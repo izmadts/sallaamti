@@ -62,9 +62,9 @@
                              <a class="text-dark px-2" href="https://tiktok.com/@sallaamti"><i class="fab fa-tiktok"></i></a>
                              <a class="text-dark px-2" href="https://youtube.com/@sallaamti"><i class="fab fa-youtube"></i></a>
                              <a class="text-dark px-2 me-2" href="https://instagram.com/sallaamti"><i class="fab fa-instagram"></i></a>
-                             <a href="{{ route('login') }}" class="btn btn-outline-warning px-4"><i class="fa fa-lock text-dark me-1">‌</i> Log in</a>
+                             <a href="{{ route('login') }}" class="btn btn-outline-warning"><i class="fa fa-lock text-dark me-1">‌</i> Log in</a>
                              @if (Route::has('register'))
-                             <a href="{{ route('register') }}" class="btn btn-outline-warning px-4"><i class="fa fa-user-plus text-dark me-1">‌</i>Register
+                             <a href="{{ route('register') }}" class="btn btn-outline-warning"><i class="fa fa-user-plus text-dark me-1">‌</i>Register
                              </a>
                              @endif
                          </div>
