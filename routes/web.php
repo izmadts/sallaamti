@@ -23,7 +23,7 @@ use App\Http\Controllers\VolunteerController;
 use App\Http\Controllers\Admin\VolunteerAdminController;
 use App\Http\Controllers\DonationController;
 use App\Http\Controllers\Admin\DonationAdminController;
-
+use App\Http\Controllers\Admin\AdminDashboardController;
 
 //Public Sallaamti Front Website Routes
 Route::get('/welcome', function () {return view('welcome');});
@@ -106,7 +106,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/nikah-verifications', [NikahVerificationController::class, 'index'])->name('nikah.verifications');
     Route::post('/nikah-verifications/{profile}/approve', [NikahVerificationController::class, 'approve'])->name('nikah.approve');
     Route::post('/nikah-verifications/{profile}/reject', [NikahVerificationController::class, 'reject'])->name('nikah.reject');
-    Route::get('/nikah-payments/{profile}', [NikahPaymentAdminController::class, 'index'])->name('nikah.payments');
+    Route::get('/nikah-payments', [NikahPaymentAdminController::class, 'index'])->name('nikah.payments');
     Route::post('/nikah-payments/{profile}/confirm', [NikahPaymentAdminController::class, 'confirm'])->name('nikah.payments.confirm');
     Route::post('/nikah-payments/{profile}/reject', [NikahPaymentAdminController::class, 'reject'])->name('nikah.payments.reject');
     //Quran course management
@@ -137,6 +137,9 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::post('donations/{donation}/confirm', [DonationAdminController::class, 'confirm'])->name('donations.confirm');
     Route::post('donations/{donation}/reject', [DonationAdminController::class, 'reject'])->name('donations.reject');
     Route::get('/admin/donation-screenshot/{donation}', [DonationAdminController::class, 'screenshot'])->name('admin.donation.screenshot');
+    // Additional admin OWN DASHBOARD routes
+    Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
+
 }); // End of admin middleware group
 
 Route::middleware(['auth', 'teacher'])->prefix('teacher')->name('teacher.')->group(function () {

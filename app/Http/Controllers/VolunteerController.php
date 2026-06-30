@@ -17,14 +17,14 @@ class VolunteerController extends Controller
     {
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'email', 'max:255'],
-            'phone' => ['required', 'string', 'max:30'],
+            'email' => ['required', 'email', 'max:255', 'unique:volunteer_applications,email'],
+            'phone' => ['required', 'string', 'max:30', 'unique:volunteer_applications,phone'],
             'city' => ['nullable', 'string', 'max:100'],
             'area_of_interest' => ['nullable', 'string', 'max:100'],
             'message' => ['nullable', 'string', 'max:1000'],
         ]);
 
-        $validated['user_id'] = Auth::id(); // null if guest
+        $validated['user_id'] = Auth::id();
 
         VolunteerApplication::create($validated);
 
