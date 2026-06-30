@@ -1,5 +1,5 @@
 <x-guest-layout>
-    <div class="card" style="width: 40rem; margin: auto; margin-top: 200px; padding: 20px;">
+    <div class="card" style="width: 20rem; margin-top: 200px; padding: 10px;">
         <h2 class="font-semibold mb-4">Join Sallaamti as a Volunteer</h2>
 
         @if (session('status'))
@@ -24,9 +24,11 @@
                 </select>
             </div>
             <div><label class="mb-1 mt-2">Message (optional)</label>
-            <textarea name="message" rows="3" class="border-gray-300 rounded-md form-control"></textarea></div>
+                <textarea name="message" rows="3" class="border-gray-300 rounded-md form-control"></textarea>
+            </div>
             <button type="submit" class="btn btn-primary btn-lg mt-3">Submit Application</button>
         </form>
-        <a href="{{ route('index') }}" class="inline-block mt-6 bg-light text-dark mt-3 px-5 py-2 rounded"><<< Back to Home</a>
+        <a href="{{ route('index') }}" class="inline-block mt-6 bg-light text-dark mt-3 px-5 py-2 rounded">
+            <<< Back to Home</a>
     </div>
 </x-guest-layout>
