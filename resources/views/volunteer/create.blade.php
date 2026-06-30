@@ -1,5 +1,5 @@
 <x-guest-layout>
-    <div class="card" style="width: 20rem; margin-top: 200px; padding: 10px;">
+    <div class="card" style="width: 20rem; margin: auto; margin-top: 200px; padding: 10px;">
         <h2 class="font-semibold mb-4">Join Sallaamti as a Volunteer</h2>
 
         @if (session('status'))
