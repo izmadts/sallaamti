@@ -38,7 +38,7 @@ return new class extends Migration
             // Verification & media
             $table->string('photo')->nullable(); // path, hidden until accepted
             $table->string('cnic_number')->nullable();
-            $table->string('cnic_image')->nullable();
+            $table->string('cnic_front_image')->nullable();
             $table->enum('verification_status', ['pending', 'verified', 'rejected'])->default('pending');
             $table->text('rejection_reason')->nullable();
 
