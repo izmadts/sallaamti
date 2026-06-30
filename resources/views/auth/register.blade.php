@@ -1,6 +1,6 @@
 <x-guest-layout>
 
-    <div class="card" style="width: 20rem; margin: auto; margin-top: 200px; padding: 10px;">
+    <div class="card" style="width: 20rem; margin: auto; margin-top: 200px; padding: 30px;">
         <form method="POST" action="{{ route('register') }}">
             @csrf
             <!-- Name -->

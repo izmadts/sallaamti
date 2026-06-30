@@ -1,5 +1,5 @@
 <x-guest-layout>
-    <div class="card" style="width: 20rem; margin: auto; margin-top: 200px; padding: 10px;">
+    <div class="card" style="width: 20rem; margin: auto; margin-top: 200px; padding: 30px;">
 
         <h2 class="font-semibold mb-2">Donate to Sallaamti</h2>
         <p class="mb-6">Your contribution supports Quran education, family support, and community welfare programs.</p>
