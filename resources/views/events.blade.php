@@ -218,7 +218,7 @@
              <div class="row g-4 footer-inner">
                  <div class="col-md-6 col-lg-6 col-xl-3">
                      <div class="footer-item mt-5">
-                         <img src=" {{ asset('{{ asset('img/logo-w.png')}}" class="img-fluid">
+                         <img src=" {{ asset('img/logo-w.png')}}" class="img-fluid">
                          <p class="mb-4 text-secondary">Sallaamti (سلامتی) is an organization dedicated to spreading peace, knowledge, and compassion through the teachings of the Quran and Hadith. </p>
                          <a href="" class="btn btn-primary py-2 px-4">Donate Now</a>
                      </div>
@@ -259,14 +259,14 @@
                      <div class="footer-item mt-5">
                          <h4 class="text-light mb-4">Latest Post</h4>
                          <div class="d-flex border-bottom border-secondary py-4">
-                             <img src=" {{ asset('{{ asset('img/blog-mini-1.jpg')}}" class="img-fluid flex-shrink-0" alt="">
+                             <img src=" {{ asset('img/blog-mini-1.jpg')}}" class="img-fluid flex-shrink-0" alt="">
                              <div class="ps-3">
                                  <p class="mb-0 text-muted">01 Jan 2045</p>
                                  <a href="" class="text-body">Lorem ipsum dolor sit amet elit eros vel</a>
                              </div>
                          </div>
                          <div class="d-flex py-4">
-                             <img src=" {{ asset('{{ asset('img/blog-mini-2.jpg')}}" class="img-fluid flex-shrink-0" alt="">
+                             <img src=" {{ asset('img/blog-mini-2.jpg')}}" class="img-fluid flex-shrink-0" alt="">
                              <div class="ps-3">
                                  <p class="mb-0 text-muted">01 Jan 2045</p>
                                  <a href="" class="text-body">Lorem ipsum dolor sit amet elit eros vel</a>
@@ -298,13 +298,13 @@
      <!-- JavaScript Libraries -->
      <script src=" {{ asset('https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
      <script src=" {{ asset('https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
-     <script src=" {{ asset('{{ asset('lib/wow/wow.min.js') }}"></script>
-     <script src=" {{ asset('{{ asset('lib/easing/easing.min.js') }}"></script>
-     <script src=" {{ asset('{{ asset('lib/waypoints/waypoints.min.js') }}"></script>
-     <script src=" {{ asset('{{ asset('lib/owlcarousel/owl.carousel.min.js') }}"></script>
+     <script src=" {{ asset('lib/wow/wow.min.js') }}"></script>
+     <script src=" {{ asset('lib/easing/easing.min.js') }}"></script>
+     <script src=" {{ asset('lib/waypoints/waypoints.min.js') }}"></script>
+     <script src=" {{ asset('lib/owlcarousel/owl.carousel.min.js') }}"></script>
 
      <!-- Template Javascript -->
-     <script src=" {{ asset('{{ asset('js/main.js')}}"></script>
+     <script src=" {{ asset('js/main.js')}}"></script>
  </body>
 
  </html>
