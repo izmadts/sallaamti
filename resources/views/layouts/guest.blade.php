@@ -63,11 +63,11 @@
                     </div>
                     <div class="col-lg-5 text-end">
                         <div class="h-100 d-inline-flex align-items-center">
-                            <span class="text-body">Follow Us:</span>
-                            <a class="text-light px-2" href="https://facebook.com/sallaamti"><i class="fab fa-facebook-f"></i></a>
-                            <a class="text-light px-2" href="https://tiktok.com/@sallaamti"><i class="fab fa-tiktok"></i></a>
-                            <a class="text-light px-2" href="https://youtube.com/@sallaamti"><i class="fab fa-youtube"></i></a>
-                            <a class="text-light px-2 me-2" href="https://instagram.com/sallaamti"><i class="fab fa-instagram"></i></a>
+                            <span class="text-body d-lg-block d-none">Follow Us:</span>
+                            <a class="text-light px-2 d-lg-block d-none" href="https://facebook.com/sallaamti"><i class="fab fa-facebook-f"></i></a>
+                            <a class="text-light px-2 d-lg-block d-none" href="https://tiktok.com/@sallaamti"><i class="fab fa-tiktok"></i></a>
+                            <a class="text-light px-2 d-lg-block d-none" href="https://youtube.com/@sallaamti"><i class="fab fa-youtube"></i></a>
+                            <a class="text-light px-2 d-lg-block d-none me-2" href="https://instagram.com/sallaamti"><i class="fab fa-instagram"></i></a>
                             <a href="{{ route('login') }}" class="btn btn-outline-primary"><i class="fa fa-lock text-primary me-1">‌</i> Log in</a>
                             @if (Route::has('register'))
                             <a href="{{ route('register') }}" class="btn btn-outline-primary ms-2"><i class="fa fa-user-plus text-primary me-1">‌</i>Register
