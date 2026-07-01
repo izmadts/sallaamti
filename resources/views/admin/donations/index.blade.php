@@ -34,7 +34,7 @@
                         <p class="text-xs text-gray-400 mt-1">{{ $donation->donation_number }} | {{ $donation->created_at->format('d M Y, h:i A') }}</p>
 
                         @if ($donation->payment_screenshot)
-                        <a href="{{ route('admin.donation.screenshot', $donation) }}" target="_blank" class="text-xs text-blue-600 underline">View Screenshot</a>
+                        <a href="{{ route('admin.admin.donation.screenshot', $donation) }}" target="_blank" class="text-xs text-blue-600 underline">View Screenshot</a>
                         @endif
                     </div>
 

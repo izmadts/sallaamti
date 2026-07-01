@@ -24,6 +24,8 @@ use App\Http\Controllers\Admin\VolunteerAdminController;
 use App\Http\Controllers\DonationController;
 use App\Http\Controllers\Admin\DonationAdminController;
 use App\Http\Controllers\Admin\AdminDashboardController;
+use App\Http\Controllers\Admin\SubscriberAdminController;
+use App\Http\Controllers\SubscriberController;
 
 //Public Sallaamti Front Website Routes
 Route::get('/welcome', function () {return view('welcome');});
@@ -136,9 +138,12 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('donations', [DonationAdminController::class, 'index'])->name('donations.index');
     Route::post('donations/{donation}/confirm', [DonationAdminController::class, 'confirm'])->name('donations.confirm');
     Route::post('donations/{donation}/reject', [DonationAdminController::class, 'reject'])->name('donations.reject');
-    Route::get('/admin/donation-screenshot/{donation}', [DonationAdminController::class, 'screenshot'])->name('admin.donation.screenshot');
+    Route::get('donation-screenshot/{donation}', [DonationAdminController::class, 'screenshot'])->name('admin.donation.screenshot');
     // Additional admin OWN DASHBOARD routes
     Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
+    //Subscription management
+    Route::get('/subscribers', [SubscriberAdminController::class, 'index'])->name('subscribers.index');
+    Route::delete('/subscribers/{subscriber}', [SubscriberAdminController::class, 'destroy'])->name('subscribers.destroy');
 
 }); // End of admin middleware group
 
@@ -150,7 +155,9 @@ Route::middleware(['auth', 'teacher'])->prefix('teacher')->name('teacher.')->gro
 
 // Public verification route — no auth needed, anyone can verify a certificate is real
 Route::get('/verify-certificate/{certificateNumber}', [CertificateController::class, 'verify'])->name('certificate.verify');
-
+Route::post('/subscribe', [SubscriberController::class, 'store'])->name('subscribe');
+Route::get('/subscriber/verify/{token}', [SubscriberController::class, 'verify'])->name('subscriber.verify');
+Route::get('/subscriber/unsubscribe/{id}', [SubscriberController::class, 'unsubscribe'])->name('subscriber.unsubscribe');
 
 
 

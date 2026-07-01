@@ -7,6 +7,7 @@ use App\Models\Course;
 use App\Models\NikahProfile;
 use App\Models\QuranLiveCourse;
 use App\Models\VolunteerApplication;
+use App\Models\Donation;
 
 class AdminDashboardController extends Controller
 {
@@ -18,6 +19,7 @@ class AdminDashboardController extends Controller
             'total_courses' => Course::count(),
             'total_live_courses' => QuranLiveCourse::count(),
             'pending_volunteers' => VolunteerApplication::where('status', 'pending')->count(),
+            'total_donations' => Donation::count(),
         ];
 
         return view('admin.dashboard', compact('stats'));

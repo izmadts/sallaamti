@@ -41,6 +41,9 @@
                     <a href="{{ route('admin.courses.index') }}" class="text-green-600 hover:underline">Manage Courses</a>
                     <a href="{{ route('admin.quran-live-courses.index') }}" class="text-purple-600 hover:underline">Manage Live Courses</a>
                     <a href="{{ route('admin.donations.index') }}" class="text-green-800 hover:underline">Check Donations</a>
+                    <a href="{{ route('admin.subscribers.index') }}"><i class="fas fa-envelope-open-text"></i>Newsletter</a>
+                    <a href="{{ route('admin.volunteers.index') }}" class="text-blue-600 hover:underline">Volunteer Applications</a>
+                   
                 </div>
             </div>
 

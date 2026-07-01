@@ -13,6 +13,8 @@
         "khanamiryan/qrcode-detector-decoder": "^2.0",
         "laravel/framework": "^12.0",
         "laravel/tinker": "^2.10.1",
+        "livewire/livewire": "^4.3",
+        "power-components/livewire-powergrid": "^6.10",
         "spatie/laravel-permission": "^6.25"
     },
     "require-dev": {

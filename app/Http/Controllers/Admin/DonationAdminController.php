@@ -40,4 +40,5 @@ class DonationAdminController extends Controller
         abort_unless($path && \Storage::disk('private')->exists($path), 404);
         return \Storage::disk('private')->response($path);
     }
+    
 }
