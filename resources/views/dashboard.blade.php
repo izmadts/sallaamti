@@ -21,7 +21,7 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
 
                 <!-- Quran Learning -->
-                <a href="{{ route('courses.index') }}" class="block bg-white rounded-lg shadow-sm hover:shadow-md transition p-6 border border-gray-100">
+                <a href="{{ route('quran-live.index') }}" class="block bg-white rounded-lg shadow-sm hover:shadow-md transition p-6 border border-gray-100">
                     <div class="text-3xl mb-3">📖</div>
                     <h4 class="font-semibold text-gray-800 text-lg">{{ __('Quran Learning') }}</h4>
                     <p class="text-gray-500 text-sm mt-1">{{ __('Naazira, Tarjuma, Arabic Grammar, Seerah & Hadith courses.') }}</p>

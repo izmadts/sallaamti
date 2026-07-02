@@ -36,11 +36,12 @@
                 <div>
                     <x-input-label value="Quran Learning Level" />
                     <select name="learning_level" class="border-gray-300 rounded-md w-full mt-1">
-                        <option value="Noorani Qaida">Noorani Qaida</option>
-                        <option value="Nazira Quran">Nazira Quran</option>
-                        <option value="Tajweed">Tajweed</option>
-                        <option value="Hifz">Hifz</option>
-                        <option value="Translation">Translation</option>
+                        <option value="Noorani Qaida">Quran Level 1 (Qaida)</option>
+                        <option value="Tajweeb">Quran Level 2 (Tajweed / Qiraat)</option>
+                        <option value="Translation">Quran Level 3 (Translation)</option>
+                        <option value="Quranic Arabic">Quran Level 4 (Quranic Arabic)</option>
+                        <option value="Advance Islamic Literature">Quran Level 5 (Advance Islamic Literature)</option>
+                        <option value="Hifz">Quran Level 6 (Hifz)</option>
                     </select>
                 </div>
                 <div>
@@ -51,7 +52,26 @@
                         @endforeach
                     </div>
                 </div>
-                <div><x-input-label value="Preferred Time" /><x-text-input name="preferred_time" class="w-full mt-1" placeholder="e.g. 6:00 PM - 7:00 PM" /></div>
+                <div>
+                    <x-input-label value="Preferred Time" />
+                    <select name="preferred_time" class="border-gray-300 rounded-md w-full mt-1">
+                        <option value="12:00 PM">12:00 PM - 1:00 PM UTC+05:00</option>
+                        <option value="1:00 PM">1:00 PM - 2:00 PM UTC+05:00</option>
+                        <option value="2:00 PM">2:00 PM - 3:00 PM UTC+05:00</option>
+                        <option value="3:00 PM">3:00 PM - 4:00 PM UTC+05:00</option>
+                        <option value="4:00 PM">4:00 PM - 5:00 PM UTC+05:00</option>
+                        <option value="5:00 PM">5:00 PM - 6:00 PM UTC+05:00</option>
+                        <option value="6:00 PM">6:00 PM - 7:00 PM UTC+05:00</option>
+                        <option value="7:00 PM">7:00 PM - 8:00 PM UTC+05:00</option>
+                        <option value="8:00 PM">8:00 PM - 9:00 PM UTC+05:00</option>
+                        <option value="9:00 PM">9:00 PM - 10:00 PM UTC+05:00</option>
+                        <option value="10:00 PM">10:00 PM - 11:00 PM UTC+05:00</option>
+                        <option value="11:00 PM">11:00 PM - 12:00 AM UTC+05:00</option>
+                        <option value="12:00 AM">12:00 AM - 1:00 AM UTC+05:00</option>
+
+                    </select>
+
+                </div>
                 <div>
                     <x-input-label value="Teacher Preference" />
                     <select name="teacher_preference" class="border-gray-300 rounded-md w-full mt-1" required>

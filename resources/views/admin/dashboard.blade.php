@@ -1,52 +1,159 @@
-<x-app-layout>
+{{-- resources/views/admin/dashboard.blade.php --}}
+<x-admin-layout>
+
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">Admin Dashboard</h2>
+        <div class="flex items-center gap-2">
+            <h2 class="font-semibold text-lg text-gray-800">Dashboard</h2>
+            <span class="text-gray-300">›</span>
+            <span class="text-sm text-gray-500">Overview</span>
+        </div>
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-6xl mx-auto sm:px-6 lg:px-8 space-y-8">
+    <div class="space-y-6 max-w-7xl">
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                <a href="{{ route('admin.nikah.verifications') }}" class="bg-white rounded-lg shadow-sm p-5 hover:shadow-md transition">
-                    <p class="text-3xl font-bold text-pink-600">{{ $stats['pending_nikah_verification'] }}</p>
-                    <p class="text-sm text-gray-500 mt-1">Pending Nikah Verifications</p>
-                </a>
-                <a href="{{ route('admin.nikah.payments') }}" class="bg-white rounded-lg shadow-sm p-5 hover:shadow-md transition">
-                    <p class="text-3xl font-bold text-yellow-600">{{ $stats['pending_nikah_payments'] }}</p>
-                    <p class="text-sm text-gray-500 mt-1">Pending Nikah Payments</p>
-                </a>
-                <a href="{{ route('admin.courses.index') }}" class="bg-white rounded-lg shadow-sm p-5 hover:shadow-md transition">
-                    <p class="text-3xl font-bold text-green-600">{{ $stats['total_courses'] }}</p>
-                    <p class="text-sm text-gray-500 mt-1">Quran Courses</p>
-                </a>
-                <a href="{{ route('admin.quran-live-courses.index') }}" class="bg-white rounded-lg shadow-sm p-5 hover:shadow-md transition">
-                    <p class="text-3xl font-bold text-purple-600">{{ $stats['total_live_courses'] }}</p>
-                    <p class="text-sm text-gray-500 mt-1">Live Quran Courses</p>
-                </a>
-                <a href="{{ route('admin.donations.index') }}" class="bg-white rounded-lg shadow-sm p-5 hover:shadow-md transition">
-                    <p class="text-3xl font-bold text-green-800">{{ $stats['total_donations'] }}</p>
-                    <p class="text-sm text-gray-500 mt-1">Donations</p>
-                </a>
-                <a href="{{ route('admin.volunteers.index') }}" class="bg-white rounded-lg shadow-sm p-5 hover:shadow-md transition">
-                    <p class="text-3xl font-bold text-blue-600">{{ $stats['pending_volunteers'] }}</p>
-                    <p class="text-sm text-gray-500 mt-1">Pending Volunteer Applications</p>
-                </a>
+        {{-- ===== USERS ===== --}}
+        <section>
+            <p class="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-2">Users</p>
+            <div class="grid grid-cols-2 xl:grid-cols-4 gap-3">
+                <x-admin-stat
+                    href="{{ route('admin.users.index') }}"
+                    value="{{ $stats['total_users'] }}"
+                    label="Total Users"
+                    color="indigo"
+                    icon="👥" />
+                <x-admin-stat
+                    href="{{ route('admin.users.index') }}"
+                    value="{{ $stats['new_users_this_month'] }}"
+                    label="New This Month"
+                    color="indigo"
+                    icon="🆕" />
             </div>
+        </section>
 
-            <div class="bg-white rounded-lg shadow-sm p-6">
-                <h3 class="font-semibold text-gray-700 mb-4">Quick Links</h3>
-                <div class="grid grid-cols-2 sm:grid-cols-3 gap-3 text-sm">
-                    <a href="{{ route('admin.nikah.verifications') }}" class="text-pink-600 hover:underline">Nikah Verifications</a>
-                    <a href="{{ route('admin.nikah.payments') }}" class="text-pink-600 hover:underline">Nikah Payments</a>
-                    <a href="{{ route('admin.courses.index') }}" class="text-green-600 hover:underline">Manage Courses</a>
-                    <a href="{{ route('admin.quran-live-courses.index') }}" class="text-purple-600 hover:underline">Manage Live Courses</a>
-                    <a href="{{ route('admin.donations.index') }}" class="text-green-800 hover:underline">Check Donations</a>
-                    <a href="{{ route('admin.subscribers.index') }}"><i class="fas fa-envelope-open-text"></i>Newsletter</a>
-                    <a href="{{ route('admin.volunteers.index') }}" class="text-blue-600 hover:underline">Volunteer Applications</a>
-                   
-                </div>
+        {{-- ===== NIKAH ===== --}}
+        <section>
+            <p class="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-2">Nikah Matchmaking</p>
+            <div class="grid grid-cols-2 xl:grid-cols-4 gap-3">
+                <x-admin-stat
+                    href="{{ route('admin.nikah.payments') }}"
+                    value="{{ $stats['pending_nikah_payments'] }}"
+                    label="Pending Payments"
+                    color="yellow"
+                    icon="💳"
+                    :badge="$stats['pending_nikah_payments'] > 0" />
+                <x-admin-stat
+                    href="{{ route('admin.nikah.verifications') }}"
+                    value="{{ $stats['pending_nikah_verification'] }}"
+                    label="Pending Verifications"
+                    color="pink"
+                    icon="✅"
+                    :badge="$stats['pending_nikah_verification'] > 0" />
+                <x-admin-stat
+                    href="{{ route('admin.nikah.verifications') }}"
+                    value="{{ $stats['total_nikah_profiles'] }}"
+                    label="Total Profiles"
+                    color="gray"
+                    icon="💍" />
+                <x-admin-stat
+                    href="{{ route('admin.nikah.verifications') }}?status=verified"
+                    value="{{ $stats['verified_nikah_profiles'] }}"
+                    label="Verified Profiles"
+                    color="green"
+                    icon="🔒" />
             </div>
+        </section>
 
-        </div>
+        {{-- ===== QURAN COURSES ===== --}}
+        <section>
+            <p class="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-2">Quran Learning</p>
+            <div class="grid grid-cols-2 xl:grid-cols-4 gap-3">
+                <x-admin-stat
+                    href="{{ route('admin.courses.index') }}"
+                    value="{{ $stats['total_courses'] }}"
+                    label="Total Courses"
+                    color="green"
+                    icon="📖" />
+                <x-admin-stat
+                    href="{{ route('admin.courses.index') }}"
+                    value="{{ $stats['published_courses'] }}"
+                    label="Published"
+                    color="teal"
+                    icon="📢" />
+                <x-admin-stat
+                    value="{{ $stats['total_enrollments'] }}"
+                    label="Enrollments"
+                    color="teal"
+                    icon="🎓" />
+                <x-admin-stat
+                    value="{{ $stats['total_certificates'] }}"
+                    label="Certificates Issued"
+                    color="teal"
+                    icon="🏅" />
+            </div>
+        </section>
+
+        {{-- ===== LIVE QURAN ===== --}}
+        <section>
+            <p class="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-2">Live Quran Classes</p>
+            <div class="grid grid-cols-2 xl:grid-cols-4 gap-3">
+                <x-admin-stat
+                    href="{{ route('admin.quran-live-courses.index') }}"
+                    value="{{ $stats['total_live_courses'] }}"
+                    label="Live Courses"
+                    color="purple"
+                    icon="🎥" />
+                <x-admin-stat
+                    value="{{ $stats['pending_live_subscriptions'] }}"
+                    label="Pending Subscriptions"
+                    color="purple"
+                    icon="🔄"
+                    :badge="$stats['pending_live_subscriptions'] > 0" />
+                <x-admin-stat
+                    value="{{ $stats['pending_admissions'] }}"
+                    label="Total Admissions"
+                    color="violet"
+                    icon="📋" />
+            </div>
+        </section>
+
+        {{-- ===== DONATIONS & NEWSLETTER ===== --}}
+        <section>
+            <p class="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-2">Donations & Newsletter</p>
+            <div class="grid grid-cols-2 xl:grid-cols-4 gap-3">
+                <x-admin-stat
+                    href="{{ route('admin.donations.index') }}"
+                    value="{{ $stats['total_donations'] ?? '—' }}"
+                    label="Total Donations"
+                    color="emerald"
+                    icon="💰" />
+                <x-admin-stat
+                    href="{{ route('admin.subscribers.index') }}"
+                    value="{{ $stats['total_subscribers'] ?? '—' }}"
+                    label="Subscribers"
+                    color="sky"
+                    icon="📧" />
+            </div>
+        </section>
+
+        {{-- ===== VOLUNTEERS ===== --}}
+        <section>
+            <p class="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-2">Volunteers</p>
+            <div class="grid grid-cols-2 xl:grid-cols-4 gap-3">
+                <x-admin-stat
+                    href="{{ route('admin.volunteers.index') }}"
+                    value="{{ $stats['pending_volunteers'] }}"
+                    label="Pending Applications"
+                    color="blue"
+                    icon="🤝"
+                    :badge="$stats['pending_volunteers'] > 0" />
+                <x-admin-stat
+                    href="{{ route('admin.volunteers.index') }}"
+                    value="{{ $stats['total_volunteers'] }}"
+                    label="Approved Volunteers"
+                    color="blue"
+                    icon="⭐" />
+            </div>
+        </section>
+
     </div>
-</x-app-layout>
+</x-admin-layout>

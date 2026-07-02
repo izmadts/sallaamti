@@ -1,4 +1,4 @@
-<x-app-layout>
+<x-admin-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800">{{ $course->title }} — This Month's Payments</h2>
     </x-slot>
@@ -32,4 +32,4 @@
             {{ $subscriptions->links() }}
         </div>
     </div>
-</x-app-layout>
+</x-admin-layout>

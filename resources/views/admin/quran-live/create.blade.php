@@ -1,4 +1,4 @@
-<x-app-layout>
+<x-admin-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800">New Quran Live Course</h2>
     </x-slot>
@@ -25,11 +25,29 @@
                         @endforeach
                     </div>
                 </div>
-                <div><x-input-label value="Class Time" /><x-text-input name="class_time" class="w-full mt-1" placeholder="6:00 PM - 7:00 PM" /></div>
+                <div>
+                    <x-input-label value="Class Time" />
+                    <select name="class_time" class="border-gray-300 rounded-md w-full mt-1">
+                        <option value="12:00 PM">12:00 PM - 1:00 PM UTC+05:00</option>
+                        <option value="1:00 PM">1:00 PM - 2:00 PM UTC+05:00</option>
+                        <option value="2:00 PM">2:00 PM - 3:00 PM UTC+05:00</option>
+                        <option value="3:00 PM">3:00 PM - 4:00 PM UTC+05:00</option>
+                        <option value="4:00 PM">4:00 PM - 5:00 PM UTC+05:00</option>
+                        <option value="5:00 PM">5:00 PM - 6:00 PM UTC+05:00</option>
+                        <option value="6:00 PM">6:00 PM - 7:00 PM UTC+05:00</option>
+                        <option value="7:00 PM">7:00 PM - 8:00 PM UTC+05:00</option>
+                        <option value="8:00 PM">8:00 PM - 9:00 PM UTC+05:00</option>
+                        <option value="9:00 PM">9:00 PM - 10:00 PM UTC+05:00</option>
+                        <option value="10:00 PM">10:00 PM - 11:00 PM UTC+05:00</option>
+                        <option value="11:00 PM">11:00 PM - 12:00 AM UTC+05:00</option>
+                        <option value="12:00 AM">12:00 AM - 1:00 AM UTC+05:00</option>
+
+                    </select>
+                </div>
                 <div><x-input-label value="Monthly Fee (Rs.)" /><x-text-input name="monthly_fee" type="number" step="0.01" class="w-full mt-1" required /></div>
                 <div class="flex items-center gap-2"><input type="checkbox" name="is_published" value="1" id="is_published"><label for="is_published" class="text-sm">Publish</label></div>
                 <x-primary-button>Create Course</x-primary-button>
             </form>
         </div>
     </div>
-</x-app-layout>
+</x-admin-layout>

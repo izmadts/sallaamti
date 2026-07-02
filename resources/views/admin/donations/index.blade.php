@@ -1,4 +1,4 @@
-<x-app-layout>
+<x-admin-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800">Donations</h2>
     </x-slot>
@@ -67,4 +67,4 @@
             {{ $donations->links() }}
         </div>
     </div>
-</x-app-layout>
+</x-admin-layout>

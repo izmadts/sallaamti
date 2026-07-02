@@ -1,4 +1,4 @@
-<x-app-layout>
+<x-admin-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800">Manage Quran Live Courses</h2>
     </x-slot>
@@ -23,4 +23,4 @@
             {{ $courses->links() }}
         </div>
     </div>
-</x-app-layout>
+</x-admin-layout>
