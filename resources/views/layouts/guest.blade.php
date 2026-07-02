@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ config('app.name', 'Sallaamti Importance of Quran Education and Empowering Humanity') }}</title>
+    <title>{{ setting('site_name') }} | {{ setting('site_tagline') }}</title>
     <!-- Favicon Link -->
     <link rel="icon" type="image/x-icon" href="{{ asset('images/favicon.png') }}">
     <!-- Fonts -->
@@ -27,6 +28,7 @@
     <!-- Template Stylesheet -->
     <link href="{{ asset('css/style.css')}}" rel="stylesheet">
 </head>
+
 <body class="antialiased">
     <!-- Spinner Start -->
     <div id="spinner" class="show w-100 vh-100 bg-white position-fixed translate-middle top-50 start-50  d-flex align-items-center justify-content-center">
@@ -41,7 +43,7 @@
                     <div class="col-lg-7 text-start d-lg-block d-none">
                         <div class="h-100 d-inline-flex align-items-center me-4">
                             <span class="fa fa-phone-alt me-2 text-light"></span>
-                            <a href="https://wa.me/923346145566" class="text-light"><span>+92 334 6145566</span></a>
+                            <a href="https://wa.me/{{ setting('social_whatsapp') }}" class="text-light"><span>+92 334 6145566</span></a>
                         </div>
                         <div class="h-100 d-inline-flex align-items-center">
                             <span class="far fa-envelope me-2 text-light"></span>
@@ -51,10 +53,10 @@
                     <div class="col-lg-5 text-end">
                         <div class="h-100 d-inline-flex align-items-center">
                             <span class="text-body d-lg-block d-none">Follow Us:</span>
-                            <a class="text-light px-2" href="https://facebook.com/sallaamti"><i class="fab fa-facebook-f"></i></a>
-                            <a class="text-light px-2" href="https://tiktok.com/@sallaamti"><i class="fab fa-tiktok"></i></a>
-                            <a class="text-light px-2" href="https://youtube.com/@sallaamti"><i class="fab fa-youtube"></i></a>
-                            <a class="text-light px-2 me-2" href="https://instagram.com/sallaamti"><i class="fab fa-instagram"></i></a>
+                            <a class="text-light px-2" href="{{ setting('social_facebook') }}" target="_blank"><i class="fab fa-facebook-f"></i></a>
+                            <a class="text-light px-2" href="{{ setting('social_tiktok') }}" target="_blank"><i class="fab fa-tiktok"></i></a>
+                            <a class="text-light px-2" href="{{ setting('social_youtube') }}" target="_blank"><i class="fab fa-youtube"></i></a>
+                            <a class="text-light px-2 me-2" href="{{ setting('social_instagram') }}" target="_blank"><i class="fab fa-instagram"></i></a>
                             <a href="{{ route('login') }}" class="btn btn-outline-primary"><i class="fa fa-lock text-primary me-1">‌</i> Log in</a>
                             @if (Route::has('register'))
                             <a href="{{ route('register') }}" class="btn btn-outline-primary ms-2"><i class="fa fa-user-plus text-primary me-1">‌</i>Register
@@ -113,16 +115,8 @@
                         <form id="subscribeForm">
                             @csrf
                             <div class="position-relative mx-auto">
-                                <input
-                                    name="email"
-                                    class="form-control border-0 w-100 py-3 ps-4 pe-5"
-                                    type="email"
-                                    placeholder="Enter your email"
-                                    required>
-                                <button type="submit"
-                                    class="btn btn-primary py-2 position-absolute top-0 end-0 mt-2 me-2">
-                                    Subscribe
-                                </button>
+                                <input name="email" class="form-control border-0 w-100 py-3 ps-4 pe-5" type="email" placeholder="Enter your email" required>
+                                <button type="submit" class="btn btn-primary py-2 position-absolute top-0 end-0 mt-2 me-2">Subscribe</button>
                             </div>
                         </form>
                         <div id="subscribe-message" class="mt-2"></div>
@@ -146,12 +140,12 @@
                                 <h6 class="text-secondary mb-0">Our Address</h6>
                                 <div class="d-flex align-items-center border-bottom py-4">
                                     <span class="flex-shrink-0 btn-square bg-primary me-3 p-4"><i class="fa fa-map-marker-alt text-dark"></i></span>
-                                    <a href="{{ url('/contact') }}" class="text-body">Gulshan Faiz Colony Multan</a>
+                                    <a href="{{ url('/contact') }}" class="text-body">{{ setting('site_address') }}</a>
                                 </div>
                                 <h6 class="text-secondary mt-4 mb-0">Our Mobile</h6>
                                 <div class="d-flex align-items-center py-4">
                                     <span class="flex-shrink-0 btn-square bg-primary me-3 p-4"><i class="fa fa-phone-alt text-dark"></i></span>
-                                    <a href="https://wa.me/923346145566" class="text-body">+92 334 6145566</a>
+                                    <a href="https://wa.me/{{ setting('social_whatsapp') }}" class="text-body" target="_blank">{{ setting('site_phone') }}</a>
                                 </div>
                             </div>
                         </div>
@@ -242,4 +236,5 @@
             });
         </script>
 </body>
+
 </html>

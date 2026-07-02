@@ -11,27 +11,27 @@
             <div class="carousel-item active">
                 <img src="{{ asset('img/hero.jpg')}}" class="d-block w-100" alt="...">
                 <div class="carousel-caption d-none d-md-block">
-                    <p class="fs-1 text-dark">Quran Education</p>
-                    <h1 class="display-1 mb-2 text-dark text-uppercase">MOST IMPORTANT FOR MANKIND</h1>
-                    <p class="fs-2 text-dark">than any education in the world</p>
+                    <p class="fs-2 text-dark">Quran Education</p>
+                    <h1 class="display-4 mb-2 text-dark text-uppercase">MOST IMPORTANT FOR MANKIND</h1>
+                    <p class="fs-4 text-dark">than any education in the world</p>
                     <a href="{{ route('courses.index') }}" class="btn btn-primary py-3 px-5">Start Learning</a>
                 </div>
             </div>
             <div class="carousel-item">
                 <img src="{{ asset('img/hero1.jpg')}}" class="d-block w-100" alt="...">
                 <div class="carousel-caption d-none d-md-block">
-                    <p class="fs-1 text-dark">Avoid Zinnah</p>
-                    <h1 class="display-1 mb-2 text-dark text-uppercase">Prefer Marriage Between Ummah</h1>
-                    <p class="fs-2 text-dark">Big negligency in Muslims Society</p>
+                    <p class="fs-2 text-dark">Avoid Zinnah</p>
+                    <h1 class="display-4 mb-2 text-dark text-uppercase">Prefer Marriage Between Ummah</h1>
+                    <p class="fs-4 text-dark">Big negligency in Muslims Society</p>
                     <a href="{{ route('nikah.create') }}" class="btn btn-primary py-3 px-5">Find Match</a>
                 </div>
             </div>
             <div class="carousel-item">
                 <img src="{{ asset('img/hero2.jpg')}}" class="d-block w-100" alt="...">
                 <div class="carousel-caption d-none d-md-block">
-                    <p class="fs-1 text-dark">Parental Couching</p>
-                    <h1 class="display-1 mb-2 text-dark text-uppercase">SAVE YOUR FAMILY GET COUCHING</h1>
-                    <p class="fs-2 text-dark">before any big trouble in life</p>
+                    <p class="fs-2 text-dark">Parental Couching</p>
+                    <h1 class="display-4 mb-2 text-dark text-uppercase">SAVE YOUR FAMILY GET COUCHING</h1>
+                    <p class="fs-4 text-dark">before any big trouble in life</p>
                     <a href="#" class="btn btn-primary py-3 px-5">Get Enrolled</a>
                 </div>
             </div>
@@ -143,7 +143,7 @@
         <div class="container py-5">
             <div class="mx-auto text-center mb-5 wow fadeIn" data-wow-delay="0.1s" style="max-width: 700px;">
                 <p class="fs-5 text-uppercase text-primary">Activities</p>
-                <h1 class="display-3">Here Are Our Activities</h1>
+                <h1 class="display-4">Here Are Our Activities</h1>
             </div>
             <div class="row g-4">
                 <div class="col-lg-6 col-xl-4">
@@ -218,7 +218,7 @@
     <!-- Events Start -->
     <!-- <div class="container-fluid event py-5">
         <div class="container py-5">
-            <h1 class="display-3 mb-5 wow fadeIn" data-wow-delay="0.1s">Upcoming <span class="text-primary">Events</span></h1>
+            <h1 class="display-4 mb-5 wow fadeIn" data-wow-delay="0.1s">Upcoming <span class="text-primary">Events</span></h1>
             <div class="row g-4 event-item wow fadeIn" data-wow-delay="0.5s">
                 <div class="col-3 col-lg-2 pe-0">
                     <div class="text-center border-bottom border-dark py-3 px-2">
@@ -249,7 +249,7 @@
              <div class="container py-5">
                  <div class="text-center mx-auto mb-5 wow fadeIn" data-wow-delay="0.1s" style="max-width: 700px;">
                      <p class="fs-5 text-uppercase text-primary">Sermons</p>
-                     <h1 class="display-3">Join The Islamic Community</h1>
+                     <h1 class="display-4">Join The Islamic Community</h1>
                  </div>
                  <div class="row g-4 justify-content-center">
                      <div class="col-lg-6 col-xl-4">
@@ -333,7 +333,7 @@
     <!-- Blog Start -->
     <!-- <div class="container-fluid py-5">
              <div class="container py-5">
-                 <h1 class="display-3 mb-5 wow fadeIn" data-wow-delay="0.1s">Latest From <span class="text-primary">Our Blog</span></h1>
+                 <h1 class="display-4 mb-5 wow fadeIn" data-wow-delay="0.1s">Latest From <span class="text-primary">Our Blog</span></h1>
                  <div class="row g-4 justify-content-center">
                      <div class="col-lg-6 col-xl-4">
                          <div class="blog-item wow fadeIn" data-wow-delay="0.1s">
@@ -415,7 +415,7 @@
              <div class="container py-5">
                  <div class="text-center mx-auto mb-5 wow fadeIn" data-wow-delay="0.1s" style="max-width: 700px;">
                      <p class="fs-5 text-uppercase text-primary">Our Team</p>
-                     <h1 class="display-3">Meet Our Organizer</h1>
+                     <h1 class="display-4">Meet Our Organizer</h1>
                  </div>
                  <div class="row g-5">
                      <div class="col-lg-4 col-xl-5">
@@ -501,7 +501,7 @@
         <div class="container py-5">
             <div class="text-center mx-auto mb-5 wow fadeIn" data-wow-delay="0.1s" style="max-width: 700px;">
                 <p class="fs-5 text-uppercase text-primary">Testimonial</p>
-                <h1 class="display-3">What People Say About Sallaamti</h1>
+                <h1 class="display-4">What People Say About Sallaamti</h1>
             </div>
             <div class="owl-carousel testimonial-carousel wow fadeIn" data-wow-delay="0.1s">
                 <div class="testimonial-item">

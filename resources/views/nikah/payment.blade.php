@@ -17,12 +17,13 @@
                 <div class="bg-gray-50 border border-gray-200 rounded p-4 text-sm mb-6">
                     <div class="mb-2">
                         <img src="{{ asset('images/jazzcash.png') }}" alt="Icon Description" class="h-8 w-auto">
-                        <p><strong>JazzCash</strong> 03006163221</p>
-                        <p><strong>Account Title:</strong> Mubashar Irshad</p>
-                        <hr class="mb-4 mt-4 border-e-400">
+                        <p><strong>JazzCash:</strong> {{ setting('jazzcash_number') }}</p>
+                        <p><strong>EasyPaisa:</strong> {{ setting('easypaisa_number') }}</p>
                         <img src="{{ asset('images/meezan.png') }}" alt="Icon Description" class="h-16 w-auto">
-                        <p><strong>Meezan Bank</strong> 050109052782</p>
-                        <p><strong>Account Title:</strong> Sallaamti</p>
+                        <p><strong>Account Title:</strong> {{ setting('bank_account_title') }}</p>
+                        @if (setting('bank_name'))
+                        <p><strong>Bank:</strong> {{ setting('bank_name') }} — {{ setting('bank_account_number') }}</p>
+                        @endif
                     </div>
                 </div>
                 @if ($profile->payment_status === 'submitted')

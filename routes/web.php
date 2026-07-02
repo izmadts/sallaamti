@@ -25,6 +25,7 @@ use App\Http\Controllers\Admin\VolunteerAdminController;
 use App\Http\Controllers\DonationController;
 use App\Http\Controllers\Admin\DonationAdminController;
 use App\Http\Controllers\Admin\AdminDashboardController;
+use App\Http\Controllers\Admin\SettingsController;
 use App\Http\Controllers\Admin\SubscriberAdminController;
 use App\Http\Controllers\SubscriberController;
 use App\Http\Controllers\Admin\UserManagementController;
@@ -57,7 +58,9 @@ Route::get('/donate/{donation}/thank-you', [DonationController::class, 'thankYou
 
 
 // Remove the old closure-based dashboard route entirely, replace with:
-Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['auth', 'active'])->name('dashboard');
+Route::get('/dashboard', [DashboardController::class, 'index'])
+    ->middleware(['auth', 'active'])
+    ->name('dashboard');
 
 Route::middleware(['auth', 'active'])->group(
     function () {
@@ -161,7 +164,8 @@ Route::middleware(['auth', 'active'])->group(
             //Subscription management
             Route::get('/subscribers', [SubscriberAdminController::class, 'index'])->name('subscribers.index');
             Route::delete('/subscribers/{subscriber}', [SubscriberAdminController::class, 'destroy'])->name('subscribers.destroy');
-
+            Route::get('settings', [SettingsController::class, 'index'])->name('settings.index');
+            Route::post('settings', [SettingsController::class, 'update'])->name('settings.update');
         }); // End of admin middleware group
 
         Route::middleware(['auth', 'teacher'])->prefix('teacher')->name('teacher.')->group(function () {

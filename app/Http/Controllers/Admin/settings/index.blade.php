@@ -7,7 +7,7 @@
         </div>
     </x-slot>
 
-    <div class="w-full space-y-6">
+    <div class="max-w-3xl space-y-6">
 
         @if (session('status'))
         <div class="p-4 bg-green-50 text-green-700 rounded-lg text-sm">✅ {{ session('status') }}</div>
@@ -89,10 +89,6 @@
                 <h3 class="font-semibold text-gray-700 border-b pb-2">📱 Social Media</h3>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                        <x-input-label value="WhatsApp Number" />
-                        <x-text-input name="social_whatsapp" class="w-full mt-1" :value="$settings['social_whatsapp'] ?? ''" placeholder="+92 3XX XXXXXXX" />
-                    </div>
-                    <div>
                         <x-input-label value="Facebook URL" />
                         <x-text-input name="social_facebook" class="w-full mt-1" :value="$settings['social_facebook'] ?? ''" placeholder="https://facebook.com/..." />
                     </div>
@@ -101,12 +97,12 @@
                         <x-text-input name="social_youtube" class="w-full mt-1" :value="$settings['social_youtube'] ?? ''" placeholder="https://youtube.com/..." />
                     </div>
                     <div>
-                        <x-input-label value="Instagram URL" />
-                        <x-text-input name="social_instagram" class="w-full mt-1" :value="$settings['social_instagram'] ?? ''" placeholder="https://instagram.com/..." />
+                        <x-input-label value="WhatsApp Number" />
+                        <x-text-input name="social_whatsapp" class="w-full mt-1" :value="$settings['social_whatsapp'] ?? ''" placeholder="+92 3XX XXXXXXX" />
                     </div>
                     <div>
-                        <x-input-label value="TikTok URL" />
-                        <x-text-input name="social_tiktok" class="w-full mt-1" :value="$settings['social_tiktok'] ?? ''" placeholder="https://tiktok.com/..." />
+                        <x-input-label value="Instagram URL" />
+                        <x-text-input name="social_instagram" class="w-full mt-1" :value="$settings['social_instagram'] ?? ''" placeholder="https://instagram.com/..." />
                     </div>
                 </div>
             </div>

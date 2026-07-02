@@ -24,5 +24,10 @@ class DatabaseSeeder extends Seeder
         $this->call([
             RoleSeeder::class,
         ]);
+        // database/seeders/DatabaseSeeder.php
+        $this->call([
+            RoleSeeder::class,
+            SettingsSeeder::class,
+        ]);
     }    
 }

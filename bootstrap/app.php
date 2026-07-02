@@ -15,8 +15,12 @@ return Application::configure(basePath: dirname(__DIR__))
         'admin' => \App\Http\Middleware\EnsureUserIsAdmin::class,
         'teacher' => \App\Http\Middleware\EnsureUserIsTeacher::class,
         'active' => \App\Http\Middleware\EnsureUserIsActive::class,
+        'maintenance' => \App\Http\Middleware\MaintenanceMode::class,
         ]);
-    })
-    ->withExceptions(function (Exceptions $exceptions): void {
+    })->withMiddleware(function (Middleware $middleware) {
+    $middleware->web(append: [
+        \App\Http\Middleware\MaintenanceMode::class,
+    ]);
+})->withExceptions(function (Exceptions $exceptions): void {
         //
     })->create();

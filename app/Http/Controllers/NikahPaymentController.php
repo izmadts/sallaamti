@@ -14,7 +14,6 @@ class NikahPaymentController extends Controller
         if (!$profile) {
             return redirect()->route('nikah.create');
         }
-
         return view('nikah.payment', compact('profile'));
     }
 
