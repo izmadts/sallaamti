@@ -42,7 +42,7 @@
                     @endif
 
                     @role('admin')
-                    <x-nav-link :href="route('admin.nikah.verifications')" :active="request()->routeIs('admin.*')">
+                    <x-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.*')">
                         ⚙️ Admin
                     </x-nav-link>
                     @endrole
