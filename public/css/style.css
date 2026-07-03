@@ -20,8 +20,9 @@
 --------------------------------------------**/
 .carousel-caption {
     position: absolute;
-    right: 30%;
-    bottom: 10rem;
+    right: 10%;
+    top: 25%;
+    bottom: 1rem;
     left: 10%;
     padding-top: 1.25rem;
     padding-bottom: 1.25rem;
