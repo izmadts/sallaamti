@@ -16,8 +16,8 @@
             @endif
 
             <form method="POST" action="{{ route('admin.banners.update', $banner) }}" enctype="multipart/form-data" class="space-y-4">
-                @csrf @method('PUT')
-
+                @csrf 
+                @method('PUT')
                 <div>
                     <x-input-label value="Subtitle" />
                     <x-text-input name="subtitle" class="w-full mt-1" :value="old('subtitle', $banner->subtitle)" />
