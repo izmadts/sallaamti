@@ -11,15 +11,47 @@
                 </div>
 
                 <!-- Navigation Links -->
-                <div class="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                    @role('admin')
-                    <x-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.*')">
-                        {{ __('Admin Dashboard') }}
-                    </x-nav-link>
-                    @endrole
+                <div class="hidden space-x-8 sm:-my-px sm:ml-10 sm:flex">
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}
                     </x-nav-link>
+
+                    {{-- Always visible --}}
+                    <x-nav-link :href="route('courses.index')" :active="request()->routeIs('courses.*')">
+                        📖 Courses
+                    </x-nav-link>
+
+                    <x-nav-link :href="route('quran-live.index')" :active="request()->routeIs('quran-live.*')">
+                        🎥 Live Classes
+                    </x-nav-link>
+
+                    {{-- Only show Nikah link if user has a profile OR hasn't created one yet (always relevant) --}}
+                    <x-nav-link :href="auth()->user()->nikahProfile ? route('nikah.show') : route('nikah.create')" :active="request()->routeIs('nikah.*')">
+                        💍 Nikah
+                        @if (auth()->user()->nikahProfile?->verification_status === 'pending')
+                        <span class="ml-1 text-xs bg-yellow-100 text-yellow-700 px-1.5 py-0.5 rounded-full">Pending</span>
+                        @elseif (auth()->user()->nikahProfile?->verification_status === 'verified')
+                        <span class="ml-1 text-xs bg-green-100 text-green-700 px-1.5 py-0.5 rounded-full">✓</span>
+                        @endif
+                    </x-nav-link>
+
+                    @if (auth()->user()->certificates()->count() > 0)
+                    <x-nav-link :href="route('certificate.index')" :active="request()->routeIs('certificate.*')">
+                        🎓 Certificates
+                    </x-nav-link>
+                    @endif
+
+                    @role('admin')
+                    <x-nav-link :href="route('admin.nikah.verifications')" :active="request()->routeIs('admin.*')">
+                        ⚙️ Admin
+                    </x-nav-link>
+                    @endrole
+
+                    @role('teacher')
+                    <x-nav-link :href="route('teacher.courses.index')" :active="request()->routeIs('teacher.*')">
+                        👩‍🏫 Teacher Panel
+                    </x-nav-link>
+                    @endrole
                 </div>
             </div>
 

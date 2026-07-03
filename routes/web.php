@@ -63,7 +63,7 @@ Route::get('/donate/{donation}/thank-you', [DonationController::class, 'thankYou
 
 // Remove the old closure-based dashboard route entirely, replace with:
 Route::get('/dashboard', [DashboardController::class, 'index'])
-    ->middleware(['auth', 'active'])
+    ->middleware(['auth', 'verified'])
     ->name('dashboard');
 
 Route::middleware(['auth', 'active'])->group(
@@ -187,6 +187,13 @@ Route::middleware(['auth', 'active'])->group(
             Route::get('/courses/{course}', [QuranTeacherController::class, 'show'])->name('courses.show');
             Route::post('/courses/{course}/daily-link', [QuranTeacherController::class, 'postDailyLink'])->name('courses.daily-link.store');
         }); // End of teacher middleware group
+        
+        Route::middleware('auth')->group(function () {
+            Route::post('/notifications/mark-all-read', function () {
+                Auth::user()->unreadNotifications->markAsRead();
+                return back();
+            })->name('notifications.markAllRead');
+        });
     });
 // Public verification route — no auth needed, anyone can verify a certificate is real
 Route::get('/verify-certificate/{certificateNumber}', [CertificateController::class, 'verify'])->name('certificate.verify');
@@ -195,7 +202,7 @@ Route::post('/newsletter/subscribe', [NewsletterController::class, 'subscribe'])
 
 Route::get('/subscriber/verify/{token}', [SubscriberController::class, 'verify'])->name('subscriber.verify');
 Route::get('/subscriber/unsubscribe/{id}', [SubscriberController::class, 'unsubscribe'])->name('subscriber.unsubscribe');
-
+Route::post('/contact', [App\Http\Controllers\ContactController::class, 'store'])->name('contact.store');
 
 
 

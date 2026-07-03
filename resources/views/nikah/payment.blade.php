@@ -18,7 +18,7 @@
                     <div class="mb-2">
                         <img src="{{ asset('images/jazzcash.png') }}" alt="Icon Description" class="h-8 w-auto">
                         <p><strong>JazzCash:</strong> {{ setting('jazzcash_number') }}</p>
-                        <p><strong>EasyPaisa:</strong> {{ setting('easypaisa_number') }}</p>
+                        <!-- <p><strong>EasyPaisa:</strong> {{ setting('easypaisa_number') }}</p> -->
                         <img src="{{ asset('images/meezan.png') }}" alt="Icon Description" class="h-16 w-auto">
                         <p><strong>Account Title:</strong> {{ setting('bank_account_title') }}</p>
                         @if (setting('bank_name'))
@@ -48,7 +48,7 @@
                         <x-input-label value="Payment Method" />
                         <select name="payment_method" required class="border-gray-300 rounded-md w-full mt-1">
                             <option value="jazzcash">JazzCash</option>
-                            <option value="easypaisa">EasyPaisa</option>
+                            <!-- <option value="easypaisa">EasyPaisa</option> -->
                             <option value="bank_transfer">Bank Transfer</option>
                         </select>
                     </div>

@@ -8,75 +8,64 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        $user = Auth::user();
+        $user = Auth::user()->load([
+            'nikahProfile',
+            'enrollments.course',
+            'certificates.course',
+        ]);
 
-        if ($user->hasRole('admin')) {
-            return redirect()->route('admin.dashboard');
-        }
+        // Profile completion percentage
+        $profileCompletion = $this->calculateProfileCompletion($user);
 
-        if ($user->hasRole('teacher')) {
-            return $this->teacherDashboard($user);
-        }
+        // Quran courses progress
+        $enrollments = $user->enrollments->map(function ($enrollment) use ($user) {
+            return [
+                'course' => $enrollment->course,
+                'progress' => $enrollment->course->progressFor($user),
+            ];
+        });
 
-        if ($user->hasRole('counselor')) {
-            return $this->counselorDashboard($user);
-        }
-
-        return $this->memberDashboard($user);
-    }
-
-    private function teacherDashboard($user)
-    {
-        $courses = \App\Models\QuranLiveCourse::where('teacher_id', $user->id)->get();
-
-        $stats = [
-            'total_courses' => $courses->count(),
-            'total_students' => \App\Models\QuranSubscription::whereIn('quran_live_course_id', $courses->pluck('id'))
-                ->where('month', now()->format('Y-m'))
-                ->where('payment_status', 'confirmed')
-                ->count(),
-            'todays_links_posted' => \App\Models\QuranDailyLink::whereIn('quran_live_course_id', $courses->pluck('id'))
-                ->where('class_date', now()->toDateString())
-                ->count(),
-        ];
-
-        return view('dashboard.teacher', compact('user', 'courses', 'stats'));
-    }
-
-    private function counselorDashboard($user)
-    {
-        // Placeholder until Family Counseling module is built
-        return view('dashboard.counselor', compact('user'));
-    }
-
-    private function memberDashboard($user)
-    {
-        $enrollments = $user->enrollments()->with('course')->latest()->get();
+        // Nikah module status
         $nikahProfile = $user->nikahProfile;
-        $certificates = $user->certificates()->with('course')->latest()->get();
 
+        // Quran Live subscriptions
         $liveSubscriptions = \App\Models\QuranSubscription::where('user_id', $user->id)
             ->where('month', now()->format('Y-m'))
+            ->where('payment_status', 'confirmed')
             ->with('course')
             ->get();
 
-        $unreadNotifications = $user->unreadNotifications->take(5);
+        // Recent notifications
+        $notifications = $user->notifications()->latest()->take(5)->get();
+        $unreadCount = $user->unreadNotifications()->count();
 
-        $stats = [
-            'courses_enrolled' => $enrollments->count(),
-            'certificates_earned' => $certificates->count(),
-            'lessons_completed' => \App\Models\LessonProgress::where('user_id', $user->id)
-                ->whereNotNull('completed_at')->count(),
-        ];
+        // Certificates earned
+        $certificates = $user->certificates->take(3);
 
-        return view('dashboard.member', compact(
+        return view('dashboard', compact(
             'user',
+            'profileCompletion',
             'enrollments',
             'nikahProfile',
-            'certificates',
             'liveSubscriptions',
-            'unreadNotifications',
-            'stats'
+            'notifications',
+            'unreadCount',
+            'certificates'
         ));
+    }
+
+    private function calculateProfileCompletion($user): int
+    {
+        $fields = [
+            'name' => filled($user->name),
+            'email' => filled($user->email),
+            'phone' => filled($user->phone),
+            'gender' => filled($user->gender),
+            'city' => filled($user->city),
+            'avatar' => filled($user->avatar),
+        ];
+
+        $completed = collect($fields)->filter()->count();
+        return (int) round(($completed / count($fields)) * 100);
     }
 }

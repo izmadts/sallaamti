@@ -34,7 +34,7 @@
             <div class="bg-gray-50 border border-gray-200 rounded p-4 text-sm">
                 <img src="{{ asset('images/jazzcash.png') }}" alt="Icon Description" class="img-fluid" style="height: 32px; width: auto;">
                 <p><strong>JazzCash:</strong> {{ setting('jazzcash_number') }}</p>
-                <p><strong>EasyPaisa:</strong> {{ setting('easypaisa_number') }}</p>
+                <!-- <p><strong>EasyPaisa:</strong> {{ setting('easypaisa_number') }}</p> -->
                 <img src="{{ asset('images/meezan.png') }}" alt="Icon Description" class="img-fluid" style="height: 32px; width: auto;">
                 <p><strong>Account Title:</strong> {{ setting('bank_account_title') }}</p>
                 @if (setting('bank_name'))
