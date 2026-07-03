@@ -21,13 +21,15 @@ class DatabaseSeeder extends Seeder
         //     'name' => 'Test User',
         //     'email' => 'test@example.com',
         // ]);
-        $this->call([
-            RoleSeeder::class,
-        ]);
+        // $this->call([
+        //     RoleSeeder::class,
+        // ]);
         // database/seeders/DatabaseSeeder.php
         $this->call([
             RoleSeeder::class,
             SettingsSeeder::class,
+            BannerSeeder::class,
+            TestimonialSeeder::class,
         ]);
     }    
 }
