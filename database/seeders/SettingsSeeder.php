@@ -34,6 +34,12 @@ class SettingsSeeder extends Seeder
             ['key' => 'social_instagram',   'value' => '',                               'group' => 'social'],
             ['key' => 'social_tiktok',      'value' => '',                               'group' => 'social'],
             ['key' => 'social_whatsapp',    'value' => '',                               'group' => 'social'],
+
+            //mainpage            
+            ['key' => 'about_text',        'value' => 'Sallaamti (سلامتی): Empowering Through Knowledge and Compassion...', 'group' => 'about'],
+            ['key' => 'vision_text',       'value' => 'Our vision at Sallaamti is to create a world where the profound teachings of the Quran and Hadith inspire individuals to lead lives of peace, knowledge, and compassion.', 'group' => 'about'],
+            ['key' => 'mission_text',      'value' => 'At Sallaamti, our mission is to enlighten individuals and uplift communities through the teachings of the Quran and Hadith.', 'group' => 'about'],
+            ['key' => 'donate_goal_text',  'value' => '$10,46', 'group' => 'about'],
         ];
 
         foreach ($defaults as $setting) {

@@ -1,6 +1,5 @@
 {{-- resources/views/admin/dashboard.blade.php --}}
 <x-admin-layout>
-
     <x-slot name="header">
         <div class="flex items-center gap-2">
             <h2 class="font-semibold text-lg text-gray-800">Dashboard</h2>
@@ -16,13 +15,13 @@
             <p class="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-2">Users</p>
             <div class="grid grid-cols-2 xl:grid-cols-4 gap-3">
                 <x-admin-stat
-                    href="{{ route('admin.users.index') }}"
+                    :href="route('admin.users.index')"
                     value="{{ $stats['total_users'] }}"
                     label="Total Users"
                     color="indigo"
                     icon="👥" />
                 <x-admin-stat
-                    href="{{ route('admin.users.index') }}"
+                    :href="route('admin.users.index')"
                     value="{{ $stats['new_users_this_month'] }}"
                     label="New This Month"
                     color="indigo"

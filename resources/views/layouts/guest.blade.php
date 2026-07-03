@@ -43,11 +43,15 @@
                     <div class="col-lg-7 text-start d-lg-block d-none">
                         <div class="h-100 d-inline-flex align-items-center me-4">
                             <span class="fa fa-phone-alt me-2 text-light"></span>
-                            <a href="https://wa.me/{{ setting('social_whatsapp') }}" class="text-light"><span>+92 334 6145566</span></a>
+                            <a href="https://wa.me/{{ setting('social_whatsapp') }}" class="text-light">
+                                <span>{{ setting('site_phone') }}</span>
+                            </a>
                         </div>
                         <div class="h-100 d-inline-flex align-items-center">
                             <span class="far fa-envelope me-2 text-light"></span>
-                            <a href="mailto:info@sallaamti.com" class="text-light"><span>info@sallaamti.com</span></a>
+                            <a href="mailto:{{ setting('site_email') }}" class="text-light">
+                                <span>{{ setting('site_email') }}</span>
+                            </a>
                         </div>
                     </div>
                     <div class="col-lg-5 text-end">

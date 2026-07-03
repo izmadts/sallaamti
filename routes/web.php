@@ -26,9 +26,11 @@ use App\Http\Controllers\DonationController;
 use App\Http\Controllers\Admin\DonationAdminController;
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\SettingsController;
+use App\Http\Controllers\Admin\BannerController;
 use App\Http\Controllers\Admin\SubscriberAdminController;
 use App\Http\Controllers\SubscriberController;
 use App\Http\Controllers\Admin\UserManagementController;
+use App\Http\Controllers\Admin\TestimonialController;
 
 
 
@@ -38,8 +40,10 @@ Route::get('/', function () {
     if (auth()->check()) {
         return redirect()->route('dashboard');
     }
-    return view('/index');
-})->name('index');
+    $banners = \App\Models\Banner::active();
+    $testimonials = \App\Models\Testimonial::where('is_active', true)->orderBy('order')->get();
+    return view('index', compact('banners', 'testimonials'));
+})->name('home');
 Route::get('/about', function () {return view('about');});
 Route::get('/activities', function () {return view('activities');});
 Route::get('/events', function () {return view('events');});
@@ -122,8 +126,18 @@ Route::middleware(['auth', 'active'])->group(
             Route::put('users/{user}/toggle-active', [UserManagementController::class, 'toggleActive'])->name('users.toggle-active');
             Route::delete('users/{user}', [UserManagementController::class, 'destroy'])->name('users.destroy');
             Route::get('users/roles/manage', [UserManagementController::class, 'roles'])->name('users.roles');
+            //Site Settings, FrontEnd and Banners 
             Route::get('settings', fn() => view('admin.settings.index'))->name('settings.index');
+            
             Route::get('banners', fn() => view('admin.banners.index'))->name('banners.index');
+            Route::post('banners/reorder', [BannerController::class, 'reorder'])->name('banners.reorder');
+            Route::post('banners/{banner}/toggle', [BannerController::class, 'toggle'])->name('banners.toggle');
+            Route::resource('banners', BannerController::class);
+
+            //Testimonials Management
+            Route::resource('testimonials', TestimonialController::class);
+            Route::post('testimonials/{testimonial}/toggle', [TestimonialController::class, 'toggle'])->name('testimonials.toggle');
+
             //nikah verification management
             Route::get('/nikah-verifications', [NikahVerificationController::class, 'index'])->name('nikah.verifications');
             Route::post('/nikah-verifications/{profile}/approve', [NikahVerificationController::class, 'approve'])->name('nikah.approve');

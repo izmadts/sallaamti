@@ -3,39 +3,37 @@
     <!-- Carousel Start -->
     <div id="carouselExampleCaptions" class="carousel slide" data-bs-ride="carousel">
         <div class="carousel-indicators">
-            <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
-            <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="1" aria-label="Slide 2"></button>
-            <button type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide-to="2" aria-label="Slide 3"></button>
+            @foreach ($banners as $i => $banner)
+            <button type="button" data-bs-target="#carouselExampleCaptions"
+                data-bs-slide-to="{{ $i }}"
+                class="{{ $i === 0 ? 'active' : '' }}"
+                aria-label="Slide {{ $i + 1 }}"></button>
+            @endforeach
         </div>
+
         <div class="carousel-inner">
-            <div class="carousel-item active">
-                <img src="{{ asset('img/hero.jpg')}}" class="d-block w-100" alt="...">
+            @foreach ($banners as $i => $banner)
+            <div class="carousel-item {{ $i === 0 ? 'active' : '' }}">
+                <img src="{{ str_starts_with($banner->image, 'img/') ? asset($banner->image) : Storage::url($banner->image) }}"
+                    class="d-block w-100" alt="{{ $banner->title }}">
                 <div class="carousel-caption d-none d-md-block">
-                    <p class="fs-2 text-dark">Quran Education</p>
-                    <h1 class="display-4 mb-2 text-dark text-uppercase">MOST IMPORTANT FOR MANKIND</h1>
-                    <p class="fs-4 text-dark">than any education in the world</p>
-                    <a href="{{ route('courses.index') }}" class="btn btn-primary py-3 px-5">Start Learning</a>
+                    @if ($banner->subtitle)
+                    <p class="fs-2 text-dark">{{ $banner->subtitle }}</p>
+                    @endif
+                    <h1 class="display-4 mb-2 text-dark text-uppercase">{{ $banner->title }}</h1>
+                    @if ($banner->description)
+                    <p class="fs-4 text-dark">{{ $banner->description }}</p>
+                    @endif
+                    @if ($banner->button_text && $banner->button_url)
+                    <a href="{{ $banner->button_url }}" class="btn btn-primary py-3 px-5">
+                        {{ $banner->button_text }}
+                    </a>
+                    @endif
                 </div>
             </div>
-            <div class="carousel-item">
-                <img src="{{ asset('img/hero1.jpg')}}" class="d-block w-100" alt="...">
-                <div class="carousel-caption d-none d-md-block">
-                    <p class="fs-2 text-dark">Avoid Zinnah</p>
-                    <h1 class="display-4 mb-2 text-dark text-uppercase">Prefer Marriage Between Ummah</h1>
-                    <p class="fs-4 text-dark">Big negligency in Muslims Society</p>
-                    <a href="{{ route('nikah.create') }}" class="btn btn-primary py-3 px-5">Find Match</a>
-                </div>
-            </div>
-            <div class="carousel-item">
-                <img src="{{ asset('img/hero2.jpg')}}" class="d-block w-100" alt="...">
-                <div class="carousel-caption d-none d-md-block">
-                    <p class="fs-2 text-dark">Parental Couching</p>
-                    <h1 class="display-4 mb-2 text-dark text-uppercase">SAVE YOUR FAMILY GET COUCHING</h1>
-                    <p class="fs-4 text-dark">before any big trouble in life</p>
-                    <a href="#" class="btn btn-primary py-3 px-5">Get Enrolled</a>
-                </div>
-            </div>
+            @endforeach
         </div>
+
         <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="prev">
             <span class="carousel-control-prev-icon" aria-hidden="true"></span>
             <span class="visually-hidden">Previous</span>
@@ -45,7 +43,6 @@
             <span class="visually-hidden">Next</span>
         </button>
     </div>
-
     <!-- Carousel End -->
 
     <!-- About Satrt -->
@@ -73,14 +70,16 @@
                 <div class="col-xl-6 wow fadeIn" data-wow-delay="0.5s">
                     <p class="fs-5 text-uppercase text-primary">About Sallaamti</p>
                     <h1 class="display-5 pb-4 m-0">Allah Help Those Who Help Themselves</h1>
-                    <p class="pb-4">Sallaamti (سلامتی): Empowering Through Knowledge and Compassion Sallaamti is dedicated to spreading the teachings of the Quran and Hadith, enlightening individuals of all ages with the wisdom and guidance found within Islamic scripture. Our mission is to foster harmony and understanding among humanity, promoting peace (Sallaamati) for all. Through educational programs, workshops, and seminars, we equip people with the spiritual insights and moral principles essential for personal growth and societal well-being. Additionally, our charity initiatives focus on empowering the less fortunate, providing educational support and assistance to help them build stronger, more stable lives. Furthermore, we actively support the institution of marriage and work to prevent social injustices by providing counseling and intervention services. At Sallaamti, we strive to create a world where knowledge, compassion, and righteousness prevail, enriching the lives of individuals and communities alike.</p>
+                    {{-- About text --}}
+                    <p class="pb-4">{{ setting('about_text') }}</p>
                     <div class="row g-4 mb-4">
                         <div class="col-md-6">
                             <div class="ps-3 d-flex align-items-center justify-content-start">
                                 <span class="bg-primary btn-md-square rounded-circle mt-4 me-2"><i class="fa fa-eye text-dark fa-4x mb-5 pb-2"></i></span>
                                 <div class="ms-4">
                                     <h5>Our Vision</h5>
-                                    <p>Our vision at Sallaamti (سلامتی) is to create a world where the profound teachings of the Quran and Hadith inspire individuals to lead lives of peace, knowledge, and compassion. We envision empowered communities where education bridges gaps, charity uplifts the disadvantaged, and ethical values guide everyday actions. Through our dedication, we aspire to foster a global society rooted in harmony, justice, and mutual respect for all humanity.</p>
+                                    {{-- Vision --}}
+                                    <p>{{ setting('vision_text') }}</p>
                                 </div>
                             </div>
                         </div>
@@ -89,7 +88,8 @@
                                 <span class="bg-primary btn-md-square rounded-circle mt-4 me-2"><i class="fa fa-flag text-dark fa-4x mb-5 pb-2"></i></span>
                                 <div class="ms-4">
                                     <h5>Our Mission</h5>
-                                    <p>At Sallaamti (سلامتی), our mission is to enlighten individuals and uplift communities through the teachings of the Quran and Hadith. We are dedicated to spreading peace, fostering knowledge, and promoting compassion for all. Through education, charitable initiatives, and support for ethical living, we strive to empower the less fortunate, strengthen family bonds, and create a harmonious, just society. Our commitment is to cultivate a world where spiritual insight, moral integrity, and human dignity are cherished and upheld.</p>
+                                    {{-- Mission --}}
+                                    <p>{{ setting('mission_text') }}</p>
                                 </div>
                             </div>
                         </div>
@@ -103,7 +103,8 @@
                                 <p class="mb-0">To continue our vital work in educating the youth, supporting the less fortunate, and promoting ethical living, we need your generous support. Your donation will help us empower individuals, strengthen communities, and create a more harmonious and just society. Join us in making a meaningful difference—please donate today and help us spread Salaamati to all.</p>
                             </div>
                             <div class="col-3">
-                                <h2 class="mb-0 text-primary text-center">$10,46</h2>
+                                {{-- Donation counter --}}
+                                <h2 class="mb-0 text-primary text-center">{{ setting('donate_goal_text', '$10,46') }}</h2>
                                 <h5 class="mb-0 text-center">Raised</h5>
                             </div>
                         </div>
@@ -504,102 +505,31 @@
                 <h1 class="display-4">What People Say About Sallaamti</h1>
             </div>
             <div class="owl-carousel testimonial-carousel wow fadeIn" data-wow-delay="0.1s">
+                @foreach ($testimonials as $t)
                 <div class="testimonial-item">
                     <div class="d-flex mb-3">
                         <div class="position-relative">
-                            <img src="{{ asset('img/testimonial-1.jpg')}}" class="img-fluid" alt="">
+                            <img src="{{ $t->photo ? Storage::url($t->photo) : asset('img/testimonial-1.jpg') }}"
+                                class="img-fluid" alt="{{ $t->name }}">
                             <div class="btn-md-square bg-primary rounded-circle position-absolute" style="top: 25px; left: -25px;">
                                 <i class="fa fa-quote-left text-dark"></i>
                             </div>
                         </div>
-                        <div class="ps-3 my-auto ">
-                            <h5 class="mb-0">Muhammad Ahmed</h5>
-                            <p class="m-0">Lahore</p>
+                        <div class="ps-3 my-auto">
+                            <h5 class="mb-0">{{ $t->name }}</h5>
+                            <p class="m-0">{{ $t->location }}</p>
                         </div>
                     </div>
                     <div class="testimonial-content">
                         <div class="d-flex">
-                            <i class="fas fa-star text-primary"></i>
-                            <i class="fas fa-star text-primary"></i>
-                            <i class="fas fa-star text-primary"></i>
-                            <i class="fas fa-star text-primary"></i>
-                            <i class="fas fa-star text-primary"></i>
+                            @for ($i = 0; $i < $t->rating; $i++)
+                                <i class="fas fa-star text-primary"></i>
+                                @endfor
                         </div>
-                        <p class="fs-5 m-0 pt-3">I had been able to read the Qur'an since childhood, but I never truly understood its message. Through Sallaamti's Quran Learning & Understanding Program, I learned Tajweed and the meanings of many verses. It has strengthened my connection with Allah and brought peace into my daily life. I highly recommend this program to every Muslim family.</p>
+                        <p class="fs-5 m-0 pt-3">{{ $t->content }}</p>
                     </div>
                 </div>
-                <div class="testimonial-item">
-                    <div class="d-flex mb-3">
-                        <div class="position-relative">
-                            <img src="{{ asset('img/testimonial-1.jpg')}}" class="img-fluid" alt="">
-                            <div class="btn-md-square bg-primary rounded-circle position-absolute" style="top: 25px; left: -25px;">
-                                <i class="fa fa-quote-left text-dark"></i>
-                            </div>
-                        </div>
-                        <div class="ps-3 my-auto ">
-                            <h5 class="mb-0">Ayesha Javaid</h5>
-                            <p class="m-0">UK</p>
-                        </div>
-                    </div>
-                    <div class="testimonial-content">
-                        <div class="d-flex">
-                            <i class="fas fa-star text-primary"></i>
-                            <i class="fas fa-star text-primary"></i>
-                            <i class="fas fa-star text-primary"></i>
-                            <i class="fas fa-star text-primary"></i>
-                            <i class="fas fa-star text-primary"></i>
-                        </div>
-                        <p class="fs-5 m-0 pt-3">The Sallaamti Nikah team guided us with sincerity, professionalism, and Islamic values throughout the process. They took the time to understand our family's expectations and helped us find a compatible match. Alhamdulillah, we are happily married and grateful for their support.</p>
-                    </div>
-                </div>
-                <div class="testimonial-item">
-                    <div class="d-flex mb-3">
-                        <div class="position-relative">
-                            <img src="{{ asset('img/testimonial-3.jpg')}}" class="img-fluid" alt="">
-                            <div class="btn-md-square bg-primary rounded-circle position-absolute" style="top: 25px; left: -25px;">
-                                <i class="fa fa-quote-left text-dark"></i>
-                            </div>
-                        </div>
-                        <div class="ps-3 my-auto ">
-                            <h5 class="mb-0">Abdullah & Maryam</h5>
-                            <p class="m-0">Rawalpindi</p>
-                        </div>
-                    </div>
-                    <div class="testimonial-content">
-                        <div class="d-flex">
-                            <i class="fas fa-star text-primary"></i>
-                            <i class="fas fa-star text-primary"></i>
-                            <i class="fas fa-star text-primary"></i>
-                            <i class="fas fa-star text-primary"></i>
-                            <i class="fas fa-star text-primary"></i>
-                        </div>
-                        <p class="fs-5 m-0 pt-3">After marriage, we faced communication challenges that affected our relationship. The counselors at Sallaamti listened without judgment and provided practical guidance based on Islamic principles. Their support helped us understand each other better and strengthen our marriage. We are thankful for their compassionate assistance.</p>
-                    </div>
-                </div>
-                <div class="testimonial-item">
-                    <div class="d-flex mb-3">
-                        <div class="position-relative">
-                            <img src="{{ asset('img/testimonial-4.jpg')}}" class="img-fluid" alt="">
-                            <div class="btn-md-square bg-primary rounded-circle position-absolute" style="top: 25px; left: -25px;">
-                                <i class="fa fa-quote-left text-dark"></i>
-                            </div>
-                        </div>
-                        <div class="ps-3 my-auto ">
-                            <h5 class="mb-0">Ahmed Azeem</h5>
-                            <p class="m-0">Canada</p>
-                        </div>
-                    </div>
-                    <div class="testimonial-content">
-                        <div class="d-flex">
-                            <i class="fas fa-star text-primary"></i>
-                            <i class="fas fa-star text-primary"></i>
-                            <i class="fas fa-star text-primary"></i>
-                            <i class="fas fa-star text-primary"></i>
-                            <i class="fas fa-star text-primary"></i>
-                        </div>
-                        <p class="fs-5 m-0 pt-3">The teachers are knowledgeable, patient, and genuinely care about every student. The online classes are well organized, making it easy to learn even with a busy schedule. My children now enjoy reading the Qur'an and are developing a better understanding of Islamic values.</p>
-                    </div>
-                </div>
+                @endforeach
             </div>
             <p class="text-muted text-center"><strong>Privacy Notice:</strong> Some names and identifying details have been changed to protect the privacy of the individuals while preserving the authenticity of their experiences.</p>
         </div>

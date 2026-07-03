@@ -122,7 +122,17 @@
                           {{ request()->routeIs('admin.subscribers*') ? 'bg-teal-700 text-white' : 'text-teal-100 hover:bg-teal-800' }}">
                     <span class="text-base">📧</span> Newsletter
                 </a>
-
+                <p class="text-teal-500 text-xs uppercase tracking-widest px-3 pt-4 pb-1">FrontEnd</p>
+                <a href="{{ route('admin.banners.index') }}"
+                    class="flex items-center gap-3 px-3 py-2 rounded-lg transition
+                        {{ request()->routeIs('admin.banners*') ? 'bg-teal-700 text-white' : 'text-teal-100 hover:bg-teal-800' }}">
+                    <span class="text-base">🖼️</span> Banners
+                </a>
+                <a href="{{ route('admin.testimonials.index') }}"
+                    class="flex items-center gap-3 px-3 py-2 rounded-lg transition
+                        {{ request()->routeIs('admin.testimonials*') ? 'bg-teal-700 text-white' : 'text-teal-100 hover:bg-teal-800' }}">
+                    <span class="text-base">💬</span> Testimonials
+                </a>
                 {{-- Settings --}}
                 <p class="text-teal-500 text-xs uppercase tracking-widest px-3 pt-4 pb-1">System</p>
 
@@ -130,11 +140,6 @@
                     class="flex items-center gap-3 px-3 py-2 rounded-lg transition
                           {{ request()->routeIs('admin.settings*') ? 'bg-teal-700 text-white' : 'text-teal-100 hover:bg-teal-800' }}">
                     <span class="text-base">⚙️</span> Settings
-                </a>
-                <a href="{{ route('admin.banners.index') }}"
-                    class="flex items-center gap-3 px-3 py-2 rounded-lg transition
-                          {{ request()->routeIs('admin.banners*') ? 'bg-teal-700 text-white' : 'text-teal-100 hover:bg-teal-800' }}">
-                    <span class="text-base">🖼️</span> Banners
                 </a>
             </nav>
 

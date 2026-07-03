@@ -16,6 +16,26 @@
         <form method="POST" action="{{ route('admin.settings.update') }}" class="space-y-6">
             @csrf
 
+            {{-- Add this section to settings form --}}
+            <div class="bg-white rounded-lg shadow-sm p-6 space-y-4">
+                <h3 class="font-semibold text-gray-700 border-b pb-2">🕌 About Section</h3>
+                <div>
+                    <x-input-label value="About Text" />
+                    <textarea name="about_text" rows="4" class="border-gray-300 rounded-md w-full mt-1">{{ $settings['about_text'] ?? '' }}</textarea>
+                </div>
+                <div>
+                    <x-input-label value="Our Vision" />
+                    <textarea name="vision_text" rows="3" class="border-gray-300 rounded-md w-full mt-1">{{ $settings['vision_text'] ?? '' }}</textarea>
+                </div>
+                <div>
+                    <x-input-label value="Our Mission" />
+                    <textarea name="mission_text" rows="3" class="border-gray-300 rounded-md w-full mt-1">{{ $settings['mission_text'] ?? '' }}</textarea>
+                </div>
+                <div>
+                    <x-input-label value="Donation Goal Text (e.g. $10,000)" />
+                    <x-text-input name="donate_goal_text" class="w-full mt-1" :value="$settings['donate_goal_text'] ?? ''" />
+                </div>
+            </div>
             {{-- General --}}
             <div class="bg-white rounded-lg shadow-sm p-6 space-y-4">
                 <h3 class="font-semibold text-gray-700 border-b pb-2">🌐 General</h3>
