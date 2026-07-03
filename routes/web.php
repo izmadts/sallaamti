@@ -31,7 +31,7 @@ use App\Http\Controllers\Admin\SubscriberAdminController;
 use App\Http\Controllers\SubscriberController;
 use App\Http\Controllers\Admin\UserManagementController;
 use App\Http\Controllers\Admin\TestimonialController;
-
+use App\Http\Controllers\NewsletterController;
 
 
 //Public Sallaamti Front Website Routes
@@ -191,9 +191,10 @@ Route::middleware(['auth', 'active'])->group(
 // Public verification route — no auth needed, anyone can verify a certificate is real
 Route::get('/verify-certificate/{certificateNumber}', [CertificateController::class, 'verify'])->name('certificate.verify');
 Route::post('/subscribe', [SubscriberController::class, 'store'])->name('subscribe');
+Route::post('/newsletter/subscribe', [NewsletterController::class, 'subscribe'])->name('newsletter.subscribe');
+
 Route::get('/subscriber/verify/{token}', [SubscriberController::class, 'verify'])->name('subscriber.verify');
 Route::get('/subscriber/unsubscribe/{id}', [SubscriberController::class, 'unsubscribe'])->name('subscriber.unsubscribe');
-
 
 
 

@@ -6,6 +6,9 @@ use App\Models\Donation;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Mail;
+use App\Mail\DonationSubmitted;
+use App\Mail\AdminNewDonation;
 
 class DonationController extends Controller
 {
@@ -32,12 +35,17 @@ class DonationController extends Controller
         $validated['user_id'] = Auth::id(); // null for guests
 
         $donation = Donation::create($validated);
+        
+        Mail::to($donation->email)
+            ->send(new DonationSubmitted($donation));
 
         return redirect()->route('donate.thank-you', $donation);
     }
 
     public function thankYou(Donation $donation)
     {
+        Mail::to(config('mail.admin_email'))
+            ->send(new AdminNewDonation($donation));
         return view('donate.thank-you', compact('donation'));
     }
 

@@ -116,13 +116,38 @@
                 </div>
                 <div class="col-lg-5">
                     <div class="position-relative mx-auto">
-                        <form id="subscribeForm">
+                        <!-- <form action="{{ route('newsletter.subscribe') }}" method="POST">
+                            @csrf
+                            <div class="position-relative mx-auto">
+                                <input type="email" name="email" class="form-control border-0 w-100 py-3 ps-4 pe-5" placeholder="Your email" required>
+                                <button type="submit" class="btn btn-primary py-2 position-absolute top-0 end-0 mt-2 me-2">Subscribe</button>
+                            </div>
+                        </form> -->
+
+                        <form id="subscribeForm" action="{{ route('subscribe') }}" method="POST">
                             @csrf
                             <div class="position-relative mx-auto">
                                 <input name="email" class="form-control border-0 w-100 py-3 ps-4 pe-5" type="email" placeholder="Enter your email" required>
                                 <button type="submit" class="btn btn-primary py-2 position-absolute top-0 end-0 mt-2 me-2">Subscribe</button>
                             </div>
                         </form>
+                        @if(session('success'))
+                        <small class="text-success">
+                            {{ session('success') }}
+                        </small>
+                        @endif
+
+                        @if(session('info'))
+                        <small class="text-warning">
+                            {{ session('info') }}
+                        </small>
+                        @endif
+
+                        @if($errors->has('email'))
+                        <small class="text-danger">
+                            {{ $errors->first('email') }}
+                        </small>
+                        @endif
                         <div id="subscribe-message" class="mt-2"></div>
                     </div>
                     <div class="col-12">
