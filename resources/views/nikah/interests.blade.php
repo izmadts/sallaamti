@@ -46,43 +46,47 @@
                                     </span>
                                     @endif
                                 </div>
-                            </div>
-                            @empty
-                            <p class="text-gray-500">No interests received yet.</p>
-                            @endforelse
-                        </div>
-                    </div>
-
-                    <div>
-                        <div>
-                            <h3 class="font-semibold text-gray-700 mb-3">Sent Interests</h3>
-                            <div class="space-y-3">
-                                @forelse ($sent as $interest)
-                                <div class="bg-white rounded-lg shadow-sm p-4 flex justify-between items-center">
-                                    <div class="flex items-center gap-4">
-                                        @if ($interest->status === 'accepted' && $interest->receiver->photo)
-                                        <img src="{{ route('nikah.file', [$interest->receiver, 'photo']) }}" class="w-20 h-20 object-cover rounded-full">
-                                        @endif
-                                        <div>
-                                            <p class="font-medium">{{ $interest->receiver->age }} yrs, {{ $interest->receiver->city }}</p>
-                                            @if ($interest->status === 'accepted')
-                                            <p class="text-sm text-green-600 mt-1">
-                                                Guardian Contact: {{ $interest->receiver->guardian_contact }} ({{ $interest->receiver->guardian_name }})
-                                            </p>
-                                            @endif
-                                        </div>
-                                    </div>
-                                    <span class="text-xs px-2 py-1 rounded-full {{ $interest->status === 'accepted' ? 'bg-green-100 text-green-800' : ($interest->status === 'declined' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800') }}">
-                                        {{ ucfirst($interest->status) }}
-                                    </span>
+                                <div>
+                                    @if ($interest->status === 'accepted')
+                                    <a href="{{ route('nikah.messages.show', $interest) }}" class="text-sm text-blue-600 hover:underline">💬 Messages</a>
+                                    @endif
                                 </div>
                                 @empty
-                                <p class="text-gray-500">No interests sent yet.</p>
+                                <p class="text-gray-500">No interests received yet.</p>
                                 @endforelse
                             </div>
                         </div>
-                    </div>
 
+                        <div>
+                            <div>
+                                <h3 class="font-semibold text-gray-700 mb-3">Sent Interests</h3>
+                                <div class="space-y-3">
+                                    @forelse ($sent as $interest)
+                                    <div class="bg-white rounded-lg shadow-sm p-4 flex justify-between items-center">
+                                        <div class="flex items-center gap-4">
+                                            @if ($interest->status === 'accepted' && $interest->receiver->photo)
+                                            <img src="{{ route('nikah.file', [$interest->receiver, 'photo']) }}" class="w-20 h-20 object-cover rounded-full">
+                                            @endif
+                                            <div>
+                                                <p class="font-medium">{{ $interest->receiver->age }} yrs, {{ $interest->receiver->city }}</p>
+                                                @if ($interest->status === 'accepted')
+                                                <p class="text-sm text-green-600 mt-1">
+                                                    Guardian Contact: {{ $interest->receiver->guardian_contact }} ({{ $interest->receiver->guardian_name }})
+                                                </p>
+                                                @endif
+                                            </div>
+                                        </div>
+                                        <span class="text-xs px-2 py-1 rounded-full {{ $interest->status === 'accepted' ? 'bg-green-100 text-green-800' : ($interest->status === 'declined' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800') }}">
+                                            {{ ucfirst($interest->status) }}
+                                        </span>
+                                    </div>
+                                    @empty
+                                    <p class="text-gray-500">No interests sent yet.</p>
+                                    @endforelse
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
                 </div>
-            </div>
 </x-app-layout>

@@ -125,7 +125,7 @@
                                 @if (!$profile->cnic_number)
                                 <div>
                                     <x-input-label for="cnic_number" value="CNIC Number" />
-                                    <x-text-input id="cnic_number" name="cnic_number" type="text" class="w-full mt-1" :value="old('cnic_number')" required/>
+                                    <x-text-input id="cnic_number" name="cnic_number" type="text" class="w-full mt-1" :value="old('cnic_number')" required />
                                 </div>
                                 @endif
                                 @if (!$profile->cnic_front_image)
@@ -142,7 +142,7 @@
                                 @endif
                             </div>
                             @endif
-                        </div>                       
+                        </div>
                         <hr class="mt-4 border-b">
                         <div class="mt-4 flex items-center gap-2">
                             <input type="checkbox" id="allow_photo_sharing" name="allow_photo_sharing" value="1" checked class="rounded">
@@ -161,7 +161,40 @@
                             <option value="private" {{ old('visibility', $profile->visibility) === 'private' ? 'selected' : '' }}>Private</option>
                         </select>
                     </div>
-
+                    <div>
+                        <h3 class="font-semibold text-gray-700 mb-3 border-b pb-2">Match Preferences (improves match %)</h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <x-input-label value="Preferred Min Age" />
+                                <x-text-input name="pref_min_age" type="number" class="w-full mt-1" :value="old('pref_min_age', $profile->pref_min_age)" />
+                            </div>
+                            <div>
+                                <x-input-label value="Preferred Max Age" />
+                                <x-text-input name="pref_max_age" type="number" class="w-full mt-1" :value="old('pref_max_age', $profile->pref_max_age)" />
+                            </div>
+                            <div>
+                                <x-input-label value="Preferred City" />
+                                <x-text-input name="pref_city" class="w-full mt-1" :value="old('pref_city', $profile->pref_city)" />
+                            </div>
+                            <div>
+                                <x-input-label value="Preferred Sect" />
+                                <x-text-input name="pref_sect" class="w-full mt-1" :value="old('pref_sect', $profile->pref_sect)" />
+                            </div>
+                            <div>
+                                <x-input-label value="Preferred Education Level" />
+                                <x-text-input name="pref_education" class="w-full mt-1" :value="old('pref_education', $profile->pref_education)" />
+                            </div>
+                            <div>
+                                <x-input-label value="Preferred Marital Status" />
+                                <select name="pref_marital_status" class="border-gray-300 rounded-md w-full mt-1">
+                                    <option value="">No preference</option>
+                                    <option value="never_married" {{ old('pref_marital_status', $profile->pref_marital_status) === 'never_married' ? 'selected' : '' }}>Never Married</option>
+                                    <option value="divorced" {{ old('pref_marital_status', $profile->pref_marital_status) === 'divorced' ? 'selected' : '' }}>Divorced</option>
+                                    <option value="widowed" {{ old('pref_marital_status', $profile->pref_marital_status) === 'widowed' ? 'selected' : '' }}>Widowed</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
                     <div class="flex justify-end gap-3">
                         <a href="{{ route('nikah.show') }}" class="px-4 py-2 text-sm text-gray-600">Cancel</a>
                         <x-primary-button>Update Profile</x-primary-button>

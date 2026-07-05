@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\NikahProfile;
+use App\Models\NikahSavedProfile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -11,11 +12,9 @@ class NikahProfileController extends Controller
 {
     public function create()
     {
-        // If profile already exists, redirect to edit instead
         if (Auth::user()->nikahProfile) {
             return redirect()->route('nikah.show');
         }
-
         return view('nikah.create');
     }
 
@@ -37,7 +36,7 @@ class NikahProfileController extends Controller
         $validated['allow_photo_sharing'] = $request->has('allow_photo_sharing');
         $validated['payment_amount'] = config('services.nikah.verification_fee');
 
-        $profile = NikahProfile::create($validated);
+        NikahProfile::create($validated);
 
         return redirect()->route('nikah.payment')->with('status', 'Profile submitted! Please complete the verification fee payment to proceed.');
     }
@@ -69,7 +68,7 @@ class NikahProfileController extends Controller
         $profile = Auth::user()->nikahProfile;
         $validated = $this->validateProfile($request, $profile);
         $validated['allow_photo_sharing'] = $request->has('allow_photo_sharing');
-        
+
         if ($request->hasFile('cnic_front_image')) {
             $validated['cnic_front_image'] = $request->file('cnic_front_image')->store('nikah/cnic', 'private');
         }
@@ -83,6 +82,105 @@ class NikahProfileController extends Controller
         $profile->update($validated);
 
         return redirect()->route('nikah.show')->with('status', 'Profile updated successfully.');
+    }
+
+    public function browse(Request $request)
+    {
+        $myProfile = Auth::user()->nikahProfile;
+
+        if (!$myProfile) {
+            return redirect()->route('nikah.create')->with('status', 'Create your profile first to browse matches.');
+        }
+
+        // Get blocked IDs BEFORE running the query
+        $blockedIds = $myProfile->blockedProfiles()->pluck('blocked_profile_id')->toArray();
+
+        $query = NikahProfile::where('verification_status', 'verified')
+            ->where('is_active', true)
+            ->where('visibility', 'public')
+            ->where('user_id', '!=', Auth::id())
+            ->whereNotIn('id', $blockedIds) // ← correct position: inside the query
+            ->whereHas('user', function ($q) {
+                $q->where('gender', '!=', Auth::user()->gender);
+            })->with(['user', 'photos' => function ($q) {
+                $q->where('is_primary', true);
+            }]);
+
+        if ($request->filled('city')) {
+            $query->where('city', 'like', '%' . $request->city . '%');
+        }
+        if ($request->filled('min_age')) {
+            $query->where('age', '>=', $request->min_age);
+        }
+        if ($request->filled('max_age')) {
+            $query->where('age', '<=', $request->max_age);
+        }
+        if ($request->filled('sect')) {
+            $query->where('sect', 'like', '%' . $request->sect . '%');
+        }
+        if ($request->filled('marital_status')) {
+            $query->where('marital_status', $request->marital_status);
+        }
+        if ($request->filled('education')) {
+            $query->where('education', 'like', '%' . $request->education . '%');
+        }
+
+        $profiles = $query->get();
+
+        // Calculate match % and sort descending
+        $profiles = $profiles->map(function ($profile) use ($myProfile) {
+            $profile->match_percentage = $profile->matchPercentageWith($myProfile);
+            return $profile;
+        })->sortByDesc('match_percentage');
+
+        // Manual pagination after sorting
+        $page = $request->get('page', 1);
+        $perPage = 9;
+        $paginated = new \Illuminate\Pagination\LengthAwarePaginator(
+            $profiles->forPage($page, $perPage),
+            $profiles->count(),
+            $perPage,
+            $page,
+            ['path' => $request->url(), 'query' => $request->query()]
+        );
+
+        $sentInterestIds = $myProfile->sentInterests()->pluck('receiver_profile_id')->toArray();
+        $savedProfileIds = $myProfile->savedProfiles()->pluck('saved_profile_id')->toArray();
+
+        return view('nikah.browse', compact('paginated', 'sentInterestIds', 'savedProfileIds', 'myProfile'));
+    }
+
+    public function toggleSave(NikahProfile $profile)
+    {
+        $myProfile = Auth::user()->nikahProfile;
+        abort_unless($myProfile, 403);
+
+        $existing = NikahSavedProfile::where('nikah_profile_id', $myProfile->id)
+            ->where('saved_profile_id', $profile->id)
+            ->first();
+
+        if ($existing) {
+            $existing->delete();
+            return back()->with('status', 'Profile removed from saved.');
+        }
+
+        NikahSavedProfile::create([
+            'nikah_profile_id' => $myProfile->id,
+            'saved_profile_id' => $profile->id,
+        ]);
+
+        return back()->with('status', 'Profile saved!');
+    }
+
+    public function saved()
+    {
+        $myProfile = Auth::user()->nikahProfile;
+        abort_unless($myProfile, 404);
+
+        $saved = $myProfile->savedProfiles()->with('savedProfile.user')->get();
+        $sentInterestIds = $myProfile->sentInterests()->pluck('receiver_profile_id')->toArray();
+
+        return view('nikah.saved', compact('saved', 'sentInterestIds'));
     }
 
     private function validateProfile(Request $request, ?NikahProfile $profile = null): array
@@ -109,38 +207,12 @@ class NikahProfileController extends Controller
             'photo' => ['nullable', 'image', 'max:4096'],
             'allow_photo_sharing' => ['nullable', 'boolean'],
             'visibility' => ['required', 'in:public,private'],
+            'pref_min_age' => ['nullable', 'integer', 'min:18'],
+            'pref_max_age' => ['nullable', 'integer', 'min:18'],
+            'pref_city' => ['nullable', 'string', 'max:100'],
+            'pref_sect' => ['nullable', 'string', 'max:100'],
+            'pref_education' => ['nullable', 'string', 'max:100'],
+            'pref_marital_status' => ['nullable', 'string'],
         ]);
-    }
-    public function browse(Request $request)
-    {
-        $myProfile = Auth::user()->nikahProfile;
-
-        if (!$myProfile) {
-            return redirect()->route('nikah.create')->with('status', 'Create your profile first to browse matches.');
-        }
-
-        $query = NikahProfile::where('verification_status', 'verified')
-            ->where('is_active', true)
-            ->where('visibility', 'public')
-            ->where('user_id', '!=', Auth::id())
-            ->whereHas('user', function ($q) {
-                $q->where('gender', '!=', Auth::user()->gender);
-            });
-
-        if ($request->filled('city')) {
-            $query->where('city', 'like', '%' . $request->city . '%');
-        }
-        if ($request->filled('min_age')) {
-            $query->where('age', '>=', $request->min_age);
-        }
-        if ($request->filled('max_age')) {
-            $query->where('age', '<=', $request->max_age);
-        }
-
-        $profiles = $query->latest()->paginate(9)->withQueryString();
-
-        $sentInterestIds = $myProfile->sentInterests()->pluck('receiver_profile_id')->toArray();
-
-        return view('nikah.browse', compact('profiles', 'sentInterestIds'));
     }
 }

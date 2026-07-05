@@ -34,7 +34,17 @@
                         <span class="ml-1 text-xs bg-green-100 text-green-700 px-1.5 py-0.5 rounded-full">✓</span>
                         @endif
                     </x-nav-link>
+                    @if (Route::has('volunteer.create'))
+                    <a href="{{ route('volunteer.create') }}" class="nav-item nav-link text-sm text-gray-600 hover:text-pink-600 flex items-center gap-1">
+                        🤝 Volunteer
+                    </a>
+                    @endif
 
+                    @if (Route::has('donations.create'))
+                    <a href="{{ route('donations.create') }}" class="flex items-center gap-2 text-sm text-gray-600 hover:text-pink-600">
+                        💝 Donate
+                    </a>
+                    @endif
                     @if (auth()->user()->certificates()->count() > 0)
                     <x-nav-link :href="route('certificate.index')" :active="request()->routeIs('certificate.*')">
                         🎓 Certificates

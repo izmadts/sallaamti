@@ -137,7 +137,53 @@
                         </dl>
                     </div>
                 </div>
+                <div class="bg-white rounded-lg shadow-sm p-6">
+                    <h3 class="font-semibold text-gray-700 mb-4">My Photos
+                        <span class="text-xs text-gray-400 font-normal">({{ $profile->photos?->count() ?? 0 }}/5 — only visible after mutual interest accepted)</span>
+                    </h3>
 
+                    @if ($profile->photos && $profile->photos->count() > 0)
+                    <div class="flex flex-wrap gap-3 mb-4">
+                        @foreach ($profile->photos as $photo)
+                        <div class="relative">
+                            <img src="{{ route('nikah.photos.show', $photo) }}" class="w-24 h-24 object-cover rounded-lg border-2 {{ $photo->is_primary ? 'border-pink-500' : 'border-gray-200' }}">
+
+                            @if ($photo->is_primary)
+                            <span class="absolute top-1 left-1 text-xs bg-pink-500 text-white px-1 rounded">Primary</span>
+                            @endif
+
+                            <div class="absolute top-1 right-1 flex flex-col gap-1">
+                                @if (!$photo->is_primary)
+                                <form method="POST" action="{{ route('nikah.photos.primary', $photo) }}">
+                                    @csrf
+                                    <button class="text-xs bg-white text-gray-600 px-1 rounded shadow">⭐</button>
+                                </form>
+                                @endif
+                                <form method="POST" action="{{ route('nikah.photos.destroy', $photo) }}"
+                                    onsubmit="return confirm('Remove this photo?')">
+                                    @csrf @method('DELETE')
+                                    <button class="text-xs bg-white text-red-600 px-1 rounded shadow">✕</button>
+                                </form>
+                            </div>
+                        </div>
+                        @endforeach
+                    </div>
+                    @else
+                    <p class="text-sm text-gray-400 mb-4">No photos uploaded yet.</p>
+                    @endif
+
+                    @if (($profile->photos?->count() ?? 0) < 5)
+                        <form method="POST" action="{{ route('nikah.photos.store') }}" enctype="multipart/form-data">
+                        @csrf
+                        <div class="flex items-center gap-3">
+                            <input type="file" name="photos[]" accept="image/*" multiple
+                                class="text-sm border border-gray-300 rounded px-2 py-1">
+                            <x-primary-button>Upload</x-primary-button>
+                        </div>
+                        <p class="text-xs text-gray-400 mt-1">You can select multiple photos at once. Max 5 total.</p>
+                        </form>
+                        @endif
+                </div>
                 @if ($profile->about)
                 <div class="mt-6">
                     <h3 class="font-semibold text-gray-700 mb-2 border-b pb-1">About</h3>
@@ -156,6 +202,12 @@
                     <a href="{{ route('nikah.edit') }}" class="inline-flex items-center px-4 py-2 bg-gray-800 text-white text-sm font-medium rounded-md hover:bg-gray-700">
                         Edit Profile
                     </a>
+                    <form method="POST" action="{{ route('nikah.toggle-active') }}" class="inline">
+                        @csrf
+                        <button class="px-4 py-2 text-sm rounded {{ $profile->is_active ? 'bg-gray-200 text-gray-700' : 'bg-green-600 text-white' }}">
+                            {{ $profile->is_active ? 'Hide My Profile' : 'Activate My Profile' }}
+                        </button>
+                    </form>
                 </div>
 
             </div>

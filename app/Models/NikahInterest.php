@@ -32,4 +32,9 @@ class NikahInterest extends Model
     {
         return $this->status === 'accepted';
     }
+    
+    public function guardianMessages()
+    {
+        return $this->hasMany(NikahGuardianMessage::class);
+    }
 }
