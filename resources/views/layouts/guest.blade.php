@@ -61,11 +61,22 @@
                             <a class="text-light px-2" href="{{ setting('social_tiktok') }}" target="_blank"><i class="fab fa-tiktok"></i></a>
                             <a class="text-light px-2" href="{{ setting('social_youtube') }}" target="_blank"><i class="fab fa-youtube"></i></a>
                             <a class="text-light px-2 me-2" href="{{ setting('social_instagram') }}" target="_blank"><i class="fab fa-instagram"></i></a>
-                            <a href="{{ route('login') }}" class="btn btn-outline-primary"><i class="fa fa-lock text-primary me-1">‌</i> Log in</a>
+                            @auth
+                            {{-- Logged in: show Dashboard button only --}}
+                            <a href="{{ route('dashboard') }}" class="btn btn-primary">
+                                <i class="fa fa-tachometer-alt me-1"></i> Dashboard
+                            </a>
+                            @else
+                            {{-- Guest: show Login + Register --}}
+                            <a href="{{ route('login') }}" class="btn btn-outline-primary">
+                                <i class="fa fa-lock me-1"></i> Log in
+                            </a>
                             @if (Route::has('register'))
-                            <a href="{{ route('register') }}" class="btn btn-outline-primary ms-2"><i class="fa fa-user-plus text-primary me-1">‌</i>Register
+                            <a href="{{ route('register') }}" class="btn btn-outline-primary ms-2">
+                                <i class="fa fa-user-plus me-1"></i> Register
                             </a>
                             @endif
+                            @endauth
                         </div>
                     </div>
                 </div>

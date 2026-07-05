@@ -20,8 +20,7 @@ return new class extends Migration {
             $table->enum('student_gender', ['male', 'female']);
             $table->integer('student_age');
             $table->string('education_grade')->nullable();
-            $table->boolean('learned_quran_before')->default(false);
-            $table->string('learning_level')->nullable(); // Noorani Qaida / Nazira / Hifz / Tajweed etc
+            $table->boolean('learned_quran_before')->default(false);           
             $table->json('preferred_days')->nullable();
             $table->string('preferred_time')->nullable();
             $table->enum('teacher_preference', ['male', 'female', 'no_preference'])->default('no_preference');

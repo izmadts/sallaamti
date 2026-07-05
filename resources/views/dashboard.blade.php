@@ -1,11 +1,19 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            Welcome back, {{ Auth::user()->name }} 👋
-        </h2>
+        <div class="flex justify-between items-center">
+            <div>
+                <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+                    Welcome back, {{ Auth::user()->name }} 👋
+                </h2>
+                <p class="text-sm text-gray-500 mt-0.5">{{ now()->format('l, d F Y') }}</p>
+            </div>
+            <a href="{{ route('profile.edit') }}" class="flex items-center gap-2">
+                <img src="{{ Auth::user()->avatarUrl() }}" class="w-10 h-10 rounded-full object-cover border-2 border-teal-600">
+            </a>
+        </div>
     </x-slot>
 
-    <div class="py-12">
+    <div class="py-8">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
 
             {{-- Profile Completion Banner --}}
@@ -18,33 +26,35 @@
                     </div>
                     <p class="text-xs text-yellow-700 mt-1">{{ $profileCompletion }}% complete</p>
                 </div>
-                <a href="{{ route('profile.edit') }}" class="ml-4 text-sm bg-yellow-500 text-white px-3 py-1.5 rounded hover:bg-yellow-600">Complete Profile</a>
+                <a href="{{ route('profile.edit') }}" class="ml-4 text-sm bg-yellow-500 text-white px-3 py-1.5 rounded hover:bg-yellow-600 whitespace-nowrap">
+                    Complete →
+                </a>
         </div>
         @endif
 
         {{-- Stats Row --}}
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-            <div class="bg-white rounded-lg shadow-sm p-5 text-center">
+            <a href="{{ route('courses.my-learning') }}" class="bg-white rounded-lg shadow-sm p-5 text-center hover:shadow-md transition border-l-4 border-green-500">
                 <div class="text-3xl font-bold text-gray-800">{{ $enrollments->count() }}</div>
                 <div class="text-sm text-gray-500 mt-1">Courses Enrolled</div>
-            </div>
-            <div class="bg-white rounded-lg shadow-sm p-5 text-center">
+            </a>
+            <a href="{{ route('certificate.index') }}" class="bg-white rounded-lg shadow-sm p-5 text-center hover:shadow-md transition border-l-4 border-yellow-500">
                 <div class="text-3xl font-bold text-gray-800">{{ $certificates->count() }}</div>
-                <div class="text-sm text-gray-500 mt-1">Certificates Earned</div>
-            </div>
-            <div class="bg-white rounded-lg shadow-sm p-5 text-center">
+                <div class="text-sm text-gray-500 mt-1">Certificates</div>
+            </a>
+            <a href="{{ route('quran-live.my-class') }}" class="bg-white rounded-lg shadow-sm p-5 text-center hover:shadow-md transition border-l-4 border-blue-500">
                 <div class="text-3xl font-bold text-gray-800">{{ $liveSubscriptions->count() }}</div>
                 <div class="text-sm text-gray-500 mt-1">Live Classes Active</div>
-            </div>
-            <div class="bg-white rounded-lg shadow-sm p-5 text-center">
-                <div class="text-3xl font-bold {{ $unreadCount > 0 ? 'text-pink-600' : 'text-gray-800' }}">{{ $unreadCount }}</div>
-                <div class="text-sm text-gray-500 mt-1">Unread Notifications</div>
-            </div>
+            </a>
+            <a href="{{ route('nikah.interests') }}" class="bg-white rounded-lg shadow-sm p-5 text-center hover:shadow-md transition border-l-4 border-pink-500">
+                <div class="text-3xl font-bold {{ $unreadCount > 0 ? 'text-red-600' : 'text-gray-800' }}">{{ $unreadCount }}</div>
+                <div class="text-sm text-gray-500 mt-1">Notifications</div>
+            </a>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
-            {{-- Left Column: Module Status Cards --}}
+            {{-- Left: Module Cards + Progress --}}
             <div class="lg:col-span-2 space-y-6">
 
                 {{-- My Modules --}}
@@ -52,18 +62,28 @@
                     <h3 class="font-semibold text-gray-700 mb-4">My Modules</h3>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
 
-                        {{-- Quran Courses --}}
+                        {{-- Quran Self-Paced --}}
                         <a href="{{ route('courses.index') }}" class="border rounded-lg p-4 hover:shadow-md transition {{ $enrollments->count() > 0 ? 'border-green-200 bg-green-50' : 'border-gray-100' }}">
                             <div class="flex justify-between items-start">
                                 <div class="text-2xl">📖</div>
-                                @if ($enrollments->count() > 0)
-                                <span class="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded-full">Active</span>
-                                @else
-                                <span class="text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full">Not enrolled</span>
-                                @endif
+                                <span class="text-xs px-2 py-0.5 rounded-full {{ $enrollments->count() > 0 ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500' }}">
+                                    {{ $enrollments->count() > 0 ? $enrollments->count().' enrolled' : 'Not enrolled' }}
+                                </span>
                             </div>
                             <h4 class="font-medium text-gray-800 mt-2">Quran Courses</h4>
-                            <p class="text-xs text-gray-500">{{ $enrollments->count() }} course(s) enrolled</p>
+                            <p class="text-xs text-gray-500">Self-paced video lessons & quizzes</p>
+                        </a>
+
+                        {{-- Quran Live --}}
+                        <a href="{{ route('quran-live.my-class') }}" class="border rounded-lg p-4 hover:shadow-md transition {{ $liveSubscriptions->count() > 0 ? 'border-teal-200 bg-teal-50' : 'border-gray-100' }}">
+                            <div class="flex justify-between items-start">
+                                <div class="text-2xl">🎥</div>
+                                <span class="text-xs px-2 py-0.5 rounded-full {{ $liveSubscriptions->count() > 0 ? 'bg-teal-100 text-teal-700' : 'bg-gray-100 text-gray-500' }}">
+                                    {{ $liveSubscriptions->count() > 0 ? 'Active' : 'Not subscribed' }}
+                                </span>
+                            </div>
+                            <h4 class="font-medium text-gray-800 mt-2">Live Quran Classes</h4>
+                            <p class="text-xs text-gray-500">Online live sessions with teacher</p>
                         </a>
 
                         {{-- Nikah --}}
@@ -85,51 +105,32 @@
                                 @if ($nikahProfile)
                                 Payment: {{ ucfirst($nikahProfile->payment_status) }}
                                 @else
-                                Create your profile
+                                Create your profile to find a match
                                 @endif
                             </p>
-                        </a>
-
-                        {{-- Live Classes --}}
-                        <a href="{{ route('quran-live.index') }}" class="border rounded-lg p-4 hover:shadow-md transition {{ $liveSubscriptions->count() > 0 ? 'border-blue-200 bg-blue-50' : 'border-gray-100' }}">
-                            <div class="flex justify-between items-start">
-                                <div class="text-2xl">🎥</div>
-                                @if ($liveSubscriptions->count() > 0)
-                                <span class="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">Active</span>
-                                @else
-                                <span class="text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full">Not subscribed</span>
-                                @endif
-                            </div>
-                            <h4 class="font-medium text-gray-800 mt-2">Live Quran Classes</h4>
-                            <p class="text-xs text-gray-500">{{ $liveSubscriptions->count() }} active this month</p>
                         </a>
 
                         {{-- Certificates --}}
                         <a href="{{ route('certificate.index') }}" class="border rounded-lg p-4 hover:shadow-md transition {{ $certificates->count() > 0 ? 'border-yellow-200 bg-yellow-50' : 'border-gray-100' }}">
                             <div class="flex justify-between items-start">
                                 <div class="text-2xl">🎓</div>
-                                @if ($certificates->count() > 0)
-                                <span class="text-xs bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded-full">Earned</span>
-                                @else
-                                <span class="text-xs bg-gray-100 text-gray-500 px-2 py-0.5 rounded-full">None yet</span>
-                                @endif
+                                <span class="text-xs px-2 py-0.5 rounded-full {{ $certificates->count() > 0 ? 'bg-yellow-100 text-yellow-700' : 'bg-gray-100 text-gray-500' }}">
+                                    {{ $certificates->count() > 0 ? $certificates->count().' earned' : 'None yet' }}
+                                </span>
                             </div>
                             <h4 class="font-medium text-gray-800 mt-2">Certificates</h4>
-                            <p class="text-xs text-gray-500">{{ $certificates->count() }} certificate(s) earned</p>
+                            <p class="text-xs text-gray-500">Earned on course completion</p>
                         </a>
 
                     </div>
                 </div>
-            </div>
 
-            {{-- Right Column: Notifications + Quick Links --}}
-            <div class="space-y-6">
                 {{-- Course Progress --}}
                 @if ($enrollments->count() > 0)
                 <div class="bg-white rounded-lg shadow-sm p-6">
                     <div class="flex justify-between items-center mb-4">
                         <h3 class="font-semibold text-gray-700">My Learning Progress</h3>
-                        <a href="{{ route('courses.my-learning') }}" class="text-sm text-pink-600 hover:underline">View all →</a>
+                        <a href="{{ route('courses.my-learning') }}" class="text-sm text-teal-600 hover:underline">View all →</a>
                     </div>
                     <div class="space-y-4">
                         @foreach ($enrollments->take(3) as $item)
@@ -152,7 +153,12 @@
                 </div>
                 @endif
 
-                {{-- Recent Notifications --}}
+            </div>
+
+            {{-- Right: Notifications + Quick Links --}}
+            <div class="space-y-6">
+
+                {{-- Notifications --}}
                 <div class="bg-white rounded-lg shadow-sm p-6">
                     <div class="flex justify-between items-center mb-4">
                         <h3 class="font-semibold text-gray-700">Notifications</h3>
@@ -166,7 +172,7 @@
                     <div class="space-y-2">
                         @forelse ($notifications as $notification)
                         <div class="text-sm py-2 border-b last:border-0 {{ $notification->read_at ? 'text-gray-500' : 'text-gray-800 font-medium' }}">
-                            <a href="{{ $notification->data['url'] ?? '#' }}" class="block hover:text-pink-600">
+                            <a href="{{ $notification->data['url'] ?? '#' }}" class="block hover:text-teal-600">
                                 {{ $notification->data['message'] ?? 'Notification' }}
                             </a>
                             <p class="text-xs text-gray-400 mt-0.5">{{ $notification->created_at->diffForHumans() }}</p>
@@ -181,27 +187,15 @@
                 <div class="bg-white rounded-lg shadow-sm p-6">
                     <h3 class="font-semibold text-gray-700 mb-4">Quick Links</h3>
                     <div class="space-y-2">
-                        <a href="{{ route('profile.edit') }}" class="flex items-center gap-2 text-sm text-gray-600 hover:text-pink-600">
-                            👤 Edit Profile
-                        </a>
-                        <a href="{{ route('courses.index') }}" class="flex items-center gap-2 text-sm text-gray-600 hover:text-pink-600">
-                            📖 Browse Courses
-                        </a>
-                        <a href="{{ route('nikah.browse') }}" class="flex items-center gap-2 text-sm text-gray-600 hover:text-pink-600">
-                            💍 Browse Matches
-                        </a>
-                        <a href="{{ route('nikah.interests') }}" class="flex items-center gap-2 text-sm text-gray-600 hover:text-pink-600">
-                            💌 My Interests
-                        </a>
-                        <a href="{{ route('quran-live.index') }}" class="flex items-center gap-2 text-sm text-gray-600 hover:text-pink-600">
-                            🎥 Live Classes
-                        </a>
-                        <a href="{{ route('certificate.index') }}" class="flex items-center gap-2 text-sm text-gray-600 hover:text-pink-600">
-                            🎓 My Certificates
-                        </a>
-                        <a href="{{ route('volunteer.create') }}" class="flex items-center gap-2 text-sm text-gray-600 hover:text-pink-600">
-                            🤝 Volunteer
-                        </a>
+                        <a href="{{ route('profile.edit') }}" class="flex items-center gap-2 text-sm text-gray-600 hover:text-teal-600 py-1">👤 Edit Profile</a>
+                        <a href="{{ route('courses.index') }}" class="flex items-center gap-2 text-sm text-gray-600 hover:text-teal-600 py-1">📖 Browse Courses</a>
+                        <a href="{{ route('quran-live.index') }}" class="flex items-center gap-2 text-sm text-gray-600 hover:text-teal-600 py-1">🎥 Live Classes</a>
+                        <a href="{{ route('quran-live.my-class') }}" class="flex items-center gap-2 text-sm text-gray-600 hover:text-teal-600 py-1">📡 My Quran Class</a>
+                        <a href="{{ route('nikah.browse') }}" class="flex items-center gap-2 text-sm text-gray-600 hover:text-teal-600 py-1">💍 Browse Matches</a>
+                        <a href="{{ route('nikah.interests') }}" class="flex items-center gap-2 text-sm text-gray-600 hover:text-teal-600 py-1">💌 My Interests</a>
+                        <a href="{{ route('certificate.index') }}" class="flex items-center gap-2 text-sm text-gray-600 hover:text-teal-600 py-1">🎓 My Certificates</a>
+                        <a href="{{ route('volunteer.create') }}" class="flex items-center gap-2 text-sm text-gray-600 hover:text-teal-600 py-1">🤝 Volunteer</a>
+                        <a href="{{ route('donate.create') }}" class="flex items-center gap-2 text-sm text-gray-600 hover:text-teal-600 py-1">💝 Donate</a>
                     </div>
                 </div>
 

@@ -49,7 +49,6 @@ class QuranLiveCourseController extends Controller
             'student_age' => ['required', 'integer', 'min:3', 'max:80'],
             'education_grade' => ['nullable', 'string', 'max:100'],
             'learned_quran_before' => ['nullable', 'boolean'],
-            'learning_level' => ['nullable', 'string', 'max:100'],
             'preferred_days' => ['nullable', 'array'],
             'preferred_time' => ['nullable', 'string', 'max:50'],
             'teacher_preference' => ['required', 'in:male,female,no_preference'],

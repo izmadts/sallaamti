@@ -32,18 +32,7 @@
                 <div class="flex items-center gap-2">
                     <input type="checkbox" name="learned_quran_before" value="1" id="learned_quran_before">
                     <label for="learned_quran_before" class="text-sm">Student has learned Quran before</label>
-                </div>
-                <div>
-                    <x-input-label value="Quran Learning Level" />
-                    <select name="learning_level" class="border-gray-300 rounded-md w-full mt-1">
-                        <option value="Noorani Qaida">Quran Level 1 (Qaida)</option>
-                        <option value="Tajweeb">Quran Level 2 (Tajweed / Qiraat)</option>
-                        <option value="Translation">Quran Level 3 (Translation)</option>
-                        <option value="Quranic Arabic">Quran Level 4 (Quranic Arabic)</option>
-                        <option value="Advance Islamic Literature">Quran Level 5 (Advance Islamic Literature)</option>
-                        <option value="Hifz">Quran Level 6 (Hifz)</option>
-                    </select>
-                </div>
+                </div>                
                 <div>
                     <x-input-label value="Preferred Class Days" />
                     <div class="grid grid-cols-4 gap-2 mt-1 text-sm">

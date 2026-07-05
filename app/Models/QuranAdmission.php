@@ -18,7 +18,6 @@ class QuranAdmission extends Model
         'student_age',
         'education_grade',
         'learned_quran_before',
-        'learning_level',
         'preferred_days',
         'preferred_time',
         'teacher_preference',
