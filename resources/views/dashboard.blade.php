@@ -120,7 +120,10 @@
 
                     </div>
                 </div>
+            </div>
 
+            {{-- Right Column: Notifications + Quick Links --}}
+            <div class="space-y-6">
                 {{-- Course Progress --}}
                 @if ($enrollments->count() > 0)
                 <div class="bg-white rounded-lg shadow-sm p-6">
@@ -148,11 +151,6 @@
                     </div>
                 </div>
                 @endif
-
-            </div>
-
-            {{-- Right Column: Notifications + Quick Links --}}
-            <div class="space-y-6">
 
                 {{-- Recent Notifications --}}
                 <div class="bg-white rounded-lg shadow-sm p-6">

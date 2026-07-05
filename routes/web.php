@@ -23,6 +23,7 @@ use App\Http\Controllers\CertificateController;
 use App\Http\Controllers\QuranLiveCourseController;
 use App\Http\Controllers\QuranSubscriptionFileController;
 use App\Http\Controllers\Admin\QuranLiveCourseAdminController;
+use App\Http\Controllers\Admin\QuranClassGroupAdminController;
 use App\Http\Controllers\Teacher\QuranTeacherController;
 use App\Http\Controllers\VolunteerController;
 use App\Http\Controllers\Admin\VolunteerAdminController;
@@ -73,8 +74,8 @@ Route::get('/volunteer', [VolunteerController::class, 'create'])->name('voluntee
 Route::post('/volunteer', [VolunteerController::class, 'store'])->name('volunteer.store');
 
 // Donation (guests can donate)
-Route::get('/donate', [DonationController::class, 'create'])->name('donations.create');
-Route::post('/donate', [DonationController::class, 'store'])->name('donations.store');
+Route::get('/donate', [DonationController::class, 'create'])->name('donate.create');
+Route::post('/donate', [DonationController::class, 'store'])->name('donate.store');
 Route::get('/donate/{donation}/thank-you', [DonationController::class, 'thankYou'])->name('donate.thank-you');
 
 // Contact
@@ -157,7 +158,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/quran-live/{course}/subscribe', [QuranLiveCourseController::class, 'subscribe'])->name('quran-live.subscribe');
     Route::post('/quran-live/{course}/subscribe', [QuranLiveCourseController::class, 'storeSubscription'])->name('quran-live.subscribe.store');
     Route::get('/quran-subscriptions/{subscription}/screenshot', [QuranSubscriptionFileController::class, 'show'])->name('quran-subscription.screenshot');
-
+    // Add to auth user group:
+    Route::get('/my-quran-class', [QuranLiveCourseController::class, 'myClass'])->name('quran-live.my-class');
+    Route::get('/my-quran-progress', [QuranLiveCourseController::class, 'myProgress'])->name('quran-live.my-progress');
+    
     // --- DONATIONS (auth extras) ---
     Route::get('/my-donations', [DonationController::class, 'myDonations'])->name('donate.my');
     Route::get('/donation-screenshot/{donation}', [DonationController::class, 'screenshot'])->name('donation.screenshot');
@@ -218,7 +222,15 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('quran-live-courses/{quranLiveCourse}/subscriptions', [QuranLiveCourseAdminController::class, 'subscriptions'])->name('quran-live-courses.subscriptions');
     Route::post('quran-subscriptions/{subscription}/confirm', [QuranLiveCourseAdminController::class, 'confirmPayment'])->name('quran-subscriptions.confirm');
     Route::post('quran-subscriptions/{subscription}/reject', [QuranLiveCourseAdminController::class, 'rejectPayment'])->name('quran-subscriptions.reject');
-
+    Route::get('quran-live-courses/{course}/groups', [QuranClassGroupAdminController::class, 'index'])->name('quran-live-courses.groups.index');
+    Route::get('quran-live-courses/{course}/groups/create', [QuranClassGroupAdminController::class, 'create'])->name('quran-live-courses.groups.create');
+    Route::post('quran-live-courses/{course}/groups', [QuranClassGroupAdminController::class, 'store'])->name('quran-live-courses.groups.store');
+    Route::get('quran-class-groups/{group}/edit', [QuranClassGroupAdminController::class, 'edit'])->name('quran-class-groups.edit');
+    Route::put('quran-class-groups/{group}', [QuranClassGroupAdminController::class, 'update'])->name('quran-class-groups.update');
+    Route::get('quran-admissions', [QuranClassGroupAdminController::class, 'admissions'])->name('quran-admissions.index');
+    Route::post('quran-admissions/{admission}/assign', [QuranClassGroupAdminController::class, 'assignToGroup'])->name('quran-admissions.assign');
+    Route::post('quran-admissions/{admission}/reject', [QuranClassGroupAdminController::class, 'rejectAdmission'])->name('quran-admissions.reject');
+    Route::post('quran-group-students/{student}/status', [QuranClassGroupAdminController::class, 'updateStudentStatus'])->name('quran-group-students.status');
     // Volunteer Management
     Route::get('volunteers', [VolunteerAdminController::class, 'index'])->name('volunteers.index');
     Route::post('volunteers/{volunteer}/approve', [VolunteerAdminController::class, 'approve'])->name('volunteers.approve');
@@ -243,6 +255,12 @@ Route::middleware(['auth', 'teacher'])->prefix('teacher')->name('teacher.')->gro
     Route::get('/courses', [QuranTeacherController::class, 'index'])->name('courses.index');
     Route::get('/courses/{course}', [QuranTeacherController::class, 'show'])->name('courses.show');
     Route::post('/courses/{course}/daily-link', [QuranTeacherController::class, 'postDailyLink'])->name('courses.daily-link.store');
+    // Add to teacher group:
+    Route::get('/groups', [QuranTeacherController::class, 'groups'])->name('groups.index');
+    Route::get('/groups/{group}', [QuranTeacherController::class, 'showGroup'])->name('groups.show');
+    Route::post('/groups/{group}/daily-link', [QuranTeacherController::class, 'postDailyLink'])->name('groups.daily-link.store');
+    Route::post('/groups/{group}/students/{student}/assessment', [QuranTeacherController::class, 'storeAssessment'])->name('groups.assessment.store');
+    Route::post('/groups/{group}/students/{student}/progress-report', [QuranTeacherController::class, 'storeProgressReport'])->name('groups.progress-report.store');
 });
 
 require __DIR__ . '/auth.php';

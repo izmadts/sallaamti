@@ -24,7 +24,23 @@ class QuranAdmission extends Model
         'teacher_preference',
         'comments',
         'declaration_accepted',
+        'selected_level',
+        'previous_level',
+        'class_type',
+        'timezone',
+        'status',
+        'admin_notes',
+        'assigned_group_id',
     ];
+
+    public function assignedGroup()
+    {
+        return $this->belongsTo(QuranClassGroup::class, 'assigned_group_id');
+    }
+    public function groupStudent()
+    {
+        return $this->hasOne(QuranGroupStudent::class);
+    }
 
     protected function casts(): array
     {

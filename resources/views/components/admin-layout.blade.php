@@ -84,7 +84,7 @@
 
                 {{-- Quran --}}
                 <p class="text-teal-500 text-xs uppercase tracking-widest px-3 pt-4 pb-1">Quran Learning</p>
-
+                <a href="{{ route('admin.quran-admissions.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg transition">📋 Quran Admissions</a>
                 <a href="{{ route('admin.courses.index') }}"
                     class="flex items-center gap-3 px-3 py-2 rounded-lg transition
                           {{ request()->routeIs('admin.courses*') ? 'bg-teal-700 text-white' : 'text-teal-100 hover:bg-teal-800' }}">

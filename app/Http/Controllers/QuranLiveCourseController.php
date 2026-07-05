@@ -3,7 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Models\QuranAdmission;
+use App\Models\QuranAssessment;
+use App\Models\QuranGroupStudent;
 use App\Models\QuranLiveCourse;
+use App\Models\QuranProgressReport;
 use App\Models\QuranSubscription;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -52,6 +55,10 @@ class QuranLiveCourseController extends Controller
             'teacher_preference' => ['required', 'in:male,female,no_preference'],
             'comments' => ['nullable', 'string', 'max:1000'],
             'declaration_accepted' => ['required', 'accepted'],
+            'selected_level' => ['nullable', 'string', 'max:255'],
+            'previous_level' => ['nullable', 'string', 'max:255'],
+            'class_type' => ['nullable', 'in:one_to_one,group'],
+            'timezone' => ['nullable', 'string', 'max:100'],
         ]);
 
         $validated['learned_quran_before'] = $request->has('learned_quran_before');
@@ -103,5 +110,50 @@ class QuranLiveCourseController extends Controller
         );
 
         return redirect()->route('quran-live.show', $course)->with('status', 'Payment submitted! Awaiting confirmation.');
+    }
+
+    public function myClass()
+    {
+        $user = Auth::user();
+
+        $groupStudent = QuranGroupStudent::where('user_id', $user->id)
+            ->where('status', 'active')
+            ->with(['group.course', 'group.teacher'])
+            ->first();
+
+        if (!$groupStudent) {
+            $admissions = QuranAdmission::where('user_id', $user->id)->with('course')->get();
+            return view('quran-live.my-class', compact('admissions', 'groupStudent'));
+        }
+
+        $group = $groupStudent->group;
+        $todaysLink = $group->todaysLink();
+        $subscription = $group->course->subscriptionFor($user);
+        $hasActiveSubscription = $subscription && $subscription->payment_status === 'confirmed';
+
+        return view('quran-live.my-class', compact('groupStudent', 'group', 'todaysLink', 'hasActiveSubscription', 'subscription'));
+    }
+
+    public function myProgress()
+    {
+        $user = Auth::user();
+
+        $groupStudent = QuranGroupStudent::where('user_id', $user->id)
+            ->with('group.course')
+            ->first();
+
+        abort_unless($groupStudent, 404);
+
+        $assessments = QuranAssessment::where('user_id', $user->id)
+            ->where('quran_class_group_id', $groupStudent->quran_class_group_id)
+            ->orderByDesc('assessment_date')
+            ->get();
+
+        $progressReports = QuranProgressReport::where('user_id', $user->id)
+            ->where('quran_class_group_id', $groupStudent->quran_class_group_id)
+            ->orderByDesc('month')
+            ->get();
+
+        return view('quran-live.my-progress', compact('groupStudent', 'assessments', 'progressReports'));
     }
 }

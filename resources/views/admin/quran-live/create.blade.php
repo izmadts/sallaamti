@@ -1,52 +1,79 @@
 <x-admin-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800">New Quran Live Course</h2>
+        <h2 class="font-semibold text-xl text-gray-800">New Quran Live Course / Level</h2>
     </x-slot>
     <div class="py-12">
-        <div class="max-w-2xl mx-auto sm:px-6 lg:px-8 bg-white rounded-lg shadow-sm p-6">
+        <div class="max-w-3xl mx-auto sm:px-6 lg:px-8 bg-white rounded-lg shadow-sm p-6">
             <form method="POST" action="{{ route('admin.quran-live-courses.store') }}" class="space-y-4">
                 @csrf
-                <div><x-input-label value="Title" /><x-text-input name="title" class="w-full mt-1" required /></div>
-                <div><x-input-label value="Description" /><textarea name="description" rows="3" class="border-gray-300 rounded-md w-full mt-1"></textarea></div>
-                <div>
-                    <x-input-label value="Assign Teacher" />
-                    <select name="teacher_id" class="border-gray-300 rounded-md w-full mt-1">
-                        <option value="">-- None yet --</option>
-                        @foreach ($teachers as $t)
-                        <option value="{{ $t->id }}">{{ $t->name }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <div>
-                    <x-input-label value="Class Days" />
-                    <div class="grid grid-cols-4 gap-2 mt-1 text-sm">
-                        @foreach (['Mon','Tue','Wed','Thu','Fri','Sat','Sun'] as $day)
-                        <label class="flex items-center gap-1"><input type="checkbox" name="class_days[]" value="{{ $day }}"> {{ $day }}</label>
-                        @endforeach
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <x-input-label value="Level Number (e.g. Level 1)" />
+                        <x-text-input name="level_number" class="w-full mt-1" placeholder="Level 1" />
+                    </div>
+                    <div>
+                        <x-input-label value="Category" />
+                        <select name="category" class="border-gray-300 rounded-md w-full mt-1">
+                            <option value="">-- Select --</option>
+                            <option value="Nazrah">Nazrah Quran</option>
+                            <option value="Tajweed">Tajweed</option>
+                            <option value="Translation">Translation & Tafseer</option>
+                            <option value="Arabic Grammar">Arabic Grammar</option>
+                            <option value="Advance">Advance (Optional)</option>
+                            <option value="Special">Special Program</option>
+                        </select>
                     </div>
                 </div>
-                <div>
-                    <x-input-label value="Class Time" />
-                    <select name="class_time" class="border-gray-300 rounded-md w-full mt-1">
-                        <option value="12:00 PM">12:00 PM - 1:00 PM UTC+05:00</option>
-                        <option value="1:00 PM">1:00 PM - 2:00 PM UTC+05:00</option>
-                        <option value="2:00 PM">2:00 PM - 3:00 PM UTC+05:00</option>
-                        <option value="3:00 PM">3:00 PM - 4:00 PM UTC+05:00</option>
-                        <option value="4:00 PM">4:00 PM - 5:00 PM UTC+05:00</option>
-                        <option value="5:00 PM">5:00 PM - 6:00 PM UTC+05:00</option>
-                        <option value="6:00 PM">6:00 PM - 7:00 PM UTC+05:00</option>
-                        <option value="7:00 PM">7:00 PM - 8:00 PM UTC+05:00</option>
-                        <option value="8:00 PM">8:00 PM - 9:00 PM UTC+05:00</option>
-                        <option value="9:00 PM">9:00 PM - 10:00 PM UTC+05:00</option>
-                        <option value="10:00 PM">10:00 PM - 11:00 PM UTC+05:00</option>
-                        <option value="11:00 PM">11:00 PM - 12:00 AM UTC+05:00</option>
-                        <option value="12:00 AM">12:00 AM - 1:00 AM UTC+05:00</option>
 
+                <div>
+                    <x-input-label value="Title" />
+                    <x-text-input name="title" class="w-full mt-1" required placeholder="e.g. Nazrah Quran — Level 1" />
+                </div>
+
+                <div>
+                    <x-input-label value="Duration" />
+                    <x-text-input name="duration" class="w-full mt-1" placeholder="e.g. 6-12 Months" />
+                </div>
+
+                <div>
+                    <x-input-label value="Description / Outcome" />
+                    <textarea name="outcome" rows="2" class="border-gray-300 rounded-md w-full mt-1" placeholder="Student will be able to..."></textarea>
+                </div>
+
+                <div>
+                    <x-input-label value="Syllabus Topics (one per line)" />
+                    <textarea name="topics_raw" rows="6" class="border-gray-300 rounded-md w-full mt-1"
+                        placeholder="Arabic Alphabet (Makharij)&#10;Zabar, Zair, Pesh&#10;Basic Tajweed Rules"></textarea>
+                    <p class="text-xs text-gray-400 mt-1">Each line becomes a topic bullet point on the course page.</p>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <x-input-label value="Monthly Fee (Rs. / $)" />
+                        <x-text-input name="monthly_fee" type="number" step="0.01" class="w-full mt-1" required />
+                    </div>
+                    <div>
+                        <x-input-label value="Max Students Per Group" />
+                        <x-text-input name="max_students_per_group" type="number" class="w-full mt-1" value="10" />
+                    </div>
+                </div>
+
+                <div>
+                    <x-input-label value="Gender Preference" />
+                    <select name="gender_preference" class="border-gray-300 rounded-md w-full mt-1">
+                        <option value="both">Both (Male & Female)</option>
+                        <option value="male">Male Only</option>
+                        <option value="female">Female Only</option>
                     </select>
                 </div>
-                <div><x-input-label value="Monthly Fee (Rs.)" /><x-text-input name="monthly_fee" type="number" step="0.01" class="w-full mt-1" required /></div>
-                <div class="flex items-center gap-2"><input type="checkbox" name="is_published" value="1" id="is_published"><label for="is_published" class="text-sm">Publish</label></div>
-                <x-primary-button>Create Course</x-primary-button>
+
+                <div class="flex items-center gap-2">
+                    <input type="checkbox" name="is_published" value="1" id="is_published">
+                    <label for="is_published" class="text-sm">Publish (visible to students)</label>
+                </div>
+
+                <x-primary-button>Create Course Level</x-primary-button>
             </form>
         </div>
     </div>

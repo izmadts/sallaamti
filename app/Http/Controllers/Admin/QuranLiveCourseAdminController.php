@@ -38,6 +38,10 @@ class QuranLiveCourseAdminController extends Controller
     public function edit(QuranLiveCourse $quranLiveCourse)
     {
         $teachers = User::role('teacher')->get();
+        return view('admin.quran-live.edit', [
+            'course' => $quranLiveCourse,
+            'teachers' => $teachers,
+        ]);
         return view('admin.quran-live.edit', ['course' => $quranLiveCourse, 'teachers' => $teachers]);
     }
 
@@ -46,9 +50,15 @@ class QuranLiveCourseAdminController extends Controller
         $validated = $this->validateCourse($request);
         $validated['is_published'] = $request->has('is_published');
         $validated['class_days'] = $request->input('class_days', []);
-
+        // After validation, convert textarea to JSON array
+        if ($request->filled('topics_raw')) {
+            $validated['topics'] = array_filter(
+                array_map('trim', explode("\n", $request->topics_raw))
+            );
+        }
+        
         $quranLiveCourse->update($validated);
-
+        
         return redirect()->route('admin.quran-live-courses.index')->with('status', 'Course updated.');
     }
 
@@ -91,4 +101,6 @@ class QuranLiveCourseAdminController extends Controller
             'monthly_fee' => ['required', 'numeric', 'min:0'],
         ]);
     }
+    
+    
 }

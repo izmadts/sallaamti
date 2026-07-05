@@ -12,8 +12,9 @@
                     <div>
                         <p class="font-medium">{{ $course->title }} <span class="text-xs text-gray-400">({{ $course->admissions_count }} admitted)</span></p>
                         <p class="text-xs text-gray-500">Teacher: {{ $course->teacher?->name ?? 'TBA' }} | Rs. {{ number_format($course->monthly_fee) }}/mo</p>
-                    </div>
+                    </div>                   
                     <div class="flex gap-3">
+                        <a href="{{ route('admin.quran-live-courses.groups.index', $course) }}" class="text-sm text-purple-600">Groups</a>
                         <a href="{{ route('admin.quran-live-courses.subscriptions', $course) }}" class="text-sm text-blue-600">Subscriptions</a>
                         <a href="{{ route('admin.quran-live-courses.edit', $course) }}" class="text-sm text-gray-600">Edit</a>
                     </div>
