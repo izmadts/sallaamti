@@ -49,7 +49,7 @@ Route::get('/', function () {
     $banners = \App\Models\Banner::where('is_active', true)->orderBy('order')->get();
     $testimonials = \App\Models\Testimonial::where('is_active', true)->orderBy('order')->get();
     return view('index', compact('banners', 'testimonials'));
-})->name('home');
+})->name('index');
 
 // Static pages
 Route::get('/welcome', fn() => view('welcome'));

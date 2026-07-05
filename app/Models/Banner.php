@@ -26,4 +26,5 @@ class Banner extends Model
     {
         return static::where('is_active', true)->orderBy('order')->get();
     }
+    
 }

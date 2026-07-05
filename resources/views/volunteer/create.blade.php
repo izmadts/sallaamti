@@ -29,6 +29,6 @@
             <button type="submit" class="btn btn-primary btn-lg mt-3">Submit Application</button>
         </form>
         <a href="{{ route('index') }}" class="inline-block mt-6 bg-light text-dark mt-3 px-5 py-2 rounded">
-            <<< Back to Home</a>
+            <Back to Home</a>
     </div>
 </x-guest-layout>
