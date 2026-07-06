@@ -9,7 +9,7 @@ use App\Models\QuranDailyLink;
 use App\Models\QuranGroupStudent;
 use App\Models\QuranLiveCourse;
 use App\Models\QuranProgressReport;
-use App.Notifications\QuranProgressReportReady;
+use App\Notifications\QuranProgressReportReady;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
