@@ -11,27 +11,54 @@
             @endforeach
         </div>
 
-        <div class="carousel-inner">
-            @foreach ($banners as $i => $banner)
-            <div class="carousel-item {{ $i === 0 ? 'active' : '' }}">
-                <img src="{{ str_starts_with($banner->image, 'img/') ? asset($banner->image) : Storage::url($banner->image) }}"
-                    class="d-block w-100" alt="{{ $banner->title }}">
-                <div class="carousel-caption d-none d-md-block">
-                    @if ($banner->subtitle)
-                    <p class="fs-2 text-dark">{{ $banner->subtitle }}</p>
-                    @endif
-                    <h1 class="display-4 mb-2 text-dark text-uppercase">{{ $banner->title }}</h1>
-                    @if ($banner->description)
-                    <p class="fs-4 text-dark">{{ $banner->description }}</p>
-                    @endif
-                    @if ($banner->button_text && $banner->button_url)
-                    <a href="{{ $banner->button_url }}" class="btn btn-primary py-3 px-5">
-                        {{ $banner->button_text }}
-                    </a>
-                    @endif
+        <div id="homeCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel">
+            <div class="carousel-inner">
+
+                @foreach($banners as $i => $banner)
+
+                <div class="carousel-item {{ $i == 0 ? 'active' : '' }}">
+
+                    <img
+                        src="{{ str_starts_with($banner->image,'img/') ? asset($banner->image) : Storage::url($banner->image) }}"
+                        class="d-block w-100 banner-image"
+                        alt="{{ $banner->title }}">
+
+                    <div class="carousel-caption banner-caption">
+
+                        @if($banner->subtitle)
+                        <p class="banner-subtitle">
+                            {{ $banner->subtitle }}
+                        </p>
+                        @endif
+
+                        <h1 class="banner-title">
+                            {{ $banner->title }}
+                        </h1>
+
+                        @if($banner->description)
+                        <p class="banner-description">
+                            {{ $banner->description }}
+                        </p>
+                        @endif
+
+                        @if($banner->button_text && $banner->button_url)
+
+                        <a href="{{ $banner->button_url }}"
+                            class="btn btn-primary px-4 py-3">
+
+                            {{ $banner->button_text }}
+
+                        </a>
+
+                        @endif
+
+                    </div>
+
                 </div>
+
+                @endforeach
+
             </div>
-            @endforeach
         </div>
 
         <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleCaptions" data-bs-slide="prev">

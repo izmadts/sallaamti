@@ -226,7 +226,7 @@
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" class="text-white">🏠 Dashboard</x-responsive-nav-link>
 
             {{-- Quran group --}}
-            <div class="px-3 py-1 text-xs text-teal-300 font-semibold uppercase tracking-wider mt-2">Quran Learning</div>
+            <div class="px-1 py-1 text-xs text-teal-300 font-semibold uppercase tracking-wider mt-2">Quran Learning</div>
             <x-responsive-nav-link :href="route('courses.index')" class="text-white">📖 Browse Courses</x-responsive-nav-link>
             <x-responsive-nav-link :href="route('courses.my-learning')" class="text-white">📚 My Learning</x-responsive-nav-link>
             <x-responsive-nav-link :href="route('quran-live.index')" class="text-white">🎥 Live Classes</x-responsive-nav-link>
@@ -234,7 +234,7 @@
             <x-responsive-nav-link :href="route('quran-live.my-progress')" class="text-white">📊 My Progress</x-responsive-nav-link>
 
             {{-- Nikah group --}}
-            <div class="px-3 py-1 text-xs text-teal-300 font-semibold uppercase tracking-wider mt-2">Nikah</div>
+            <div class="px-1 py-1 text-xs text-teal-300 font-semibold uppercase tracking-wider mt-2">Nikah</div>
             <x-responsive-nav-link :href="auth()->user()->nikahProfile ? route('nikah.show') : route('nikah.create')" class="text-white">💍 My Nikah Profile</x-responsive-nav-link>
             <x-responsive-nav-link :href="route('nikah.browse')" class="text-white">🔍 Browse Matches</x-responsive-nav-link>
             <x-responsive-nav-link :href="route('nikah.interests')" class="text-white">💌 My Interests</x-responsive-nav-link>

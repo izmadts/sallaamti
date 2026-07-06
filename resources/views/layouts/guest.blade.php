@@ -27,6 +27,156 @@
     <link href="{{ asset('css/bootstrap.min.css')}}" rel="stylesheet">
     <!-- Template Stylesheet -->
     <link href="{{ asset('css/style.css')}}" rel="stylesheet">
+    <style>
+        /* Custom styles for the spinner */
+        /* Banner Image */
+
+        .banner-image {
+
+            height: 650px;
+
+            width: 100%;
+
+            object-fit: cover;
+
+            object-position: center;
+
+        }
+
+
+        /* Dark Overlay */
+
+        .carousel-item {
+
+            position: relative;
+
+        }
+
+        .carousel-item::before {
+
+            content: "";
+
+            position: absolute;
+
+            inset: 0;
+
+            background: rgba(0, 0, 0, .35);
+
+            z-index: 1;
+
+        }
+
+
+        /* Caption */
+
+        .banner-caption {
+
+            z-index: 2;
+
+            bottom: 15%;
+
+        }
+
+        .banner-title {
+
+            font-size: 58px;
+
+            font-weight: 700;
+
+            color: #fff;
+
+        }
+
+        .banner-subtitle {
+
+            font-size: 24px;
+
+            color: #fff;
+
+        }
+
+        .banner-description {
+
+            font-size: 20px;
+
+            color: #fff;
+
+        }
+
+
+        /* Tablet */
+
+        @media(max-width:991px) {
+
+            .banner-image {
+
+                height: 500px;
+
+            }
+
+            .banner-title {
+
+                font-size: 42px;
+
+            }
+
+            .banner-description {
+
+                font-size: 18px;
+
+            }
+
+        }
+
+
+        /* Mobile */
+
+        @media(max-width:768px) {
+
+            .banner-image {
+
+                height: 330px;
+
+            }
+
+            .banner-caption {
+
+                bottom: 10%;
+
+                padding: 0 20px;
+
+            }
+
+            .banner-title {
+
+                font-size: 26px;
+
+                line-height: 1.3;
+
+            }
+
+            .banner-subtitle {
+
+                font-size: 16px;
+
+            }
+
+            .banner-description {
+
+                display: none;
+
+            }
+
+            .banner-caption .btn {
+
+                padding: 8px 18px;
+
+                font-size: 14px;
+
+            }
+
+        }
+    </style>
 </head>
 
 <body class="antialiased">
@@ -36,11 +186,11 @@
     </div>
     <!-- Spinner End -->
     <!-- Topbar start -->
-    <div class="container-fluid border-bottom fixed-top" id="header">
-        <div class="topbar">
+    <div class="container-fluid border-bottom sticky-top" id="header">
+        <div class="topbar d-none d-md-block">
             <div class="topbar-inner ">
                 <div class="row gx-0">
-                    <div class="col-lg-7 text-start d-lg-block d-none">
+                    <div class="col-lg-7 text-start">
                         <div class="h-100 d-inline-flex align-items-center me-4">
                             <span class="fa fa-phone-alt me-2 text-light"></span>
                             <a href="https://wa.me/{{ setting('social_whatsapp') }}" class="text-light">
@@ -54,7 +204,7 @@
                             </a>
                         </div>
                     </div>
-                    <div class="col-lg-5 text-end">
+                    <div class="col-lg-5 text-end ">
                         <div class="h-100 d-inline-flex align-items-center">
                             <span class="text-body d-lg-block d-none">Follow Us:</span>
                             <a class="text-light px-2" href="{{ setting('social_facebook') }}" target="_blank"><i class="fab fa-facebook-f"></i></a>
@@ -83,40 +233,60 @@
             </div>
         </div>
         <div class="container">
-            <nav class="navbar navbar-light navbar-expand-lg py-3">
+            <nav class="navbar navbar-light navbar-expand-lg py-2">
                 <a href="{{ url('/') }}" class="navbar-brand">
                     <x-application-logo />
                 </a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
+
+                {{-- Mobile: auth button before hamburger --}}
+                <div class="d-flex d-lg-none align-items-center gap-2 ms-auto me-2">
+                    @auth
+                    <a href="{{ route('dashboard') }}" class="btn btn-primary btn-sm py-1 px-3">
+                        <i class="fa fa-th-large me-1"></i>Dashboard
+                    </a>
+                    @else
+                    <a href="{{ route('login') }}" class="btn btn-outline-primary btn-sm py-1 px-3">Login</a>
+                    @endauth
+                </div>
+
+                <button class="navbar-toggler border-0 shadow-none" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-expanded="false">
                     <span class="fa fa-bars text-primary"></span>
                 </button>
-                <div class="collapse navbar-collapse bg-white" id="navbarCollapse">
+
+                <div class="collapse navbar-collapse" id="navbarCollapse">
                     <div class="navbar-nav ms-lg-auto mx-xl-auto">
-                        <a href="{{ url('/') }}" class="nav-item nav-link active">Home</a>
-                        <a href="{{ url('/about') }}" class="nav-item nav-link">About</a>
-                        <a href="{{ url('/activities') }}" class="nav-item nav-link">Activities</a>
-                        <!-- <a href="{{ url('/events') }}" class="nav-item nav-link">Events</a>
-                        <a href="{{ url('/sermons') }}" class="nav-item nav-link">Sermons</a>
-                        <div class="nav-item dropdown">
-                            <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">More</a>
-                            <div class="dropdown-menu m-0 rounded-0">
-                                <a href="{{ url('/blog') }}" class="dropdown-item">Latest Blog</a>
-                                <a href="{{ url('/team') }}" class="dropdown-item">Our Team</a>
-                                <a href="{{ url('/testimonial') }}" class="dropdown-item">Testimonial</a>
-                            </div>
-                        </div> -->
-                        <a href="{{ url('/contact') }}" class="nav-item nav-link">Contact</a>
+                        <a href="{{ url('/') }}" class="nav-item nav-link {{ request()->is('/') ? 'active' : '' }}">Home</a>
+                        <a href="{{ url('/about') }}" class="nav-item nav-link {{ request()->is('about') ? 'active' : '' }}">About</a>
+                        <a href="{{ url('/activities') }}" class="nav-item nav-link {{ request()->is('activities') ? 'active' : '' }}">Activities</a>
+                        <a href="{{ url('/contact') }}" class="nav-item nav-link {{ request()->is('contact') ? 'active' : '' }}">Contact</a>
+
+                        {{-- Mobile only --}}
+                        <div class="d-lg-none">
+                            <div class="border-top my-2"></div>
+                            <a href="{{ url('/donate') }}" class="nav-item nav-link text-primary fw-semibold">💝 Donate</a>
+                            <a href="{{ url('/volunteer') }}" class="nav-item nav-link text-primary fw-semibold">🤝 Volunteer</a>
+                            <a href="{{ route('courses.index') }}" class="nav-item nav-link">📖 Quran Courses</a>
+                            <a href="{{ route('quran-live.index') }}" class="nav-item nav-link">🎥 Live Classes</a>
+                            @guest
+                            <a href="{{ route('register') }}" class="nav-item nav-link fw-semibold">📝 Register Free</a>
+                            @endguest
+                        </div>
                     </div>
-                    <a href="{{ url('/donate') }}" class="btn btn-primary py-2 px-4 d-none d-xl-inline-block me-2">Donate</a>
-                    <a href="{{ url('/volunteer') }}" class="btn btn-primary py-2 px-4 d-none d-xl-inline-block">Volunteer</a>
+
+                    {{-- Desktop CTA buttons --}}
+                    <div class="d-none d-lg-flex align-items-center gap-2 ms-2">
+                        <a href="{{ url('/donate') }}" class="btn btn-primary py-2 px-4">💝 Donate</a>
+                        <a href="{{ url('/volunteer') }}" class="btn btn-outline-primary py-2 px-4">🤝 Volunteer</a>
+                    </div>
                 </div>
             </nav>
         </div>
     </div>
     <!-- Topbar End -->
-    <main class="w-full sm:max-w-md mt-6 px-6 py-4 bg-white dark:bg-gray-800 shadow-md overflow-hidden sm:rounded-lg">
+    <main class="w-full sm:max-w-md px-6 bg-white dark:bg-gray-800 shadow-md overflow-hidden sm:rounded-lg">
         {{ $slot }}
     </main>
+
     <!-- Footer Start -->
     <div class="container-fluid footer pt-5 wow fadeIn" data-wow-delay="0.1s">
         <div class="container py-5">
@@ -127,13 +297,6 @@
                 </div>
                 <div class="col-lg-5">
                     <div class="position-relative mx-auto">
-                        <!-- <form action="{{ route('newsletter.subscribe') }}" method="POST">
-                            @csrf
-                            <div class="position-relative mx-auto">
-                                <input type="email" name="email" class="form-control border-0 w-100 py-3 ps-4 pe-5" placeholder="Your email" required>
-                                <button type="submit" class="btn btn-primary py-2 position-absolute top-0 end-0 mt-2 me-2">Subscribe</button>
-                            </div>
-                        </form> -->
 
                         <form id="subscribeForm" action="{{ route('subscribe') }}" method="POST">
                             @csrf
