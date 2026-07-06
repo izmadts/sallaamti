@@ -44,9 +44,13 @@ class NikahVerificationController extends Controller
 
     public function approve(NikahProfile $profile)
     {
-        abort_unless($profile->payment_status === 'confirmed', 403, 'Payment must be confirmed before verification.');
+        abort_unless($profile->payment_status === 'confirmed', 403, 'Payment must be confirmed first.');
 
         $profile->update(['verification_status' => 'verified', 'rejection_reason' => null]);
+
+        // Notify user
+        $profile->user->notify(new \App\Notifications\NikahProfileVerified());
+
         return back()->with('status', 'Profile approved.');
     }
 
@@ -54,6 +58,10 @@ class NikahVerificationController extends Controller
     {
         $request->validate(['rejection_reason' => 'required|string|max:500']);
         $profile->update(['verification_status' => 'rejected', 'rejection_reason' => $request->rejection_reason]);
+
+        // Notify user
+        $profile->user->notify(new \App\Notifications\NikahProfileRejected($request->rejection_reason));
+
         return back()->with('status', 'Profile rejected.');
     }
 }

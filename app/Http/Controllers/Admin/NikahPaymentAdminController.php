@@ -17,16 +17,16 @@ class NikahPaymentAdminController extends Controller
             ->paginate(10);
 
         return view('admin.nikah.nikah-payments', compact('profiles'));
-    }  
+    }
 
     public function confirm(NikahProfile $profile)
     {
-        $profile->update([
-            'payment_status' => 'confirmed',
-            'payment_confirmed_at' => now(),
-        ]);
+        $profile->update(['payment_status' => 'confirmed', 'payment_confirmed_at' => now()]);
 
-        return back()->with('status', 'Payment confirmed. Profile can now proceed to CNIC verification.');
+        // Notify user
+        $profile->user->notify(new \App\Notifications\NikahPaymentConfirmed());
+
+        return back()->with('status', 'Payment confirmed.');
     }
 
     public function reject(Request $request, NikahProfile $profile)

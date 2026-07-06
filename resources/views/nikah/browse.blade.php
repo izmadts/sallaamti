@@ -91,8 +91,13 @@
                             </form>
                         </div>
                     </div>
+
                     {{-- Photo --}}
                     <div class="relative h-48 bg-gray-100 flex items-center justify-center">
+                        {{-- Inside the photo div, after the match % badge --}}
+                        <div class="absolute top-2 left-1">
+                            <span class="text-xs bg-green-500 text-white px-2 py-0.5 rounded-full shadow">✅ Verified</span>
+                        </div>
                         @if ($profile->photos->first())
                         <img src="{{ route('nikah.photos.show', $profile->photos->first()) }}" class="w-full h-full object-cover blur-md">
                         <div class="absolute inset-0 flex items-center justify-center text-gray-400 text-sm">🔒 Photo hidden</div>
@@ -127,11 +132,17 @@
                         </div>
                         @endif
 
-                        <h4 class="font-semibold text-gray-800">{{ $profile->age }} yrs, {{ $profile->city }}</h4>
-                        <p class="text-sm text-gray-500">{{ $profile->profession ?: 'Profession not listed' }}</p>
-                        <p class="text-sm text-gray-500">{{ ucfirst(str_replace('_', ' ', $profile->marital_status)) }}
-                            @if ($profile->sect) · {{ $profile->sect }} @endif
-                        </p>
+                        {{-- Add this link wrapper around the profile info section --}}
+                        <a href="{{ route('nikah.profile.view', $profile) }}" class="block hover:opacity-90">
+                            <h4 class="font-semibold text-gray-800 text-base">{{ $profile->age }} yrs · {{ $profile->city }}</h4>
+                            <div class="mt-1 space-y-0.5">
+                                @if ($profile->profession)<p class="text-xs text-gray-500">💼 {{ $profile->profession }}</p>@endif
+                                @if ($profile->education)<p class="text-xs text-gray-500">🎓 {{ $profile->education }}</p>@endif
+                                @if ($profile->sect)<p class="text-xs text-gray-500">☪️ {{ $profile->sect }}</p>@endif
+                                <p class="text-xs text-gray-400">{{ ucfirst(str_replace('_', ' ', $profile->marital_status)) }}</p>
+                            </div>
+                        </a>
+
 
                         <div class="mt-3 flex gap-2">
                             {{-- Express Interest --}}

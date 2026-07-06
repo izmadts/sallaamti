@@ -215,4 +215,55 @@ class NikahProfileController extends Controller
             'pref_marital_status' => ['nullable', 'string'],
         ]);
     }
+    public function view(NikahProfile $profile)
+    {
+        // Only show verified, active, public profiles
+        abort_unless(
+            $profile->verification_status === 'verified' &&
+                $profile->is_active &&
+                $profile->visibility === 'public',
+            404
+        );
+
+        $myProfile = Auth::user()->nikahProfile;
+
+        // Check if there's a mutual accepted interest
+        $hasAcceptedInterest = false;
+        $interest = null;
+
+        if ($myProfile) {
+            $interest = \App\Models\NikahInterest::where(function ($q) use ($myProfile, $profile) {
+                $q->where('sender_profile_id', $myProfile->id)
+                    ->where('receiver_profile_id', $profile->id);
+            })->orWhere(function ($q) use ($myProfile, $profile) {
+                $q->where('receiver_profile_id', $myProfile->id)
+                    ->where('sender_profile_id', $profile->id);
+            })->first();
+
+            $hasAcceptedInterest = $interest && $interest->status === 'accepted';
+        }
+
+        $sentInterest = $myProfile
+            ? \App\Models\NikahInterest::where('sender_profile_id', $myProfile->id)
+            ->where('receiver_profile_id', $profile->id)
+            ->first()
+            : null;
+
+        $isSaved = $myProfile
+            ? \App\Models\NikahSavedProfile::where('nikah_profile_id', $myProfile->id)
+            ->where('saved_profile_id', $profile->id)
+            ->exists()
+            : false;
+
+        $matchPercentage = $myProfile ? $profile->matchPercentageWith($myProfile) : 0;
+
+        return view('nikah.profile-view', compact(
+            'profile',
+            'hasAcceptedInterest',
+            'interest',
+            'sentInterest',
+            'isSaved',
+            'matchPercentage'
+        ));
+    }
 }

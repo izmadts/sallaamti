@@ -122,6 +122,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/nikah/browse', [NikahProfileController::class, 'browse'])->name('nikah.browse');
     Route::get('/nikah/saved', [NikahProfileController::class, 'saved'])->name('nikah.saved');
     Route::post('/nikah/save/{profile}', [NikahProfileController::class, 'toggleSave'])->name('nikah.save');
+    Route::get('/nikah/profile/{profile}', [NikahProfileController::class, 'view'])->name('nikah.profile.view');
     Route::get('/nikah/file/{profile}/{type}', [NikahFileController::class, 'show'])->name('nikah.file');
     Route::post('/nikah/interest/{profile}', [NikahInterestController::class, 'send'])->name('nikah.interest.send');
     Route::get('/nikah/interests', [NikahInterestController::class, 'index'])->name('nikah.interests');
@@ -151,6 +152,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/courses/{course:slug}/certificate', [CertificateController::class, 'generate'])->name('certificate.generate');
     Route::get('/certificates/{certificate}/download', [CertificateController::class, 'download'])->name('certificate.download');
     Route::get('/my-certificates', [CertificateController::class, 'index'])->name('certificate.index');
+    Route::get('/my-quran-progress', [QuranLiveCourseController::class, 'myProgress'])->name('quran-live.my-progress');
+    Route::get('/my-quran-class', [QuranLiveCourseController::class, 'myClass'])->name('quran-live.my-class');
+
 
     // --- QURAN LIVE CLASSES ---
     Route::get('/quran-live/{course}/admission', [QuranLiveCourseController::class, 'admissionForm'])->name('quran-live.admission');
@@ -261,6 +265,9 @@ Route::middleware(['auth', 'teacher'])->prefix('teacher')->name('teacher.')->gro
     Route::post('/groups/{group}/daily-link', [QuranTeacherController::class, 'postDailyLink'])->name('groups.daily-link.store');
     Route::post('/groups/{group}/students/{student}/assessment', [QuranTeacherController::class, 'storeAssessment'])->name('groups.assessment.store');
     Route::post('/groups/{group}/students/{student}/progress-report', [QuranTeacherController::class, 'storeProgressReport'])->name('groups.progress-report.store');
+    Route::get('/students', [QuranTeacherController::class, 'students'])->name('students.index');
+    Route::get('/students/{student}', [QuranTeacherController::class, 'studentDetail'])->name('students.show');
+    Route::get('/schedule', [QuranTeacherController::class, 'schedule'])->name('schedule');
 });
 
 require __DIR__ . '/auth.php';

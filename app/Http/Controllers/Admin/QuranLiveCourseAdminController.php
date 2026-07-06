@@ -81,6 +81,12 @@ class QuranLiveCourseAdminController extends Controller
     public function confirmPayment(QuranSubscription $subscription)
     {
         $subscription->update(['payment_status' => 'confirmed', 'payment_confirmed_at' => now()]);
+
+        // Notify student
+        $subscription->user->notify(
+            new \App\Notifications\QuranLivePaymentConfirmed($subscription->course, $subscription->month)
+        );
+
         return back()->with('status', 'Payment confirmed.');
     }
 

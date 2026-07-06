@@ -9,6 +9,7 @@ use App\Models\QuranDailyLink;
 use App\Models\QuranGroupStudent;
 use App\Models\QuranLiveCourse;
 use App\Models\QuranProgressReport;
+use App.Notifications\QuranProgressReportReady;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -16,8 +17,11 @@ class QuranTeacherController extends Controller
 {
     public function index()
     {
+        $groups = QuranClassGroup::where('teacher_id', Auth::id())
+            ->with(['course', 'activeStudents.user'])
+            ->get();
         $courses = QuranLiveCourse::where('teacher_id', Auth::id())->get();
-        return view('teacher.courses.index', compact('courses'));
+        return view('teacher.courses.index', compact('groups', 'courses'));
     }
 
     public function groups()
@@ -117,7 +121,7 @@ class QuranTeacherController extends Controller
 
         // Notify student about new report
         $student->user->notify(new \App\Notifications\QuranProgressReportReady($group, $validated['month']));
-
+        
         return back()->with('status', 'Progress report saved.');
     }
 
@@ -125,5 +129,44 @@ class QuranTeacherController extends Controller
     public function show(QuranLiveCourse $course)
     {
         return redirect()->route('teacher.groups.index');
+    }
+    public function students()
+    {
+        $groupIds = QuranClassGroup::where('teacher_id', Auth::id())->pluck('id');
+
+        $students = QuranGroupStudent::whereIn('quran_class_group_id', $groupIds)
+            ->where('status', 'active')
+            ->with(['user', 'group.course', 'admission'])
+            ->paginate(15);
+
+        return view('teacher.students.index', compact('students'));
+    }
+
+    public function studentDetail(QuranGroupStudent $student)
+    {
+        $group = $student->group;
+        abort_unless($group->teacher_id === Auth::id(), 403);
+
+        $assessments = QuranAssessment::where('user_id', $student->user_id)
+            ->where('quran_class_group_id', $group->id)
+            ->orderByDesc('assessment_date')
+            ->get();
+
+        $progressReports = QuranProgressReport::where('user_id', $student->user_id)
+            ->where('quran_class_group_id', $group->id)
+            ->orderByDesc('month')
+            ->get();
+
+        return view('teacher.students.show', compact('student', 'group', 'assessments', 'progressReports'));
+    }
+
+    public function schedule()
+    {
+        $groups = QuranClassGroup::where('teacher_id', Auth::id())
+            ->where('is_active', true)
+            ->with(['course', 'activeStudents'])
+            ->get();
+
+        return view('teacher.schedule', compact('groups'));
     }
 }
