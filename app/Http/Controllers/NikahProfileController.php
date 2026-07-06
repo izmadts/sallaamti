@@ -188,7 +188,7 @@ class NikahProfileController extends Controller
         return $request->validate([
             'age' => ['required', 'integer', 'min:18', 'max:70'],
             'height' => ['nullable', 'string', 'max:20'],
-            'marital_status' => ['required', 'string', 'in:never_married,divorced,widowed,married'],
+            'marital_status' => ['required', 'string', 'in:never_married,divorced,widowed,married,separated'],
             'sect' => ['nullable', 'string', 'max:100'],
             'caste' => ['nullable', 'string', 'max:100'],
             'education' => ['nullable', 'string', 'max:255'],

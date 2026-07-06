@@ -40,7 +40,7 @@
                                     <option value="never_married">Never Married</option>
                                     <option value="divorced">Divorced</option>
                                     <option value="widowed">Widowed</option>
-                                    <option value="separate">Separate</option>
+                                    <option value="separated">Separated</option>
                                     <option value="married">Married</option>
                                 </select>
                             </div>
