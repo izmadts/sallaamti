@@ -87,9 +87,10 @@
 
                 <div class="wow fadeInRight" data-wow-delay="0.2s">
                     <div class="grid grid-cols-2 gap-4">
-                        <img src="{{ asset('img/quran-1.jpg') }}" class="w-full h-48 object-cover rounded-2xl" alt="">
-                        <img src="{{ asset('img/quran-2.jpg') }}" class="w-full h-48 object-cover rounded-2xl mt-8" alt="">
-                        <img src="{{ asset('img/quran-3.jpg') }}" class="w-full h-48 object-cover rounded-2xl" alt="">
+                        @php $previewCourses = \App\Models\Course::where('is_published', true)->take(4)->get(); @endphp
+                        @foreach ($previewCourses as $course)
+                        <img src="{{ Storage::url($course->thumbnail) }}" alt="{{ $course->title }}" class="w-full h-48 object-cover rounded-2xl" alt="">
+                        @endforeach
                         <div class="rounded-2xl flex flex-col items-center justify-center text-center p-4 wow-card" style="background: var(--teal)">
                             <div class="text-4xl font-extrabold text-white">{{ \App\Models\Course::where('is_published',true)->count() }}+</div>
                             <div class="text-white/70 text-sm mt-1">Published Courses</div>
