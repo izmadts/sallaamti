@@ -1,26 +1,43 @@
 <x-guest-layout>
-    <div class="mb-4 text-sm text-gray-600 dark:text-gray-400">
-        {{ __('Forgot your password? No problem. Just let us know your email address and we will email you a password reset link that will allow you to choose a new one.') }}
-    </div>
+    <div class="auth-wrapper">
+        <div class="auth-card">
 
-    <!-- Session Status -->
-    <x-auth-session-status class="mb-4" :status="session('status')" />
-    <div class="card" style="width: 20rem; margin: auto; margin-top: 200px; padding: 30px;">
-        <form method="POST" action="{{ route('password.email') }}">
-            @csrf
-
-            <!-- Email Address -->
-            <div>
-                <x-input-label for="email" :value="__('Email')" />
-                <input id="email" class="form-control" type="email" name="email" :value="old('email')" required autofocus />
-                <x-input-error :messages="$errors->get('email')" class="mt-2" />
+            <div class="text-center mb-8">
+                <a href="{{ url('/') }}">
+                    <x-application-logo class="h-14 w-auto mx-auto" />
+                </a>
+                <div class="w-16 h-16 rounded-2xl flex items-center justify-center text-3xl mx-auto mt-4 mb-3" style="background: var(--teal-light)">🔑</div>
+                <h2 class="text-2xl font-extrabold text-gray-800">Forgot Password?</h2>
+                <p class="text-gray-500 text-sm mt-2 max-w-xs mx-auto">No worries — enter your email and we'll send you a reset link.</p>
             </div>
 
-            <div class="d-flex justify-content-between mt-4">
-                <button type="submit" class="btn btn-primary btn-lg btn-block">
-                    {{ __('Email Password Reset Link') }}
+            <x-auth-session-status class="mb-4" :status="session('status')" />
+
+            <form method="POST" action="{{ route('password.email') }}" class="space-y-5">
+                @csrf
+
+                <div>
+                    <label class="auth-label">Email Address</label>
+                    <div class="auth-input-wrap">
+                        <i class="fa fa-envelope auth-icon"></i>
+                        <input type="email" name="email" value="{{ old('email') }}" required autofocus
+                            class="auth-input @error('email') auth-input-error @enderror"
+                            placeholder="your@email.com">
+                    </div>
+                    <x-input-error :messages="$errors->get('email')" class="mt-1" />
+                </div>
+
+                <button type="submit" class="btn-base btn-teal w-full py-3 text-base font-semibold">
+                    Send Reset Link <i class="fa fa-paper-plane ml-2"></i>
                 </button>
-            </div>
-        </form>
+
+                <div class="text-center">
+                    <a href="{{ route('login') }}" class="text-sm font-medium flex items-center justify-center gap-1" style="color: var(--teal)">
+                        <i class="fa fa-arrow-left text-xs"></i> Back to Login
+                    </a>
+                </div>
+            </form>
+
+        </div>
     </div>
 </x-guest-layout>

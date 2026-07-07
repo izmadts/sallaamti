@@ -1,34 +1,265 @@
 <x-guest-layout>
-    <div class="card" style="width: 20rem; margin: auto; margin-top: 200px; padding: 30px;">
-        <h2 class="font-semibold mb-4">Join Sallaamti as a Volunteer</h2>
 
-        @if (session('status'))
-        <div class="p-4 bg-green-50 text-green-700 rounded mb-4">{{ session('status') }}</div>
-        @endif
+    {{-- Page Hero --}}
+    <section class="page-hero relative overflow-hidden flex items-center" style="min-height: 280px; background: linear-gradient(135deg, #0d6b6b 0%, #1a1a2e 100%);">
+        <div class="absolute inset-0 opacity-5 overflow-hidden" style="font-size: 20rem; color: #fff; display: flex; align-items: center; justify-content: center; pointer-events: none;">🤝</div>
+        <div class="max-w-7xl mx-auto px-4 py-16 relative z-10 text-center w-full">
+            <span class="section-eyebrow" style="color: rgba(255,255,255,0.7)">Join Our Team</span>
+            <h1 class="text-4xl md:text-5xl font-extrabold text-white mt-2 mb-3">🤝 Volunteer with Sallaamti</h1>
+            <p class="text-white/70 text-lg max-w-xl mx-auto">"The best of people are those who are most beneficial to people." — Prophet Muhammad ﷺ</p>
+        </div>
+    </section>
 
-        <form method="POST" action="{{ route('volunteer.store') }}" class="space-y-4 bg-white p-6 rounded-lg shadow-sm">
-            @csrf
-            <div><label class="mb-1 mt-2">Full Name</label><input name="name" class="form-control" required /></div>
-            <div><label class="mb-1 mt-2">Email </label><input name="email" type="email" class="form-control" required /></div>
-            <div><label class="mb-1 mt-2">Phone</label><input name="phone" class="form-control" required /></div>
-            <div><label class="mb-1 mt-2">City </label><input name="city" class="form-control" /></div>
-            <div>
-                <label class="mb-1 mt-2">Area of Interest </label>
-                <select name="area_of_interest" class="border-gray-300 rounded-md form-select">
-                    <option value="Teaching">Teaching (Quran/Islamic Studies)</option>
-                    <option value="Tech">Tech / Web Development</option>
-                    <option value="Counseling">Family Counseling</option>
-                    <option value="Fundraising">Fundraising</option>
-                    <option value="Events">Events & Outreach</option>
-                    <option value="Other">Other</option>
-                </select>
+    <section class="py-16 bg-cream">
+        <div class="max-w-5xl mx-auto px-4">
+
+            @if (session('status'))
+            <div class="mb-6 p-4 rounded-xl text-green-700 flex items-center gap-3" style="background: #f0fdf4; border: 1px solid #bbf7d0">
+                <i class="fa fa-check-circle text-xl flex-shrink-0"></i>
+                <div>{{ session('status') }}</div>
             </div>
-            <div><label class="mb-1 mt-2">Message (optional)</label>
-                <textarea name="message" rows="3" class="border-gray-300 rounded-md form-control"></textarea>
+            @endif
+
+            <div class="grid lg:grid-cols-3 gap-8">
+
+                {{-- Form --}}
+                <div class="lg:col-span-2">
+                    <div class="bg-white rounded-2xl shadow-sm p-8">
+                        <h3 class="font-bold text-xl text-gray-800 mb-6">Volunteer Application Form</h3>
+
+                        @if ($errors->any())
+                        <div class="mb-6 p-4 rounded-xl text-red-700 text-sm" style="background: #fef2f2; border: 1px solid #fecaca">
+                            <ul class="list-disc list-inside space-y-1">
+                                @foreach ($errors->all() as $error)<li>{{ $error }}</li>@endforeach
+                            </ul>
+                        </div>
+                        @endif
+
+                        <form method="POST" action="{{ route('volunteer.store') }}" class="space-y-5">
+                            @csrf
+
+                            {{-- Name + Email --}}
+                            <div class="grid sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="auth-label">Full Name <span class="text-red-400">*</span></label>
+                                    <div class="auth-input-wrap">
+                                        <i class="fa fa-user auth-icon"></i>
+                                        <input type="text" name="name" value="{{ old('name', auth()->user()?->name) }}" required
+                                            class="auth-input @error('name') auth-input-error @enderror"
+                                            placeholder="Your full name">
+                                    </div>
+                                    <x-input-error :messages="$errors->get('name')" class="mt-1" />
+                                </div>
+                                <div>
+                                    <label class="auth-label">Email Address <span class="text-red-400">*</span></label>
+                                    <div class="auth-input-wrap">
+                                        <i class="fa fa-envelope auth-icon"></i>
+                                        <input type="email" name="email" value="{{ old('email', auth()->user()?->email) }}" required
+                                            class="auth-input @error('email') auth-input-error @enderror"
+                                            placeholder="your@email.com">
+                                    </div>
+                                    <x-input-error :messages="$errors->get('email')" class="mt-1" />
+                                </div>
+                            </div>
+
+                            {{-- Phone + City --}}
+                            <div class="grid sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="auth-label">Phone / WhatsApp <span class="text-red-400">*</span></label>
+                                    <div class="auth-input-wrap">
+                                        <i class="fa fa-phone auth-icon"></i>
+                                        <input type="text" name="phone" value="{{ old('phone', auth()->user()?->phone) }}" required
+                                            class="auth-input @error('phone') auth-input-error @enderror"
+                                            placeholder="+92 3XX XXXXXXX">
+                                    </div>
+                                    <x-input-error :messages="$errors->get('phone')" class="mt-1" />
+                                </div>
+                                <div>
+                                    <label class="auth-label">City / Country</label>
+                                    <div class="auth-input-wrap">
+                                        <i class="fa fa-map-marker-alt auth-icon"></i>
+                                        <input type="text" name="city" value="{{ old('city', auth()->user()?->city) }}"
+                                            class="auth-input" placeholder="Karachi, London, Dubai...">
+                                    </div>
+                                </div>
+                            </div>
+
+                            {{-- Area of Interest --}}
+                            <div>
+                                <label class="auth-label">Area of Interest <span class="text-red-400">*</span></label>
+                                <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 mt-2">
+                                    @foreach ([
+                                    ['Teaching (Quran)', '👩‍🏫', 'teaching'],
+                                    ['Tech / Web Dev', '💻', 'tech'],
+                                    ['Family Counseling', '🤝', 'counseling'],
+                                    ['Fundraising', '💰', 'fundraising'],
+                                    ['Events & Outreach', '📢', 'events'],
+                                    ['Graphic Design', '🎨', 'design'],
+                                    ['Social Media', '📱', 'social_media'],
+                                    ['Administration', '📋', 'admin'],
+                                    ['Other', '✨', 'other'],
+                                    ] as $area)
+                                    <label class="interest-option">
+                                        <input type="radio" name="area_of_interest" value="{{ $area[2] }}"
+                                            {{ old('area_of_interest') === $area[2] ? 'checked' : '' }}
+                                            class="sr-only interest-radio">
+                                        <span class="interest-label">
+                                            <span class="text-lg">{{ $area[1] }}</span>
+                                            <span class="text-xs font-semibold mt-1 text-center">{{ $area[0] }}</span>
+                                        </span>
+                                    </label>
+                                    @endforeach
+                                </div>
+                                <x-input-error :messages="$errors->get('area_of_interest')" class="mt-1" />
+                            </div>
+
+                            {{-- Availability --}}
+                            <div>
+                                <label class="auth-label">Weekly Availability</label>
+                                <div class="auth-input-wrap">
+                                    <i class="fa fa-clock auth-icon"></i>
+                                    <select name="availability" class="auth-input">
+                                        <option value="">Select your availability</option>
+                                        <option value="1-2 hours" {{ old('availability') === '1-2 hours' ? 'selected' : '' }}>1–2 hours per week</option>
+                                        <option value="3-5 hours" {{ old('availability') === '3-5 hours' ? 'selected' : '' }}>3–5 hours per week</option>
+                                        <option value="5-10 hours" {{ old('availability') === '5-10 hours' ? 'selected' : '' }}>5–10 hours per week</option>
+                                        <option value="full-time" {{ old('availability') === 'full-time' ? 'selected' : '' }}>Full-time volunteer</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            {{-- Skills --}}
+                            <div>
+                                <label class="auth-label">Your Skills / Qualifications</label>
+                                <div class="auth-input-wrap">
+                                    <i class="fa fa-star auth-icon"></i>
+                                    <input type="text" name="skills" value="{{ old('skills') }}"
+                                        class="auth-input"
+                                        placeholder="e.g. Hafiz, Web Developer, Graphic Designer, Counselor...">
+                                </div>
+                            </div>
+
+                            {{-- Message --}}
+                            <div>
+                                <label class="auth-label">Why do you want to volunteer? <span class="text-red-400">*</span></label>
+                                <textarea name="message" rows="4" required
+                                    class="auth-input w-full resize-none @error('message') auth-input-error @enderror"
+                                    style="padding-left: 1rem"
+                                    placeholder="Tell us about yourself, your motivation, and how you'd like to contribute to the Sallaamti mission...">{{ old('message') }}</textarea>
+                                <x-input-error :messages="$errors->get('message')" class="mt-1" />
+                            </div>
+
+                            {{-- Declaration --}}
+                            <div class="p-4 rounded-xl" style="background: var(--cream); border: 1px solid #e5e5e5">
+                                <div class="flex items-start gap-3">
+                                    <input type="checkbox" name="declaration" id="declaration" required class="auth-checkbox mt-0.5 flex-shrink-0">
+                                    <label for="declaration" class="text-sm text-gray-600 leading-relaxed">
+                                        I confirm that all information provided is accurate. I understand that volunteering with Sallaamti is a commitment to serve the Muslim Ummah with sincerity, Islamic values and professionalism. I agree to maintain confidentiality and respect in all my interactions.
+                                    </label>
+                                </div>
+                            </div>
+
+                            <button type="submit" class="btn-base btn-teal w-full py-4 text-base font-bold">
+                                Submit Volunteer Application <i class="fa fa-arrow-right ml-2"></i>
+                            </button>
+
+                            <p class="text-center text-xs text-gray-400">
+                                Our team will review your application and contact you within 3–5 business days.
+                            </p>
+                        </form>
+                    </div>
+                </div>
+
+                {{-- Sidebar --}}
+                <div class="space-y-4">
+
+                    {{-- Why Volunteer --}}
+                    <div class="bg-white rounded-2xl p-6 shadow-sm">
+                        <h5 class="font-bold text-gray-800 mb-4">Why Volunteer?</h5>
+                        <div class="space-y-3">
+                            @foreach ([
+                            ['🌍', 'Global Impact', 'Reach Muslims in 20+ countries'],
+                            ['📜', 'Official Certificate', 'Volunteer recognition certificate'],
+                            ['🤝', 'Muslim Community', 'Join a dedicated team of believers'],
+                            ['🎓', 'Skill Development', 'Grow while serving the Ummah'],
+                            ['🤲', 'Sadaqah Jariyah', 'Ongoing reward even after you stop'],
+                            ] as $w)
+                            <div class="flex items-start gap-3">
+                                <span class="text-xl flex-shrink-0">{{ $w[0] }}</span>
+                                <div>
+                                    <strong class="text-sm text-gray-800">{{ $w[1] }}</strong>
+                                    <p class="text-xs text-gray-500 mb-0">{{ $w[2] }}</p>
+                                </div>
+                            </div>
+                            @endforeach
+                        </div>
+                    </div>
+
+                    {{-- Roles we need --}}
+                    <div class="rounded-2xl p-6 shadow-sm" style="background: linear-gradient(135deg, #0d6b6b 0%, #1a1a2e 100%)">
+                        <h5 class="font-bold text-white mb-4">Roles We Need</h5>
+                        <div class="space-y-2">
+                            @foreach ([
+                            ['👩‍🏫', 'Quran Teachers (Male & Female)'],
+                            ['💻', 'Web & App Developers'],
+                            ['🎨', 'Graphic Designers'],
+                            ['📢', 'Community Outreach'],
+                            ['📋', 'Admin & Coordination'],
+                            ['🤝', 'Islamic Counselors'],
+                            ] as $role)
+                            <div class="flex items-center gap-2 text-white/80 text-sm">
+                                <span>{{ $role[0] }}</span> {{ $role[1] }}
+                            </div>
+                            @endforeach
+                        </div>
+                    </div>
+
+                    {{-- Contact --}}
+                    <div class="bg-white rounded-2xl p-6 shadow-sm">
+                        <h5 class="font-bold text-gray-800 mb-3">Questions?</h5>
+                        <p class="text-gray-500 text-sm mb-4">Reach out to us before applying if you have questions.</p>
+                        <a href="https://wa.me/{{ setting('social_whatsapp') }}" target="_blank"
+                            class="btn-base btn-teal w-full py-2.5 text-sm text-center block">
+                            <i class="fab fa-whatsapp mr-2"></i>WhatsApp Us
+                        </a>
+                    </div>
+
+                </div>
             </div>
-            <button type="submit" class="btn btn-primary btn-lg mt-3">Submit Application</button>
-        </form>
-        <a href="{{ route('index') }}" class="inline-block mt-6 bg-light text-dark mt-3 px-5 py-2 rounded">
-            <Back to Home</a>
-    </div>
+        </div>
+    </section>
+
+    <style>
+        /* Interest selector */
+        .interest-option {
+            cursor: pointer;
+            display: block;
+        }
+
+        .interest-label {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 10px 8px;
+            border-radius: 12px;
+            border: 2px solid #e5e7eb;
+            transition: all 0.2s;
+            text-align: center;
+            height: 100%;
+            min-height: 72px;
+            color: #6b7280;
+        }
+
+        .interest-radio:checked+.interest-label {
+            border-color: var(--teal);
+            background: var(--teal-light);
+            color: var(--teal);
+        }
+
+        .interest-label:hover {
+            border-color: var(--teal);
+        }
+    </style>
+
 </x-guest-layout>

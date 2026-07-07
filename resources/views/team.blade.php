@@ -1,324 +1,155 @@
- <!DOCTYPE html>
- <html lang="en">
-
- <head>
-     <meta charset="utf-8">
-     <title>Sallaamti Importance of Quran Eudction and Empowring Humanity</title>
-     <meta content="width=device-width, initial-scale=1.0" name="viewport">
-     <meta content="" name="keywords">
-     <meta content="" name="description">
-
-     <!-- Google Web Fonts -->
-     <link rel="preconnect" href="https://fonts.googleapis.com">
-     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700&family=Pacifico&display=swap" rel="stylesheet">
-
-     <!-- Icon Font Stylesheet -->
-     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css" />
-     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
-
-     <!-- Libraries Stylesheet -->
-     <link href="{{ asset('lib/animate/animate.min.css') }}" rel="stylesheet">
-     <link href="{{ asset('lib/owlcarousel/assets/owl.carousel.min.css')}}" rel="stylesheet">
-
-     <!-- Customized Bootstrap Stylesheet -->
-     <link href="{{ asset('css/bootstrap.min.css')}}" rel="stylesheet">
-
-     <!-- Template Stylesheet -->
-     <link href="{{ asset('css/style.css')}}" rel="stylesheet">
-
-
-
- </head>
-
- <body>
-
-     <!-- Spinner Start -->
-     <div id="spinner" class="show w-100 vh-100 bg-white position-fixed translate-middle top-50 start-50  d-flex align-items-center justify-content-center">
-         <div class="spinner-grow text-primary" role="status"></div>
-     </div>
-     <!-- Spinner End -->
-
-
-     <!-- Topbar start -->
-     <div class="container-fluid fixed-top" id="header">
-         <div class="container topbar">
-             <div class="topbar-inner ">
-                 <div class="row gx-0">
-                     <div class="col-lg-7 text-start d-lg-block d-none">
-                         <div class="h-100 d-inline-flex align-items-center me-4">
-                             <span class="fa fa-phone-alt me-2 text-dark"></span>
-                             <a href="#" class="text-secondary"><span>+92 334 6145566</span></a>
-                         </div>
-                         <div class="h-100 d-inline-flex align-items-center">
-                             <span class="far fa-envelope me-2 text-dark"></span>
-                             <a href="#" class="text-secondary"><span>info@sallaamti.com</span></a>
-                         </div>
-                     </div>
-                     <div class="col-lg-5 text-end">
-                         <div class="h-100 d-inline-flex align-items-center">
-                             <span class="text-body">Follow Us:</span>
-                             <a class="text-dark px-2" href="https://facebook.com/sallaamti"><i class="fab fa-facebook-f"></i></a>
-                             <a class="text-dark px-2" href="https://tiktok.com/@sallaamti"><i class="fab fa-tiktok"></i></a>
-                             <a class="text-dark px-2" href="https://youtube.com/@sallaamti"><i class="fab fa-youtube"></i></a>
-                             <a class="text-dark px-2 me-2" href="https://instagram.com/sallaamti"><i class="fab fa-instagram"></i></a>
-                             <a href="{{ route('login') }}" class="btn btn-outline-warning px-4"><i class="fa fa-lock text-dark me-1">‌</i> Log in</a>
-                             @if (Route::has('register'))
-                             <a href="{{ route('register') }}" class="btn btn-outline-warning px-4"><i class="fa fa-user-plus text-dark me-1">‌</i>Register
-                             </a>
-                             @endif
-                         </div>
-                     </div>
-                 </div>
-             </div>
-         </div>
-         <div class="container">
-             <nav class="navbar navbar-light navbar-expand-lg py-3">
-                 <a href="index.html" class="navbar-brand">
-                     <x-application-logo />
-                 </a>
-                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse">
-                     <span class="fa fa-bars text-primary"></span>
-                 </button>
-                 <div class="collapse navbar-collapse bg-white" id="navbarCollapse">
-                     <div class="navbar-nav ms-lg-auto mx-xl-auto">
-                         <a href="{{ url('/') }}" class="nav-item nav-link active">Home</a>
-                         <a href="{{ url('/about') }}" class="nav-item nav-link">About</a>
-                         <a href="{{ url('/activities') }}" class="nav-item nav-link">Activities</a>
-                         <a href="{{ url('/events') }}" class="nav-item nav-link">Events</a>
-                         <a href="{{ url('/sermons') }}" class="nav-item nav-link">Sermons</a>
-                         <div class="nav-item dropdown">
-                             <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">More</a>
-                             <div class="dropdown-menu m-0 rounded-0">
-                                 <a href="{{ url('/blog') }}" class="dropdown-item">Latest Blog</a>
-                                 <a href="{{ url('/team') }}" class="dropdown-item">Our Team</a>
-                                 <a href="{{ url('/testimonial') }}" class="dropdown-item">Testimonial</a>
-                             </div>
-                         </div>
-                         <a href="{{ url('/contact') }}" class="nav-item nav-link">Contact</a>
-                     </div>
-                     <a href="" class="btn btn-primary py-2 px-4 d-none d-xl-inline-block">Donate</a>
-                 </div>
-             </nav>
-         </div>
-     </div>
-     <!-- Topbar End -->
-
-
-     <!-- Hero Start -->
-     <div class="container-fluid hero-header">
-         <div class="container">
-             <div class="row">
-                 <div class="col-lg-7">
-                     <div class="hero-header-inner animated zoomIn">
-                         <h1 class="display-1 text-dark">Our Team</h1>
-                         <ol class="breadcrumb mb-0">
-                             <li class="breadcrumb-item"><a href="#">Home</a></li>
-                             <li class="breadcrumb-item"><a href="#">Pages</a></li>
-                             <li class="breadcrumb-item text-dark" aria-current="page">Our Team</li>
-                         </ol>
-                     </div>
-                 </div>
-             </div>
-         </div>
-     </div>
-     <!-- Hero End -->
-
-
-     <!-- Team Start -->
-     <div class="container-fluid team py-5">
-         <div class="container py-5">
-             <div class="text-center mx-auto mb-5 wow fadeIn" data-wow-delay="0.1s" style="max-width: 700px;">
-                 <p class="fs-5 text-uppercase text-primary">Our Team</p>
-                 <h1 class="display-3">Meet Our Organizer</h1>
-             </div>
-             <div class="row g-5">
-                 <div class="col-lg-4 col-xl-5">
-                     <div class="team-img wow zoomIn" data-wow-delay="0.1s">
-                         <img src="img/team-1.jpg" class="img-fluid" alt="">
-                     </div>
-                 </div>
-                 <div class="col-lg-8 col-xl-7">
-                     <div class="team-item wow fadeIn" data-wow-delay="0.1s">
-                         <h1>Anamul Hasan</h1>
-                         <h5 class="fw-normal fst-italic text-primary mb-4">President</h5>
-                         <p class="mb-4">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam,
-                             sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. aliquip ex ea commodo consequat.</p>
-                         <div class="team-icon d-flex pb-4 mb-4 border-bottom border-primary">
-                             <a class="btn btn-primary btn-lg-square me-2" href=""><i class="fab fa-facebook-f"></i></a>
-                             <a class="btn btn-primary btn-lg-square me-2" href=""><i class="fab fa-twitter"></i></a>
-                             <a href="#" class="btn btn-primary btn-lg-square me-2"><i class="fab fa-instagram"></i></a>
-                             <a href="#" class="btn btn-primary btn-lg-square"><i class="fab fa-linkedin-in"></i></a>
-                         </div>
-                     </div>
-                     <div class="row g-4">
-                         <div class="col-md-4">
-                             <div class="team-item wow zoomIn" data-wow-delay="0.2s">
-                                 <img src="img/team-2.jpg" class="img-fluid w-100" alt="">
-                                 <div class="team-content text-dark text-center py-3">
-                                     <div class="team-content-inner">
-                                         <h5 class="mb-0">Mustafa Kamal</h5>
-                                         <p class="text-dark">Imam</p>
-                                         <div class="team-icon d-flex align-items-center justify-content-center">
-                                             <a class="btn btn-primary btn-sm-square me-2" href=""><i class="fab fa-facebook-f"></i></a>
-                                             <a class="btn btn-primary btn-sm-square me-2" href=""><i class="fab fa-twitter"></i></a>
-                                             <a href="#" class="btn btn-primary btn-sm-square me-2"><i class="fab fa-instagram"></i></a>
-                                             <a href="#" class="btn btn-primary btn-sm-square"><i class="fab fa-linkedin-in"></i></a>
-                                         </div>
-                                     </div>
-                                 </div>
-                             </div>
-                         </div>
-                         <div class="col-md-4">
-                             <div class="team-item wow zoomIn" data-wow-delay="0.4s">
-                                 <img src="img/team-3.jpg" class="img-fluid w-100" alt="">
-                                 <div class="team-content text-dark text-center py-3">
-                                     <div class="team-content-inner">
-                                         <h5 class="mb-0">Nahiyan Momen</h5>
-                                         <p class="text-dark">Teacher</p>
-                                         <div class="team-icon d-flex align-items-center justify-content-center">
-                                             <a class="btn btn-primary btn-sm-square me-2" href=""><i class="fab fa-facebook-f"></i></a>
-                                             <a class="btn btn-primary btn-sm-square me-2" href=""><i class="fab fa-twitter"></i></a>
-                                             <a href="#" class="btn btn-primary btn-sm-square me-2"><i class="fab fa-instagram"></i></a>
-                                             <a href="#" class="btn btn-primary btn-sm-square"><i class="fab fa-linkedin-in"></i></a>
-                                         </div>
-                                     </div>
-                                 </div>
-                             </div>
-                         </div>
-                         <div class="col-md-4">
-                             <div class="team-item wow zoomIn" data-wow-delay="0.6s">
-                                 <img src="img/team-4.jpg" class="img-fluid w-100" alt="">
-                                 <div class="team-content text-dark text-center py-3">
-                                     <div class="team-content-inner">
-                                         <h5 class="mb-0">Asfaque Ali</h5>
-                                         <p class="text-dark">Volunteer</p>
-                                         <div class="team-icon d-flex align-items-center justify-content-center">
-                                             <a class="btn btn-primary btn-sm-square me-2" href=""><i class="fab fa-facebook-f"></i></a>
-                                             <a class="btn btn-primary btn-sm-square me-2" href=""><i class="fab fa-twitter"></i></a>
-                                             <a href="#" class="btn btn-primary btn-sm-square me-2"><i class="fab fa-instagram"></i></a>
-                                             <a href="#" class="btn btn-primary btn-sm-square"><i class="fab fa-linkedin-in"></i></a>
-                                         </div>
-                                     </div>
-                                 </div>
-                             </div>
-                         </div>
-                     </div>
-                 </div>
-             </div>
-         </div>
-     </div>
-     <!-- Team End -->
-
-
-     <!-- Footer Start -->
-     <div class="container-fluid footer pt-5 wow fadeIn" data-wow-delay="0.1s">
-         <div class="container py-5">
-             <div class="row py-5">
-                 <div class="col-lg-7">
-                     <h1 class="text-light mb-0">Subscribe our newsletter</h1>
-                     <p class="text-secondary">Get the latest news and other tips</p>
-                 </div>
-                 <div class="col-lg-5">
-                     <div class="position-relative mx-auto">
-                         <input class="form-control border-0 w-100 py-3 ps-4 pe-5" type="text" placeholder="Your email">
-                         <button type="button" class="btn btn-primary py-2 position-absolute top-0 end-0 mt-2 me-2">Subcribe</button>
-                     </div>
-                 </div>
-                 <div class="col-12">
-                     <div class="border-top border-secondary"></div>
-                 </div>
-             </div>
-             <div class="row g-4 footer-inner">
-                 <div class="col-md-6 col-lg-6 col-xl-3">
-                     <div class="footer-item mt-5">
-                         <img src="{{ asset('img/logo-w.png')}}" class="img-fluid">
-                         <p class="mb-4 text-secondary">Sallaamti (سلامتی) is an organization dedicated to spreading peace, knowledge, and compassion through the teachings of the Quran and Hadith. </p>
-                         <a href="" class="btn btn-primary py-2 px-4">Donate Now</a>
-                     </div>
-                 </div>
-                 <div class="col-md-6 col-lg-6 col-xl-3">
-                     <div class="footer-item mt-5">
-                         <h4 class="text-light mb-4">Contact</h4>
-                         <div class="d-flex flex-column">
-                             <h6 class="text-secondary mb-0">Our Address</h6>
-                             <div class="d-flex align-items-center border-bottom py-4">
-                                 <span class="flex-shrink-0 btn-square bg-primary me-3 p-4"><i class="fa fa-map-marker-alt text-dark"></i></span>
-                                 <a href="" class="text-body">Gulshan Faiz Colony Multan</a>
-                             </div>
-                             <h6 class="text-secondary mt-4 mb-0">Our Mobile</h6>
-                             <div class="d-flex align-items-center py-4">
-                                 <span class="flex-shrink-0 btn-square bg-primary me-3 p-4"><i class="fa fa-phone-alt text-dark"></i></span>
-                                 <a href="" class="text-body">+92 334 6145566</a>
-                             </div>
-                         </div>
-                     </div>
-                 </div>
-                 <div class="col-md-6 col-lg-6 col-xl-3">
-                     <div class="footer-item mt-5">
-                         <h4 class="text-light mb-4">Explore Link</h4>
-                         <div class="d-flex flex-column align-items-start">
-                             <a class="text-body mb-2" href=""><i class="fa fa-check text-primary me-2"></i>Home</a>
-                             <a class="text-body mb-2" href=""><i class="fa fa-check text-primary me-2"></i>About Us</a>
-                             <a class="text-body mb-2" href=""><i class="fa fa-check text-primary me-2"></i>Our Features</a>
-                             <a class="text-body mb-2" href=""><i class="fa fa-check text-primary me-2"></i>Contact us</a>
-                             <a class="text-body mb-2" href=""><i class="fa fa-check text-primary me-2"></i>Our Blog</a>
-                             <a class="text-body mb-2" href=""><i class="fa fa-check text-primary me-2"></i>Our Events</a>
-                             <a class="text-body mb-2" href=""><i class="fa fa-check text-primary me-2"></i>Donations</a>
-                             <a class="text-body mb-2" href=""><i class="fa fa-check text-primary me-2"></i>Sermons</a>
-                         </div>
-                     </div>
-                 </div>
-                 <div class="col-md-6 col-lg-6 col-xl-3">
-                     <div class="footer-item mt-5">
-                         <h4 class="text-light mb-4">Latest Post</h4>
-                         <div class="d-flex border-bottom border-secondary py-4">
-                             <img src="{{ asset('img/blog-mini-1.jpg')}}" class="img-fluid flex-shrink-0" alt="">
-                             <div class="ps-3">
-                                 <p class="mb-0 text-muted">01 Jan 2045</p>
-                                 <a href="" class="text-body">Lorem ipsum dolor sit amet elit eros vel</a>
-                             </div>
-                         </div>
-                         <div class="d-flex py-4">
-                             <img src="{{ asset('img/blog-mini-2.jpg')}}" class="img-fluid flex-shrink-0" alt="">
-                             <div class="ps-3">
-                                 <p class="mb-0 text-muted">01 Jan 2045</p>
-                                 <a href="" class="text-body">Lorem ipsum dolor sit amet elit eros vel</a>
-                             </div>
-                         </div>
-                     </div>
-                 </div>
-             </div>
-         </div>
-         <div class="container py-4">
-             <div class="border-top border-secondary pb-4"></div>
-             <div class="row">
-                 <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
-                     &copy; <a class="border-bottom" href="#">www.sallaamti.com</a>, All Right Reserved.
-                 </div>
-                 <div class="col-md-6 text-center text-md-end">
-                     Designed & Developed By <a class="border-bottom" href="https://izmadts.com">IZMAdts</a>
-                 </div>
-             </div>
-         </div>
-     </div>
-     <!-- Footer End -->
-
-
-     <!-- Back to Top -->
-     <a href="#" class="btn btn-primary border-3 border-light back-to-top"><i class="fa fa-arrow-up"></i></a>
-
-
-     <!-- JavaScript Libraries -->
-     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
-     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
-     <script src="{{ asset('lib/wow/wow.min.js') }}"></script>
-     <script src="{{ asset('lib/easing/easing.min.js') }}"></script>
-     <script src="{{ asset('lib/waypoints/waypoints.min.js') }}"></script>
-     <script src="{{ asset('lib/owlcarousel/owl.carousel.min.js') }}"></script>
-
-     <!-- Template Javascript -->
-     <script src="{{ asset('js/main.js')}}"></script>
- </body>
-
- </html>
+<x-guest-layout>
+    <!-- Team Section -->
+    <section class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-6">
+            <!-- Section Heading -->
+            <div class="text-center max-w-3xl mx-auto mb-16 wow fadeIn" data-wow-delay="0.1s">
+                <p class="uppercase tracking-widest text-teal-700 font-semibold mb-3">
+                    Our Team
+                </p>
+                <h2 class="text-4xl md:text-5xl font-bold text-gray-900">
+                    Meet Our Organizer
+                </h2>
+            </div>
+            <div class="grid lg:grid-cols-12 gap-10 items-start">
+                <!-- President Image -->
+                <div class="lg:col-span-5 wow zoomIn" data-wow-delay="0.1s">
+                    <img
+                        src="{{ asset('img/team-1.jpg') }}"
+                        class="rounded-2xl shadow-xl w-full object-cover"
+                        alt="President">
+                </div>
+                <!-- Right Side -->
+                <div class="lg:col-span-7">
+                    <!-- President Details -->
+                    <div class="mb-10 wow fadeIn" data-wow-delay="0.2s">
+                        <h2 class="text-4xl font-bold text-gray-900">
+                            Anamul Hasan
+                        </h2>
+                        <p class="mt-2 text-xl italic text-teal-700">
+                            President
+                        </p>
+                        <p class="mt-6 text-gray-600 leading-8">
+                            Lorem ipsum dolor sit amet, consectetur adipiscing elit.
+                            Sed do eiusmod tempor incididunt ut labore et dolore magna
+                            aliqua. Ut enim ad minim veniam, quis nostrud exercitation
+                            ullamco laboris nisi ut aliquip ex ea commodo consequat.
+                        </p>
+                        <!-- Social -->
+                        <div class="flex gap-3 mt-8 pb-8 border-b border-teal-600">
+                            <a href="#"
+                                class="w-11 h-11 rounded-full bg-teal-700 text-white flex items-center justify-center hover:bg-teal-800 transition">
+                                <i class="fab fa-facebook-f"></i>
+                            </a>
+                            <a href="#"
+                                class="w-11 h-11 rounded-full bg-teal-700 text-white flex items-center justify-center hover:bg-teal-800 transition">
+                                <i class="fab fa-twitter"></i>
+                            </a>
+                            <a href="#"
+                                class="w-11 h-11 rounded-full bg-teal-700 text-white flex items-center justify-center hover:bg-teal-800 transition">
+                                <i class="fab fa-instagram"></i>
+                            </a>
+                            <a href="#"
+                                class="w-11 h-11 rounded-full bg-teal-700 text-white flex items-center justify-center hover:bg-teal-800 transition">
+                                <i class="fab fa-linkedin-in"></i>
+                            </a>
+                        </div>
+                    </div>
+                    <!-- Team Members -->
+                    <div class="grid md:grid-cols-3 gap-6">
+                        <!-- Member -->
+                        <div class="bg-white rounded-2xl overflow-hidden shadow hover:shadow-xl transition wow zoomIn"
+                            data-wow-delay="0.2s">
+                            <img
+                                src="{{ asset('img/team-2.jpg') }}"
+                                class="w-full h-72 object-cover"
+                                alt="">
+                            <div class="p-6 text-center">
+                                <h4 class="text-xl font-semibold text-gray-900">
+                                    Mustafa Kamal
+                                </h4>
+                                <p class="text-gray-500 mb-5">
+                                    Imam
+                                </p>
+                                <div class="flex justify-center gap-2">
+                                    <a href="#" class="w-9 h-9 rounded-full bg-teal-700 text-white flex items-center justify-center hover:bg-teal-800">
+                                        <i class="fab fa-facebook-f"></i>
+                                    </a>
+                                    <a href="#" class="w-9 h-9 rounded-full bg-teal-700 text-white flex items-center justify-center hover:bg-teal-800">
+                                        <i class="fab fa-twitter"></i>
+                                    </a>
+                                    <a href="#" class="w-9 h-9 rounded-full bg-teal-700 text-white flex items-center justify-center hover:bg-teal-800">
+                                        <i class="fab fa-instagram"></i>
+                                    </a>
+                                    <a href="#" class="w-9 h-9 rounded-full bg-teal-700 text-white flex items-center justify-center hover:bg-teal-800">
+                                        <i class="fab fa-linkedin-in"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Member -->
+                        <div class="bg-white rounded-2xl overflow-hidden shadow hover:shadow-xl transition wow zoomIn"
+                            data-wow-delay="0.4s">
+                            <img
+                                src="{{ asset('img/team-3.jpg') }}"
+                                class="w-full h-72 object-cover"
+                                alt="">
+                            <div class="p-6 text-center">
+                                <h4 class="text-xl font-semibold text-gray-900">
+                                    Nahiyan Momen
+                                </h4>
+                                <p class="text-gray-500 mb-5">
+                                    Teacher
+                                </p>
+                                <div class="flex justify-center gap-2">
+                                    <a href="#" class="w-9 h-9 rounded-full bg-teal-700 text-white flex items-center justify-center hover:bg-teal-800">
+                                        <i class="fab fa-facebook-f"></i>
+                                    </a>
+                                    <a href="#" class="w-9 h-9 rounded-full bg-teal-700 text-white flex items-center justify-center hover:bg-teal-800">
+                                        <i class="fab fa-twitter"></i>
+                                    </a>
+                                    <a href="#" class="w-9 h-9 rounded-full bg-teal-700 text-white flex items-center justify-center hover:bg-teal-800">
+                                        <i class="fab fa-instagram"></i>
+                                    </a>
+                                    <a href="#" class="w-9 h-9 rounded-full bg-teal-700 text-white flex items-center justify-center hover:bg-teal-800">
+                                        <i class="fab fa-linkedin-in"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Member -->
+                        <div class="bg-white rounded-2xl overflow-hidden shadow hover:shadow-xl transition wow zoomIn"
+                            data-wow-delay="0.6s">
+                            <img
+                                src="{{ asset('img/team-4.jpg') }}"
+                                class="w-full h-72 object-cover"
+                                alt="">
+                            <div class="p-6 text-center">
+                                <h4 class="text-xl font-semibold text-gray-900">
+                                    Asfaque Ali
+                                </h4>
+                                <p class="text-gray-500 mb-5">
+                                    Volunteer
+                                </p>
+                                <div class="flex justify-center gap-2">
+                                    <a href="#" class="w-9 h-9 rounded-full bg-teal-700 text-white flex items-center justify-center hover:bg-teal-800">
+                                        <i class="fab fa-facebook-f"></i>
+                                    </a>
+                                    <a href="#" class="w-9 h-9 rounded-full bg-teal-700 text-white flex items-center justify-center hover:bg-teal-800">
+                                        <i class="fab fa-twitter"></i>
+                                    </a>
+                                    <a href="#" class="w-9 h-9 rounded-full bg-teal-700 text-white flex items-center justify-center hover:bg-teal-800">
+                                        <i class="fab fa-instagram"></i>
+                                    </a>
+                                    <a href="#" class="w-9 h-9 rounded-full bg-teal-700 text-white flex items-center justify-center hover:bg-teal-800">
+                                        <i class="fab fa-linkedin-in"></i>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</x-guest-layout>
