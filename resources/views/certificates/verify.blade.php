@@ -1,11 +1,11 @@
-<x-app-layout>
+<x-guest-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800">Certificate Verification</h2>
     </x-slot>
 
-    <div class="py-12">
-        <div class="max-w-xl mx-auto sm:px-6 lg:px-8">
-            <div class="bg-white rounded-lg shadow-sm p-6">
+    <div class="py-12 mt-5 text-center">
+        <div class="w-64 mx-auto sm:px-6 lg:px-8 shadow rounded-lg bg-white m-5 p-5">
+            <div class="bg-white rounded-lg p-6">
                 @if ($certificate)
                 <p class="text-green-600 font-medium mb-4">✅ This certificate is valid.</p>
                 <dl class="text-sm space-y-2">
@@ -32,4 +32,4 @@
             </div>
         </div>
     </div>
-</x-app-layout>
+</x-guest-layout>
