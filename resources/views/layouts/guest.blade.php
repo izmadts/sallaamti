@@ -27,156 +27,23 @@
     <link href="{{ asset('css/bootstrap.min.css')}}" rel="stylesheet">
     <!-- Template Stylesheet -->
     <link href="{{ asset('css/style.css')}}" rel="stylesheet">
+    {{-- ============================================================ --}}
+    {{-- STYLES --}}
+    {{-- ============================================================ --}}
     <style>
-        /* Custom styles for the spinner */
-        /* Banner Image */
-
-        .banner-image {
-
-            height: 650px;
-
-            width: 100%;
-
-            object-fit: cover;
-
-            object-position: center;
-
-        }
-
-
-        /* Dark Overlay */
-
-        .carousel-item {
-
-            position: relative;
-
-        }
-
-        .carousel-item::before {
-
-            content: "";
-
-            position: absolute;
-
-            inset: 0;
-
-            background: rgba(0, 0, 0, .35);
-
-            z-index: 1;
-
-        }
-
-
-        /* Caption */
-
-        .banner-caption {
-
-            z-index: 2;
-
-            bottom: 15%;
-
-        }
-
-        .banner-title {
-
-            font-size: 58px;
-
-            font-weight: 700;
-
-            color: #fff;
-
-        }
-
-        .banner-subtitle {
-
-            font-size: 24px;
-
-            color: #fff;
-
-        }
-
-        .banner-description {
-
-            font-size: 20px;
-
-            color: #fff;
-
-        }
-
-
-        /* Tablet */
-
-        @media(max-width:991px) {
-
-            .banner-image {
-
-                height: 500px;
-
-            }
-
-            .banner-title {
-
-                font-size: 42px;
-
-            }
-
-            .banner-description {
-
-                font-size: 18px;
-
-            }
-
-        }
-
-
-        /* Mobile */
-
-        @media(max-width:768px) {
-
-            .banner-image {
-
-                height: 330px;
-
-            }
-
-            .banner-caption {
-
-                bottom: 10%;
-
-                padding: 0 20px;
-
-            }
-
-            .banner-title {
-
-                font-size: 26px;
-
-                line-height: 1.3;
-
-            }
-
-            .banner-subtitle {
-
-                font-size: 16px;
-
-            }
-
-            .banner-description {
-
-                display: none;
-
-            }
-
-            .banner-caption .btn {
-
-                padding: 8px 18px;
-
-                font-size: 14px;
-
-            }
-
+        /* ===== TOKENS ===== */
+        :root {
+            --teal: #0d6b6b;
+            --teal-dark: #095555;
+            --teal-light: #e8f5f5;
+            --gold: #b8962e;
+            --gold-light: #fdf6e3;
+            --cream: #fdfaf3;
+            --text-dark: #1a1a2e;
+            --text-muted: #6c757d;
         }
     </style>
+
 </head>
 
 <body class="antialiased">

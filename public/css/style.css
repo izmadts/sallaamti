@@ -18,6 +18,8 @@
     color: #ffffff !important;
 }
 --------------------------------------------**/
+
+
 .carousel-caption {
     position: absolute;
     right: 20%;
@@ -149,7 +151,7 @@ h4, h5, h6, .h4, .h5, .h6 {
 .topbar .topbar-inner {
     height: 50px;
     padding: 5px 15px;
-    background: rgb(0, 0, 0);
+    background: var(--teal);
 }
 
 .topbar a,
