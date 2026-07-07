@@ -6,20 +6,20 @@
     </x-slot>
 
     <div class="py-5">
-        <div class="container">
+        <div class="max-w-7xl mx-auto px-4">
 
             {{-- Categories --}}
-            <div class="mb-4 d-flex flex-wrap gap-2">
+            <div class="mb-4 flex flex-wrap gap-2">
 
                 <a href="{{ route('courses.index') }}"
-                    class="btn {{ !request('category') ? 'btn-dark' : 'btn-outline-secondary' }} rounded-pill btn-sm">
+                    class="btn-base {{ !request('category') ? 'btn-dark' : 'btn-outline-secondary' }} rounded-pill btn-sm">
                     All
                 </a>
 
                 @foreach ($categories as $cat)
 
                 <a href="{{ route('courses.index', ['category' => $cat]) }}"
-                    class="btn {{ request('category') === $cat ? 'btn-dark' : 'btn-outline-secondary' }} rounded-pill btn-sm">
+                    class="btn-base {{ request('category') === $cat ? 'btn-dark' : 'btn-outline-secondary' }} rounded-pill btn-sm">
 
                     {{ $cat }}
 
@@ -34,7 +34,7 @@
 
                 @forelse($courses as $course)
 
-                <div class="col-md-6 col-lg-4">
+                <div class="grid md:grid-cols-6 gap-6">
 
                     <a href="{{ route('courses.show', $course) }}"
                         class="text-decoration-none text-dark">
