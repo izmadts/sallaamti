@@ -16,6 +16,7 @@ return Application::configure(basePath: dirname(__DIR__))
         'teacher' => \App\Http\Middleware\EnsureUserIsTeacher::class,
         'active' => \App\Http\Middleware\EnsureUserIsActive::class,
         'maintenance' => \App\Http\Middleware\MaintenanceMode::class,
+        'blog.manage' => \App\Http\Middleware\EnsureCanManageBlog::class,
         ]);
     })->withMiddleware(function (Middleware $middleware) {
     $middleware->web(append: [

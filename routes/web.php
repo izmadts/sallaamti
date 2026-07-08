@@ -38,6 +38,8 @@ use App\Http\Controllers\Admin\UserManagementController;
 use App\Http\Controllers\Admin\TestimonialController;
 use App\Http\Controllers\NewsletterController;
 use App\Http\Controllers\ContactController;
+use App\Http\Controllers\BlogController;
+use App\Http\Controllers\Admin\BlogPostController;
 
 // ============================================================
 // PUBLIC ROUTES (no auth required)
@@ -57,7 +59,6 @@ Route::get('/about', fn() => view('about'));
 Route::get('/activities', fn() => view('activities'));
 Route::get('/events', fn() => view('events'));
 Route::get('/sermons', fn() => view('sermons'));
-Route::get('/blog', fn() => view('blog'));
 Route::get('/team', fn() => view('team'));
 Route::get('/testimonial', fn() => view('testimonial'));
 Route::get('/contact', fn() => view('contact'));
@@ -67,6 +68,10 @@ Route::get('/courses', [CourseController::class, 'index'])->name('courses.index'
 Route::get('/courses/{course:slug}', [CourseController::class, 'show'])->name('courses.show');
 Route::get('/quran-live', [QuranLiveCourseController::class, 'index'])->name('quran-live.index');
 Route::get('/quran-live/{course}', [QuranLiveCourseController::class, 'show'])->name('quran-live.show');
+
+// Blog (public reading)
+Route::get('/blog', [BlogController::class, 'index'])->name('blog.index');
+Route::get('/blog/{blog_post:slug}', [BlogController::class, 'show'])->name('blog.show');
 
 // Volunteer (guests can apply)
 Route::get('/volunteer', [VolunteerController::class, 'create'])->name('volunteer.create');
@@ -248,6 +253,16 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     // Subscribers
     Route::get('/subscribers', [SubscriberAdminController::class, 'index'])->name('subscribers.index');
     Route::delete('/subscribers/{subscriber}', [SubscriberAdminController::class, 'destroy'])->name('subscribers.destroy');
+});
+
+// ============================================================
+// BLOG MANAGEMENT (admin + manager + blogger)
+// ============================================================
+
+Route::middleware(['auth', 'blog.manage'])->prefix('admin')->name('admin.')->group(function () {
+    Route::resource('blog-posts', BlogPostController::class)->except(['show']);
+    Route::patch('blog-posts/{blog_post}/publish', [BlogPostController::class, 'publish'])->name('blog-posts.publish');
+    Route::patch('blog-posts/{blog_post}/unpublish', [BlogPostController::class, 'unpublish'])->name('blog-posts.unpublish');
 });
 
 // ============================================================

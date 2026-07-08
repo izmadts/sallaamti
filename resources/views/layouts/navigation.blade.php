@@ -110,6 +110,13 @@
                     </x-dropdown>
                     @endrole
 
+                    @hasanyrole(['manager', 'blogger'])
+                    <x-nav-link :href="route('admin.blog-posts.index')" :active="request()->routeIs('admin.blog-posts*')"
+                        class="text-white hover:bg-teal-600 px-3 py-2 rounded-md text-sm">
+                        📝 Blog Posts
+                    </x-nav-link>
+                    @endhasanyrole
+
                 </div>
             </div>
 
@@ -263,6 +270,11 @@
             <x-responsive-nav-link :href="route('teacher.courses.index')" class="text-white">📚 My Courses</x-responsive-nav-link>
             <x-responsive-nav-link :href="route('teacher.groups.index')" class="text-white">👥 My Class Groups</x-responsive-nav-link>
             @endrole
+
+            @hasanyrole(['manager', 'blogger'])
+            <div class="px-3 py-1 text-xs text-teal-300 font-semibold uppercase tracking-wider mt-2">Blog</div>
+            <x-responsive-nav-link :href="route('admin.blog-posts.index')" class="text-white">📝 Blog Posts</x-responsive-nav-link>
+            @endhasanyrole
         </div>
 
         {{-- Mobile User Info --}}
