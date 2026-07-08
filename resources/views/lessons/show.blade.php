@@ -25,8 +25,8 @@
                 <h3 class="font-semibold text-xl mb-4">{{ $lesson->title }}</h3>
 
                 @if ($lesson->video_url)
-                <div class="aspect-video mb-4">
-                    <iframe src="{{ $lesson->embed_url }}" class="w-10 h-full rounded" allowfullscreen></iframe>
+                <div class="aspect-video mb-4 rounded-lg overflow-hidden bg-black">
+                    <iframe src="{{ $lesson->embed_url }}" class="w-full h-full" allowfullscreen></iframe>
                 </div>
                 @endif
 
