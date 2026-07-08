@@ -22,18 +22,12 @@ class SettingsController extends Controller
             'site_email'            => ['nullable', 'email'],
             'site_phone'            => ['nullable', 'string', 'max:30'],
             'site_address'          => ['nullable', 'string', 'max:255'],
-            // In validation:
+            'about_heading'    => ['nullable', 'string', 'max:255'],
             'about_text'       => ['nullable', 'string'],
             'vision_text'      => ['nullable', 'string'],
             'mission_text'     => ['nullable', 'string'],
             'donate_goal_text' => ['nullable', 'string', 'max:50'],
 
-            // In $groups:
-            'about_text'       => 'about',
-            'vision_text'      => 'about',
-            'mission_text'     => 'about',
-            'donate_goal_text' => 'about',
-            
             //Payment settings
             'jazzcash_number'       => ['nullable', 'string', 'max:30'],
             'easypaisa_number'      => ['nullable', 'string', 'max:30'],
@@ -57,6 +51,11 @@ class SettingsController extends Controller
             'site_phone'             => 'general',
             'site_address'           => 'general',
             'maintenance_mode'       => 'general',
+            'about_heading'          => 'about',
+            'about_text'             => 'about',
+            'vision_text'            => 'about',
+            'mission_text'           => 'about',
+            'donate_goal_text'       => 'about',
             'jazzcash_number'        => 'payment',
             'easypaisa_number'       => 'payment',
             'bank_account_title'     => 'payment',

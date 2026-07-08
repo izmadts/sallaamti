@@ -17,6 +17,11 @@ class VolunteerAdminController extends Controller
     public function approve(VolunteerApplication $volunteer)
     {
         $volunteer->update(['status' => 'approved']);
+
+        if ($volunteer->user_id && !$volunteer->user->hasRole('volunteer')) {
+            $volunteer->user->assignRole('volunteer');
+        }
+
         return back()->with('status', 'Approved.');
     }
 

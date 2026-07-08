@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Str;
 use Spatie\Permission\Models\Role;
 
 class UserManagementController extends Controller
@@ -89,5 +90,16 @@ class UserManagementController extends Controller
     {
         $roles = Role::withCount('users')->get();
         return view('admin.users.roles', compact('roles'));
+    }
+
+    public function storeRole(Request $request)
+    {
+        $request->validate([
+            'name' => ['required', 'string', 'max:50', 'alpha_dash', 'unique:roles,name'],
+        ]);
+
+        Role::create(['name' => Str::lower($request->name)]);
+
+        return back()->with('status', 'Role created.');
     }
 }

@@ -241,32 +241,28 @@
             </div>
 
             {{-- Team Grid --}}
+            @if ($teamMembers->isNotEmpty())
             <div class="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                @foreach ([
-                ['img/team-2.jpg', 'Ustaz Abdullah', 'Lead Quran Teacher', 'Tajweed & Nazra specialist with 15 years of teaching experience.'],
-                ['img/team-3.jpg', 'Ustaza Fatima', 'Female Quran Teacher', 'Dedicated to teaching Quran and Islamic studies to sisters and children.'],
-                ['img/team-4.jpg', 'Ahmed Raza', 'Tech Lead', 'Building and maintaining the Sallaamti platform to serve the Ummah digitally.'],
-                ['img/team-2.jpg', 'Nadia Khan', 'Nikah Coordinator', 'Overseeing profile verifications and ensuring a safe matrimonial environment.'],
-                ] as $member)
+                @foreach ($teamMembers as $member)
                 <div class="team-card bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300 wow zoomIn" data-wow-delay="0.1s">
                     <div class="relative overflow-hidden">
-                        <img src="{{ asset($member[0]) }}" class="w-full h-52 object-cover" alt="{{ $member[1] }}">
-                        <div class="absolute inset-0 flex items-end p-4 opacity-0 hover:opacity-100 transition-opacity duration-300" style="background: rgba(13,107,107,0.85)">
-                            <div class="flex gap-2">
-                                <a href="#" class="social-btn-sm"><i class="fab fa-facebook-f"></i></a>
-                                <a href="#" class="social-btn-sm"><i class="fab fa-instagram"></i></a>
-                                <a href="#" class="social-btn-sm"><i class="fab fa-linkedin-in"></i></a>
-                            </div>
-                        </div>
+                        @if ($member->photo)
+                        <img src="{{ Storage::url($member->photo) }}" class="w-full h-52 object-cover" alt="{{ $member->name }}">
+                        @else
+                        <div class="w-full h-52 flex items-center justify-center text-4xl" style="background: var(--teal-light)">👤</div>
+                        @endif
                     </div>
                     <div class="p-4 text-center">
-                        <h5 class="font-bold text-gray-800 mb-0">{{ $member[1] }}</h5>
-                        <p class="text-sm font-semibold mb-2" style="color: var(--teal)">{{ $member[2] }}</p>
-                        <p class="text-xs text-gray-500 leading-relaxed">{{ $member[3] }}</p>
+                        <h5 class="font-bold text-gray-800 mb-0">{{ $member->name }}</h5>
+                        <p class="text-sm font-semibold mb-2" style="color: var(--teal)">{{ $member->role }}</p>
+                        @if ($member->bio)
+                        <div class="prose prose-sm max-w-none text-gray-500">{!! $member->bio !!}</div>
+                        @endif
                     </div>
                 </div>
                 @endforeach
             </div>
+            @endif
         </div>
     </section>
 

@@ -16,4 +16,9 @@ class VolunteerApplication extends Model
         'message', 
         'status'
         ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

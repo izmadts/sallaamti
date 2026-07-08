@@ -44,7 +44,8 @@
             </div>
             <div>
                 <x-input-label value="Content" />
-                <textarea name="content" rows="12" class="border-gray-300 rounded-md w-full mt-1" required>{{ old('content', $post->content) }}</textarea>
+                <input id="trix-content" type="hidden" name="content" value="{{ old('content', $post->content) }}">
+                <trix-editor input="trix-content"></trix-editor>
             </div>
             <div class="flex items-center gap-2 text-xs px-3 py-2 rounded-full inline-flex {{ $post->status === 'published' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500' }}">
                 {{ $post->status === 'published' ? '✅ Published' : '📝 Draft' }}

@@ -8,6 +8,39 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>{{ config('app.name') }} — Admin</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+    {{-- Trix rich text editor --}}
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/trix@2/dist/trix.css">
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/trix@2/dist/trix.umd.min.js"></script>
+    <style>
+        trix-toolbar .trix-button-row {
+            flex-wrap: wrap;
+        }
+
+        trix-toolbar .trix-button {
+            border-color: #d1d5db;
+        }
+
+        trix-toolbar .trix-button.trix-active {
+            background: #0d6b6b;
+            color: #fff;
+        }
+
+        trix-editor {
+            border: 1px solid #d1d5db;
+            border-radius: 0 0 0.375rem 0.375rem;
+            min-height: 10rem;
+            padding: 0.75rem;
+        }
+
+        trix-toolbar {
+            border: 1px solid #d1d5db;
+            border-bottom: none;
+            border-radius: 0.375rem 0.375rem 0 0;
+            background: #f9fafb;
+            padding: 0.375rem;
+        }
+    </style>
 </head>
 
 <body class="bg-gray-100 font-sans antialiased" x-data="{ sidebarOpen: false }">
@@ -139,6 +172,16 @@
                         {{ request()->routeIs('admin.blog-posts*') ? 'bg-teal-700 text-white' : 'text-teal-100 hover:bg-teal-800' }}">
                     <span class="text-base">📝</span> Blog Posts
                 </a>
+                <a href="{{ route('admin.team-members.index') }}"
+                    class="flex items-center gap-3 px-3 py-2 rounded-lg transition
+                        {{ request()->routeIs('admin.team-members*') ? 'bg-teal-700 text-white' : 'text-teal-100 hover:bg-teal-800' }}">
+                    <span class="text-base">🧑‍🤝‍🧑</span> Team
+                </a>
+                <a href="{{ route('admin.activity-posts.index') }}"
+                    class="flex items-center gap-3 px-3 py-2 rounded-lg transition
+                        {{ request()->routeIs('admin.activity-posts*') ? 'bg-teal-700 text-white' : 'text-teal-100 hover:bg-teal-800' }}">
+                    <span class="text-base">🌍</span> Community Activities
+                </a>
                 {{-- Settings --}}
                 <p class="text-teal-500 text-xs uppercase tracking-widest px-3 pt-4 pb-1">System</p>
 
@@ -206,6 +249,32 @@
             </main>
         </div>
     </div>
+
+    {{-- Trix inline image upload --}}
+    <script>
+        document.addEventListener("trix-attachment-add", function(event) {
+            const attachment = event.attachment;
+            if (!attachment.file) return;
+
+            const formData = new FormData();
+            formData.append("image", attachment.file);
+
+            fetch("{{ route('admin.editor-images.store') }}", {
+                    method: "POST",
+                    headers: {
+                        "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').content,
+                    },
+                    body: formData,
+                })
+                .then(res => res.json())
+                .then(data => {
+                    attachment.setAttributes({ url: data.url, href: data.url });
+                })
+                .catch(() => {
+                    attachment.remove();
+                });
+        });
+    </script>
 
 </body>
 

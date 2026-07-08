@@ -38,7 +38,8 @@
             </div>
             <div>
                 <x-input-label value="Content" />
-                <textarea name="content" rows="12" class="border-gray-300 rounded-md w-full mt-1" required>{{ old('content') }}</textarea>
+                <input id="trix-content" type="hidden" name="content" value="{{ old('content') }}">
+                <trix-editor input="trix-content"></trix-editor>
             </div>
             <p class="text-xs text-gray-400">New posts are saved as a draft. A manager or admin will publish it once it's ready.</p>
             <x-primary-button>Save Draft</x-primary-button>

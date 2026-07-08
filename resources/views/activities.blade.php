@@ -33,6 +33,7 @@
                 ['skills', '💻', 'Skills'],
                 ['rozgar', '🛠️', 'Employment'],
                 ['family', '👨‍👩‍👧', 'Family'],
+                ['community', '🌍', 'Community Impact'],
                 ['volunteer', '🤝', 'Volunteer'],
                 ['donate', '💝', 'Donate'],
                 ] as $tab)
@@ -357,13 +358,49 @@
     </section>
 
     {{-- ============================================================ --}}
+    {{-- 7. COMMUNITY IMPACT --}}
+    {{-- ============================================================ --}}
+    <section id="community" class="py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="text-center mb-12">
+                <span class="section-eyebrow">Activity 07</span>
+                <h2 class="section-title">🌍 Community Impact</h2>
+                <p class="section-subtitle">A look at the real work Sallaamti has done on the ground for the Muslim Ummah.</p>
+            </div>
+
+            @if ($activityPosts->isEmpty())
+            <p class="text-center text-gray-500">Check back soon — we're always active in the community.</p>
+            @else
+            <div class="grid md:grid-cols-3 gap-6">
+                @foreach ($activityPosts as $post)
+                <div class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow border border-gray-100">
+                    @if ($post->photo)
+                    <img src="{{ Storage::url($post->photo) }}" class="w-full h-48 object-cover" alt="{{ $post->title }}">
+                    @else
+                    <div class="w-full h-48 flex items-center justify-center text-5xl" style="background: var(--teal-light)">🌍</div>
+                    @endif
+                    <div class="p-6">
+                        @if ($post->activity_date)
+                        <p class="text-xs font-semibold mb-2" style="color: var(--gold)">{{ $post->activity_date->format('d M Y') }}</p>
+                        @endif
+                        <h5 class="font-bold text-gray-800 mb-2">{{ $post->title }}</h5>
+                        <div class="prose prose-sm max-w-none text-gray-500">{!! $post->description !!}</div>
+                    </div>
+                </div>
+                @endforeach
+            </div>
+            @endif
+        </div>
+    </section>
+
+    {{-- ============================================================ --}}
     {{-- VOLUNTEER --}}
     {{-- ============================================================ --}}
     <section id="volunteer" class="py-20 bg-white">
         <div class="max-w-7xl mx-auto px-4">
             <div class="grid lg:grid-cols-2 gap-12 items-center">
                 <div class="wow fadeInLeft" data-wow-delay="0.1s">
-                    <span class="section-eyebrow">Activity 07</span>
+                    <span class="section-eyebrow">Activity 08</span>
                     <h2 class="section-title mb-4">🤝 Volunteer with Sallaamti</h2>
                     <p class="text-gray-600 mb-6 leading-relaxed">
                         "The best of people are those who are most beneficial to people." — Prophet Muhammad ﷺ. Whether you're a teacher, developer, counselor, designer or simply passionate about serving the Ummah — your skills can create a lasting impact.
@@ -421,7 +458,7 @@
     <section id="donate" class="py-20 bg-cream">
         <div class="max-w-7xl mx-auto px-4">
             <div class="text-center mb-12">
-                <span class="section-eyebrow">Activity 08</span>
+                <span class="section-eyebrow">Activity 09</span>
                 <h2 class="section-title">💝 Support Sallaamti</h2>
                 <p class="section-subtitle">Your sadaqah and donations power every program we run — from free Quran education for orphans to supporting needy families find a spouse.</p>
             </div>

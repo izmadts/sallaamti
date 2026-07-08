@@ -52,6 +52,34 @@
                 </div>
             </div>
 
+            {{-- About / Homepage --}}
+            <div class="bg-white rounded-lg shadow-sm p-6 space-y-4">
+                <h3 class="font-semibold text-gray-700 border-b pb-2">📖 About / Homepage</h3>
+                <p class="text-xs text-gray-400">These appear in the "About" section on the homepage.</p>
+                <div class="grid grid-cols-1 gap-4">
+                    <div>
+                        <x-input-label value="About Heading" />
+                        <x-text-input name="about_heading" class="w-full mt-1" :value="$settings['about_heading'] ?? ''" />
+                    </div>
+                    <div>
+                        <x-input-label value="About Text" />
+                        <textarea name="about_text" rows="4" class="border-gray-300 rounded-md w-full mt-1">{{ $settings['about_text'] ?? '' }}</textarea>
+                    </div>
+                    <div>
+                        <x-input-label value="Vision Text" />
+                        <textarea name="vision_text" rows="3" class="border-gray-300 rounded-md w-full mt-1">{{ $settings['vision_text'] ?? '' }}</textarea>
+                    </div>
+                    <div>
+                        <x-input-label value="Mission Text" />
+                        <textarea name="mission_text" rows="3" class="border-gray-300 rounded-md w-full mt-1">{{ $settings['mission_text'] ?? '' }}</textarea>
+                    </div>
+                    <div>
+                        <x-input-label value="Donate Goal Text" />
+                        <x-text-input name="donate_goal_text" class="w-full mt-1" :value="$settings['donate_goal_text'] ?? ''" placeholder="PKR 50K" />
+                    </div>
+                </div>
+            </div>
+
             {{-- Payment --}}
             <div class="bg-white rounded-lg shadow-sm p-6 space-y-4">
                 <h3 class="font-semibold text-gray-700 border-b pb-2">💳 Payment Details</h3>

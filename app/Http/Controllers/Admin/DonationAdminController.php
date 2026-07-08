@@ -30,6 +30,10 @@ class DonationAdminController extends Controller
     {
         $donation->update(['payment_status' => 'confirmed', 'payment_confirmed_at' => now()]);
 
+        if ($donation->user_id && !$donation->user->hasRole('donor')) {
+            $donation->user->assignRole('donor');
+        }
+
         // Send confirmation email to donor (if email exists)
         try {
             if (!empty($donation->email)) {

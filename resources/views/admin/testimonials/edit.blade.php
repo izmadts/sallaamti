@@ -3,7 +3,7 @@
         <div class="flex items-center gap-2 text-sm">
             <a href="{{ route('admin.testimonials.index') }}" class="text-gray-400 hover:text-gray-600">Testimonials</a>
             <span class="text-gray-300">›</span>
-            <span class="text-gray-700 font-semibold">New Testimonial</span>
+            <span class="text-gray-700 font-semibold">Edit Testimonial</span>
         </div>
     </x-slot>
     <div class="max-w-2xl">
@@ -17,24 +17,30 @@
                 @csrf
                 @method('PUT')
                 <div class="grid grid-cols-2 gap-4">
-                    <div><x-input-label value="Full Name" /><x-text-input name="name" class="w-full mt-1" required /></div>
-                    <div><x-input-label value="Location (City / Country)" /><x-text-input name="location" class="w-full mt-1" /></div>
+                    <div><x-input-label value="Full Name" /><x-text-input name="name" class="w-full mt-1" value="{{ old('name', $testimonial->name) }}" required /></div>
+                    <div><x-input-label value="Location (City / Country)" /><x-text-input name="location" class="w-full mt-1" value="{{ old('location', $testimonial->location) }}" /></div>
                 </div>
                 <div>
                     <x-input-label value="Testimonial Content" />
-                    <textarea name="content" rows="4" class="border-gray-300 rounded-md w-full mt-1" required></textarea>
+                    <input id="trix-content" type="hidden" name="content" value="{{ old('content', $testimonial->content) }}">
+                    <trix-editor input="trix-content"></trix-editor>
                 </div>
                 <div>
                     <x-input-label value="Rating (1–5 stars)" />
                     <select name="rating" class="border-gray-300 rounded-md w-full mt-1">
                         @for ($i = 5; $i >= 1; $i--)
-                        <option value="{{ $i }}">{{ str_repeat('★', $i) }} {{ $i }} Stars</option>
+                        <option value="{{ $i }}" {{ old('rating', $testimonial->rating) == $i ? 'selected' : '' }}>{{ str_repeat('★', $i) }} {{ $i }} Stars</option>
                         @endfor
                     </select>
                 </div>
+                @if ($testimonial->photo)
+                <div class="mt-1 mb-2">
+                    <img src="{{ Storage::url($testimonial->photo) }}" class="w-16 h-16 rounded-full object-cover">
+                </div>
+                @endif
                 <div><x-input-label value="Photo (optional)" /><input type="file" name="photo" accept="image/*" class="w-full mt-1"></div>
                 <div class="flex items-center gap-2">
-                    <input type="checkbox" name="is_active" value="1" id="is_active" checked class="rounded">
+                    <input type="checkbox" name="is_active" value="1" id="is_active" {{ old('is_active', $testimonial->is_active) ? 'checked' : '' }} class="rounded">
                     <label for="is_active" class="text-sm">Show on homepage</label>
                 </div>
                 <x-primary-button>Update Testimonial</x-primary-button>

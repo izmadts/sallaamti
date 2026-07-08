@@ -34,7 +34,7 @@
             @endif
 
             <div class="prose max-w-none text-gray-700 leading-relaxed">
-                {!! nl2br(e($post->content)) !!}
+                {!! $post->content !!}
             </div>
 
             <div class="mt-12 pt-6 border-t border-gray-100">

@@ -21,7 +21,8 @@
                 </div>
                 <div>
                     <x-input-label value="Testimonial Content" />
-                    <textarea name="content" rows="4" class="border-gray-300 rounded-md w-full mt-1" required></textarea>
+                    <input id="trix-content" type="hidden" name="content" value="{{ old('content') }}">
+                    <trix-editor input="trix-content"></trix-editor>
                 </div>
                 <div>
                     <x-input-label value="Rating (1–5 stars)" />

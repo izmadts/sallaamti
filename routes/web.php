@@ -40,6 +40,9 @@ use App\Http\Controllers\NewsletterController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\Admin\BlogPostController;
+use App\Http\Controllers\Admin\EditorImageController;
+use App\Http\Controllers\Admin\TeamMemberController;
+use App\Http\Controllers\Admin\ActivityPostController;
 
 // ============================================================
 // PUBLIC ROUTES (no auth required)
@@ -55,11 +58,20 @@ Route::get('/', function () {
 })->name('index');
 
 // Static pages
-Route::get('/about', fn() => view('about'));
-Route::get('/activities', fn() => view('activities'));
+Route::get('/about', function () {
+    $teamMembers = \App\Models\TeamMember::active()->orderBy('order')->get();
+    return view('about', compact('teamMembers'));
+});
+Route::get('/activities', function () {
+    $activityPosts = \App\Models\ActivityPost::active()->orderBy('activity_date', 'desc')->orderBy('order')->get();
+    return view('activities', compact('activityPosts'));
+});
 Route::get('/events', fn() => view('events'));
 Route::get('/sermons', fn() => view('sermons'));
-Route::get('/team', fn() => view('team'));
+Route::get('/team', function () {
+    $teamMembers = \App\Models\TeamMember::active()->orderBy('order')->get();
+    return view('team', compact('teamMembers'));
+});
 Route::get('/testimonial', fn() => view('testimonial'));
 Route::get('/contact', fn() => view('contact'));
 
@@ -191,6 +203,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::put('users/{user}/toggle-active', [UserManagementController::class, 'toggleActive'])->name('users.toggle-active');
     Route::delete('users/{user}', [UserManagementController::class, 'destroy'])->name('users.destroy');
     Route::get('users/roles/manage', [UserManagementController::class, 'roles'])->name('users.roles');
+    Route::post('users/roles', [UserManagementController::class, 'storeRole'])->name('users.roles.store');
 
     // Settings & Frontend
     Route::get('settings', [SettingsController::class, 'index'])->name('settings.index');
@@ -200,6 +213,10 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::resource('banners', BannerController::class);
     Route::resource('testimonials', TestimonialController::class);
     Route::post('testimonials/{testimonial}/toggle', [TestimonialController::class, 'toggle'])->name('testimonials.toggle');
+    Route::resource('team-members', TeamMemberController::class)->except(['show']);
+    Route::post('team-members/{team_member}/toggle', [TeamMemberController::class, 'toggle'])->name('team-members.toggle');
+    Route::resource('activity-posts', ActivityPostController::class)->except(['show']);
+    Route::post('activity-posts/{activity_post}/toggle', [ActivityPostController::class, 'toggle'])->name('activity-posts.toggle');
 
     // Nikah Management
     Route::get('/nikah-verifications', [NikahVerificationController::class, 'index'])->name('nikah.verifications');
@@ -263,6 +280,7 @@ Route::middleware(['auth', 'blog.manage'])->prefix('admin')->name('admin.')->gro
     Route::resource('blog-posts', BlogPostController::class)->except(['show']);
     Route::patch('blog-posts/{blog_post}/publish', [BlogPostController::class, 'publish'])->name('blog-posts.publish');
     Route::patch('blog-posts/{blog_post}/unpublish', [BlogPostController::class, 'unpublish'])->name('blog-posts.unpublish');
+    Route::post('editor-images', [EditorImageController::class, 'store'])->name('editor-images.store');
 });
 
 // ============================================================

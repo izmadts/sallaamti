@@ -587,7 +587,7 @@
                     <div class="testi-stars mb-2">
                         @for ($i = 0; $i < min($t->rating, 5); $i++)<i class="fas fa-star text-gold"></i>@endfor
                     </div>
-                    <p class="testi-quote">"{{ $t->content }}"</p>
+                    <p class="testi-quote">"{!! $t->content !!}"</p>
                     <div class="testi-author flex items-center mt-4">
                         <img src="{{ $t->photo ? Storage::url($t->photo) : asset('img/testimonial-1.jpg') }}"
                             class="testi-avatar" alt="{{ $t->name }}">
