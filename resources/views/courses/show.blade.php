@@ -14,6 +14,7 @@
                 <p class="text-gray-600">{{ $course->description }}</p>
 
                 @if ($isEnrolled)
+                {{-- Progress bar --}}
                 <div class="mt-4">
                     <div class="flex justify-between text-sm text-gray-500 mb-1">
                         <span>Progress</span><span>{{ $progress }}%</span>
@@ -23,10 +24,29 @@
                     </div>
                 </div>
                 @else
+                @auth
                 <form method="POST" action="{{ route('courses.enroll', $course) }}" class="mt-4">
                     @csrf
-                    <button class="bg-pink-600 text-white px-5 py-2 rounded text-sm hover:bg-pink-700">Enroll Now</button>
+                    <button class="bg-pink-600 text-white px-5 py-2 rounded text-sm hover:bg-pink-700">
+                        Enroll Now — It's Free
+                    </button>
                 </form>
+                @else
+                {{-- Guest CTA --}}
+                <div class="mt-4 p-4 rounded-xl border-2 border-dashed border-teal-200 bg-teal-50 text-center">
+                    <p class="text-teal-800 text-sm font-medium mb-3">
+                        🔒 Create a free account to enroll in this course
+                    </p>
+                    <div class="flex gap-2 justify-center">
+                        <a href="{{ route('register') }}" class="bg-teal-700 text-white text-sm px-5 py-2 rounded-lg font-medium hover:bg-teal-800">
+                            Register Free
+                        </a>
+                        <a href="{{ route('login') }}" class="border border-teal-600 text-teal-700 text-sm px-5 py-2 rounded-lg font-medium hover:bg-teal-50">
+                            Log In
+                        </a>
+                    </div>
+                </div>
+                @endauth
                 @endif
             </div>
 
@@ -69,7 +89,7 @@
                 @endif
             </div>
             @endif
-            @if ($course->isCertificateEligibleFor(auth()->user()))
+            @if (auth()->check() && $course->isCertificateEligibleFor(auth()->user()))
             <div class="bg-white rounded-lg shadow-sm p-6">
                 <h3 class="font-semibold text-gray-700 mb-2">🎓 Certificate</h3>
                 <p class="text-sm text-gray-500 mb-3">You've completed all requirements for this course!</p>

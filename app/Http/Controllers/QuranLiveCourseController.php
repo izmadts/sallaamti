@@ -22,9 +22,12 @@ class QuranLiveCourseController extends Controller
     public function show(QuranLiveCourse $course)
     {
         abort_unless($course->is_published, 404);
-        $admission = $course->admissionFor(Auth::user());
-        $subscription = $course->subscriptionFor(Auth::user());
-        $todaysLink = ($subscription && $subscription->payment_status === 'confirmed') ? $course->todaysLink() : null;
+
+        $admission = auth()->check() ? $course->admissionFor(Auth::user()) : null;
+        $subscription = auth()->check() ? $course->subscriptionFor(Auth::user()) : null;
+        $todaysLink = ($subscription && $subscription->payment_status === 'confirmed')
+            ? $course->todaysLink()
+            : null;
 
         return view('quran-live.show', compact('course', 'admission', 'subscription', 'todaysLink'));
     }

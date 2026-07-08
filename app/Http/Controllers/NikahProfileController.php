@@ -86,8 +86,14 @@ class NikahProfileController extends Controller
 
     public function browse(Request $request)
     {
+        // Redirect guest to register with friendly message
+        if (!Auth::check()) {
+            return redirect()->route('register')
+                ->with('status', 'Please create a free account to browse Nikah profiles.');
+        }
+        
         $myProfile = Auth::user()->nikahProfile;
-
+      
         if (!$myProfile) {
             return redirect()->route('nikah.create')->with('status', 'Create your profile first to browse matches.');
         }

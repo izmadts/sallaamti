@@ -7,6 +7,7 @@ use App\Models\Course;
 use App\Models\Lesson;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class CourseAdminController extends Controller
@@ -93,11 +94,18 @@ class CourseAdminController extends Controller
             'title' => ['required', 'string', 'max:255'],
             'content' => ['nullable', 'string'],
             'video_url' => ['nullable', 'url'],
+            'file' => ['nullable', 'file', 'mimes:pdf,doc,docx,ppt,pptx,zip', 'max:10240'],
             'order' => ['nullable', 'integer'],
         ]);
 
         $validated['course_id'] = $course->id;
         $validated['order'] = $validated['order'] ?? ($course->lessons()->max('order') + 1);
+
+        if ($request->hasFile('file')) {
+            $validated['file_path'] = $request->file('file')->store('lessons/files', 'public');
+            $validated['file_name'] = $request->file('file')->getClientOriginalName();
+        }
+        unset($validated['file']);
 
         Lesson::create($validated);
 
@@ -115,8 +123,23 @@ class CourseAdminController extends Controller
             'title' => ['required', 'string', 'max:255'],
             'content' => ['nullable', 'string'],
             'video_url' => ['nullable', 'url'],
+            'file' => ['nullable', 'file', 'mimes:pdf,doc,docx,ppt,pptx,zip', 'max:10240'],
+            'remove_file' => ['nullable', 'boolean'],
             'order' => ['nullable', 'integer'],
         ]);
+
+        if ($request->hasFile('file')) {
+            if ($lesson->file_path) {
+                Storage::disk('public')->delete($lesson->file_path);
+            }
+            $validated['file_path'] = $request->file('file')->store('lessons/files', 'public');
+            $validated['file_name'] = $request->file('file')->getClientOriginalName();
+        } elseif ($request->boolean('remove_file') && $lesson->file_path) {
+            Storage::disk('public')->delete($lesson->file_path);
+            $validated['file_path'] = null;
+            $validated['file_name'] = null;
+        }
+        unset($validated['file'], $validated['remove_file']);
 
         $lesson->update($validated);
 
@@ -126,6 +149,11 @@ class CourseAdminController extends Controller
     public function destroyLesson(Lesson $lesson)
     {
         $course = $lesson->course;
+
+        if ($lesson->file_path) {
+            Storage::disk('public')->delete($lesson->file_path);
+        }
+
         $lesson->delete();
         return redirect()->route('admin.courses.show', $course)->with('status', 'Lesson deleted.');
     }

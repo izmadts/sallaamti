@@ -15,6 +15,12 @@ class MaintenanceMode
      */
     public function handle(Request $request, Closure $next): Response
     {
+        $isAdmin = $request->user()?->hasRole('admin');
+
+        if (setting('maintenance_mode') === '1' && !$isAdmin && !$request->routeIs('login', 'admin.*')) {
+            return response()->view('maintenance', [], 503);
+        }
+
         return $next($request);
     }
 }

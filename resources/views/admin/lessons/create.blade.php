@@ -5,7 +5,7 @@
 
     <div class="py-12">
         <div class="max-w-2xl mx-auto sm:px-6 lg:px-8 bg-white rounded-lg shadow-sm p-6">
-            <form method="POST" action="{{ route('admin.courses.lessons.store', $course) }}" class="space-y-4">
+            <form method="POST" action="{{ route('admin.courses.lessons.store', $course) }}" enctype="multipart/form-data" class="space-y-4">
                 @csrf
                 <div>
                     <x-input-label value="Lesson Title" />
@@ -18,6 +18,10 @@
                 <div>
                     <x-input-label value="Content / Text" />
                     <textarea name="content" rows="8" class="border-gray-300 rounded-md w-full mt-1"></textarea>
+                </div>
+                <div>
+                    <x-input-label value="Lesson File (optional — PDF, Word, PowerPoint or ZIP, max 10MB)" />
+                    <input type="file" name="file" accept=".pdf,.doc,.docx,.ppt,.pptx,.zip" class="w-full mt-1">
                 </div>
                 <div>
                     <x-input-label value="Order" />

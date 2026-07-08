@@ -27,7 +27,9 @@ class CourseController extends Controller
     {
         abort_unless($course->is_published, 404);
         $course->load('lessons');
-        $isEnrolled = $course->isEnrolledBy(Auth::user());
+
+        // Guest-safe checks
+        $isEnrolled = auth()->check() && $course->isEnrolledBy(Auth::user());
         $progress = $isEnrolled ? $course->progressFor(Auth::user()) : 0;
 
         return view('courses.show', compact('course', 'isEnrolled', 'progress'));
@@ -35,6 +37,11 @@ class CourseController extends Controller
 
     public function enroll(Course $course)
     {
+        if (!Auth::check()) {
+            return redirect()->route('login')
+                ->with('status', 'Please log in or register to enroll in this course.');
+        }
+
         Enrollment::firstOrCreate([
             'user_id' => Auth::id(),
             'course_id' => $course->id,

@@ -34,6 +34,14 @@
                     {!! $lesson->content !!}
                 </div>
 
+                @if ($lesson->file_path)
+                <div class="mt-4">
+                    <a href="{{ Storage::url($lesson->file_path) }}" target="_blank" class="inline-flex items-center gap-2 bg-gray-100 text-gray-700 text-sm px-4 py-2 rounded hover:bg-gray-200">
+                        📎 {{ $lesson->file_name ?? 'Download lesson file' }}
+                    </a>
+                </div>
+                @endif
+
                 <div class="mt-6">
                     @if ($isCompleted)
                     <span class="text-green-600 text-sm font-medium">✅ Completed</span>

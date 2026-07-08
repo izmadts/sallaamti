@@ -53,7 +53,6 @@ Route::get('/', function () {
 })->name('index');
 
 // Static pages
-Route::get('/welcome', fn() => view('welcome'));
 Route::get('/about', fn() => view('about'));
 Route::get('/activities', fn() => view('activities'));
 Route::get('/events', fn() => view('events'));
