@@ -35,17 +35,26 @@ class DonationController extends Controller
         $validated['user_id'] = Auth::id(); // null for guests
 
         $donation = Donation::create($validated);
-        
-        Mail::to($donation->email)
-            ->send(new DonationSubmitted($donation));
+
+        try {
+            if (!empty($donation->email)) {
+                Mail::to($donation->email)->send(new DonationSubmitted($donation));
+            }
+            if (!empty(config('mail.admin_email'))) {
+                Mail::to(config('mail.admin_email'))->send(new AdminNewDonation($donation));
+            }
+        } catch (\Throwable $e) {
+            \Log::error('Donation submission email failed: ' . $e->getMessage());
+        }
+
+        session()->flash('conversion_event', 'donation_submitted');
+        session()->flash('conversion_event_data', ['value' => (float) $donation->amount, 'currency' => 'PKR']);
 
         return redirect()->route('donate.thank-you', $donation);
     }
 
     public function thankYou(Donation $donation)
     {
-        Mail::to(config('mail.admin_email'))
-            ->send(new AdminNewDonation($donation));
         return view('donate.thank-you', compact('donation'));
     }
 

@@ -11,6 +11,7 @@ class NikahProfile extends Model
 
     protected $fillable = [
         'user_id',
+        'public_token',
         'age',
         'height',
         'marital_status',

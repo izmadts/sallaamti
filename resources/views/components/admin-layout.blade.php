@@ -115,6 +115,15 @@
                     <span class="bg-pink-400 text-pink-900 text-xs font-bold px-1.5 py-0.5 rounded-full">{{ $pendingVerif }}</span>
                     @endif
                 </a>
+                <a href="{{ route('admin.nikah.reports') }}"
+                    class="flex items-center justify-between gap-3 px-3 py-2 rounded-lg transition
+                          {{ request()->routeIs('admin.nikah.reports*') ? 'bg-teal-700 text-white' : 'text-teal-100 hover:bg-teal-800' }}">
+                    <span class="flex items-center gap-3"><span class="text-base">🚩</span> Reports</span>
+                    @php $pendingReports = \App\Models\NikahReport::where('status','pending')->count(); @endphp
+                    @if ($pendingReports > 0)
+                    <span class="bg-red-400 text-red-900 text-xs font-bold px-1.5 py-0.5 rounded-full">{{ $pendingReports }}</span>
+                    @endif
+                </a>
 
                 {{-- Quran --}}
                 <p class="text-teal-500 text-xs uppercase tracking-widest px-3 pt-4 pb-1">Quran Learning</p>
@@ -181,6 +190,11 @@
                     class="flex items-center gap-3 px-3 py-2 rounded-lg transition
                         {{ request()->routeIs('admin.activity-posts*') ? 'bg-teal-700 text-white' : 'text-teal-100 hover:bg-teal-800' }}">
                     <span class="text-base">🌍</span> Community Activities
+                </a>
+                <a href="{{ route('admin.certificates.index') }}"
+                    class="flex items-center gap-3 px-3 py-2 rounded-lg transition
+                        {{ request()->routeIs('admin.certificates*') ? 'bg-teal-700 text-white' : 'text-teal-100 hover:bg-teal-800' }}">
+                    <span class="text-base">🎓</span> Certificates
                 </a>
                 {{-- Settings --}}
                 <p class="text-teal-500 text-xs uppercase tracking-widest px-3 pt-4 pb-1">System</p>

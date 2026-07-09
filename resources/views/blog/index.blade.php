@@ -1,5 +1,5 @@
 {{-- resources/views/blog/index.blade.php --}}
-<x-guest-layout>
+<x-guest-layout title="Blog" description="Reflections, reminders and articles on Quran, Islamic living and community from Sallaamti.">
 
     {{-- ============================================================ --}}
     {{-- PAGE HERO --}}

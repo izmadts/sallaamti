@@ -3,8 +3,12 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Certificate;
 use App\Models\VolunteerApplication;
+use App\Mail\VolunteerApproved;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Mail;
 
 class VolunteerAdminController extends Controller
 {
@@ -16,10 +20,33 @@ class VolunteerAdminController extends Controller
 
     public function approve(VolunteerApplication $volunteer)
     {
+        if ($volunteer->status === 'approved') {
+            return back()->with('status', 'Already approved.');
+        }
+
         $volunteer->update(['status' => 'approved']);
 
         if ($volunteer->user_id && !$volunteer->user->hasRole('volunteer')) {
             $volunteer->user->assignRole('volunteer');
+        }
+
+        if ($volunteer->user_id) {
+            try {
+                $certificate = Certificate::firstOrCreate(
+                    ['user_id' => $volunteer->user_id, 'type' => 'volunteer_id'],
+                    [
+                        'course_id' => null,
+                        'title' => 'Sallaamti Volunteer ID Card',
+                        'certificate_number' => Certificate::generateNumber('VOL'),
+                        'issued_by' => Auth::id(),
+                        'issued_at' => now(),
+                    ]
+                );
+
+                Mail::to($volunteer->email)->send(new VolunteerApproved($certificate));
+            } catch (\Throwable $e) {
+                \Log::error('Volunteer ID card generation/email failed: ' . $e->getMessage());
+            }
         }
 
         return back()->with('status', 'Approved.');

@@ -23,12 +23,17 @@ class SubscriberController extends Controller
             'email' => $request->email,
             'verification_token' => $token,
         ]);
-        Mail::send('emails.subscriber-verification', [
-            'subscriber' => $subscriber
-        ], function ($mail) use ($subscriber) {
-            $mail->to($subscriber->email)
-                ->subject('Verify your Subscription');
-        });
+        try {
+            Mail::send('emails.subscriber-verification', [
+                'subscriber' => $subscriber
+            ], function ($mail) use ($subscriber) {
+                $mail->to($subscriber->email)
+                    ->subject('Verify your Subscription');
+            });
+        } catch (\Throwable $e) {
+            \Log::error('Subscriber verification email failed: ' . $e->getMessage());
+        }
+
         return response()->json([
             'success' => true,
             'message' => 'Please check your email to verify subscription.'

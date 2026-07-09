@@ -41,6 +41,8 @@ class SettingsController extends Controller
             'social_instagram'      => ['nullable', 'url'],
             'social_tiktok'         => ['nullable', 'url'],
             'maintenance_mode'      => ['nullable', 'boolean'],
+            'gtm_id'                   => ['nullable', 'string', 'max:20'],
+            'meta_domain_verification' => ['nullable', 'string', 'max:100'],
         ]);
 
         // Save each setting
@@ -67,6 +69,8 @@ class SettingsController extends Controller
             'social_whatsapp'        => 'social',
             'social_instagram'       => 'social',
             'social_tiktok'          => 'social',
+            'gtm_id'                 => 'integrations',
+            'meta_domain_verification' => 'integrations',
         ];
 
         foreach ($groups as $key => $group) {

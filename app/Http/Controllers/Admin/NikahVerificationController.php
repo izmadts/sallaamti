@@ -48,8 +48,11 @@ class NikahVerificationController extends Controller
 
         $profile->update(['verification_status' => 'verified', 'rejection_reason' => null]);
 
-        // Notify user
-        $profile->user->notify(new \App\Notifications\NikahProfileVerified());
+        try {
+            $profile->user->notify(new \App\Notifications\NikahProfileVerified());
+        } catch (\Throwable $e) {
+            \Log::error('NikahProfileVerified notification failed: ' . $e->getMessage());
+        }
 
         return back()->with('status', 'Profile approved.');
     }
@@ -59,8 +62,11 @@ class NikahVerificationController extends Controller
         $request->validate(['rejection_reason' => 'required|string|max:500']);
         $profile->update(['verification_status' => 'rejected', 'rejection_reason' => $request->rejection_reason]);
 
-        // Notify user
-        $profile->user->notify(new \App\Notifications\NikahProfileRejected($request->rejection_reason));
+        try {
+            $profile->user->notify(new \App\Notifications\NikahProfileRejected($request->rejection_reason));
+        } catch (\Throwable $e) {
+            \Log::error('NikahProfileRejected notification failed: ' . $e->getMessage());
+        }
 
         return back()->with('status', 'Profile rejected.');
     }

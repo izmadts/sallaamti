@@ -8,7 +8,7 @@ use Endroid\QrCode\Writer\PngWriter;
 
 class Certificate extends Model
 {
-    protected $fillable = ['certificate_number', 'user_id', 'course_id', 'issued_at'];
+    protected $fillable = ['certificate_number', 'user_id', 'course_id', 'type', 'title', 'issued_by', 'issued_at'];
 
     protected function casts(): array
     {
@@ -25,9 +25,14 @@ class Certificate extends Model
         return $this->belongsTo(Course::class);
     }
 
-    public static function generateNumber(): string
+    public function issuer()
     {
-        return 'SLM-' . now()->format('Y') . '-' . strtoupper(uniqid());
+        return $this->belongsTo(User::class, 'issued_by');
+    }
+
+    public static function generateNumber(string $prefix = 'SLM'): string
+    {
+        return $prefix . '-' . now()->format('Y') . '-' . strtoupper(uniqid());
     }
 
 

@@ -119,9 +119,12 @@ class QuranTeacherController extends Controller
             $validated
         );
 
-        // Notify student about new report
-        $student->user->notify(new \App\Notifications\QuranProgressReportReady($group, $validated['month']));
-        
+        try {
+            $student->user->notify(new \App\Notifications\QuranProgressReportReady($group, $validated['month']));
+        } catch (\Throwable $e) {
+            \Log::error('QuranProgressReportReady notification failed: ' . $e->getMessage());
+        }
+
         return back()->with('status', 'Progress report saved.');
     }
 

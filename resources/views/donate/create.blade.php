@@ -1,4 +1,4 @@
-<x-guest-layout>
+<x-guest-layout title="Donate" description="Support Sallaamti's Quran education, matrimonial and community programs with your sadaqah and donations.">
 
     {{-- Page Hero --}}
     <section class="page-hero relative overflow-hidden flex items-center" style="min-height: 280px; background: linear-gradient(135deg, #b8962e 0%, #0d6b6b 100%);">

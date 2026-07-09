@@ -139,6 +139,23 @@
                 </div>
             </div>
 
+            {{-- Integrations --}}
+            <div class="bg-white rounded-lg shadow-sm p-6 space-y-4">
+                <h3 class="font-semibold text-gray-700 border-b pb-2">🔌 Integrations</h3>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <x-input-label value="Google Tag Manager Container ID" />
+                        <x-text-input name="gtm_id" class="w-full mt-1" :value="$settings['gtm_id'] ?? ''" placeholder="GTM-XXXXXXX" />
+                        <p class="text-xs text-gray-400 mt-1">From tagmanager.google.com. Leave blank to disable GTM. Configure the Meta Pixel and any other tags inside GTM's own interface once installed.</p>
+                    </div>
+                    <div>
+                        <x-input-label value="Meta Domain Verification Code" />
+                        <x-text-input name="meta_domain_verification" class="w-full mt-1" :value="$settings['meta_domain_verification'] ?? ''" placeholder="e.g. abc123def456..." />
+                        <p class="text-xs text-gray-400 mt-1">From Meta Business Manager → Brand Safety → Domain Verification. Leave blank if not needed.</p>
+                    </div>
+                </div>
+            </div>
+
             <div class="flex justify-end">
                 <x-primary-button>Save Settings</x-primary-button>
             </div>

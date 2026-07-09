@@ -43,6 +43,7 @@ use App\Http\Controllers\Admin\BlogPostController;
 use App\Http\Controllers\Admin\EditorImageController;
 use App\Http\Controllers\Admin\TeamMemberController;
 use App\Http\Controllers\Admin\ActivityPostController;
+use App\Http\Controllers\Admin\CertificateAdminController;
 
 // ============================================================
 // PUBLIC ROUTES (no auth required)
@@ -104,7 +105,13 @@ Route::get('/subscriber/verify/{token}', [SubscriberController::class, 'verify']
 Route::get('/subscriber/unsubscribe/{id}', [SubscriberController::class, 'unsubscribe'])->name('subscriber.unsubscribe');
 
 // Certificate verification (public — no login needed)
-Route::get('/verify-certificate/{certificateNumber}', [CertificateController::class, 'verify'])->name('certificate.verify');
+Route::get('/verify-certificate/{certificateNumber?}', [CertificateController::class, 'verify'])->name('certificate.verify');
+
+// Nikah profile sharing (public teaser — no login needed)
+Route::get('/nikah/p/{token}', [NikahProfileController::class, 'publicView'])->name('nikah.public-view');
+
+// XML sitemap
+Route::get('/sitemap.xml', [\App\Http\Controllers\SitemapController::class, 'index'])->name('sitemap');
 
 // ============================================================
 // AUTHENTICATED USER ROUTES
@@ -217,6 +224,11 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::post('team-members/{team_member}/toggle', [TeamMemberController::class, 'toggle'])->name('team-members.toggle');
     Route::resource('activity-posts', ActivityPostController::class)->except(['show']);
     Route::post('activity-posts/{activity_post}/toggle', [ActivityPostController::class, 'toggle'])->name('activity-posts.toggle');
+
+    // Certificates (admin-issued)
+    Route::get('certificates', [CertificateAdminController::class, 'index'])->name('certificates.index');
+    Route::get('certificates/create', [CertificateAdminController::class, 'create'])->name('certificates.create');
+    Route::post('certificates', [CertificateAdminController::class, 'store'])->name('certificates.store');
 
     // Nikah Management
     Route::get('/nikah-verifications', [NikahVerificationController::class, 'index'])->name('nikah.verifications');

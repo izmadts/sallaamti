@@ -1,5 +1,5 @@
 {{-- resources/views/team.blade.php --}}
-<x-guest-layout>
+<x-guest-layout title="Our Team" description="Meet the dedicated volunteers and professionals behind Sallaamti.">
 
     {{-- ============================================================ --}}
     {{-- PAGE HERO --}}

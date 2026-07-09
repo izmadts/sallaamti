@@ -1,4 +1,4 @@
-<x-guest-layout>
+<x-guest-layout title="Contact Us" description="Get in touch with Sallaamti — questions about courses, Nikah, volunteering or donations.">
 
     {{-- ============================================================ --}}
     {{-- PAGE HERO --}}

@@ -4,7 +4,22 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ setting('site_name') }} | {{ setting('site_tagline') }}</title>
+    <title>{{ $title ? $title . ' — ' . setting('site_name') : setting('site_name') . ' | ' . setting('site_tagline') }}</title>
+    <meta name="description" content="{{ $description ?? setting('site_tagline') }}">
+    <link rel="canonical" href="{{ url()->current() }}">
+
+    {{-- Open Graph / Twitter Card (used by WhatsApp/Facebook link previews) --}}
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ url()->current() }}">
+    <meta property="og:title" content="{{ $title ?? setting('site_name') }}">
+    <meta property="og:description" content="{{ $description ?? setting('site_tagline') }}">
+    <meta property="og:image" content="{{ $image ?? asset('images/sallaamti-logo.png') }}">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{{ $title ?? setting('site_name') }}">
+    <meta name="twitter:description" content="{{ $description ?? setting('site_tagline') }}">
+    <meta name="twitter:image" content="{{ $image ?? asset('images/sallaamti-logo.png') }}">
+
+    @include('partials.gtm-head')
     <!-- Favicon -->
     <link rel="icon" type="image/x-icon" href="{{ asset('images/favicon.png') }}">
     <!-- Fonts -->
@@ -138,6 +153,7 @@
     </style>
 </head>
 <body class="antialiased font-sans">
+    @include('partials.gtm-body')
     <!-- Spinner -->
     <div id="spinner"
         class="fixed inset-0 z-50 flex items-center justify-center bg-white w-full h-full"
@@ -331,6 +347,7 @@
                         <a class="text-gray-300 hover:text-white mb-2" href="{{ url('/contact') }}"><i class="fa fa-check text-[--teal] mr-2"></i>Contact us</a>
                         <a class="text-gray-300 hover:text-white mb-2" href="{{ url('/donate') }}"><i class="fa fa-check text-[--teal] mr-2"></i>Donations</a>
                         <a class="text-gray-300 hover:text-white mb-2" href="{{ url('/volunteer') }}"><i class="fa fa-check text-[--teal] mr-2"></i>Become Volunteer</a>
+                        <a class="text-gray-300 hover:text-white mb-2" href="{{ route('certificate.verify') }}"><i class="fa fa-check text-[--teal] mr-2"></i>Verify Certificate / ID</a>
                     </div>
                 </div>
                 <div>
@@ -396,6 +413,8 @@
                         if (data.success) {
                             msg.innerHTML = '<span class="text-green-400">' + data.message + '</span>';
                             form.reset();
+                            window.dataLayer = window.dataLayer || [];
+                            dataLayer.push({ event: 'newsletter_signup' });
                         } else {
                             msg.innerHTML = '<span class="text-yellow-400">' + data.message + '</span>';
                         }

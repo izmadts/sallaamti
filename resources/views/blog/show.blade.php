@@ -1,5 +1,5 @@
 {{-- resources/views/blog/show.blade.php --}}
-<x-guest-layout>
+<x-guest-layout :title="$post->title" :description="$post->excerpt ?? Str::limit(strip_tags($post->content), 155)" :image="$post->cover_image ? Storage::url($post->cover_image) : null">
 
     {{-- ============================================================ --}}
     {{-- PAGE HERO --}}

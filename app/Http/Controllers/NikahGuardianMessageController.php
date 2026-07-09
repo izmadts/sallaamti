@@ -12,6 +12,7 @@ class NikahGuardianMessageController extends Controller
     public function show(NikahInterest $interest)
     {
         $myProfile = Auth::user()->nikahProfile;
+        abort_unless($myProfile, 403);
 
         abort_unless(
             $interest->sender_profile_id === $myProfile->id ||
@@ -34,6 +35,7 @@ class NikahGuardianMessageController extends Controller
     public function store(Request $request, NikahInterest $interest)
     {
         $myProfile = Auth::user()->nikahProfile;
+        abort_unless($myProfile, 403);
 
         abort_unless(
             $interest->sender_profile_id === $myProfile->id ||

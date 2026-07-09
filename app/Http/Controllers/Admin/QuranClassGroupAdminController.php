@@ -105,8 +105,11 @@ class QuranClassGroupAdminController extends Controller
             'status' => 'assigned',
         ]);
 
-        // Notify student
-        $admission->user->notify(new \App\Notifications\QuranClassAssigned($group));
+        try {
+            $admission->user->notify(new \App\Notifications\QuranClassAssigned($group));
+        } catch (\Throwable $e) {
+            \Log::error('QuranClassAssigned notification failed: ' . $e->getMessage());
+        }
 
         return back()->with('status', "Student assigned to {$group->group_name}.");
     }

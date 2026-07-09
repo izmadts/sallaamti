@@ -1,5 +1,5 @@
 {{-- resources/views/about.blade.php --}}
-<x-guest-layout>
+<x-guest-layout title="About Us" description="Learn about Sallaamti's mission to spread Quranic education, halal matrimonial matching, and community support for the Muslim Ummah.">
 
     {{-- ============================================================ --}}
     {{-- PAGE HERO --}}

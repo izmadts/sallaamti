@@ -10,7 +10,7 @@
 
 <p style="text-align:center;margin:30px 0;">
 
-    <a href="{{ route('newsletter.verify', $subscriber->verification_token) }}"
+    <a href="{{ route('subscriber.verify', $subscriber->verification_token) }}"
         style="background:#0f766e;color:#fff;text-decoration:none;padding:14px 30px;border-radius:6px;display:inline-block;">
 
         Verify My Email

@@ -26,8 +26,11 @@ class NewsletterController extends Controller
 
         if ($subscriber->wasRecentlyCreated) {
 
-            Mail::to($subscriber->email)
-                ->send(new NewsletterSubscribed($subscriber));
+            try {
+                Mail::to($subscriber->email)->send(new NewsletterSubscribed($subscriber));
+            } catch (\Throwable $e) {
+                \Log::error('Newsletter subscription email failed: ' . $e->getMessage());
+            }
 
             return back()->with('success', 'Please check your email to verify your subscription.');
         }

@@ -54,6 +54,8 @@ class RegisteredUserController extends Controller
 
         Auth::login($user);
 
+        session()->flash('conversion_event', 'user_registered');
+
         return redirect(route('dashboard', absolute: false));
     }
 }

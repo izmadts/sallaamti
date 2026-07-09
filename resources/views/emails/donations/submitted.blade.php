@@ -18,7 +18,7 @@
 
     <tr>
         <td><strong>Reference</strong></td>
-        <td>{{ $donation->transaction_reference }}</td>
+        <td>{{ $donation->payment_reference }}</td>
     </tr>
 </table>
 

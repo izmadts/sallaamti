@@ -21,7 +21,11 @@ class NikahInterestController extends Controller
             'receiver_profile_id' => $profile->id,
         ]);
 
-        $profile->user->notify(new \App\Notifications\NikahInterestReceived($interest));
+        try {
+            $profile->user->notify(new \App\Notifications\NikahInterestReceived($interest));
+        } catch (\Throwable $e) {
+            \Log::error('NikahInterestReceived notification failed: ' . $e->getMessage());
+        }
 
         return back()->with('status', 'Interest sent! You will be notified if accepted.');
     }
@@ -43,7 +47,11 @@ class NikahInterestController extends Controller
 
         $interest->update(['status' => 'accepted', 'responded_at' => now()]);
 
-        $interest->sender->user->notify(new \App\Notifications\NikahInterestAccepted($interest));
+        try {
+            $interest->sender->user->notify(new \App\Notifications\NikahInterestAccepted($interest));
+        } catch (\Throwable $e) {
+            \Log::error('NikahInterestAccepted notification failed: ' . $e->getMessage());
+        }
 
         return back()->with('status', 'Interest accepted! Contact details are now visible to both sides.');
     }

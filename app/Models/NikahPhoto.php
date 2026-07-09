@@ -15,7 +15,7 @@ class NikahPhoto extends Model
 
     public function profile()
     {
-        return $this->belongsTo(NikahProfile::class);
+        return $this->belongsTo(NikahProfile::class, 'nikah_profile_id');
     }
     public function photos()
     {

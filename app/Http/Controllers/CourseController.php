@@ -47,6 +47,9 @@ class CourseController extends Controller
             'course_id' => $course->id,
         ]);
 
+        session()->flash('conversion_event', 'course_enrolled');
+        session()->flash('conversion_event_data', ['course' => $course->title]);
+
         return back()->with('status', 'Enrolled successfully! Start learning below.');
     }
     public function myLearning()

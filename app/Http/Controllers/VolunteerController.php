@@ -28,6 +28,8 @@ class VolunteerController extends Controller
 
         VolunteerApplication::create($validated);
 
+        session()->flash('conversion_event', 'volunteer_registered');
+
         return back()->with('status', 'Thank you! Your volunteer application has been received.');
     }
 }

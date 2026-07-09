@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Certificate;
 use App\Models\Course;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Barryvdh\DomPDF\Facade\Pdf;
 
@@ -28,7 +29,16 @@ class CertificateController extends Controller
     {
         abort_unless($certificate->user_id === Auth::id() || Auth::user()->hasRole('admin'), 403);
 
-        $pdf = Pdf::loadView('certificates.pdf', ['certificate' => $certificate->load('user', 'course')])
+        $certificate->load('user', 'course', 'issuer');
+
+        if ($certificate->type === 'volunteer_id') {
+            $pdf = Pdf::loadView('certificates.volunteer-id-card', ['certificate' => $certificate])
+                ->setPaper([0, 0, 242.65, 153.07]);
+
+            return $pdf->download('Sallaamti-Volunteer-ID-' . $certificate->certificate_number . '.pdf');
+        }
+
+        $pdf = Pdf::loadView('certificates.pdf', ['certificate' => $certificate])
             ->setPaper('a4', 'landscape');
 
         return $pdf->download('Sallaamti-Certificate-' . $certificate->certificate_number . '.pdf');
@@ -40,10 +50,12 @@ class CertificateController extends Controller
         return view('certificates.index', compact('certificates'));
     }
 
-    public function verify(string $certificateNumber)
+    public function verify(Request $request, ?string $certificateNumber = null)
     {
-        $certificate = Certificate::where('certificate_number', $certificateNumber)->with('user', 'course')->first();
-        return view('certificates.verify', compact('certificate'));
+        $code = $certificateNumber ?? $request->query('code');
+        $certificate = $code ? Certificate::where('certificate_number', $code)->with('user', 'course', 'issuer')->first() : null;
+
+        return view('certificates.verify', compact('certificate', 'code'));
     }
-    
+
 }

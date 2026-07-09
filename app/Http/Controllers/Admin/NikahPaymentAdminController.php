@@ -23,8 +23,11 @@ class NikahPaymentAdminController extends Controller
     {
         $profile->update(['payment_status' => 'confirmed', 'payment_confirmed_at' => now()]);
 
-        // Notify user
-        $profile->user->notify(new \App\Notifications\NikahPaymentConfirmed());
+        try {
+            $profile->user->notify(new \App\Notifications\NikahPaymentConfirmed());
+        } catch (\Throwable $e) {
+            \Log::error('NikahPaymentConfirmed notification failed: ' . $e->getMessage());
+        }
 
         return back()->with('status', 'Payment confirmed.');
     }

@@ -79,7 +79,8 @@ class NikahPhotoController extends Controller
             return Storage::disk('private')->response($photo->path);
         }
 
-        // Others only see if mutually accepted interest exists
+        // Others only see if photo-sharing is enabled AND mutually accepted interest exists
+        abort_unless($photo->profile->allow_photo_sharing, 403);
         abort_unless($myProfile, 403);
 
         $hasAccepted = \App\Models\NikahInterest::where(function ($q) use ($myProfile, $photo) {

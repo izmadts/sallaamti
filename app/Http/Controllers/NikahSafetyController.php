@@ -64,12 +64,12 @@ class NikahSafetyController extends Controller
             ->latest()
             ->paginate(15);
 
-        return view('admin.nikah-reports', compact('reports'));
+        return view('admin.nikah.nikah-reports', compact('reports'));
     }
 
     public function dismissReport(NikahReport $report)
     {
-        $report->update(['status', 'dismissed']);
+        $report->update(['status' => 'dismissed']);
         return back()->with('status', 'Report dismissed.');
     }
 }

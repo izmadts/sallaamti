@@ -1,5 +1,5 @@
 {{-- resources/views/index.blade.php --}}
-<x-guest-layout>
+<x-guest-layout :description="'Quran education, halal matrimonial matching, and community programs for the Muslim Ummah — ' . setting('site_tagline')">
 
     {{-- ============================================================ --}}
     {{-- HERO --}}

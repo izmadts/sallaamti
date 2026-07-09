@@ -7,6 +7,7 @@ use App\Models\NikahSavedProfile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class NikahProfileController extends Controller
 {
@@ -35,8 +36,11 @@ class NikahProfileController extends Controller
 
         $validated['allow_photo_sharing'] = $request->has('allow_photo_sharing');
         $validated['payment_amount'] = config('services.nikah.verification_fee');
+        $validated['public_token'] = Str::random(32);
 
         NikahProfile::create($validated);
+
+        session()->flash('conversion_event', 'nikah_profile_created');
 
         return redirect()->route('nikah.payment')->with('status', 'Profile submitted! Please complete the verification fee payment to proceed.');
     }
@@ -47,6 +51,10 @@ class NikahProfileController extends Controller
 
         if (!$profile) {
             return redirect()->route('nikah.create');
+        }
+
+        if (!$profile->public_token) {
+            $profile->update(['public_token' => Str::random(32)]);
         }
 
         return view('nikah.show', compact('profile'));
@@ -271,5 +279,19 @@ class NikahProfileController extends Controller
             'isSaved',
             'matchPercentage'
         ));
+    }
+
+    public function publicView(string $token)
+    {
+        $profile = NikahProfile::where('public_token', $token)->firstOrFail();
+
+        abort_unless(
+            $profile->verification_status === 'verified' &&
+                $profile->is_active &&
+                $profile->visibility === 'public',
+            404
+        );
+
+        return view('nikah.public-profile', compact('profile'));
     }
 }

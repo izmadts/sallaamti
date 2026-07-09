@@ -8,7 +8,7 @@
             @forelse ($certificates as $cert)
             <div class="bg-white rounded-lg shadow-sm p-5 flex justify-between items-center">
                 <div>
-                    <p class="font-medium">{{ $cert->course->title }}</p>
+                    <p class="font-medium">{{ $cert->type === 'course' ? $cert->course?->title : $cert->title }}</p>
                     <p class="text-sm text-gray-500">Issued {{ $cert->issued_at->format('M j, Y') }} — {{ $cert->certificate_number }}</p>
                 </div>
                 <a href="{{ route('certificate.download', $cert) }}" class="bg-gray-800 text-white text-sm px-4 py-2 rounded hover:bg-gray-700">Download PDF</a>

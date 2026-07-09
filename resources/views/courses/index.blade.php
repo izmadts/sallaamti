@@ -1,4 +1,4 @@
-<x-guest-layout>
+<x-guest-layout title="Quran & Islamic Learning Courses" description="Browse self-paced Quran and Islamic learning courses — Naazira, Tarjuma, Arabic Grammar, Seerah, Hadith and more.">
     <x-slot name="header">
         <h2 class="h4 fw-bold text-dark mb-0">
             Quran & Islamic Learning

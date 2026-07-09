@@ -191,15 +191,21 @@
             <img src="{{ public_path('images/sallaamti-logo.png') }}" class="logo"><br>
             @endif
 
+            @if ($certificate->type === 'course')
             <div class="english-title">Certificate of Completion</div>
+            @else
+            <div class="english-title">{{ $certificate->title }}</div>
+            @endif
 
             <div class="divider">❖ ─────────── ❖</div>
 
             <div class="presented-to">This certificate is proudly presented to</div>
             <div class="recipient-name">{{ $certificate->user->name }}</div>
 
+            @if ($certificate->type === 'course')
             <div class="course-line">for successfully completing the course</div>
-            <div class="course-title">{{ $certificate->course->title }}</div>
+            <div class="course-title">{{ $certificate->course?->title }}</div>
+            @endif
 
             <table class="footer-table">
                 <tr>
@@ -214,10 +220,14 @@
                         <div class="qr-label">Scan to verify</div>
                     </td>
                     <td>
+                        @if ($certificate->type === 'course')
                         @if (file_exists(public_path('images/signature-instructor.png')))
                         <img src="{{ public_path('images/signature-instructor.png') }}" class="signature-img"><br>
                         @endif
                         <div class="signature-line">Course Instructor</div>
+                        @else
+                        <div class="signature-line">Sallaamti Administration</div>
+                        @endif
                     </td>
                 </tr>
             </table>
