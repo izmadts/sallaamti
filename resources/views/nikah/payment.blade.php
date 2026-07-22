@@ -22,7 +22,11 @@
                         <img src="{{ asset('images/meezan.png') }}" alt="Icon Description" class="h-16 w-auto">
                         <p><strong>Account Title:</strong> {{ setting('bank_account_title') }}</p>
                         @if (setting('bank_name'))
-                        <p><strong>Bank:</strong> {{ setting('bank_name') }} — {{ setting('bank_account_number') }}</p>
+                        <p class="font-bold mb-0.5" style="color: var(--gold)">🏦 Bank Transfer</p>
+                        <p class="text-gray-600 text-xs mb-0">Bank: {{ setting('bank_name') }}</p>
+                        <p class="text-gray-600 text-xs mb-0">Account No: {{ setting('bank_account_number') }}</p>
+                        <p class="text-gray-600 text-xs mb-0">IBAN: {{ setting('bank_account_iban') }}</p>
+                        <p class="text-gray-600 text-xs mb-0">Title: {{ setting('site_name', 'Sallaamti') }}</p>
                         @endif
                     </div>
                 </div>

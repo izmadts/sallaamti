@@ -102,6 +102,10 @@
                         <x-text-input name="bank_account_number" class="w-full mt-1" :value="$settings['bank_account_number'] ?? ''" />
                     </div>
                     <div>
+                        <x-input-label value="Bank Account IBAN" />
+                        <x-text-input name="bank_account_iban" class="w-full mt-1" :value="$settings['bank_account_iban'] ?? ''" />
+                    </div>
+                    <div>
                         <x-input-label value="Bank Name" />
                         <x-text-input name="bank_name" class="w-full mt-1" :value="$settings['bank_name'] ?? ''" />
                     </div>

@@ -189,7 +189,8 @@
                             <div class="p-3 rounded-xl" style="background: #fdf6e3">
                                 <p class="font-bold mb-0.5" style="color: var(--gold)">🏦 Bank Transfer</p>
                                 <p class="text-gray-600 text-xs mb-0">Bank: {{ setting('bank_name') }}</p>
-                                <p class="text-gray-600 text-xs mb-0">IBAN: {{ setting('bank_account_number', 'PK00MEZN000XXXXXXXXX') }}</p>
+                                <p class="text-gray-600 text-xs mb-0">Account No: {{ setting('bank_account_number') }}</p>
+                                <p class="text-gray-600 text-xs mb-0">IBAN: {{ setting('bank_account_iban') }}</p>
                                 <p class="text-gray-600 text-xs mb-0">Title: {{ setting('site_name', 'Sallaamti') }}</p>
                             </div>
                         </div>
