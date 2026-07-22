@@ -182,14 +182,14 @@
                         <h5 class="font-bold text-gray-800 mb-4">💳 Payment Details</h5>
                         <div class="space-y-3 text-sm">
                             <div class="p-3 rounded-xl" style="background: var(--teal-light)">
-                                <p class="font-bold mb-0.5" style="color: var(--teal)">💚 JazzCash / EasyPaisa</p>
+                                <p class="font-bold mb-0.5" style="color: var(--teal)">❤️ JazzCash</p>
                                 <p class="text-gray-600 mb-0">{{ setting('jazzcash_number', '03XX-XXXXXXX') }}</p>
-                                <p class="font-semibold text-gray-700 mb-0">{{ setting('site_name', 'Sallaamti') }}</p>
+                                <p class="font-semibold text-gray-700 mb-0">{{ setting('jazzcash_account_title', 'Mubashar Irshad') }}</p>
                             </div>
                             <div class="p-3 rounded-xl" style="background: #fdf6e3">
                                 <p class="font-bold mb-0.5" style="color: var(--gold)">🏦 Bank Transfer</p>
-                                <p class="text-gray-600 text-xs mb-0">Bank: {{ setting('bank_name', 'Meezan Bank') }}</p>
-                                <p class="text-gray-600 text-xs mb-0">IBAN: {{ setting('bank_iban', 'PK00MEZN000XXXXXXXXX') }}</p>
+                                <p class="text-gray-600 text-xs mb-0">Bank: {{ setting('bank_name') }}</p>
+                                <p class="text-gray-600 text-xs mb-0">IBAN: {{ setting('bank_account_number', 'PK00MEZN000XXXXXXXXX') }}</p>
                                 <p class="text-gray-600 text-xs mb-0">Title: {{ setting('site_name', 'Sallaamti') }}</p>
                             </div>
                         </div>
