@@ -7,7 +7,8 @@
             <h3 class="font-semibold mb-2">Fee: Rs. {{ number_format($course->monthly_fee) }}</h3>
             <div class="bg-gray-50 border rounded p-4 text-sm mb-6">
                 <img src="{{ asset('images/jazzcash.png') }}" alt="Icon Description" class="h-8 w-auto">
-                <p><strong>JazzCash:</strong> {{ setting('jazzcash_number') }}</p>
+                <p class="text-gray-600 mb-0">{{ setting('jazzcash_number', '03XX-XXXXXXX') }}</p>
+                <p class="font-semibold text-gray-700 mb-0">{{ setting('jazzcash_account_title', 'Mubashar Irshad') }}</p>
                 <!-- <p><strong>EasyPaisa:</strong> {{ setting('easypaisa_number') }}</p> -->
                 <img src="{{ asset('images/meezan.png') }}" alt="Icon Description" class="h-16 w-auto">
                 <p><strong>Account Title:</strong> {{ setting('bank_account_title') }}</p>

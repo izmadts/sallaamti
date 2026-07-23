@@ -86,6 +86,10 @@
                 <p class="text-xs text-gray-400">These appear on all payment submission forms across the site.</p>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
+                        <x-input-label value="JazzCash Account Title" />
+                        <x-text-input name="jazzcash_account_title" class="w-full mt-1" :value="$settings['jazzcash_account_title'] ?? ''" placeholder="Your JazzCash Account Title" />
+                    </div>
+                    <div>
                         <x-input-label value="JazzCash Number" />
                         <x-text-input name="jazzcash_number" class="w-full mt-1" :value="$settings['jazzcash_number'] ?? ''" placeholder="03XX-XXXXXXX" />
                     </div>
