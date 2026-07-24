@@ -1,117 +1,308 @@
-<x-guest-layout title="Quran & Islamic Learning Courses" description="Browse self-paced Quran and Islamic learning courses — Naazira, Tarjuma, Arabic Grammar, Seerah, Hadith and more.">
-    <x-slot name="header">
-        <h2 class="h4 fw-bold text-dark mb-0">
-            Quran & Islamic Learning
-        </h2>
-    </x-slot>
+<x-guest-layout>
 
-    <div class="py-5">
+    {{-- ============================================================ --}}
+    {{-- PAGE HERO --}}
+    {{-- ============================================================ --}}
+    <section class="page-hero relative overflow-hidden flex items-center"
+        style="min-height: 280px; background: linear-gradient(135deg, #0d6b6b 0%, #1a1a2e 100%);">
+        <div class="absolute inset-0 overflow-hidden pointer-events-none opacity-5 flex items-center justify-center"
+            style="font-size: 18rem; color: #fff;">📖</div>
+        <div class="max-w-7xl mx-auto px-4 py-16 relative z-10 w-full">
+            <div class="grid lg:grid-cols-2 gap-8 items-center">
+                <div>
+                    <span class="section-eyebrow" style="color: rgba(255,255,255,0.7)">Quran & Islamic Learning</span>
+                    <h1 class="text-4xl md:text-5xl font-extrabold text-white mt-2 mb-3">
+                        Self-Paced Courses
+                    </h1>
+                    <p class="text-white/70 text-lg max-w-xl">
+                        Structured Quran courses — Naazira, Tajweed, Translation, Arabic Grammar, Seerah & Hadith. Learn at your own pace, earn a certificate.
+                    </p>
+                </div>
+                <div class="hidden lg:flex justify-end gap-4">
+                    <div class="bg-white/10 backdrop-blur rounded-2xl p-5 text-center text-white">
+                        <div class="text-3xl font-extrabold" style="color: #b8962e">{{ \App\Models\Course::where('is_published',true)->count() }}+</div>
+                        <div class="text-xs text-white/70 mt-1 uppercase tracking-wider">Courses</div>
+                    </div>
+                    <div class="bg-white/10 backdrop-blur rounded-2xl p-5 text-center text-white">
+                        <div class="text-3xl font-extrabold" style="color: #b8962e">{{ \App\Models\Enrollment::count() }}+</div>
+                        <div class="text-xs text-white/70 mt-1 uppercase tracking-wider">Enrollments</div>
+                    </div>
+                    <div class="bg-white/10 backdrop-blur rounded-2xl p-5 text-center text-white">
+                        <div class="text-3xl font-extrabold" style="color: #b8962e">{{ \App\Models\Certificate::count() }}+</div>
+                        <div class="text-xs text-white/70 mt-1 uppercase tracking-wider">Certificates</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    {{-- ============================================================ --}}
+    {{-- CATEGORY FILTERS --}}
+    {{-- ============================================================ --}}
+    <section class="bg-white border-b border-gray-100 sticky top-0 z-40 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="flex overflow-x-auto gap-2 py-3 scrollbar-hide">
+                <a href="{{ route('courses.index') }}"
+                    class="flex-shrink-0 px-4 py-2 rounded-full text-sm font-semibold transition-all duration-200 border-2
+                {{ !request('category') ? 'text-white border-transparent' : 'border-gray-200 text-gray-600 hover:border-teal-500 hover:text-teal-700' }}"
+                    style="{{ !request('category') ? 'background: #0d6b6b; border-color: #0d6b6b' : '' }}">
+                    🌟 All Courses
+                </a>
+                @foreach ($categories as $cat)
+                @php
+                $icons = [
+                'Nazrah' => '📖', 'Tajweed' => '🎵', 'Translation' => '📝',
+                'Arabic Grammar' => '🔤', 'Seerah' => '🕌', 'Hadith' => '📜',
+                'Advance' => '⭐', 'Special' => '✨',
+                ];
+                $icon = $icons[$cat] ?? '📚';
+                $active = request('category') === $cat;
+                @endphp
+                <a href="{{ route('courses.index', ['category' => $cat]) }}"
+                    class="flex-shrink-0 flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-semibold transition-all duration-200 border-2
+                {{ $active ? 'text-white border-transparent' : 'border-gray-200 text-gray-600 hover:border-teal-500 hover:text-teal-700' }}"
+                    style="{{ $active ? 'background: #0d6b6b; border-color: #0d6b6b' : '' }}">
+                    {{ $icon }} {{ $cat }}
+                </a>
+                @endforeach
+            </div>
+        </div>
+    </section>
+
+    {{-- ============================================================ --}}
+    {{-- COURSES GRID --}}
+    {{-- ============================================================ --}}
+    <section class="py-12 bg-cream">
         <div class="max-w-7xl mx-auto px-4">
 
-            {{-- Categories --}}
-            <div class="mb-4 flex flex-wrap gap-2">
-
-                <a href="{{ route('courses.index') }}"
-                    class="btn-base {{ !request('category') ? 'btn-dark' : 'btn-outline-secondary' }} rounded-pill btn-sm">
-                    All
+            {{-- Results bar --}}
+            <div class="flex justify-between items-center mb-6 flex-wrap gap-3">
+                <p class="text-sm text-gray-500">
+                    Showing <strong class="text-gray-800">{{ $courses->total() }}</strong> course(s)
+                    @if (request('category'))
+                    in <strong class="text-gray-800">{{ request('category') }}</strong>
+                    <a href="{{ route('courses.index') }}" class="ml-2 text-xs text-red-400 hover:text-red-600">✕ Clear filter</a>
+                    @endif
+                </p>
+                @guest
+                <a href="{{ route('register') }}"
+                    class="btn-base btn-gold text-sm px-5 py-2 font-semibold">
+                    Join Free to Enroll →
                 </a>
-
-                @foreach ($categories as $cat)
-
-                <a href="{{ route('courses.index', ['category' => $cat]) }}"
-                    class="btn-base {{ request('category') === $cat ? 'btn-dark' : 'btn-outline-secondary' }} rounded-pill btn-sm">
-
-                    {{ $cat }}
-
-                </a>
-
-                @endforeach
-
+                @endguest
             </div>
 
-            {{-- Courses --}}
-            <div class="row g-4">
+            {{-- Grid --}}
+            <div class="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+                @forelse ($courses as $course)
 
-                @forelse($courses as $course)
+                @php
+                $isEnrolled = auth()->check() && $course->isEnrolledBy(auth()->user());
+                $progress = $isEnrolled ? $course->progressFor(auth()->user()) : 0;
+                $categoryColors = [
+                'Nazrah' => '#0d6b6b', 'Tajweed' => '#b8962e',
+                'Translation' => '#1a5276', 'Arabic Grammar' => '#922b21',
+                'Seerah' => '#16a34a', 'Hadith' => '#7d3c98',
+                ];
+                $color = $categoryColors[$course->category] ?? '#0d6b6b';
+                @endphp
 
-                <div class="grid md:grid-cols-6 gap-6">
+                <div class="course-card bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-300 flex flex-col group">
 
-                    <a href="{{ route('courses.show', $course) }}"
-                        class="text-decoration-none text-dark">
+                    {{-- Thumbnail --}}
+                    <a href="{{ route('courses.show', $course) }}" class="block relative overflow-hidden">
+                        @if ($course->thumbnail)
+                        <img src="{{ Storage::url($course->thumbnail) }}"
+                            class="w-full h-44 object-cover group-hover:scale-105 transition-transform duration-500"
+                            alt="{{ $course->title }}">
+                        @else
+                        <div class="w-full h-44 flex items-center justify-center text-6xl"
+                            style="background: linear-gradient(135deg, {{ $color }}22, {{ $color }}44)">
+                            📖
+                        </div>
+                        @endif
 
-                        <div class="card h-100 shadow-sm border-0">
-
-                            @if($course->thumbnail)
-
-                            <img
-                                src="{{ Storage::url($course->thumbnail) }}"
-                                class="card-img-top"
-                                style="height:220px;object-fit:cover;"
-                                alt="{{ $course->title }}">
-
-                            @else
-
-                            <div
-                                class="d-flex align-items-center justify-content-center bg-light"
-                                style="height:220px;font-size:70px;">
-
-                                📖
-
-                            </div>
-
-                            @endif
-
-                            <div class="card-body">
-
-                                <small class="text-uppercase text-muted">
-
-                                    {{ $course->category }}
-
-                                </small>
-
-                                <h5 class="card-title mt-2">
-
-                                    {{ $course->title }}
-
-                                </h5>
-
-                                <p class="card-text text-muted">
-
-                                    {{ $course->lessons_count }} Lessons
-
-                                </p>
-
-                            </div>
-
+                        {{-- Category badge --}}
+                        <div class="absolute top-3 left-3">
+                            <span class="text-xs font-bold px-2.5 py-1 rounded-full text-white shadow-sm"
+                                style="background: {{ $color }}">
+                                {{ $course->category ?? 'Course' }}
+                            </span>
                         </div>
 
+                        {{-- Enrolled badge --}}
+                        @if ($isEnrolled)
+                        <div class="absolute top-3 right-3">
+                            <span class="text-xs font-bold px-2.5 py-1 rounded-full bg-green-500 text-white shadow-sm">
+                                ✅ Enrolled
+                            </span>
+                        </div>
+                        @endif
                     </a>
 
+                    {{-- Body --}}
+                    <div class="p-5 flex flex-col flex-1">
+
+                        {{-- Title --}}
+                        <a href="{{ route('courses.show', $course) }}"
+                            class="block font-bold text-gray-800 text-base mb-1 leading-snug hover:text-teal-700 transition-colors line-clamp-2">
+                            {{ $course->title }}
+                        </a>
+
+                        {{-- Description --}}
+                        @if ($course->description)
+                        <p class="text-xs text-gray-500 mb-3 leading-relaxed line-clamp-2">
+                            {{ $course->description }}
+                        </p>
+                        @endif
+
+                        {{-- Meta --}}
+                        <div class="flex items-center gap-3 text-xs text-gray-400 mb-4 flex-wrap">
+                            <span class="flex items-center gap-1">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                                </svg>
+                                {{ $course->lessons_count }} lesson{{ $course->lessons_count !== 1 ? 's' : '' }}
+                            </span>
+                            @if ($course->level)
+                            <span class="flex items-center gap-1">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                                </svg>
+                                {{ $course->level }}
+                            </span>
+                            @endif
+                            <span class="flex items-center gap-1">
+                                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                                </svg>
+                                {{ $course->enrollments_count ?? 0 }} enrolled
+                            </span>
+                        </div>
+
+                        {{-- Progress bar (enrolled users) --}}
+                        @if ($isEnrolled)
+                        <div class="mb-4">
+                            <div class="flex justify-between text-xs mb-1">
+                                <span class="text-gray-500">Progress</span>
+                                <span class="font-semibold" style="color: #0d6b6b">{{ $progress }}%</span>
+                            </div>
+                            <div class="w-full bg-gray-100 rounded-full h-1.5">
+                                <div class="h-1.5 rounded-full transition-all"
+                                    style="width: {{ $progress }}%; background: {{ $progress === 100 ? '#16a34a' : '#0d6b6b' }}">
+                                </div>
+                            </div>
+                            @if ($progress === 100)
+                            <p class="text-xs text-green-600 mt-1 font-semibold">🎉 Completed! Get your certificate.</p>
+                            @endif
+                        </div>
+                        @endif
+
+                        {{-- Spacer --}}
+                        <div class="flex-1"></div>
+
+                        {{-- CTA --}}
+                        @if ($isEnrolled)
+                        <a href="{{ route('courses.show', $course) }}"
+                            class="block text-center py-2.5 rounded-xl text-sm font-semibold text-white transition-all"
+                            style="background: {{ $progress === 100 ? '#16a34a' : '#0d6b6b' }}">
+                            {{ $progress === 100 ? '🏆 Get Certificate' : '▶ Continue Learning' }}
+                        </a>
+                        @else
+                        @auth
+                        <a href="{{ route('courses.show', $course) }}"
+                            class="block text-center py-2.5 rounded-xl text-sm font-semibold transition-all border-2"
+                            style="border-color: #0d6b6b; color: #0d6b6b">
+                            Enroll Now — Free
+                        </a>
+                        @else
+                        <a href="{{ route('register') }}"
+                            class="block text-center py-2.5 rounded-xl text-sm font-semibold text-white transition-all"
+                            style="background: #b8962e">
+                            Register to Enroll
+                        </a>
+                        @endauth
+                        @endif
+
+                    </div>
                 </div>
 
                 @empty
-
-                <div class="col-12">
-
-                    <div class="alert alert-info">
-
-                        No courses available yet.
-
-                    </div>
-
+                <div class="col-span-full py-20 text-center">
+                    <div class="text-6xl mb-4">📚</div>
+                    <h3 class="text-xl font-bold text-gray-700 mb-2">No Courses Found</h3>
+                    <p class="text-gray-400 mb-6">
+                        @if (request('category'))
+                        No courses in the <strong>{{ request('category') }}</strong> category yet.
+                        @else
+                        No courses published yet. Check back soon!
+                        @endif
+                    </p>
+                    @if (request('category'))
+                    <a href="{{ route('courses.index') }}" class="btn-base btn-teal px-6 py-2 text-sm">
+                        View All Courses
+                    </a>
+                    @endif
                 </div>
-
                 @endforelse
-
             </div>
 
             {{-- Pagination --}}
-            <div class="mt-4 d-flex justify-content-center">
-
+            @if ($courses->hasPages())
+            <div class="mt-10 flex justify-center">
                 {{ $courses->links() }}
-
             </div>
+            @endif
 
         </div>
-    </div>
+    </section>
+
+    {{-- ============================================================ --}}
+    {{-- GUEST CTA BANNER --}}
+    {{-- ============================================================ --}}
+    @guest
+    <section class="py-14 final-cta-section">
+        <div class="max-w-3xl mx-auto px-4 text-center">
+            <div class="text-4xl mb-3">🎓</div>
+            <h2 class="text-2xl md:text-3xl font-extrabold text-white mb-3">
+                Ready to Start Learning?
+            </h2>
+            <p class="text-white/70 mb-6">
+                Join thousands of Muslims learning Quran online. Create a free account and enroll in any course instantly.
+            </p>
+            <div class="flex gap-3 justify-center flex-wrap">
+                <a href="{{ route('register') }}" class="btn-base btn-gold px-8 py-3 font-semibold">
+                    Register Free <i class="fa fa-arrow-right ml-2"></i>
+                </a>
+                <a href="{{ route('login') }}" class="btn-base btn-outline-light px-8 py-3">
+                    Log In
+                </a>
+            </div>
+        </div>
+    </section>
+    @endguest
+
+    {{-- Page-specific styles --}}
+    <style>
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+
+        .line-clamp-2 {
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .course-card:hover {
+            transform: translateY(-4px);
+        }
+    </style>
+
 </x-guest-layout>
