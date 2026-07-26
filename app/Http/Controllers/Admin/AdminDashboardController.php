@@ -17,6 +17,7 @@ use App\Models\Subscriber;
 use App\Models\Donation;
 use App\Models\User;
 use App\Models\VolunteerApplication;
+use App\Models\SupportQuery;
 
 class AdminDashboardController extends Controller
 {
@@ -61,6 +62,12 @@ class AdminDashboardController extends Controller
 
             // Subscribers
             'total_subscribers'         => Subscriber::count(),
+
+            // Support Queries
+            'support_new'         => SupportQuery::where('status', 'new')->count(),
+            'support_in_progress' => SupportQuery::where('status', 'in_progress')->count(),
+            'support_resolved'    => SupportQuery::where('status', 'resolved')->count(),
+            'support_closed'      => SupportQuery::where('status', 'closed')->count(),
         ];
 
         return view('admin.dashboard', compact('stats'));

@@ -27,10 +27,12 @@ class DonationController extends Controller
             'purpose' => ['nullable', 'string', 'max:100'],
             'payment_method' => ['required', 'in:jazzcash,easypaisa,bank_transfer'],
             'payment_reference' => ['required', 'string', 'max:100'],
-            'payment_screenshot' => ['required', 'image', 'max:4096'],
+            'payment_screenshot' => ['nullable', 'image', 'max:4096'],
         ]);
 
-        $validated['payment_screenshot'] = $request->file('payment_screenshot')->store('donations', 'private');
+        if ($request->hasFile('payment_screenshot')) {
+            $validated['payment_screenshot'] = $request->file('payment_screenshot')->store('donations', 'private');
+        }
         $validated['donation_number'] = Donation::generateNumber();
         $validated['user_id'] = Auth::id(); // null for guests
 

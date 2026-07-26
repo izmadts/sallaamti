@@ -142,34 +142,113 @@
     </section>
 
     {{-- ============================================================ --}}
-    {{-- WHAT WE DO --}}
+    {{-- ACTIVITIES --}}
     {{-- ============================================================ --}}
     <section class="py-20 bg-white">
         <div class="max-w-7xl mx-auto px-4">
             <div class="text-center mb-12">
-                <span class="section-eyebrow">Our Programs</span>
-                <h2 class="section-title">How We Serve the Ummah</h2>
+                <span class="section-eyebrow">Activities</span>
+                <h2 class="section-title">What We Do at Sallaamti</h2>
+                <p class="section-subtitle">From Quranic education to matrimonial services, family support to community giving — everything in one trusted platform.</p>
             </div>
-            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div class="grid lg:grid-cols-2 xl:grid-cols-3 gap-6">
                 @foreach ([
-                ['📖', 'Sallaamti Taaleem', 'var(--teal)', 'Structured Quran learning — Naazira, Tarjuma, Arabic Grammar, Seerah and Hadith — for all ages through self-paced video courses and live classes.', route('courses.index'), 'Learn More'],
-                ['🎥', 'Live Quran Classes', '#1a5276', 'Online live classes with qualified male and female teachers via Zoom. Monthly subscription, flexible timings for Pakistan and international students.', route('quran-live.index'), 'View Classes'],
-                ['💍', 'Sallaamti Nikah', '#c0392b', 'A halal, verified matrimonial platform with CNIC verification, guardian-mediated communication and complete privacy. Built for serious Muslim families.', route('register'), 'Create Profile'],
-                ['💻', 'Sallaamti Skills', 'var(--gold)', 'Computer skills, graphic design, web development, digital marketing, tailoring, electrician training — empowering youth with halal livelihood skills.', '#', 'Coming Soon'],
-                ['🛠️', 'Sallaamti Rozgar', '#16a34a', 'Employment support for the needy, orphans and deserving families — helping them start dignified small businesses with micro-financing guidance.', '#', 'Coming Soon'],
-                ['👨‍👩‍👧', 'Sallaamti Waldain', '#7d3c98', 'Parenting coaching — helping family heads build strong, values-driven homes. Because strong roots make strong families and generations.', '#', 'Coming Soon'],
-                ] as $prog)
-                <div class="program-block p-6 rounded-2xl border border-gray-100 shadow-sm hover:shadow-md transition-shadow duration-300 flex flex-col">
-                    <div class="w-12 h-12 rounded-xl flex items-center justify-center text-2xl mb-4" style="background: {{ $prog[1] }}22">
-                        {{ $prog[0] }}
+                [
+                'icon' => 'fa-book-open',
+                'color' => 'text-teal',
+                'emoji' => '📖',
+                'title' => 'Quran Learning',
+                'desc' => 'Structured self-paced Quran courses — Nazrah, Tajweed, Translation and Arabic Grammar — with quizzes and certificates.',
+                'url' => route('courses.index'),
+                'btn' => 'Explore Courses',
+                'badge' => null,
+                ],
+                [
+                'icon' => 'fa-laptop',
+                'color' => 'text-gold',
+                'emoji' => '🎥',
+                'title' => 'Live Quran Classes',
+                'desc' => 'One-to-one and group live online classes with qualified teachers. Flexible timings for Pakistan and international students.',
+                'url' => route('quran-live.index'),
+                'btn' => 'View Live Classes',
+                'badge' => null,
+                ],
+                [
+                'icon' => 'fa-heart',
+                'color' => 'text-red-500',
+                'emoji' => '💍',
+                'title' => 'Sallaamti Nikah',
+                'desc' => 'A verified, CNIC-checked Islamic matrimonial platform. Guardian-mediated, photo-private and built on Islamic values.',
+                'url' => route('nikah.create'),
+                'btn' => 'Create Profile',
+                'badge' => null,
+                ],
+                [
+                'icon' => 'fa-hands-helping',
+                'color' => 'text-purple-500',
+                'emoji' => '💑',
+                'title' => 'Family Support',
+                'desc' => 'Submit a confidential query and our qualified counselors will guide you on marital, parenting, financial or spiritual matters.',
+                'url' => auth()->check() ? route('support.create') : route('register'),
+                'btn' => auth()->check() ? 'Get Support' : 'Join & Get Support',
+                'badge' => 'Live',
+                ],
+                [
+                'icon' => 'fa-hand-holding-heart',
+                'color' => 'text-gold',
+                'emoji' => '💝',
+                'title' => 'Donate & Support',
+                'desc' => 'Fund Quran education for orphans, support needy families and keep Sallaamti free for students worldwide.',
+                'url' => route('donate.create'),
+                'btn' => 'Donate Now',
+                'badge' => null,
+                ],
+                [
+                'icon' => 'fa-users',
+                'color' => 'text-teal',
+                'emoji' => '🤝',
+                'title' => 'Volunteer with Us',
+                'desc' => 'Join as a Quran teacher, counselor, developer or outreach volunteer. Earn Sadaqah Jariyah while serving the Ummah.',
+                'url' => route('volunteer.create'),
+                'btn' => 'Apply as Volunteer',
+                'badge' => null,
+                ],
+                ] as $activity)
+
+                <div class="activity-card group relative">
+
+                    {{-- Live / Coming Soon badge --}}
+                    @if ($activity['badge'])
+                    <div class="absolute top-4 right-4">
+                        <span class="text-xs font-bold px-2.5 py-1 rounded-full text-white"
+                            style="background: #16a34a">
+                            ✅ {{ $activity['badge'] }}
+                        </span>
                     </div>
-                    <h5 class="font-bold text-gray-800 mb-2">{{ $prog[1] === '#' ? $prog[2] : $prog[2] }}</h5>
-                    <p class="text-gray-500 text-sm leading-relaxed flex-1">{{ $prog[3] }}</p>
-                    @if ($prog[5] === 'Coming Soon')
-                    <span class="mt-4 inline-block text-xs font-semibold px-3 py-1 rounded-full" style="background: #f0f0f0; color: #888">🚀 Coming Soon</span>
-                    @else
-                    <a href="{{ $prog[4] }}" class="btn-base btn-teal inline-block mt-4 text-sm px-5 py-2 self-start">{{ $prog[5] }}</a>
                     @endif
+
+                    {{-- Icon --}}
+                    <div class="w-14 h-14 rounded-2xl flex items-center justify-center mb-4 text-2xl transition-transform duration-300 group-hover:scale-110"
+                        style="background: var(--teal-light)">
+                        {{ $activity['emoji'] }}
+                    </div>
+
+                    {{-- Title --}}
+                    <h5 class="font-bold text-lg text-gray-800 mb-2">{{ $activity['title'] }}</h5>
+
+                    {{-- Description --}}
+                    <p class="text-gray-500 text-sm leading-relaxed mb-5 flex-1">{{ $activity['desc'] }}</p>
+
+                    {{-- CTA --}}
+                    <a href="{{ $activity['url'] }}"
+                        class="btn-base text-sm px-5 py-2 font-semibold inline-block
+                    {{ $activity['url'] === '#' ? 'btn-disabled' : 'btn-teal' }}">
+                        {{ $activity['btn'] }}
+                        @if ($activity['url'] !== '#')
+                        <i class="fa fa-arrow-right ml-1 text-xs"></i>
+                        @endif
+                    </a>
+
                 </div>
                 @endforeach
             </div>

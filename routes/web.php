@@ -44,6 +44,8 @@ use App\Http\Controllers\Admin\EditorImageController;
 use App\Http\Controllers\Admin\TeamMemberController;
 use App\Http\Controllers\Admin\ActivityPostController;
 use App\Http\Controllers\Admin\CertificateAdminController;
+use App\Http\Controllers\SupportQueryController;
+use App\Http\Controllers\Admin\SupportQueryAdminController;
 
 // ============================================================
 // PUBLIC ROUTES (no auth required)
@@ -57,7 +59,14 @@ Route::get('/', function () {
     $testimonials = \App\Models\Testimonial::where('is_active', true)->orderBy('order')->get();
     return view('index', compact('banners', 'testimonials'));
 })->name('index');
-
+// Route::get('/', function () {
+//     if (auth()->check()) {
+//         return redirect()->route('dashboard');
+//     }
+//     $banners = \App\Models\Banner::active()->get();
+//     $testimonials = \App\Models\Testimonial::where('is_active', true)->orderBy('order')->get();
+//     return view('index', compact('banners', 'testimonials'));
+// })->name('home');
 // Static pages
 Route::get('/about', function () {
     $teamMembers = \App\Models\TeamMember::active()->orderBy('order')->get();
@@ -193,6 +202,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/my-donations', [DonationController::class, 'myDonations'])->name('donate.my');
     Route::get('/donation-screenshot/{donation}', [DonationController::class, 'screenshot'])->name('donation.screenshot');
     Route::get('/thank-you', fn() => view('thank-you'))->name('thank-you');
+
+    Route::get('/support', [SupportQueryController::class, 'index'])->name('support.index');
+    Route::get('/support/create', [SupportQueryController::class, 'create'])->name('support.create');
+    Route::post('/support', [SupportQueryController::class, 'store'])->name('support.store');
+    Route::get('/support/{query}', [SupportQueryController::class, 'show'])->name('support.show');
+    Route::post('/support/{query}/reply', [SupportQueryController::class, 'reply'])->name('support.reply');
 });
 
 // ============================================================
@@ -282,6 +297,12 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     // Subscribers
     Route::get('/subscribers', [SubscriberAdminController::class, 'index'])->name('subscribers.index');
     Route::delete('/subscribers/{subscriber}', [SubscriberAdminController::class, 'destroy'])->name('subscribers.destroy');
+
+    Route::get('support', [SupportQueryAdminController::class, 'index'])->name('support.index');
+    Route::get('support/{query}', [SupportQueryAdminController::class, 'show'])->name('support.show');
+    Route::post('support/{query}/assign', [SupportQueryAdminController::class, 'assign'])->name('support.assign');
+    Route::post('support/{query}/status', [SupportQueryAdminController::class, 'updateStatus'])->name('support.status');
+    Route::post('support/{query}/reply', [SupportQueryAdminController::class, 'reply'])->name('support.reply');
 });
 
 // ============================================================

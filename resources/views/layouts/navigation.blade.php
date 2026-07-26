@@ -74,7 +74,10 @@
                             <x-dropdown-link :href="route('nikah.saved')">★ Saved Profiles</x-dropdown-link>
                         </x-slot>
                     </x-dropdown>
-
+                    <x-nav-link :href="route('support.index')" :active="request()->routeIs('support.*')"
+                        class="text-white hover:bg-teal-600 px-3 py-2 rounded-md text-sm">
+                        🤝 Family Support
+                    </x-nav-link>
                     <x-nav-link :href="route('volunteer.create')" :active="request()->routeIs('volunteer.*')"
                         class="text-white hover:bg-teal-600 px-3 py-2 rounded-md text-sm">
                         🤝 Volunteer
@@ -183,6 +186,7 @@
                         <x-dropdown-link :href="route('nikah.saved')">★ Saved Profiles</x-dropdown-link>
                         <x-dropdown-link :href="route('certificate.index')">🎓 My Certificates</x-dropdown-link>
                         <x-dropdown-link :href="route('donate.my')">💝 My Donations</x-dropdown-link>
+                        <x-dropdown-link :href="route('support.index')">🤝 My Support Queries</x-dropdown-link>
                         <div class="border-t border-gray-100 my-1"></div>
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
@@ -259,7 +263,7 @@
             <x-responsive-nav-link :href="route('volunteer.create')" class="text-white">🤝 Volunteer</x-responsive-nav-link>
             <x-responsive-nav-link :href="route('donate.create')" class="text-white">💝 Donate</x-responsive-nav-link>
             <x-responsive-nav-link :href="route('certificate.index')" class="text-white">🎓 My Certificates</x-responsive-nav-link>
-
+            <x-responsive-nav-link :href="route('support.index')" class="text-white">🤝 Support Queries</x-responsive-nav-link>
             @role('admin')
             <div class="px-3 py-1 text-xs text-teal-300 font-semibold uppercase tracking-wider mt-2">Admin</div>
             <x-responsive-nav-link :href="route('admin.dashboard')" class="text-white">⚙️ Admin Dashboard</x-responsive-nav-link>

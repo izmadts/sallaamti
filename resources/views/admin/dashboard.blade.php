@@ -181,7 +181,32 @@
                     icon="✅" />
             </div>
         </section>
-
+        {{-- Support Queries --}}
+        <section>
+            <p class="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-2">Family Support</p>
+            <div class="grid grid-cols-2 xl:grid-cols-4 gap-3">
+                <x-admin-stat :href="route('admin.support.index', ['status' => 'new'])"
+                    value="{{ $stats['support_new'] }}"
+                    label="New Queries"
+                    color="yellow" icon="🆘"
+                    :badge="$stats['support_new'] > 0" />
+                <x-admin-stat :href="route('admin.support.index', ['status' => 'in_progress'])"
+                    value="{{ $stats['support_in_progress'] }}"
+                    label="In Progress"
+                    color="purple" icon="💬"
+                    :badge="$stats['support_in_progress'] > 0" />
+                <x-admin-stat :href="route('admin.support.index', ['status' => 'resolved'])"
+                    value="{{ $stats['support_resolved'] }}"
+                    label="Resolved"
+                    color="green" icon="✅"
+                    :badge="$stats['support_resolved'] > 0" />
+                <x-admin-stat :href="route('admin.support.index', ['status' => 'closed'])"
+                    value="{{ $stats['support_closed'] }}"
+                    label="Closed"
+                    color="gray" icon="🔒"
+                    :badge="$stats['support_closed'] > 0" />
+            </div>
+        </section>
         {{-- ===== DONATIONS & NEWSLETTER ===== --}}
         <section>
             <p class="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-2">Donations & Newsletter</p>

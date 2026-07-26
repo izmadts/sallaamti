@@ -120,7 +120,7 @@
                             </div>
                             <h4 class="font-medium text-gray-800 mt-2">Certificates</h4>
                             <p class="text-xs text-gray-500">Earned on course completion</p>
-                        </a>
+                        </a>                     
 
                     </div>
                 </div>
@@ -193,6 +193,7 @@
                         <a href="{{ route('quran-live.my-class') }}" class="flex items-center gap-2 text-sm text-gray-600 hover:text-teal-600 py-1">📡 My Quran Class</a>
                         <a href="{{ route('nikah.browse') }}" class="flex items-center gap-2 text-sm text-gray-600 hover:text-teal-600 py-1">💍 Browse Matches</a>
                         <a href="{{ route('nikah.interests') }}" class="flex items-center gap-2 text-sm text-gray-600 hover:text-teal-600 py-1">💌 My Interests</a>
+                        <a href="{{ route('support.create') }}" class="flex items-center gap-2 text-sm text-gray-600 hover:text-teal-600 py-1">🤝 Get Family Support</a>
                         <a href="{{ route('certificate.index') }}" class="flex items-center gap-2 text-sm text-gray-600 hover:text-teal-600 py-1">🎓 My Certificates</a>
                         <a href="{{ route('volunteer.create') }}" class="flex items-center gap-2 text-sm text-gray-600 hover:text-teal-600 py-1">🤝 Volunteer</a>
                         <a href="{{ route('donate.create') }}" class="flex items-center gap-2 text-sm text-gray-600 hover:text-teal-600 py-1">💝 Donate</a>

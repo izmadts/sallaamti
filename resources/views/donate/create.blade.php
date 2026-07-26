@@ -1,229 +1,356 @@
-<x-guest-layout title="Donate" description="Support Sallaamti's Quran education, matrimonial and community programs with your sadaqah and donations.">
+<x-guest-layout>
 
-    {{-- Page Hero --}}
-    <section class="page-hero relative overflow-hidden flex items-center" style="min-height: 280px; background: linear-gradient(135deg, #b8962e 0%, #0d6b6b 100%);">
-        <div class="max-w-7xl mx-auto px-4 py-16 relative z-10 text-center w-full">
-            <span class="section-eyebrow" style="color: rgba(255,255,255,0.7)">Support Our Mission</span>
-            <h1 class="text-4xl md:text-5xl font-extrabold text-white mt-2 mb-3">💝 Make a Donation</h1>
-            <p class="text-white/70 text-lg max-w-xl mx-auto">"Spend in the way of Allah and do not throw yourselves into destruction." — Quran 2:195</p>
+    {{-- ============================================================ --}}
+    {{-- HERO --}}
+    {{-- ============================================================ --}}
+    <section class="relative overflow-hidden flex items-center"
+        style="min-height: 320px; background: linear-gradient(135deg, #b8962e 0%, #0d6b6b 100%);">
+        <div class="absolute inset-0 opacity-5 flex items-center justify-center pointer-events-none"
+            style="font-size: 20rem; color: #fff;">🤲</div>
+        <div class="max-w-4xl mx-auto px-4 py-20 relative z-10 text-center w-full">
+            <span class="section-eyebrow" style="color: rgba(255,255,255,0.7)">Sadaqah Jariyah</span>
+            <h1 class="text-4xl md:text-5xl font-extrabold text-white mt-2 mb-4">Support Sallaamti</h1>
+            <p class="text-white/70 text-lg max-w-xl mx-auto">
+                "The believer's shade on the Day of Resurrection will be his charity." — Tirmidhi
+            </p>
+
+            {{-- Quick impact stats --}}
+            <div class="flex justify-center gap-6 mt-8 flex-wrap">
+                @foreach ([
+                ['📚', \App\Models\Enrollment::count() . '+', 'Students Helped'],
+                ['🎓', \App\Models\Certificate::count() . '+', 'Certificates Given'],
+                ['🌍', '20+', 'Countries Reached'],
+                ] as $s)
+                <div class="text-center">
+                    <div class="text-2xl mb-1">{{ $s[0] }}</div>
+                    <div class="text-xl font-extrabold text-white">{{ $s[1] }}</div>
+                    <div class="text-white/50 text-xs">{{ $s[2] }}</div>
+                </div>
+                @endforeach
+            </div>
         </div>
     </section>
 
+    {{-- ============================================================ --}}
+    {{-- MAIN CONTENT --}}
+    {{-- ============================================================ --}}
     <section class="py-16 bg-cream">
-        <div class="max-w-5xl mx-auto px-4">
+        <div class="max-w-4xl mx-auto px-4">
 
             @if (session('status'))
-            <div class="mb-6 p-4 rounded-xl text-green-700 flex items-center gap-3" style="background: #f0fdf4; border: 1px solid #bbf7d0">
-                <i class="fa fa-check-circle text-xl"></i>
-                <div>{{ session('status') }}</div>
+            <div class="mb-8 p-5 rounded-2xl text-green-700 flex items-start gap-4"
+                style="background: #f0fdf4; border: 1px solid #bbf7d0">
+                <div class="text-3xl flex-shrink-0">✅</div>
+                <div>
+                    <p class="font-bold mb-1">JazakAllah Khair! Donation Submitted.</p>
+                    <p class="text-sm text-green-600">{{ session('status') }} Our team will confirm within 24 hours, in sha Allah.</p>
+                </div>
             </div>
             @endif
 
-            <div class="grid lg:grid-cols-3 gap-8">
+            <div class="grid lg:grid-cols-5 gap-8">
 
-                {{-- Form --}}
-                <div class="lg:col-span-2">
-                    <div class="bg-white rounded-2xl shadow-sm p-8">
-                        <h3 class="font-bold text-xl text-gray-800 mb-6">Donation Details</h3>
+                {{-- ===== FORM (wider) ===== --}}
+                <div class="lg:col-span-3">
+                    <div class="bg-white rounded-3xl shadow-sm p-8">
+
+                        <h3 class="font-extrabold text-2xl text-gray-800 mb-2">Make a Donation</h3>
+                        <p class="text-gray-400 text-sm mb-8">3 simple steps — choose amount, pay, upload screenshot.</p>
 
                         @if ($errors->any())
-                        <div class="mb-6 p-4 rounded-xl text-red-700 text-sm" style="background: #fef2f2; border: 1px solid #fecaca">
-                            <ul class="list-disc list-inside space-y-1">
-                                @foreach ($errors->all() as $error)<li>{{ $error }}</li>@endforeach
+                        <div class="mb-6 p-4 rounded-xl text-red-600 text-sm"
+                            style="background: #fef2f2; border: 1px solid #fecaca">
+                            <p class="font-semibold mb-1">Please fix the following:</p>
+                            <ul class="list-disc list-inside space-y-0.5">
+                                @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                                @endforeach
                             </ul>
                         </div>
                         @endif
 
-                        <form method="POST" action="{{ route('donate.store') }}" enctype="multipart/form-data" class="space-y-6">
+                        <form method="POST" action="{{ route('donate.store') }}"
+                            enctype="multipart/form-data" class="space-y-7">
                             @csrf
 
-                            {{-- Cause --}}
+                            {{-- STEP 1: Amount --}}
                             <div>
-                                <label class="auth-label">Select a Cause</label>
-                                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 mt-2">
-                                    @foreach ([
-                                    ['quran_education', '📚', 'Quran Education'],
-                                    ['family_support', '👨‍👩‍👧', 'Family Support'],
-                                    ['skills_training', '💻', 'Skills Training'],
-                                    ['nikah_support', '💍', 'Nikah Support'],
-                                    ['general', '🕌', 'General Fund'],
-                                    ['where_needed', '🤲', 'Where Needed Most'],
-                                    ] as $cause)
-                                    <label class="cause-option">
-                                        <input type="radio" name="cause" value="{{ $cause[0] }}" {{ old('cause', 'general') === $cause[0] ? 'checked' : '' }} class="sr-only cause-radio">
-                                        <span class="cause-label">
-                                            <span class="text-xl">{{ $cause[1] }}</span>
-                                            <span class="text-xs font-semibold mt-1">{{ $cause[2] }}</span>
-                                        </span>
-                                    </label>
-                                    @endforeach
+                                <div class="flex items-center gap-3 mb-4">
+                                    <div class="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0"
+                                        style="background: var(--teal)">1</div>
+                                    <label class="font-bold text-gray-800">Choose an Amount</label>
                                 </div>
-                            </div>
 
-                            {{-- Amount --}}
-                            <div>
-                                <label class="auth-label">Donation Amount</label>
-                                <div class="grid grid-cols-3 sm:grid-cols-5 gap-2 mt-2 mb-3">
-                                    @foreach (['500', '1000', '2000', '5000', '10000'] as $amt)
-                                    <button type="button" onclick="setAmount({{ $amt }})"
-                                        class="amount-btn py-2 px-3 rounded-xl border-2 text-sm font-semibold transition-all duration-200 text-gray-600 border-gray-200 hover:border-teal-600 hover:text-teal-700">
-                                        PKR {{ number_format($amt) }}
+                                {{-- Quick amounts --}}
+                                <div class="grid grid-cols-3 gap-2 mb-3">
+                                    @foreach ([
+                                    ['500', 'PKR 500', 'Covers 1 week of lessons'],
+                                    ['1000', 'PKR 1,000', '2 weeks of a student'],
+                                    ['3000', 'PKR 3,000', '1 month education'],
+                                    ['5000', 'PKR 5,000', 'Support a family'],
+                                    ['10000', 'PKR 10,000', 'Sponsor a course'],
+                                    ['custom', 'Custom', 'Any amount helps'],
+                                    ] as $amt)
+                                    <button type="button"
+                                        onclick="selectAmount('{{ $amt[0] }}')"
+                                        id="btn-{{ $amt[0] }}"
+                                        class="amount-preset group relative p-3 rounded-xl border-2 border-gray-200 text-center transition-all duration-200 hover:border-teal-500 focus:outline-none">
+                                        <span class="block font-bold text-gray-800 text-sm">{{ $amt[1] }}</span>
+                                        <span class="block text-gray-400 text-xs mt-0.5 leading-tight">{{ $amt[2] }}</span>
                                     </button>
                                     @endforeach
                                 </div>
-                                <div class="auth-input-wrap">
-                                    <span class="auth-icon font-semibold text-gray-500 text-sm">PKR</span>
-                                    <input type="number" name="amount" id="amountInput" value="{{ old('amount') }}" required
-                                        class="auth-input @error('amount') auth-input-error @enderror"
-                                        placeholder="Or enter custom amount">
-                                </div>
-                                <x-input-error :messages="$errors->get('amount')" class="mt-1" />
-                            </div>
 
-                            {{-- Donor name --}}
-                            <div class="grid sm:grid-cols-2 gap-4">
-                                <div>
-                                    <label class="auth-label">Your Name</label>
-                                    <div class="auth-input-wrap">
-                                        <i class="fa fa-user auth-icon"></i>
-                                        <input type="text" name="donor_name" value="{{ old('donor_name', auth()->user()?->name) }}" required
-                                            class="auth-input" placeholder="Full name">
+                                {{-- Custom amount input --}}
+                                <div id="customAmountWrap" class="hidden">
+                                    <div class="flex items-center gap-2 border-2 border-teal-500 rounded-xl px-4 py-3">
+                                        <span class="text-gray-500 font-semibold text-sm flex-shrink-0">PKR</span>
+                                        <input type="number" id="customAmountInput"
+                                            class="flex-1 outline-none text-gray-800 text-sm font-medium bg-transparent"
+                                            placeholder="Enter amount e.g. 2500"
+                                            min="100">
                                     </div>
                                 </div>
-                                <div>
-                                    <label class="auth-label">Email Address</label>
-                                    <div class="auth-input-wrap">
-                                        <i class="fa fa-envelope auth-icon"></i>
-                                        <input type="email" name="donor_email" value="{{ old('donor_email', auth()->user()?->email) }}" required
-                                            class="auth-input" placeholder="your@email.com">
+
+                                {{-- Hidden actual amount field --}}
+                                <input type="hidden" name="amount" id="amountFinal" value="{{ old('amount') }}">
+                                @error('amount')
+                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            {{-- STEP 2: Payment Method --}}
+                            <div>
+                                <div class="flex items-center gap-3 mb-4">
+                                    <div class="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0"
+                                        style="background: var(--teal)">2</div>
+                                    <label class="font-bold text-gray-800">Pay Using</label>
+                                </div>
+
+                                <div class="grid grid-cols-2 gap-3 mb-4" x-data="{ method: '{{ old('payment_method', '') }}' }">
+
+                                    {{-- Bank Transfer --}}
+                                    <label class="cursor-pointer">
+                                        <input type="radio" name="payment_method" value="bank_transfer"
+                                            x-model="method"
+                                            {{ old('payment_method') === 'bank_transfer' ? 'checked' : '' }}
+                                            class="sr-only peer">
+                                        <div class="peer-checked:border-teal-600 peer-checked:bg-teal-50 border-2 border-gray-200 rounded-2xl p-4 text-center transition-all cursor-pointer hover:border-teal-400">
+                                            <div class="text-2xl mb-1">🏦</div>
+                                            <p class="font-bold text-sm text-gray-800">Bank Transfer</p>
+                                            <p class="text-xs text-gray-400 mt-0.5">Pakistan</p>
+                                        </div>
+                                    </label>
+
+                                    {{-- International --}}
+                                    <label class="cursor-pointer">
+                                        <input type="radio" name="payment_method" value="international"
+                                            x-model="method"
+                                            {{ old('payment_method') === 'international' ? 'checked' : '' }}
+                                            class="sr-only peer">
+                                        <div class="peer-checked:border-teal-600 peer-checked:bg-teal-50 border-2 border-gray-200 rounded-2xl p-4 text-center transition-all cursor-pointer hover:border-teal-400">
+                                            <div class="text-2xl mb-1">🌐</div>
+                                            <p class="font-bold text-sm text-gray-800">International</p>
+                                            <p class="text-xs text-gray-400 mt-0.5">Wire / SWIFT</p>
+                                        </div>
+                                    </label>
+
+                                    {{-- Payment details shown dynamically --}}
+                                    <div x-show="method === 'bank_transfer'" x-transition
+                                        class="col-span-2 rounded-2xl p-4 text-sm space-y-1.5"
+                                        style="background: #e8f5f5; border: 1px solid #0d6b6b33">
+                                        <p class="font-bold text-gray-700 mb-2">🏦 Bank Transfer Details</p>
+                                        <div class="flex justify-between">
+                                            <span class="text-gray-500">Bank</span>
+                                            <span class="font-medium text-gray-800">{{ setting('bank_name', 'Meezan Bank') }}</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span class="text-gray-500">Account No</span>
+                                            <span class="font-medium text-gray-800 select-all">{{ setting('bank_account_number', 'XXXX-XXXXXXXXXXXX') }}</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span class="text-gray-500">IBAN</span>
+                                            <span class="font-medium text-gray-800 select-all text-xs">{{ setting('bank_account_iban', 'PK00MEZN000000000000') }}</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span class="text-gray-500">Account Title</span>
+                                            <span class="font-medium text-gray-800">{{ setting('site_name', 'Sallaamti') }}</span>
+                                        </div>
+                                    </div>
+
+                                    <div x-show="method === 'international'" x-transition
+                                        class="col-span-2 rounded-2xl p-4 text-sm space-y-1.5"
+                                        style="background: #fdf6e3; border: 1px solid #b8962e33">
+                                        <p class="font-bold text-gray-700 mb-2">🌐 International Wire Details</p>
+                                        <div class="flex justify-between">
+                                            <span class="text-gray-500">Bank</span>
+                                            <span class="font-medium text-gray-800">{{ setting('bank_name', 'Meezan Bank') }}</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span class="text-gray-500">IBAN / SWIFT</span>
+                                            <span class="font-medium text-gray-800 text-xs select-all">{{ setting('bank_account_iban', 'PK00MEZN000000000000') }}</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span class="text-gray-500">Account Title</span>
+                                            <span class="font-medium text-gray-800">{{ setting('site_name', 'Sallaamti') }}</span>
+                                        </div>
+                                        <div class="flex justify-between">
+                                            <span class="text-gray-500">Country</span>
+                                            <span class="font-medium text-gray-800">Pakistan</span>
+                                        </div>
+                                        <p class="text-xs text-amber-600 mt-2 pt-2 border-t border-amber-200">
+                                            For international transfers contact us on WhatsApp for routing details.
+                                        </p>
+                                    </div>
+                                </div>
+
+                                @error('payment_method')
+                                <p class="text-red-500 text-xs">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            {{-- STEP 3: Proof --}}
+                            <div>
+                                <div class="flex items-center gap-3 mb-4">
+                                    <div class="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0"
+                                        style="background: var(--teal)">3</div>
+                                    <label class="font-bold text-gray-800">Upload Payment Screenshot (Optional)</label>
+                                </div>
+
+                                <div id="uploadArea"
+                                    class="border-2 border-dashed border-gray-200 rounded-2xl p-8 text-center cursor-pointer transition-all hover:border-teal-400 hover:bg-teal-50"
+                                    onclick="document.getElementById('screenshot').click()">
+                                    <div id="uploadPlaceholder">
+                                        <div class="text-4xl mb-2">📸</div>
+                                        <p class="text-gray-600 text-sm font-medium">Tap to upload payment screenshot</p>
+                                        <p class="text-gray-400 text-xs mt-1">JPG or PNG — Max 4MB</p>
+                                    </div>
+                                    <div id="uploadPreview" class="hidden">
+                                        <img id="previewImg" src="" alt="" class="max-h-40 mx-auto rounded-xl mb-2">
+                                        <p id="uploadedName" class="text-sm font-semibold" style="color: var(--teal)"></p>
+                                        <p class="text-xs text-gray-400 mt-1">Tap to change</p>
+                                    </div>
+                                </div>
+                                <input type="file" id="screenshot" name="payment_screenshot"
+                                    accept="image/*" class="hidden">
+                                @error('payment_screenshot')
+                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            {{-- Optional: name only --}}
+                            <div class="pt-2 border-t border-gray-100">
+                                <p class="text-xs text-gray-400 mb-3 font-medium uppercase tracking-wider">Optional — helps us send you a receipt</p>
+                                <div class="grid sm:grid-cols-2 gap-3">
+                                    <div>
+                                        <div class="flex items-center border border-gray-200 rounded-xl px-3 py-2.5 gap-2 focus-within:border-teal-500 transition-colors">
+                                            <i class="fa fa-user text-gray-300 text-xs w-4"></i>
+                                            <input type="text" name="donor_name"
+                                                value="{{ old('donor_name', auth()->user()?->name) }}"
+                                                class="flex-1 outline-none text-sm text-gray-700 bg-transparent"
+                                                placeholder="Your name">
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <div class="flex items-center border border-gray-200 rounded-xl px-3 py-2.5 gap-2 focus-within:border-teal-500 transition-colors">
+                                            <i class="fa fa-envelope text-gray-300 text-xs w-4"></i>
+                                            <input type="email" name="donor_email"
+                                                value="{{ old('donor_email', auth()->user()?->email) }}"
+                                                class="flex-1 outline-none text-sm text-gray-700 bg-transparent"
+                                                placeholder="Email for receipt">
+                                        </div>
                                     </div>
                                 </div>
                             </div>
 
-                            {{-- Phone --}}
-                            <div>
-                                <label class="auth-label">Phone / WhatsApp <span class="text-gray-400 font-normal">(optional)</span></label>
-                                <div class="auth-input-wrap">
-                                    <i class="fa fa-phone auth-icon"></i>
-                                    <input type="text" name="donor_phone" value="{{ old('donor_phone', auth()->user()?->phone) }}"
-                                        class="auth-input" placeholder="03XX XXXXXXX">
-                                </div>
+                            {{-- Hidden fields with defaults --}}
+                            <input type="hidden" name="cause" value="general">
+                            <input type="hidden" name="payment_reference" value="pending-admin-verify">
+
+                            {{-- Anonymous toggle --}}
+                            <div class="flex items-center gap-3 py-2">
+                                <label class="relative inline-flex items-center cursor-pointer">
+                                    <input type="checkbox" name="is_anonymous" value="1" class="sr-only peer"
+                                        {{ old('is_anonymous') ? 'checked' : '' }}>
+                                    <div class="w-9 h-5 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-teal-600"></div>
+                                </label>
+                                <span class="text-sm text-gray-500">Keep my donation anonymous</span>
                             </div>
 
-                            {{-- Payment Method --}}
-                            <div>
-                                <label class="auth-label">Payment Method</label>
-                                <div class="auth-input-wrap">
-                                    <i class="fa fa-credit-card auth-icon"></i>
-                                    <select name="payment_method" required class="auth-input @error('payment_method') auth-input-error @enderror">
-                                        <option value="">Select payment method</option>
-                                        <option value="jazzcash" {{ old('payment_method') === 'jazzcash' ? 'selected' : '' }}>💚 JazzCash</option>
-                                        <!-- <option value="easypaisa" {{ old('payment_method') === 'easypaisa' ? 'selected' : '' }}>🟡 EasyPaisa</option> -->
-                                        <option value="bank_transfer" {{ old('payment_method') === 'bank_transfer' ? 'selected' : '' }}>🏦 Bank Transfer</option>
-                                        <option value="international" {{ old('payment_method') === 'international' ? 'selected' : '' }}>🌐 International Wire</option>
-                                    </select>
-                                </div>
-                                <x-input-error :messages="$errors->get('payment_method')" class="mt-1" />
-                            </div>
-
-                            {{-- Transaction Reference --}}
-                            <div>
-                                <label class="auth-label">Transaction Reference / ID</label>
-                                <div class="auth-input-wrap">
-                                    <i class="fa fa-hashtag auth-icon"></i>
-                                    <input type="text" name="payment_reference" value="{{ old('payment_reference') }}" required
-                                        class="auth-input @error('payment_reference') auth-input-error @enderror"
-                                        placeholder="e.g. TXN-123456789">
-                                </div>
-                                <x-input-error :messages="$errors->get('payment_reference')" class="mt-1" />
-                            </div>
-
-                            {{-- Screenshot --}}
-                            <div>
-                                <label class="auth-label">Payment Screenshot</label>
-                                <div class="upload-area" onclick="document.getElementById('screenshot').click()">
-                                    <div class="text-3xl mb-2">📸</div>
-                                    <p class="text-gray-600 text-sm font-medium">Click to upload payment screenshot</p>
-                                    <p class="text-gray-400 text-xs mt-1">JPG, PNG — Max 4MB</p>
-                                    <p id="file-name" class="text-xs mt-2 font-semibold" style="color: var(--teal)"></p>
-                                </div>
-                                <input type="file" id="screenshot" name="payment_screenshot" accept="image/*" class="hidden"
-                                    onchange="document.getElementById('file-name').textContent = this.files[0]?.name || ''" required>
-                                <x-input-error :messages="$errors->get('payment_screenshot')" class="mt-1" />
-                            </div>
-
-                            {{-- Message --}}
-                            <div>
-                                <label class="auth-label">Message <span class="text-gray-400 font-normal">(optional)</span></label>
-                                <textarea name="message" rows="3"
-                                    class="auth-input w-full resize-none"
-                                    style="padding-left: 1rem"
-                                    placeholder="A message or du'a you'd like to share...">{{ old('message') }}</textarea>
-                            </div>
-
-                            {{-- Anonymous --}}
-                            <div class="flex items-center gap-2">
-                                <input type="checkbox" name="is_anonymous" value="1" id="anon" class="auth-checkbox" {{ old('is_anonymous') ? 'checked' : '' }}>
-                                <label for="anon" class="text-sm text-gray-600">Make my donation anonymous (your name won't be shown publicly)</label>
-                            </div>
-
-                            <button type="submit" class="btn-base btn-gold w-full py-4 text-base font-bold">
-                                💝 Submit Donation <i class="fa fa-arrow-right ml-2"></i>
+                            {{-- Submit --}}
+                            <button type="submit"
+                                class="w-full py-4 rounded-2xl text-white font-extrabold text-lg transition-all duration-200 hover:opacity-90 active:scale-95"
+                                style="background: linear-gradient(135deg, #b8962e 0%, #0d6b6b 100%)">
+                                💝 Submit Donation — JazakAllah Khair
                             </button>
+
+                            <p class="text-center text-xs text-gray-400">
+                                Our admin will verify and confirm within 24 hours, in sha Allah.
+                            </p>
+
                         </form>
                     </div>
                 </div>
 
-                {{-- Sidebar --}}
-                <div class="space-y-4">
+                {{-- ===== SIDEBAR ===== --}}
+                <div class="lg:col-span-2 space-y-4">
 
-                    {{-- Payment Info --}}
-                    <div class="bg-white rounded-2xl p-6 shadow-sm">
-                        <h5 class="font-bold text-gray-800 mb-4">💳 Payment Details</h5>
-                        <div class="space-y-3 text-sm">
-                            <div class="p-3 rounded-xl" style="background: var(--teal-light)">
-                                <p class="font-bold mb-0.5" style="color: var(--teal)">❤️ JazzCash</p>
-                                <p class="text-gray-600 mb-0">{{ setting('jazzcash_number', '03XX-XXXXXXX') }}</p>
-                                <p class="font-semibold text-gray-700 mb-0">{{ setting('jazzcash_account_title', 'Mubashar Irshad') }}</p>
-                            </div>
-                            <div class="p-3 rounded-xl" style="background: #fdf6e3">
-                                <p class="font-bold mb-0.5" style="color: var(--gold)">🏦 Bank Transfer</p>
-                                <p class="text-gray-600 text-xs mb-0">Bank: {{ setting('bank_name') }}</p>
-                                <p class="text-gray-600 text-xs mb-0">Account No: {{ setting('bank_account_number') }}</p>
-                                <p class="text-gray-600 text-xs mb-0">IBAN: {{ setting('bank_account_iban') }}</p>
-                                <p class="text-gray-600 text-xs mb-0">Title: {{ setting('site_name', 'Sallaamti') }}</p>
-                            </div>
-                        </div>
-                    </div>
-
-                    {{-- Causes --}}
+                    {{-- Why donate --}}
                     <div class="bg-white rounded-2xl p-6 shadow-sm">
                         <h5 class="font-bold text-gray-800 mb-4">🤲 Your Donation Helps</h5>
-                        <div class="space-y-3 text-sm">
+                        <div class="space-y-3">
                             @foreach ([
-                            ['📚', 'Quran education for orphans and needy students'],
-                            ['👨‍👩‍👧', 'Supporting families in financial hardship'],
-                            ['🛠️', 'Skills training for unemployed youth'],
-                            ['🌐', 'Keeping our platform free for students globally'],
+                            ['📚', 'Quran education', 'Free Quran lessons for orphans and needy children'],
+                            ['👨‍👩‍👧', 'Family support', 'Counseling and assistance for struggling families'],
+                            ['🌐', 'Platform free', 'Keeping Sallaamti accessible for students globally'],
+                            ['💍', 'Nikah support', 'Helping deserving singles afford the verification process'],
                             ] as $impact)
-                            <div class="flex items-start gap-2 text-gray-600">
-                                <span class="flex-shrink-0">{{ $impact[0] }}</span>
-                                <span>{{ $impact[1] }}</span>
+                            <div class="flex items-start gap-3">
+                                <span class="text-xl flex-shrink-0">{{ $impact[0] }}</span>
+                                <div>
+                                    <p class="font-semibold text-gray-700 text-sm">{{ $impact[1] }}</p>
+                                    <p class="text-gray-400 text-xs mt-0.5">{{ $impact[2] }}</p>
+                                </div>
                             </div>
                             @endforeach
                         </div>
                     </div>
 
-                    {{-- Trust --}}
-                    <div class="bg-white rounded-2xl p-6 shadow-sm">
-                        <h5 class="font-bold text-gray-800 mb-4">🔒 Safe & Transparent</h5>
-                        <div class="space-y-2 text-sm text-gray-500">
-                            <div class="flex items-center gap-2"><i class="fa fa-check-circle" style="color: var(--teal)"></i> Manual verification by admin</div>
-                            <div class="flex items-center gap-2"><i class="fa fa-check-circle" style="color: var(--teal)"></i> Receipt sent to your email</div>
-                            <div class="flex items-center gap-2"><i class="fa fa-check-circle" style="color: var(--teal)"></i> Transparent fund utilization</div>
-                            <div class="flex items-center gap-2"><i class="fa fa-check-circle" style="color: var(--teal)"></i> 100% goes to the cause</div>
+                    {{-- Trust signals --}}
+                    <div class="rounded-2xl p-6" style="background: linear-gradient(135deg, #0d6b6b 0%, #1a1a2e 100%)">
+                        <h5 class="font-bold text-white mb-4">🔒 100% Safe & Trusted</h5>
+                        <div class="space-y-2.5">
+                            @foreach ([
+                            'Every donation manually verified',
+                            'Receipt emailed within 24 hours',
+                            'Full transparency on fund use',
+                            'No admin salary taken from donations',
+                            ] as $trust)
+                            <div class="flex items-center gap-2 text-white/70 text-sm">
+                                <svg class="w-4 h-4 flex-shrink-0 text-green-400" fill="currentColor" viewBox="0 0 20 20">
+                                    <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd" />
+                                </svg>
+                                {{ $trust }}
+                            </div>
+                            @endforeach
                         </div>
                     </div>
+
+                    {{-- WhatsApp support --}}
+                    <a href="https://wa.me/{{ setting('social_whatsapp') }}" target="_blank"
+                        class="flex items-center gap-3 bg-white rounded-2xl p-4 shadow-sm hover:shadow-md transition-shadow group">
+                        <div class="w-12 h-12 rounded-xl flex items-center justify-center text-2xl flex-shrink-0"
+                            style="background: #f0fdf4">💬</div>
+                        <div>
+                            <p class="font-bold text-gray-800 text-sm group-hover:text-green-600 transition-colors">
+                                Need help? WhatsApp us
+                            </p>
+                            <p class="text-xs text-gray-400 mt-0.5">We reply within a few hours</p>
+                        </div>
+                        <svg class="w-4 h-4 text-gray-300 ml-auto group-hover:text-green-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                        </svg>
+                    </a>
 
                 </div>
             </div>
@@ -231,65 +358,67 @@
     </section>
 
     <style>
-        /* Cause selector */
-        .cause-option {
-            cursor: pointer;
-        }
-
-        .cause-label {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            padding: 10px 8px;
-            border-radius: 12px;
-            border: 2px solid #e5e7eb;
-            transition: all 0.2s;
-            text-align: center;
-            height: 100%;
-            color: #6b7280;
-            font-size: 12px;
-        }
-
-        .cause-radio:checked+.cause-label {
+        .amount-preset.selected {
             border-color: var(--teal);
             background: var(--teal-light);
+        }
+
+        .amount-preset.selected span:first-child {
             color: var(--teal);
-        }
-
-        .cause-label:hover {
-            border-color: var(--teal);
-        }
-
-        /* Amount buttons */
-        .amount-btn.active {
-            background: var(--teal);
-            border-color: var(--teal);
-            color: #fff;
-        }
-
-        /* Upload area */
-        .upload-area {
-            border: 2px dashed #d1d5db;
-            border-radius: 12px;
-            padding: 24px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .upload-area:hover {
-            border-color: var(--teal);
-            background: var(--teal-light);
         }
     </style>
 
     <script>
-        function setAmount(val) {
-            document.getElementById('amountInput').value = val;
-            document.querySelectorAll('.amount-btn').forEach(btn => btn.classList.remove('active'));
-            event.target.classList.add('active');
+        function selectAmount(val) {
+            // Remove selected from all
+            document.querySelectorAll('.amount-preset').forEach(b => b.classList.remove('selected'));
+
+            const customWrap = document.getElementById('customAmountWrap');
+            const finalInput = document.getElementById('amountFinal');
+
+            if (val === 'custom') {
+                // Show custom input
+                customWrap.classList.remove('hidden');
+                document.getElementById('btn-custom').classList.add('selected');
+                finalInput.value = '';
+
+                // Sync custom input to hidden field
+                const customInput = document.getElementById('customAmountInput');
+                customInput.focus();
+                customInput.addEventListener('input', () => {
+                    finalInput.value = customInput.value;
+                });
+            } else {
+                customWrap.classList.add('hidden');
+                document.getElementById('btn-' + val).classList.add('selected');
+                finalInput.value = val;
+            }
         }
+
+        // Screenshot preview
+        document.getElementById('screenshot').addEventListener('change', function() {
+            const file = this.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                document.getElementById('uploadPlaceholder').classList.add('hidden');
+                document.getElementById('uploadPreview').classList.remove('hidden');
+                document.getElementById('previewImg').src = e.target.result;
+                document.getElementById('uploadedName').textContent = file.name;
+            };
+            reader.readAsDataURL(file);
+        });
+
+        // Pre-select first amount on load
+        document.addEventListener('DOMContentLoaded', () => {
+            @if(old('amount'))
+            document.getElementById('amountFinal').value = '{{ old('
+            amount ') }}';
+            @else
+            selectAmount('1000');
+            @endif
+        });
     </script>
 
 </x-guest-layout>

@@ -547,24 +547,106 @@
             <div class="text-center mb-12">
                 <span class="section-eyebrow">Activities</span>
                 <h2 class="section-title">What We Do at Sallaamti</h2>
+                <p class="section-subtitle">From Quranic education to matrimonial services, family support to community giving — everything in one trusted platform.</p>
             </div>
             <div class="grid lg:grid-cols-2 xl:grid-cols-3 gap-6">
                 @foreach ([
-                ['fa-book-open', 'text-teal', '📖 Quran Learning', 'Learn with proper Tajweed, understanding, and authentic Islamic teachings for children and adults.', route('courses.index'), 'Explore Courses'],
-                ['fa-laptop', 'text-gold', '🎧 Live Quran Classes', 'Join our live Quran classes and enhance your understanding with expert guidance.', route('quran-live.index'), 'View Live Classes'],
-                ['fa-heart', 'text-red-500', '💍 Sallaamti Nikah', 'A verified, guardian-mediated Islamic matrimonial platform built on trust and values.', route('nikah.create'), 'Create Profile'],
-                ['fa-quran', 'text-teal', '💑 Couples Care', 'Guidance and support for building strong, healthy relationships and families.', '#', 'Coming Soon'],
-                ['fa-desktop', 'text-gold', '💻 Digital Skills', 'Comprehensive training in computer skills, design, web development and trades.', '#', 'Coming Soon'],
-                ['fa-users', 'text-teal', '👨‍👧‍👦 Parental Coaching', 'Professional guidance for effective parenting and raising the next generation of Muslims.', '#', 'Coming Soon'],
+                [
+                'icon' => 'fa-book-open',
+                'color' => 'text-teal',
+                'emoji' => '📖',
+                'title' => 'Quran Learning',
+                'desc' => 'Structured self-paced Quran courses — Nazrah, Tajweed, Translation and Arabic Grammar — with quizzes and certificates.',
+                'url' => route('courses.index'),
+                'btn' => 'Explore Courses',
+                'badge' => null,
+                ],
+                [
+                'icon' => 'fa-laptop',
+                'color' => 'text-gold',
+                'emoji' => '🎥',
+                'title' => 'Live Quran Classes',
+                'desc' => 'One-to-one and group live online classes with qualified teachers. Flexible timings for Pakistan and international students.',
+                'url' => route('quran-live.index'),
+                'btn' => 'View Live Classes',
+                'badge' => null,
+                ],
+                [
+                'icon' => 'fa-heart',
+                'color' => 'text-red-500',
+                'emoji' => '💍',
+                'title' => 'Sallaamti Nikah',
+                'desc' => 'A verified, CNIC-checked Islamic matrimonial platform. Guardian-mediated, photo-private and built on Islamic values.',
+                'url' => route('nikah.create'),
+                'btn' => 'Create Profile',
+                'badge' => null,
+                ],
+                [
+                'icon' => 'fa-hands-helping',
+                'color' => 'text-purple-500',
+                'emoji' => '💑',
+                'title' => 'Family Support',
+                'desc' => 'Submit a confidential query and our qualified counselors will guide you on marital, parenting, financial or spiritual matters.',
+                'url' => auth()->check() ? route('support.create') : route('register'),
+                'btn' => auth()->check() ? 'Get Support' : 'Join & Get Support',
+                'badge' => 'Live',
+                ],
+                [
+                'icon' => 'fa-hand-holding-heart',
+                'color' => 'text-gold',
+                'emoji' => '💝',
+                'title' => 'Donate & Support',
+                'desc' => 'Fund Quran education for orphans, support needy families and keep Sallaamti free for students worldwide.',
+                'url' => route('donate.create'),
+                'btn' => 'Donate Now',
+                'badge' => null,
+                ],
+                [
+                'icon' => 'fa-users',
+                'color' => 'text-teal',
+                'emoji' => '🤝',
+                'title' => 'Volunteer with Us',
+                'desc' => 'Join as a Quran teacher, counselor, developer or outreach volunteer. Earn Sadaqah Jariyah while serving the Ummah.',
+                'url' => route('volunteer.create'),
+                'btn' => 'Apply as Volunteer',
+                'badge' => null,
+                ],
                 ] as $activity)
-                <div class="activity-card">
-                    <i class="fa {{ $activity[0] }} fa-3x {{ $activity[1] }} mb-4"></i>
-                    <h5 class="font-bold text-lg mb-2">{{ $activity[2] }}</h5>
-                    <p class="text-gray-500 text-sm mb-4">{{ $activity[3] }}</p>
-                    <a href="{{ $activity[4] }}"
-                        class="{{ $activity[4] === '#' ? 'btn-disabled btn-base text-sm px-4' : 'btn-teal btn-base text-sm px-4' }}">
-                        {{ $activity[5] }}
+
+                <div class="activity-card group relative">
+
+                    {{-- Live / Coming Soon badge --}}
+                    @if ($activity['badge'])
+                    <div class="absolute top-4 right-4">
+                        <span class="text-xs font-bold px-2.5 py-1 rounded-full text-white"
+                            style="background: #16a34a">
+                            ✅ {{ $activity['badge'] }}
+                        </span>
+                    </div>
+                    @endif
+
+                    {{-- Icon --}}
+                    <div class="w-14 h-14 rounded-2xl flex items-center justify-center mb-4 text-2xl transition-transform duration-300 group-hover:scale-110"
+                        style="background: var(--teal-light)">
+                        {{ $activity['emoji'] }}
+                    </div>
+
+                    {{-- Title --}}
+                    <h5 class="font-bold text-lg text-gray-800 mb-2">{{ $activity['title'] }}</h5>
+
+                    {{-- Description --}}
+                    <p class="text-gray-500 text-sm leading-relaxed mb-5 flex-1">{{ $activity['desc'] }}</p>
+
+                    {{-- CTA --}}
+                    <a href="{{ $activity['url'] }}"
+                        class="btn-base text-sm px-5 py-2 font-semibold inline-block
+                    {{ $activity['url'] === '#' ? 'btn-disabled' : 'btn-teal' }}">
+                        {{ $activity['btn'] }}
+                        @if ($activity['url'] !== '#')
+                        <i class="fa fa-arrow-right ml-1 text-xs"></i>
+                        @endif
                     </a>
+
                 </div>
                 @endforeach
             </div>
@@ -575,37 +657,179 @@
     {{-- TESTIMONIALS --}}
     {{-- ============================================================ --}}
     @if ($testimonials->isNotEmpty())
-    <section class="py-20 bg-cream">
+    <section class="py-20 overflow-hidden" style="background: linear-gradient(135deg, #0d6b6b 0%, #1a1a2e 100%)">
         <div class="max-w-7xl mx-auto px-4">
-            <div class="text-center mb-12">
-                <span class="section-eyebrow">Testimonials</span>
-                <h2 class="section-title">What Our Community Says</h2>
+
+            {{-- Header --}}
+            <div class="text-center mb-14">
+                <span class="section-eyebrow" style="color: rgba(255,255,255,0.6)">Community Stories</span>
+                <h2 class="text-3xl md:text-4xl font-extrabold text-white mt-2">What Our Community Says</h2>
+                <p class="text-white/50 text-sm mt-3">Real experiences from students, parents and families around the world.</p>
             </div>
-            <div class="owl-carousel testimonial-carousel wow fadeIn" data-wow-delay="0.1s">
-                @foreach ($testimonials as $t)
-                <div class="testimonial-item">
-                    <div class="testi-stars mb-2">
-                        @for ($i = 0; $i < min($t->rating, 5); $i++)<i class="fas fa-star text-gold"></i>@endfor
-                    </div>
-                    <p class="testi-quote">"{!! $t->content !!}"</p>
-                    <div class="testi-author flex items-center mt-4">
-                        <img src="{{ $t->photo ? Storage::url($t->photo) : asset('img/testimonial-1.jpg') }}"
-                            class="testi-avatar" alt="{{ $t->name }}">
-                        <div class="ml-3">
-                            <strong>{{ $t->name }}</strong>
-                            <small class="block text-gray-500">{{ $t->location }}</small>
+
+            {{-- Alpine Slider --}}
+            <div
+                x-data="{
+                active: 0,
+                total: {{ $testimonials->count() }},
+                timer: null,
+                startAutoplay() {
+                    this.timer = setInterval(() => {
+                        this.active = (this.active + 1) % this.total;
+                    }, 5000);
+                },
+                stopAutoplay() {
+                    clearInterval(this.timer);
+                },
+                next() {
+                    this.stopAutoplay();
+                    this.active = (this.active + 1) % this.total;
+                    this.startAutoplay();
+                },
+                prev() {
+                    this.stopAutoplay();
+                    this.active = (this.active - 1 + this.total) % this.total;
+                    this.startAutoplay();
+                },
+                goTo(i) {
+                    this.stopAutoplay();
+                    this.active = i;
+                    this.startAutoplay();
+                }
+            }"
+                x-init="startAutoplay()"
+                @mouseenter="stopAutoplay()"
+                @mouseleave="startAutoplay()"
+                class="relative">
+                {{-- Giant quote watermark --}}
+                <div class="absolute -top-8 left-1/2 -translate-x-1/2 text-9xl font-serif select-none pointer-events-none z-0 leading-none"
+                    style="color: rgba(184,150,46,0.15)">"</div>
+
+                {{-- Slides --}}
+                <div class="relative overflow-hidden">
+                    <div class="flex transition-transform duration-700 ease-in-out"
+                        :style="`transform: translateX(-${active * 100}%)`">
+
+                        @foreach ($testimonials as $index => $t)
+                        <div class="w-full flex-shrink-0 px-4 sm:px-16 md:px-28 lg:px-48">
+                            <div class="rounded-3xl p-8 md:p-12 text-center relative z-10 border border-white/10"
+                                style="background: rgba(255,255,255,0.07); backdrop-filter: blur(12px)">
+
+                                {{-- Stars --}}
+                                <div class="flex justify-center gap-1.5 mb-6">
+                                    @for ($i = 0; $i < 5; $i++)
+                                        <svg class="w-5 h-5 transition-opacity {{ $i < $t->rating ? 'opacity-100' : 'opacity-20' }}"
+                                        viewBox="0 0 20 20" fill="{{ $i < $t->rating ? '#b8962e' : '#ffffff' }}">
+                                        <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z" />
+                                        </svg>
+                                        @endfor
+                                </div>
+
+                                {{-- Quote text --}}
+                                <p class="text-white/90 text-lg md:text-xl leading-relaxed italic font-light mb-8">
+                                    "{{ $t->content }}"
+                                </p>
+
+                                {{-- Divider --}}
+                                <div class="w-12 h-px mx-auto mb-6" style="background: rgba(184,150,46,0.5)"></div>
+
+                                {{-- Author --}}
+                                <div class="flex items-center justify-center gap-4">
+                                    <div class="relative flex-shrink-0">
+                                        <img src="{{ $t->photo ? Storage::url($t->photo) : asset('img/testimonial-1.jpg') }}"
+                                            class="w-14 h-14 rounded-full object-cover border-2 border-white/20"
+                                            alt="{{ $t->name }}">
+                                        {{-- Verified badge --}}
+                                        <div class="absolute -bottom-1 -right-1 w-5 h-5 rounded-full flex items-center justify-center"
+                                            style="background: #b8962e; border: 2px solid #1a1a2e">
+                                            <svg class="w-2.5 h-2.5 text-white" fill="currentColor" viewBox="0 0 20 20">
+                                                <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" />
+                                            </svg>
+                                        </div>
+                                    </div>
+                                    <div class="text-left">
+                                        <p class="font-bold text-white text-sm">{{ $t->name }}</p>
+                                        @if ($t->location)
+                                        <p class="text-white/40 text-xs mt-0.5 flex items-center gap-1">
+                                            <svg class="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
+                                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
+                                            </svg>
+                                            {{ $t->location }}
+                                        </p>
+                                        @endif
+                                    </div>
+                                </div>
+
+                            </div>
                         </div>
+                        @endforeach
+
                     </div>
                 </div>
-                @endforeach
+
+                {{-- Prev Arrow --}}
+                <button @click="prev()"
+                    class="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-0 sm:-translate-x-2 w-10 h-10 rounded-full flex items-center justify-center text-white transition-all duration-200 border border-white/20 hover:border-white/50 hover:bg-white/10 focus:outline-none z-20">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                    </svg>
+                </button>
+
+                {{-- Next Arrow --}}
+                <button @click="next()"
+                    class="absolute right-0 top-1/2 -translate-y-1/2 translate-x-0 sm:translate-x-2 w-10 h-10 rounded-full flex items-center justify-center text-white transition-all duration-200 border border-white/20 hover:border-white/50 hover:bg-white/10 focus:outline-none z-20">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    </svg>
+                </button>
+
+                {{-- Dots + Counter --}}
+                <div class="mt-10 flex flex-col items-center gap-3">
+
+                    {{-- Dot indicators --}}
+                    <div class="flex items-center gap-2">
+                        @foreach ($testimonials as $i => $t)
+                        <button
+                            @click="goTo({{ $i }})"
+                            :class="active === {{ $i }}
+                            ? 'w-7 opacity-100 scale-100'
+                            : 'w-2 opacity-30 hover:opacity-60 scale-75'"
+                            class="h-2 rounded-full transition-all duration-400 focus:outline-none"
+                            style="background: #b8962e"
+                            :aria-label="`Go to testimonial {{ $i + 1 }}`">
+                        </button>
+                        @endforeach
+                    </div>
+
+                    {{-- Counter --}}
+                    <p class="text-white/25 text-xs">
+                        <span x-text="active + 1"></span>&thinsp;/&thinsp;{{ $testimonials->count() }}
+                    </p>
+
+                </div>
+
+                {{-- Progress bar --}}
+                <div class="mt-4 max-w-xs mx-auto h-0.5 rounded-full overflow-hidden" style="background: rgba(255,255,255,0.1)">
+                    <div class="h-full rounded-full transition-all duration-700"
+                        style="background: #b8962e"
+                        :style="`width: ${((active + 1) / total) * 100}%`">
+                    </div>
+                </div>
+
             </div>
-            <p class="text-gray-400 text-center mt-4 text-sm">
-                <i class="fa fa-lock mr-1"></i> Some names and details changed to protect privacy.
+
+            {{-- Privacy note --}}
+            <p class="text-center text-white/20 text-xs mt-10 flex items-center justify-center gap-1.5">
+                <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+                Some names and details changed to protect privacy.
             </p>
+
         </div>
     </section>
     @endif
-
     {{-- ============================================================ --}}
     {{-- FINAL CTA --}}
     {{-- ============================================================ --}}

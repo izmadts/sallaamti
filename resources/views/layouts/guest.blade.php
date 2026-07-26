@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -57,6 +58,7 @@
             padding: 60px 16px;
             background: var(--cream);
         }
+
         .auth-card {
             width: 100%;
             max-width: 480px;
@@ -65,6 +67,7 @@
             box-shadow: 0 4px 30px rgba(0, 0, 0, 0.08);
             padding: 48px 40px;
         }
+
         .auth-label {
             display: block;
             font-size: 13px;
@@ -72,11 +75,13 @@
             color: #374151;
             margin-bottom: 6px;
         }
+
         .auth-input-wrap {
             position: relative;
             display: flex;
             align-items: center;
         }
+
         .auth-icon {
             position: absolute;
             left: 14px;
@@ -85,6 +90,7 @@
             z-index: 1;
             pointer-events: none;
         }
+
         .auth-input {
             width: 100%;
             padding: 11px 14px 11px 38px;
@@ -98,13 +104,16 @@
             appearance: none;
             -webkit-appearance: none;
         }
+
         .auth-input:focus {
             border-color: var(--teal);
             box-shadow: 0 0 0 3px rgba(13, 107, 107, 0.1);
         }
+
         .auth-input-error {
             border-color: #f87171 !important;
         }
+
         .auth-eye-btn {
             position: absolute;
             right: 12px;
@@ -115,9 +124,11 @@
             padding: 4px;
             font-size: 13px;
         }
+
         .auth-eye-btn:hover {
             color: var(--teal);
         }
+
         .auth-checkbox {
             width: 16px;
             height: 16px;
@@ -127,12 +138,14 @@
             cursor: pointer;
             flex-shrink: 0;
         }
+
         .auth-divider {
             display: flex;
             align-items: center;
             gap: 12px;
             margin: 4px 0;
         }
+
         .auth-divider::before,
         .auth-divider::after {
             content: '';
@@ -140,11 +153,13 @@
             height: 1px;
             background: #e5e7eb;
         }
+
         .auth-divider span {
             font-size: 12px;
             color: #9ca3af;
             font-weight: 500;
         }
+
         @media (max-width: 575px) {
             .auth-card {
                 padding: 28px 20px;
@@ -152,6 +167,7 @@
         }
     </style>
 </head>
+
 <body class="antialiased font-sans">
     @include('partials.gtm-body')
     <!-- Spinner -->
@@ -351,21 +367,76 @@
                     </div>
                 </div>
                 <div>
-                    <h4 class="text-white font-semibold mb-4">Latest Post</h4>
-                    <div class="flex border-b border-gray-700 py-4">
-                        <img src="{{ asset('img/blog-mini-1.jpg')}}" class="shrink-0 w-16 h-16 object-cover" alt="">
-                        <div class="pl-3">
-                            <p class="mb-0 text-gray-500 text-sm">01 Jan 2045</p>
-                            <a href="" class="text-gray-300 hover:text-white">Lorem ipsum dolor sit amet elit eros vel</a>
-                        </div>
+                    <h5 class="text-white mb-4 font-semibold">Latest Posts</h5>
+
+                    @if (isset($footerPosts) && $footerPosts->isNotEmpty())
+                    <div class="flex flex-col gap-0">
+                        @foreach ($footerPosts as $post)
+                        <a href="{{ url('/blog/' . $post->slug) }}"
+                            class="flex items-start gap-3 py-4 border-b border-gray-700 last:border-0 group">
+
+                            {{-- Thumbnail --}}
+                            <div class="flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden bg-gray-700">
+                                @if ($post->thumbnail)
+                                <img src="{{ Storage::url($post->thumbnail) }}"
+                                    class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                                    alt="{{ $post->title }}">
+                                @else
+                                <div class="w-full h-full flex items-center justify-center text-2xl">📝</div>
+                                @endif
+                            </div>
+
+                            {{-- Content --}}
+                            <div class="flex-1 min-w-0">
+                                <p class="text-gray-500 text-xs mb-1 flex items-center gap-1">
+                                    <svg class="w-3 h-3 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                    </svg>
+                                    {{ $post->published_at?->format('d M Y') }}
+                                    @if ($post->category)
+                                    <span class="text-gray-600">·</span>
+                                    <span>{{ $post->category }}</span>
+                                    @endif
+                                </p>
+                                <p class="text-gray-300 text-sm leading-snug group-hover:text-white transition-colors line-clamp-2">
+                                    {{ $post->title }}
+                                </p>
+                            </div>
+
+                        </a>
+                        @endforeach
                     </div>
-                    <div class="flex py-4">
-                        <img src="{{ asset('img/blog-mini-2.jpg')}}" class="shrink-0 w-16 h-16 object-cover" alt="">
-                        <div class="pl-3">
-                            <p class="mb-0 text-gray-500 text-sm">01 Jan 2045</p>
-                            <a href="" class="text-gray-300 hover:text-white">Lorem ipsum dolor sit amet elit eros vel</a>
+
+                    <a href="{{ url('/blog') }}"
+                        class="inline-flex items-center gap-1 text-xs mt-3 transition-colors"
+                        style="color: #b8962e">
+                        View all posts
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                        </svg>
+                    </a>
+
+                    @else
+                    {{-- No posts yet — show placeholder --}}
+                    <div class="flex flex-col gap-0">
+                        @foreach ([
+                        ['📖', 'How to Learn Quran Effectively Online', '15 Jan 2025'],
+                        ['💍', 'Islamic Guide to Finding a Halal Spouse', '10 Jan 2025'],
+                        ] as $placeholder)
+                        <div class="flex items-start gap-3 py-4 border-b border-gray-700 last:border-0 opacity-40">
+                            <div class="flex-shrink-0 w-16 h-16 rounded-lg bg-gray-700 flex items-center justify-center text-2xl">
+                                {{ $placeholder[0] }}
+                            </div>
+                            <div class="flex-1">
+                                <p class="text-gray-500 text-xs mb-1">{{ $placeholder[2] }}</p>
+                                <p class="text-gray-400 text-sm leading-snug">{{ $placeholder[1] }}</p>
+                            </div>
                         </div>
+                        @endforeach
+                        <p class="text-xs text-gray-600 mt-3">Blog articles coming soon...</p>
                     </div>
+                    @endif
+
                 </div>
             </div>
         </div>
@@ -414,7 +485,9 @@
                             msg.innerHTML = '<span class="text-green-400">' + data.message + '</span>';
                             form.reset();
                             window.dataLayer = window.dataLayer || [];
-                            dataLayer.push({ event: 'newsletter_signup' });
+                            dataLayer.push({
+                                event: 'newsletter_signup'
+                            });
                         } else {
                             msg.innerHTML = '<span class="text-yellow-400">' + data.message + '</span>';
                         }
@@ -426,4 +499,5 @@
         });
     </script>
 </body>
+
 </html>
