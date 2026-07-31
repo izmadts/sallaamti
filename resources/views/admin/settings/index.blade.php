@@ -230,6 +230,7 @@
                     el.parentElement.style.color = count > max * 0.9 ? '#ef4444' : '#9ca3af';
                 }
             </script>
+            
             {{-- Integrations --}}
             <div class="bg-white rounded-lg shadow-sm p-6 space-y-4">
                 <h3 class="font-semibold text-gray-700 border-b pb-2">🔌 Integrations</h3>
