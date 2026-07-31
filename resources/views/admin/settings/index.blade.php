@@ -147,6 +147,89 @@
                 </div>
             </div>
 
+
+            {{-- SEO Settings --}}
+            <div class="bg-white rounded-xl shadow-sm p-6 mb-6">
+                <h3 class="font-semibold text-gray-700 mb-5 pb-2 border-b border-gray-100">
+                    🔍 SEO Settings
+                </h3>
+                <div class="space-y-4">
+                    <div>
+                        <label class="text-xs font-semibold text-gray-500 block mb-1">
+                            Homepage Meta Title
+                            <span class="text-gray-400 font-normal ml-1">(max 60 chars)</span>
+                        </label>
+                        <input type="text" name="seo_home_title"
+                            value="{{ setting('seo_home_title', 'Sallaamti — Learn Quran Online | Live Classes | Islamic Matrimonial') }}"
+                            maxlength="60"
+                            class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-teal-500"
+                            oninput="updateCounter(this, 'title_count', 60)">
+                        <div class="flex justify-between mt-1">
+                            <p class="text-xs text-gray-400">Shown as the blue link in Google search results</p>
+                            <span class="text-xs text-gray-400"><span id="title_count">{{ strlen(setting('seo_home_title', '')) }}</span>/60</span>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="text-xs font-semibold text-gray-500 block mb-1">
+                            Homepage Meta Description
+                            <span class="text-gray-400 font-normal ml-1">(max 160 chars)</span>
+                        </label>
+                        <textarea name="seo_home_description" rows="3"
+                            maxlength="160"
+                            class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-teal-500 resize-none"
+                            oninput="updateCounter(this, 'desc_count', 160)">{{ setting('seo_home_description', 'Join Sallaamti to learn Quran online with expert teachers. Free self-paced courses, live classes, halal matrimonial and family support.') }}</textarea>
+                        <div class="flex justify-between mt-1">
+                            <p class="text-xs text-gray-400">Shown as the description snippet in Google</p>
+                            <span class="text-xs text-gray-400"><span id="desc_count">{{ strlen(setting('seo_home_description', '')) }}</span>/160</span>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="text-xs font-semibold text-gray-500 block mb-1">
+                            Focus Keywords
+                        </label>
+                        <input type="text" name="seo_keywords"
+                            value="{{ setting('seo_keywords', 'learn quran online, quran classes pakistan, online quran teacher, nikah platform pakistan') }}"
+                            class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-teal-500"
+                            placeholder="keyword1, keyword2, keyword3">
+                        <p class="text-xs text-gray-400 mt-1">Comma separated — target 5-10 keywords</p>
+                    </div>
+
+                    <div>
+                        <label class="text-xs font-semibold text-gray-500 block mb-1">
+                            Default OG Image (for social sharing previews)
+                        </label>
+                        @if(setting('seo_og_image'))
+                        <img src="{{ Storage::url(setting('seo_og_image')) }}"
+                            class="h-20 rounded-lg mb-2 object-cover">
+                        @endif
+                        <input type="file" name="seo_og_image" accept="image/*"
+                            class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm">
+                        <p class="text-xs text-gray-400 mt-1">Recommended: 1200×630px — shown when sharing on Facebook, WhatsApp, Twitter</p>
+                    </div>
+
+                    <div>
+                        <label class="text-xs font-semibold text-gray-500 block mb-1">
+                            Google Search Console Verification Code
+                        </label>
+                        <input type="text" name="google_verification"
+                            value="{{ setting('google_verification') }}"
+                            class="w-full border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-teal-500"
+                            placeholder="google-site-verification content value">
+                    </div>
+
+                </div>
+            </div>
+
+            <script>
+                function updateCounter(input, counterId, max) {
+                    const count = input.value.length;
+                    const el = document.getElementById(counterId);
+                    el.textContent = count;
+                    el.parentElement.style.color = count > max * 0.9 ? '#ef4444' : '#9ca3af';
+                }
+            </script>
             {{-- Integrations --}}
             <div class="bg-white rounded-lg shadow-sm p-6 space-y-4">
                 <h3 class="font-semibold text-gray-700 border-b pb-2">🔌 Integrations</h3>
@@ -163,7 +246,6 @@
                     </div>
                 </div>
             </div>
-
             <div class="flex justify-end">
                 <x-primary-button>Save Settings</x-primary-button>
             </div>

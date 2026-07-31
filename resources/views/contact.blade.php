@@ -1,5 +1,7 @@
 <x-guest-layout title="Contact Us" description="Get in touch with Sallaamti — questions about courses, Nikah, volunteering or donations.">
-
+    @section('title', 'Contact Sallaamti — Get in Touch')
+    @section('description', 'Contact Sallaamti for questions about Quran courses, live classes, Nikah platform or volunteering. We reply within 24 hours, in sha Allah.')
+    @section('canonical', url('/contact'))
     {{-- ============================================================ --}}
     {{-- PAGE HERO --}}
     {{-- ============================================================ --}}

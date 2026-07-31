@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Setting;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class SettingsController extends Controller
 {
@@ -45,6 +46,11 @@ class SettingsController extends Controller
             'maintenance_mode'      => ['nullable', 'boolean'],
             'gtm_id'                   => ['nullable', 'string', 'max:20'],
             'meta_domain_verification' => ['nullable', 'string', 'max:100'],
+            'seo_home_title'       => ['nullable', 'string', 'max:60'],
+            'seo_home_description' => ['nullable', 'string', 'max:160'],
+            'seo_keywords'         => ['nullable', 'string', 'max:500'],
+            'seo_og_image'         => ['nullable', 'image', 'max:2048'],
+            'google_verification'  => ['nullable', 'string', 'max:255'],
         ]);
 
         // Save each setting
@@ -75,8 +81,19 @@ class SettingsController extends Controller
             'social_tiktok'          => 'social',
             'gtm_id'                 => 'integrations',
             'meta_domain_verification' => 'integrations',
+            'seo_home_title'       => ['nullable', 'string', 'max:60'],
+            'seo_home_description' => ['nullable', 'string', 'max:160'],
+            'seo_keywords'         => ['nullable', 'string', 'max:500'],
+            'seo_og_image'         => ['nullable', 'image', 'max:2048'],
+            'google_verification'  => ['nullable', 'string', 'max:255'],
         ];
-
+        if ($request->hasFile('seo_og_image')) {
+            if (setting('seo_og_image')) {
+                Storage::disk('public')->delete(setting('seo_og_image'));
+            }
+            $validated['seo_og_image'] = $request->file('seo_og_image')
+                ->store('settings', 'public');
+        }
         foreach ($groups as $key => $group) {
             $value = $key === 'maintenance_mode'
                 ? ($request->has('maintenance_mode') ? '1' : '0')

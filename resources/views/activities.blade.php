@@ -1,6 +1,8 @@
 {{-- resources/views/activities.blade.php --}}
 <x-guest-layout>
-
+    @section('title', 'Our Activities — Quran Learning, Live Classes, Nikah & More | Sallaamti')
+    @section('description', 'Explore Sallaamti activities: online Quran courses, live classes with teachers, halal Nikah platform, family counseling, volunteering and donations.')
+    @section('canonical', url('/activities'))
     {{-- ============================================================ --}}
     {{-- PAGE HERO --}}
     {{-- ============================================================ --}}

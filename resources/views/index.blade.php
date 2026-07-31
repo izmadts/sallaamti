@@ -1,6 +1,33 @@
 {{-- resources/views/index.blade.php --}}
 <x-guest-layout :description="'Quran education, halal matrimonial matching, and community programs for the Muslim Ummah — ' . setting('site_tagline')">
+    @section('title', 'Sallaamti — Learn Quran Online | Live Classes | Islamic Matrimonial')
+    @section('description', 'Join Sallaamti to learn Quran online with expert teachers. Self-paced Quran courses, live classes, halal matrimonial platform and family counseling. Free to join.')
+    @section('keywords', 'learn quran online pakistan, online quran classes, quran teacher online, islamic matrimonial pakistan, nikah platform')
+    @section('og_title', 'Sallaamti — Learn Quran Online | Live Classes | Islamic Matrimonial')
+    @section('og_description', 'Learn Quran with expert teachers. Join thousands of Muslims worldwide.')
+    @section('og_image', asset('img/og-home.jpg'))
 
+    @push('schema')
+    @php
+    $websiteSchema = [
+    '@context' => 'https://schema.org',
+    '@type' => 'WebSite',
+    'name' => 'Sallaamti',
+    'url' => config('app.url'),
+    'potentialAction' => [
+    '@type' => 'SearchAction',
+    'target' => config('app.url') . '/courses?search={search_term_string}',
+    'query-input' => 'required name=search_term_string',
+    ],
+    ];
+    @endphp
+    <script type="application/ld+json">
+        {
+            !!json_encode($websiteSchema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) !!
+        }
+    </script>
+    @endpush
+    {{-- rest of page content --}}
     {{-- ============================================================ --}}
     {{-- HERO --}}
     {{-- ============================================================ --}}

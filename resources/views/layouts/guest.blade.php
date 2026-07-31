@@ -5,24 +5,72 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ $title ? $title . ' — ' . setting('site_name') : setting('site_name') . ' | ' . setting('site_tagline') }}</title>
-    <meta name="description" content="{{ $description ?? setting('site_tagline') }}">
-    <link rel="canonical" href="{{ url()->current() }}">
+    {{-- ===== PRIMARY META ===== --}}
+    <title>@yield('title', setting('seo_home_title', setting('site_name') . ' | ' . setting('site_tagline')))</title>
+    <meta name="description" content="@yield('description', setting('seo_home_description', 'Learn Quran online with Sallaamti.'))">
+    <meta name="keywords" content="@yield('keywords', setting('seo_keywords', 'learn quran online'))">
 
-    {{-- Open Graph / Twitter Card (used by WhatsApp/Facebook link previews) --}}
-    <meta property="og:type" content="website">
+    {{-- Google verification --}}
+    @if(setting('google_verification'))
+    <meta name="google-site-verification" content="{{ setting('google_verification') }}">
+    @endif
+    <meta name="author" content="{{ setting('site_name', 'Sallaamti') }}">
+    <meta name="robots" content="@yield('robots', 'index, follow')">
+    <link rel="canonical" href="@yield('canonical', url()->current())">
+
+    {{-- ===== OPEN GRAPH (Facebook, WhatsApp previews) ===== --}}
+    <meta property="og:type" content="@yield('og_type', 'website')">
+    <meta property="og:title" content="@yield('og_title', setting('site_name') . ' | ' . setting('site_tagline'))">
+    <meta property="og:description" content="@yield('og_description', 'Learn Quran online with expert teachers. Self-paced courses, live classes, Islamic matrimonial and family support.')">
+    <meta property="og:image" content="@yield('og_image', asset('img/og-default.jpg'))">
     <meta property="og:url" content="{{ url()->current() }}">
-    <meta property="og:title" content="{{ $title ?? setting('site_name') }}">
-    <meta property="og:description" content="{{ $description ?? setting('site_tagline') }}">
-    <meta property="og:image" content="{{ $image ?? asset('images/sallaamti-logo.png') }}">
+    <meta property="og:site_name" content="{{ setting('site_name', 'Sallaamti') }}">
+    <meta property="og:locale" content="en_PK">
+
+    {{-- ===== TWITTER CARD ===== --}}
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="{{ $title ?? setting('site_name') }}">
-    <meta name="twitter:description" content="{{ $description ?? setting('site_tagline') }}">
-    <meta name="twitter:image" content="{{ $image ?? asset('images/sallaamti-logo.png') }}">
+    <meta name="twitter:title" content="@yield('og_title', setting('site_name'))">
+    <meta name="twitter:description" content="@yield('og_description', 'Learn Quran online with expert teachers.')">
+    <meta name="twitter:image" content="@yield('og_image', asset('img/og-default.jpg'))">
+    {{-- ===== STRUCTURED DATA (JSON-LD) ===== --}}
+    @php
+    $structuredData = [
+    '@context' => 'https://schema.org',
+    '@type' => 'Organization',
+    'name' => setting('site_name', 'Sallaamti'),
+    'url' => config('app.url'),
+    'logo' => asset('img/logo.png'),
+    'description' => setting('about_text', 'Islamic education platform offering Quran courses, live classes and matrimonial services.'),
+    'contactPoint' => [
+    '@type' => 'ContactPoint',
+    'telephone' => setting('site_phone', ''),
+    'email' => setting('site_email', ''),
+    'contactType' => 'customer support',
+    ],
+    'sameAs' => array_filter([
+    setting('social_facebook', ''),
+    setting('social_instagram', ''),
+    setting('social_youtube', ''),
+    setting('social_tiktok', ''),
+    ]),
+    ];
+    @endphp
+    <script type="application/ld+json">
+        {
+            !!json_encode($structuredData, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) !!
+        }
+    </script>
+    {{-- Page-specific structured data --}}
+    @stack('schema')
+
+    {{-- Favicon --}}
+    <link rel="icon" type="image/x-icon" href="{{ asset('images/favicon.png') }}">
+    <link rel="apple-touch-icon" href="{{ asset('images/favicon.png') }}">
+
+    {{-- ... rest of your CSS links unchanged ... --}}
 
     @include('partials.gtm-head')
-    <!-- Favicon -->
-    <link rel="icon" type="image/x-icon" href="{{ asset('images/favicon.png') }}">
+
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />

@@ -1,4 +1,52 @@
 <x-app-layout :title="$course->title" :description="Str::limit(strip_tags($course->description), 155)" :image="$course->thumbnail ? Storage::url($course->thumbnail) : null">
+    @php
+    $courseDescription = Str::limit(strip_tags($course->description ?? 'Learn ' . $course->title . ' with Sallaamti — expert Quran education online.'), 160);
+    $courseDescriptionLong = Str::limit(strip_tags($course->description ?? ''), 200);
+    @endphp
+
+    @section('title', $course->title . ' | Quran Course | Sallaamti')
+    @section('description', $courseDescription)
+    @section('canonical', route('courses.show', $course))
+    @section('og_type', 'article')
+    @section('og_title', $course->title . ' — Sallaamti Quran Course')
+    @section('og_description', $courseDescription)
+    @if ($course->thumbnail)
+    @section('og_image', Storage::url($course->thumbnail))
+    @endif
+
+    @push('schema')
+    @php
+    $courseSchema = [
+    '@context' => 'https://schema.org',
+    '@type' => 'Course',
+    'name' => $course->title,
+    'description' => $courseDescriptionLong,
+    'provider' => [
+    '@type' => 'Organization',
+    'name' => 'Sallaamti',
+    'url' => config('app.url'),
+    ],
+    'url' => route('courses.show', $course),
+    'courseMode' => 'online',
+    'inLanguage' => 'ur',
+    'isAccessibleForFree'=> true,
+    'numberOfCredits' => $course->lessons_count ?? 0,
+    'hasCourseInstance' => [
+    '@type' => 'CourseInstance',
+    'courseMode' => 'online',
+    'instructor' => [
+    '@type' => 'Person',
+    'name' => 'Sallaamti Teacher',
+    ],
+    ],
+    ];
+    @endphp
+    <script type="application/ld+json">
+        {
+            !!json_encode($courseSchema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) !!
+        }
+    </script>
+    @endpush
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">{{ $course->title }}</h2>
     </x-slot>

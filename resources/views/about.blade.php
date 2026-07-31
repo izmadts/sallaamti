@@ -1,6 +1,9 @@
 {{-- resources/views/about.blade.php --}}
 <x-guest-layout title="About Us" description="Learn about Sallaamti's mission to spread Quranic education, halal matrimonial matching, and community support for the Muslim Ummah.">
-
+    @section('title', 'About Sallaamti — Our Mission, Vision & Team')
+    @section('description', 'Learn about Sallaamti — an Islamic education platform dedicated to spreading Quranic knowledge, supporting families and building a global Muslim community.')
+    @section('canonical', url('/about'))
+    
     {{-- ============================================================ --}}
     {{-- PAGE HERO --}}
     {{-- ============================================================ --}}
