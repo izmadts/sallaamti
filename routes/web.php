@@ -220,7 +220,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
 
     Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
-
     // User Management
     Route::get('users', [UserManagementController::class, 'index'])->name('users.index');
     Route::get('users/{user}', [UserManagementController::class, 'show'])->name('users.show');
