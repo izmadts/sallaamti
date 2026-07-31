@@ -220,6 +220,15 @@
                 </div>
             </div>
         </div>
+        @if (session('error'))
+        <div class="max-w-7xl mx-auto px-4 mt-4">
+            <div class="p-4 rounded-xl text-sm font-medium flex items-center gap-3"
+                style="background: #fef2f2; border: 1px solid #fecaca; color: #dc2626">
+                <i class="fa fa-exclamation-circle"></i>
+                {{ session('error') }}
+            </div>
+        </div>
+        @endif
         <!-- Main nav -->
         <div class="max-w-7xl mx-auto px-4">
             <nav class="flex items-center justify-between py-2">

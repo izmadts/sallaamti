@@ -6,25 +6,20 @@ use Illuminate\Database\Eloquent\Model;
 
 class NikahPhoto extends Model
 {
-    protected $fillable = ['nikah_profile_id', 'path', 'is_primary', 'order'];
+    protected $fillable = [
+        'nikah_profile_id',
+        'path',          // ← correct column name
+        'is_primary',
+        'order',
+    ];
 
     protected function casts(): array
     {
         return ['is_primary' => 'boolean'];
     }
 
-    public function profile()
+    public function nikahProfile()
     {
-        return $this->belongsTo(NikahProfile::class, 'nikah_profile_id');
-    }
-    public function photos()
-    {
-        return $this->hasMany(NikahPhoto::class)->orderBy('order');
-    }
-
-    public function primaryPhoto(): ?NikahPhoto
-    {
-        return $this->photos()->where('is_primary', true)->first()
-            ?? $this->photos()->first();
+        return $this->belongsTo(NikahProfile::class);
     }
 }

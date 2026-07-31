@@ -94,21 +94,24 @@ Route::get('/quran-live/{course}', [QuranLiveCourseController::class, 'show'])->
 // Blog (public reading)
 Route::get('/blog', [BlogController::class, 'index'])->name('blog.index');
 Route::get('/blog/{blog_post:slug}', [BlogController::class, 'show'])->name('blog.show');
-
+Route::middleware('throttle:5,1')->group(function () {
+    Route::post('/donate', [DonationController::class, 'store'])->name('donate.store');
+    Route::post('/volunteer', [VolunteerController::class, 'store'])->name('volunteer.store');
+});
 // Volunteer (guests can apply)
 Route::get('/volunteer', [VolunteerController::class, 'create'])->name('volunteer.create');
-Route::post('/volunteer', [VolunteerController::class, 'store'])->name('volunteer.store');
 
 // Donation (guests can donate)
 Route::get('/donate', [DonationController::class, 'create'])->name('donate.create');
-Route::post('/donate', [DonationController::class, 'store'])->name('donate.store');
 Route::get('/donate/{donation}/thank-you', [DonationController::class, 'thankYou'])->name('donate.thank-you');
 
-// Contact
-Route::post('/contact', [ContactController::class, 'store'])->name('contact.store');
+Route::middleware('throttle:10,1')->group(function () {
+    Route::post('/contact', [ContactController::class, 'store'])->name('contact.store');
+    Route::post('/subscribe', [SubscriberController::class, 'store'])->name('subscribe');
+});
 
 // Newsletter
-Route::post('/subscribe', [SubscriberController::class, 'store'])->name('subscribe');
+
 Route::post('/newsletter/subscribe', [NewsletterController::class, 'subscribe'])->name('newsletter.subscribe');
 Route::get('/subscriber/verify/{token}', [SubscriberController::class, 'verify'])->name('subscriber.verify');
 Route::get('/subscriber/unsubscribe/{id}', [SubscriberController::class, 'unsubscribe'])->name('subscriber.unsubscribe');
