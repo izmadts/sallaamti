@@ -67,6 +67,17 @@
     <link rel="icon" type="image/x-icon" href="{{ asset('images/favicon.png') }}">
     <link rel="apple-touch-icon" href="{{ asset('images/favicon.png') }}">
 
+    {{-- Preload critical font --}}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="dns-prefetch" href="https://fonts.googleapis.com">
+
+    {{-- Preload hero image (first banner) --}}
+    @php $firstBanner = \App\Models\Banner::active()->first(); @endphp
+    @if ($firstBanner)
+    <link rel="preload" as="image"
+        href="{{ str_starts_with($firstBanner->image, 'img/') ? asset($firstBanner->image) : Storage::url($firstBanner->image) }}">
+    @endif
     {{-- ... rest of your CSS links unchanged ... --}}
 
     @include('partials.gtm-head')
@@ -80,7 +91,9 @@
     <!-- Icon fonts (kept — swap for an SVG icon set later if you want to drop these) -->
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
-    <link rel="stylesheet" href="{{ asset('css/style.css') }}" />
+   
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}" />    
+    
     <!-- Vite: Tailwind + Alpine (ships with Breeze) -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     {{-- ============================================================ --}}
@@ -88,132 +101,7 @@
     {{-- Reference in Tailwind config as teal / gold / cream --}}
     {{-- or use arbitrary values like bg-[--teal] as done below. --}}
     {{-- ============================================================ --}}
-    <style>
-        /* :root {
-            --teal: {{setting('theme_teal')}};
-            --teal-light: {{setting('theme_teal_light')}};
-            --teal-dark: {{setting('theme_teal_dark')}};
-            --gold: {{setting('theme_gold')}};
-            --cream: {{setting('theme_cream')}};
-            --text-dark: {{setting('theme_text_dark')}};
-        } */
-        /* ===== AUTH FORMS ===== */
-        .auth-wrapper {
-            min-height: calc(100vh - 140px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 60px 16px;
-            background: var(--cream);
-        }
 
-        .auth-card {
-            width: 100%;
-            max-width: 480px;
-            background: #fff;
-            border-radius: 20px;
-            box-shadow: 0 4px 30px rgba(0, 0, 0, 0.08);
-            padding: 48px 40px;
-        }
-
-        .auth-label {
-            display: block;
-            font-size: 13px;
-            font-weight: 600;
-            color: #374151;
-            margin-bottom: 6px;
-        }
-
-        .auth-input-wrap {
-            position: relative;
-            display: flex;
-            align-items: center;
-        }
-
-        .auth-icon {
-            position: absolute;
-            left: 14px;
-            color: #9ca3af;
-            font-size: 13px;
-            z-index: 1;
-            pointer-events: none;
-        }
-
-        .auth-input {
-            width: 100%;
-            padding: 11px 14px 11px 38px;
-            border: 2px solid #e5e7eb;
-            border-radius: 10px;
-            font-size: 14px;
-            color: #1f2937;
-            background: #fff;
-            transition: border-color 0.2s, box-shadow 0.2s;
-            outline: none;
-            appearance: none;
-            -webkit-appearance: none;
-        }
-
-        .auth-input:focus {
-            border-color: var(--teal);
-            box-shadow: 0 0 0 3px rgba(13, 107, 107, 0.1);
-        }
-
-        .auth-input-error {
-            border-color: #f87171 !important;
-        }
-
-        .auth-eye-btn {
-            position: absolute;
-            right: 12px;
-            color: #9ca3af;
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: 4px;
-            font-size: 13px;
-        }
-
-        .auth-eye-btn:hover {
-            color: var(--teal);
-        }
-
-        .auth-checkbox {
-            width: 16px;
-            height: 16px;
-            border: 2px solid #d1d5db;
-            border-radius: 4px;
-            accent-color: var(--teal);
-            cursor: pointer;
-            flex-shrink: 0;
-        }
-
-        .auth-divider {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin: 4px 0;
-        }
-
-        .auth-divider::before,
-        .auth-divider::after {
-            content: '';
-            flex: 1;
-            height: 1px;
-            background: #e5e7eb;
-        }
-
-        .auth-divider span {
-            font-size: 12px;
-            color: #9ca3af;
-            font-weight: 500;
-        }
-
-        @media (max-width: 575px) {
-            .auth-card {
-                padding: 28px 20px;
-            }
-        }
-    </style>
 </head>
 
 <body class="antialiased font-sans">
@@ -345,7 +233,7 @@
         </div>
     </div>
     <!-- /Header -->
-    <main class="w-full px-6 bg-white dark:bg-gray-800 shadow-md overflow-hidden sm:rounded-lg">
+    <main class="w-full px-2 bg-white dark:bg-gray-800 shadow-md overflow-hidden sm:rounded-lg">
         {{ $slot }}
     </main>
     <!-- Footer -->
@@ -353,7 +241,7 @@
         <div class="max-w-7xl mx-auto px-4 py-12">
             <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 pb-8">
                 <div class="lg:col-span-7">
-                    <h1 class="text-white text-2xl font-semibold mb-0">Subscribe our newsletter</h1>
+                    <h2 class="text-white text-2xl font-semibold mb-0">Subscribe our newsletter</h2>
                     <p class="text-gray-400">Get the latest news and other tips</p>
                 </div>
                 <div class="lg:col-span-5">

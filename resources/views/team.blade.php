@@ -29,7 +29,7 @@
 
             <div class="grid lg:grid-cols-12 gap-8 mb-16 items-center max-w-4xl mx-auto">
                 <div class="lg:col-span-4">
-                    <img src="{{ asset('img/team-1.jpg') }}" class="w-full rounded-2xl shadow-lg" alt="Founder">
+                    <img src="{{ asset('img/team-1.jpg') }}" loading="lazy" class="w-full rounded-2xl shadow-lg" alt="Founder">
                 </div>
                 <div class="lg:col-span-8">
                     <span class="section-eyebrow">Founder & Director</span>
@@ -67,7 +67,7 @@
             <div class="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                 @foreach ($team as $member)
                 <div class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow hover:-translate-y-1 duration-300">
-                    <img src="{{ $member->avatarUrl() }}" class="w-full h-52 object-cover" alt="{{ $member->name }}">
+                    <img src="{{ $member->avatarUrl() }}" loading="lazy" class="w-full h-52 object-cover" alt="{{ $member->name }}">
                     <div class="p-4 text-center">
                         <h5 class="font-bold text-gray-800">{{ $member->name }}</h5>
                         <p class="text-sm font-semibold mt-0.5" style="color: var(--teal)">Quran Teacher</p>

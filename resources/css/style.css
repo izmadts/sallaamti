@@ -1,0 +1,125 @@
+
+ /* :root {
+            --teal: {{setting('theme_teal')}};
+            --teal-light: {{setting('theme_teal_light')}};
+            --teal-dark: {{setting('theme_teal_dark')}};
+            --gold: {{setting('theme_gold')}};
+            --cream: {{setting('theme_cream')}};
+            --text-dark: {{setting('theme_text_dark')}};
+        } */
+ /* ===== AUTH FORMS ===== */
+ .auth-wrapper {
+     min-height: calc(100vh - 140px);
+     display: flex;
+     align-items: center;
+     justify-content: center;
+     padding: 60px 16px;
+     background: var(--cream);
+ }
+
+ .auth-card {
+     width: 100%;
+     max-width: 480px;
+     background: #fff;
+     border-radius: 20px;
+     box-shadow: 0 4px 30px rgba(0, 0, 0, 0.08);
+     padding: 48px 40px;
+ }
+
+ .auth-label {
+     display: block;
+     font-size: 13px;
+     font-weight: 600;
+     color: #374151;
+     margin-bottom: 6px;
+ }
+
+ .auth-input-wrap {
+     position: relative;
+     display: flex;
+     align-items: center;
+ }
+
+ .auth-icon {
+     position: absolute;
+     left: 14px;
+     color: #9ca3af;
+     font-size: 13px;
+     z-index: 1;
+     pointer-events: none;
+ }
+
+ .auth-input {
+     width: 100%;
+     padding: 11px 14px 11px 38px;
+     border: 2px solid #e5e7eb;
+     border-radius: 10px;
+     font-size: 14px;
+     color: #1f2937;
+     background: #fff;
+     transition: border-color 0.2s, box-shadow 0.2s;
+     outline: none;
+     appearance: none;
+     -webkit-appearance: none;
+ }
+
+ .auth-input:focus {
+     border-color: var(--teal);
+     box-shadow: 0 0 0 3px rgba(13, 107, 107, 0.1);
+ }
+
+ .auth-input-error {
+     border-color: #f87171 !important;
+ }
+
+ .auth-eye-btn {
+     position: absolute;
+     right: 12px;
+     color: #9ca3af;
+     background: none;
+     border: none;
+     cursor: pointer;
+     padding: 4px;
+     font-size: 13px;
+ }
+
+ .auth-eye-btn:hover {
+     color: var(--teal);
+ }
+
+ .auth-checkbox {
+     width: 16px;
+     height: 16px;
+     border: 2px solid #d1d5db;
+     border-radius: 4px;
+     accent-color: var(--teal);
+     cursor: pointer;
+     flex-shrink: 0;
+ }
+
+ .auth-divider {
+     display: flex;
+     align-items: center;
+     gap: 12px;
+     margin: 4px 0;
+ }
+
+ .auth-divider::before,
+ .auth-divider::after {
+     content: '';
+     flex: 1;
+     height: 1px;
+     background: #e5e7eb;
+ }
+
+ .auth-divider span {
+     font-size: 12px;
+     color: #9ca3af;
+     font-weight: 500;
+ }
+
+ @media (max-width: 575px) {
+     .auth-card {
+         padding: 28px 20px;
+     }
+ }

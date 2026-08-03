@@ -45,8 +45,14 @@
         <div class="absolute inset-0 transition-opacity duration-700"
             :class="{ 'opacity-100 z-10': active === {{ $i }}, 'opacity-0 z-0': active !== {{ $i }} }">
             <div class="hero-bg-overlay absolute inset-0"></div>
-            <img src="{{ str_starts_with($banner->image, 'img/') ? asset($banner->image) : Storage::url($banner->image) }}"
-                class="block w-full hero-bg-img" alt="{{ $banner->title }}">
+            @if ($i === 0)
+            <img src="{{ str_starts_with($banner->image, 'img/') ? asset($banner->image) : Storage::url($banner->image) }}" class="block w-full hero-bg-img" fetchpriority="high" alt="{{ $banner->title }}">
+            @else
+            {{-- Other slides — lazy load --}}
+            <img src="{{ str_starts_with($banner->image, 'img/') ? asset($banner->image) : Storage::url($banner->image) }}" class="block w-full hero-bg-img" loading="lazy" alt="{{ $banner->title }}">
+            @endif
+            <!-- <img src="{{ str_starts_with($banner->image, 'img/') ? asset($banner->image) : Storage::url($banner->image) }}"
+                class="block w-full hero-bg-img" alt="{{ $banner->title }}" fetchpriority="high"> -->
         </div>
         @endforeach
 
@@ -260,7 +266,7 @@
                             @foreach ($previewCourses as $course)
                             <div class="course-preview-card">
                                 @if ($course->thumbnail)
-                                <img src="{{ Storage::url($course->thumbnail) }}" alt="{{ $course->title }}">
+                                <img src="{{ Storage::url($course->thumbnail) }}" loading="lazy" alt="{{ $course->title }}">
                                 @else
                                 <div class="course-preview-placeholder">📖</div>
                                 @endif
@@ -444,10 +450,10 @@
         <div class="max-w-7xl mx-auto px-4">
             <div class="grid xl:grid-cols-2 gap-12 items-center">
                 <div class="grid grid-cols-2 gap-3">
-                    <img src="{{ asset('img/about-1.jpg') }}" class="max-w-full rounded-2xl h-full object-cover wow zoomIn" data-wow-delay="0.1s" alt="">
+                    <img src="{{ asset('img/about-1.jpg') }}" loading="lazy" class="max-w-full rounded-2xl h-full object-cover wow zoomIn" data-wow-delay="0.1s" alt="">
                     <div class="flex flex-col gap-3">
-                        <img src="{{ asset('img/about-2.jpg') }}" class="max-w-full rounded-2xl wow zoomIn" data-wow-delay="0.2s" alt="">
-                        <img src="{{ asset('img/about-3.jpg') }}" class="max-w-full rounded-2xl wow zoomIn" data-wow-delay="0.3s" alt="">
+                        <img src="{{ asset('img/about-2.jpg') }}" loading="lazy" class="max-w-full rounded-2xl wow zoomIn" data-wow-delay="0.2s" alt="">
+                        <img src="{{ asset('img/about-3.jpg') }}" loading="lazy" class="max-w-full rounded-2xl wow zoomIn" data-wow-delay="0.3s" alt="">
                     </div>
                 </div>
                 <div>
@@ -764,7 +770,7 @@
                                 <div class="flex items-center justify-center gap-4">
                                     <div class="relative flex-shrink-0">
                                         <img src="{{ $t->photo ? Storage::url($t->photo) : asset('img/testimonial-1.jpg') }}"
-                                            class="w-14 h-14 rounded-full object-cover border-2 border-white/20"
+                                            loading="lazy" class="w-14 h-14 rounded-full object-cover border-2 border-white/20"
                                             alt="{{ $t->name }}">
                                         {{-- Verified badge --}}
                                         <div class="absolute -bottom-1 -right-1 w-5 h-5 rounded-full flex items-center justify-center"

@@ -92,7 +92,7 @@
                     <div class="grid grid-cols-2 gap-4">
                         @php $previewCourses = \App\Models\Course::where('is_published', true)->take(4)->get(); @endphp
                         @foreach ($previewCourses as $course)
-                        <img src="{{ Storage::url($course->thumbnail) }}" alt="{{ $course->title }}" class="w-full h-48 object-cover rounded-2xl" alt="">
+                        <img src="{{ Storage::url($course->thumbnail) }}" loading="lazy" alt="{{ $course->title }}" class="w-full h-48 object-cover rounded-2xl" alt="">
                         @endforeach
                         <div class="rounded-2xl flex flex-col items-center justify-center text-center p-4 wow-card" style="background: var(--teal)">
                             <div class="text-4xl font-extrabold text-white">{{ \App\Models\Course::where('is_published',true)->count() }}+</div>
@@ -377,7 +377,7 @@
                 @foreach ($activityPosts as $post)
                 <div class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow border border-gray-100">
                     @if ($post->photo)
-                    <img src="{{ Storage::url($post->photo) }}" class="w-full h-48 object-cover" alt="{{ $post->title }}">
+                    <img src="{{ Storage::url($post->photo) }}" loading="lazy" class="w-full h-48 object-cover" alt="{{ $post->title }}">
                     @else
                     <div class="w-full h-48 flex items-center justify-center text-5xl" style="background: var(--teal-light)">🌍</div>
                     @endif
@@ -429,7 +429,7 @@
                 </div>
 
                 <div class="wow fadeInRight" data-wow-delay="0.2s">
-                    <img src="{{ asset('img/volunteer.jpg') }}" class="w-full rounded-2xl shadow-lg mb-6" alt="Volunteer with Sallaamti" onerror="this.style.display='none'">
+                    <img src="{{ asset('img/volunteer.jpg') }}" loading="lazy" class="w-full rounded-2xl shadow-lg mb-6" alt="Volunteer with Sallaamti" onerror="this.style.display='none'">
                     <div class="rounded-2xl p-6" style="background: linear-gradient(135deg, #0d6b6b 0%, #1a1a2e 100%)">
                         <h5 class="font-bold text-white mb-4">Why Volunteer with Us?</h5>
                         <div class="flex flex-col gap-3">

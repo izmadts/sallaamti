@@ -1,1 +1,1 @@
-<img src="{{ asset('img/logo.png')}}" class="img-fluid h-10" alt="Logo">
+<img src="{{ asset('img/logo.png' )}}" class="img-fluid h-10" alt="Sallaamti Logo" />

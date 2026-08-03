@@ -27,7 +27,7 @@
                     <p class="text-gray-600 text-sm italic leading-relaxed mb-4">"{{ $t->content }}"</p>
                     <div class="flex items-center gap-3 pt-4 border-t border-gray-100">
                         <img src="{{ $t->photo ? Storage::url($t->photo) : asset('img/testimonial-1.jpg') }}"
-                            class="w-12 h-12 rounded-full object-cover" alt="{{ $t->name }}">
+                            loading="lazy" class="w-12 h-12 rounded-full object-cover" alt="{{ $t->name }}">
                         <div>
                             <p class="font-bold text-gray-800 text-sm">{{ $t->name }}</p>
                             @if ($t->location)

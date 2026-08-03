@@ -3,7 +3,7 @@
     @section('title', 'About Sallaamti — Our Mission, Vision & Team')
     @section('description', 'Learn about Sallaamti — an Islamic education platform dedicated to spreading Quranic knowledge, supporting families and building a global Muslim community.')
     @section('canonical', url('/about'))
-    
+
     {{-- ============================================================ --}}
     {{-- PAGE HERO --}}
     {{-- ============================================================ --}}
@@ -32,10 +32,10 @@
 
                 {{-- Images --}}
                 <div class="grid grid-cols-2 gap-4">
-                    <img src="{{ asset('img/about-1.jpg') }}" class="w-full h-full object-cover rounded-2xl wow zoomIn" data-wow-delay="0.1s" alt="Sallaamti community">
+                    <img src="{{ asset('img/about-1.jpg') }}" width="600" height="400" loading="lazy" class="w-full h-full object-cover rounded-2xl wow zoomIn" data-wow-delay="0.1s" alt="Sallaamti community">
                     <div class="flex flex-col gap-4">
-                        <img src="{{ asset('img/about-2.jpg') }}" class="w-full rounded-2xl wow zoomIn" data-wow-delay="0.2s" alt="">
-                        <img src="{{ asset('img/about-3.jpg') }}" class="w-full rounded-2xl wow zoomIn" data-wow-delay="0.3s" alt="">
+                        <img src="{{ asset('img/about-2.jpg') }}" loading="lazy" class="w-full rounded-2xl wow zoomIn" data-wow-delay="0.2s" alt="">
+                        <img src="{{ asset('img/about-3.jpg') }}" loading="lazy" class="w-full rounded-2xl wow zoomIn" data-wow-delay="0.3s" alt="">
                     </div>
                 </div>
 
@@ -74,7 +74,7 @@
 
                     {{-- Donation highlight --}}
                     <div class="rounded-xl p-4 flex items-center gap-4 mb-8" style="background: var(--cream); border: 1px solid #e5e5e5">
-                        <img src="{{ asset('img/about-child.jpg') }}" class="w-16 h-16 rounded-full object-cover flex-shrink-0" alt="">
+                        <img src="{{ asset('img/about-child.jpg') }}" loading="lazy" class="w-16 h-16 rounded-full object-cover flex-shrink-0" alt="">
                         <div class="flex-1 text-sm text-gray-600">
                             To continue our vital work educating youth and supporting families, we need your generous support. Your donation creates lasting change.
                         </div>
@@ -299,7 +299,7 @@
             <div class="grid lg:grid-cols-12 gap-8 mb-12 items-center">
                 <div class="lg:col-span-4 xl:col-span-4 wow zoomIn" data-wow-delay="0.1s">
                     <div class="relative">
-                        <img src="{{ asset('img/team-1.jpg') }}" class="w-full rounded-2xl shadow-lg" alt="Sallaamti Founder">
+                        <img src="{{ asset('img/team-1.jpg') }}" loading="lazy" class="w-full rounded-2xl shadow-lg" alt="Sallaamti Founder">
                         <div class="absolute -bottom-4 -right-4 w-20 h-20 rounded-2xl flex items-center justify-center text-3xl shadow-lg" style="background: var(--gold)">🕌</div>
                     </div>
                 </div>
@@ -329,7 +329,7 @@
                 <div class="team-card bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300 wow zoomIn" data-wow-delay="0.1s">
                     <div class="relative overflow-hidden">
                         @if ($member->photo)
-                        <img src="{{ Storage::url($member->photo) }}" class="w-full h-52 object-cover" alt="{{ $member->name }}">
+                        <img src="{{ Storage::url($member->photo) }}" loading="lazy" class="w-full h-52 object-cover" alt="{{ $member->name }}">
                         @else
                         <div class="w-full h-52 flex items-center justify-center text-4xl" style="background: var(--teal-light)">👤</div>
                         @endif
@@ -380,13 +380,13 @@
                 </div>
                 <div class="grid grid-cols-2 gap-4">
                     <div class="col-span-2 rounded-2xl overflow-hidden">
-                        <img src="{{ asset('img/about-4.jpg') }}" class="w-full h-56 object-cover wow zoomIn" data-wow-delay="0.1s" alt="">
+                        <img src="{{ asset('img/about-4.jpg') }}" loading="lazy" class="w-full h-56 object-cover wow zoomIn" data-wow-delay="0.1s" alt="">
                     </div>
                     <div class="rounded-2xl overflow-hidden">
-                        <img src="{{ asset('img/about-5.jpg') }}" class="w-full h-40 object-cover wow zoomIn" data-wow-delay="0.2s" alt="">
+                        <img src="{{ asset('img/about-5.jpg') }}" loading="lazy" class="w-full h-40 object-cover wow zoomIn" data-wow-delay="0.2s" alt="">
                     </div>
                     <div class="rounded-2xl overflow-hidden">
-                        <img src="{{ asset('img/about-6.jpg') }}" class="w-full h-40 object-cover wow zoomIn" data-wow-delay="0.3s" alt="">
+                        <img src="{{ asset('img/about-6.jpg') }}" loading="lazy" class="w-full h-40 object-cover wow zoomIn" data-wow-delay="0.3s" alt="">
                     </div>
                 </div>
             </div>

@@ -8,7 +8,7 @@
                 <p class="text-sm text-gray-500 mt-0.5">{{ now()->format('l, d F Y') }}</p>
             </div>
             <a href="{{ route('profile.edit') }}" class="flex items-center gap-2">
-                <img src="{{ Auth::user()->avatarUrl() }}" class="w-10 h-10 rounded-full object-cover border-2 border-teal-600">
+                <img src="{{ Auth::user()->avatarUrl() }}" loading="lazy" class="w-10 h-10 rounded-full object-cover border-2 border-teal-600">
             </a>
         </div>
     </x-slot>
@@ -120,7 +120,7 @@
                             </div>
                             <h4 class="font-medium text-gray-800 mt-2">Certificates</h4>
                             <p class="text-xs text-gray-500">Earned on course completion</p>
-                        </a>                     
+                        </a>
 
                     </div>
                 </div>
