@@ -1,4 +1,4 @@
-<x-guest-layout>
+<x-auth-layout>
     <div class="auth-wrapper">
         <div class="auth-card" style="max-width: 560px">
 
@@ -138,4 +138,4 @@
 
         </div>
     </div>
-</x-guest-layout>
+</x-auth-layout>
