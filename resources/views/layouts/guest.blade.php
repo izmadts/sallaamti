@@ -91,9 +91,9 @@
     <!-- Icon fonts (kept — swap for an SVG icon set later if you want to drop these) -->
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
-   
-    <link rel="stylesheet" href="{{ asset('css/style.css') }}" />    
-    
+
+    <link rel="stylesheet" href="{{ asset('css/style.css') }}" />
+
     <!-- Vite: Tailwind + Alpine (ships with Breeze) -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     {{-- ============================================================ --}}
@@ -188,8 +188,19 @@
                 <!-- Hamburger -->
                 <button type="button"
                     @click="mobileOpen = !mobileOpen"
-                    class="lg:hidden border-0 shadow-none p-2 focus:outline-none">
-                    <span class="fa fa-bars text-[--teal] text-xl"></span>
+                    class="lg:hidden border-0 shadow-none p-2 focus:outline-none"
+                    aria-label="Toggle navigation menu"
+                    :aria-expanded="mobileOpen.toString()"
+                    aria-controls="mobile-menu">
+                    <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24" aria-hidden="true">
+                        <path :class="{'hidden': mobileOpen, 'inline-flex': !mobileOpen}"
+                            class="inline-flex" stroke-linecap="round" stroke-linejoin="round"
+                            stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+                        <path :class="{'hidden': !mobileOpen, 'inline-flex': mobileOpen}"
+                            class="hidden" stroke-linecap="round" stroke-linejoin="round"
+                            stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                    <span class="sr-only">Toggle menu</span>
                 </button>
                 <!-- Nav links -->
                 <div class="hidden lg:flex lg:items-center lg:ml-auto lg:mx-auto">
@@ -212,7 +223,7 @@
             <div x-show="mobileOpen"
                 x-cloak
                 x-transition
-                class="lg:hidden pb-4">
+                class="lg:hidden pb-4" id="mobile-menu">
                 <div class="flex flex-col">
                     <a href="{{ url('/') }}" class="py-2 text-sm font-medium {{ request()->is('/') ? 'text-[--teal]' : 'text-[--text-dark]' }}">Home</a>
                     <a href="{{ url('/about') }}" class="py-2 text-sm font-medium {{ request()->is('about') ? 'text-[--teal]' : 'text-[--text-dark]' }}">About</a>
