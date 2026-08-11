@@ -3,7 +3,9 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\NikahProfile;
 use App\Models\Setting;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -12,7 +14,29 @@ class SettingsController extends Controller
     public function index()
     {
         $settings = Setting::allKeyed();
-        return view('admin.settings.index', compact('settings'));
+        $demoNikahProfileCount = NikahProfile::where('is_demo', true)->count();
+
+        return view('admin.settings.index', compact('settings', 'demoNikahProfileCount'));
+    }
+
+    public function generateDemoNikahProfiles(Request $request)
+    {
+        $request->validate(['demo_count' => ['required', 'integer', 'min:1', 'max:50']]);
+
+        \Illuminate\Support\Facades\Artisan::call('nikah:demo-profiles', ['count' => $request->demo_count]);
+
+        return back()->with('status', "{$request->demo_count} demo Nikah profile(s) generated.");
+    }
+
+    public function removeDemoNikahProfiles()
+    {
+        // Same cascade-delete approach as the nikah:demo-profiles-remove
+        // Artisan command — deleting the placeholder users cascades to their
+        // nikah_profiles row and everything hanging off it.
+        $userIds = NikahProfile::where('is_demo', true)->pluck('user_id');
+        User::whereIn('id', $userIds)->delete();
+
+        return back()->with('status', "{$userIds->count()} demo Nikah profile(s) removed.");
     }
 
     public function update(Request $request)

@@ -248,5 +248,32 @@
                 <x-primary-button>Save Settings</x-primary-button>
             </div>
         </form>
+
+        {{-- Demo Nikah Profiles — cold-start social proof, kept outside the settings form since it's its own action --}}
+        <div class="bg-white rounded-lg shadow-sm p-6 space-y-4 mt-6">
+            <h3 class="font-semibold text-gray-700 border-b pb-2">💍 Demo Nikah Profiles</h3>
+            <p class="text-xs text-gray-400">
+                Placeholder verified profiles so the homepage "verified profiles" counter isn't stuck at 0 while the platform is new.
+                They're clearly tagged internally (<code>is_demo</code>) and never mixed up with real members. Remove them the moment you have enough real verified profiles.
+            </p>
+            <p class="text-sm text-gray-600">Currently active: <span class="font-semibold">{{ $demoNikahProfileCount }}</span> demo profile(s).</p>
+            <div class="flex flex-wrap gap-3 items-end">
+                <form method="POST" action="{{ route('admin.settings.demo-nikah.generate') }}" class="flex items-end gap-2">
+                    @csrf
+                    <div>
+                        <x-input-label value="How many to generate" />
+                        <input type="number" name="demo_count" value="10" min="1" max="50" class="border-gray-300 rounded-md text-sm w-24 mt-1">
+                    </div>
+                    <button class="bg-teal-600 text-white text-sm px-4 py-2 rounded hover:bg-teal-700">Generate</button>
+                </form>
+                <form method="POST" action="{{ route('admin.settings.demo-nikah.remove') }}"
+                    onsubmit="return confirm('Remove all {{ $demoNikahProfileCount }} demo Nikah profiles? This cannot be undone.')">
+                    @csrf
+                    <button class="bg-red-600 text-white text-sm px-4 py-2 rounded hover:bg-red-700" {{ $demoNikahProfileCount === 0 ? 'disabled' : '' }}>
+                        Remove All Demo Profiles
+                    </button>
+                </form>
+            </div>
+        </div>
     </div>
 </x-admin-layout>

@@ -223,6 +223,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     // Settings & Frontend
     Route::get('settings', [SettingsController::class, 'index'])->name('settings.index');
     Route::post('settings', [SettingsController::class, 'update'])->name('settings.update');
+    Route::post('settings/demo-nikah-profiles/generate', [SettingsController::class, 'generateDemoNikahProfiles'])->name('settings.demo-nikah.generate');
+    Route::post('settings/demo-nikah-profiles/remove', [SettingsController::class, 'removeDemoNikahProfiles'])->name('settings.demo-nikah.remove');
     Route::post('banners/reorder', [BannerController::class, 'reorder'])->name('banners.reorder');
     Route::post('banners/{banner}/toggle', [BannerController::class, 'toggle'])->name('banners.toggle');
     Route::resource('banners', BannerController::class);
