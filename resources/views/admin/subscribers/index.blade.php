@@ -13,11 +13,6 @@
     </x-slot>
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
-            @if(session('success'))
-            <div class="rounded-lg border border-green-200 bg-green-50 p-4 text-green-700">
-                {{ session('success') }}
-            </div>
-            @endif
             {{-- Statistics --}}
             <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
                 <div class="bg-white rounded-xl shadow-sm border p-6">

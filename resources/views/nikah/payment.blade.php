@@ -6,30 +6,33 @@
     <div class="py-12">
         <div class="max-w-2xl mx-auto sm:px-6 lg:px-8 space-y-6">
 
-            @if (session('status'))
-            <div class="p-4 bg-green-50 text-green-700 rounded">{{ session('status') }}</div>
-            @endif
 
             <div class="bg-white rounded-lg shadow-sm p-6">
-                <h3 class="font-semibold text-gray-700 mb-2">Fee Amount: Rs. {{ number_format($profile->payment_amount ?? config('services.nikah.verification_fee')) }}</h3>
+                <h3 class="font-semibold text-gray-700 mb-2">Fee Amount: Rs. {{ number_format($profile->payment_amount ?? setting('nikah_verification_fee', config('services.nikah.verification_fee'))) }}</h3>
                 <p class="text-sm text-gray-500 mb-4">A verification fee confirms your serious intent and helps us maintain a trustworthy matchmaking community. Please send the amount via JazzCash or EasyPaisa to the number below, then submit your payment details for confirmation.</p>
 
-                <div class="bg-gray-50 border border-gray-200 rounded p-4 text-sm mb-6">
-                    <div class="mb-2">
-                        <img src="{{ asset('images/jazzcash.png') }}" alt="Icon Description" class="h-8 w-auto">
-                        <p class="text-gray-600 mb-0">{{ setting('jazzcash_number', '03XX-XXXXXXX') }}</p>
-                        <p class="font-semibold text-gray-700 mb-0">{{ setting('jazzcash_account_title', 'Mubashar Irshad') }}</p>
-                        <!-- <p><strong>EasyPaisa:</strong> {{ setting('easypaisa_number') }}</p> -->
-                        <img src="{{ asset('images/meezan.png') }}" alt="Icon Description" class="h-16 w-auto">
-                        <p><strong>Account Title:</strong> {{ setting('bank_account_title') }}</p>
-                        @if (setting('bank_name'))
-                        <p class="font-bold mb-0.5" style="color: var(--gold)">🏦 Bank Transfer</p>
+                <div class="bg-gray-50 border border-gray-200 rounded p-4 text-sm mb-6 space-y-4">
+                    @if (setting('jazzcash_number'))
+                    <div>
+                        <p class="font-bold mb-1" style="color: var(--gold)">📱 JazzCash</p>
+                        <img src="{{ asset('images/jazzcash.png') }}" alt="JazzCash" class="h-8 w-auto mb-1">
+                        <p class="text-gray-600 mb-0">{{ setting('jazzcash_number') }}</p>
+                        <p class="font-semibold text-gray-700 mb-0">{{ setting('jazzcash_account_title') }}</p>
+                    </div>
+                    @endif
+                    @if (setting('bank_name'))
+                    <div>
+                        <p class="font-bold mb-1" style="color: var(--gold)">🏦 Bank Transfer</p>
+                        <img src="{{ asset('images/meezan.png') }}" alt="Bank" class="h-16 w-auto mb-1">
                         <p class="text-gray-600 text-xs mb-0">Bank: {{ setting('bank_name') }}</p>
+                        <p class="text-gray-600 text-xs mb-0">Account Title: {{ setting('bank_account_title') }}</p>
                         <p class="text-gray-600 text-xs mb-0">Account No: {{ setting('bank_account_number') }}</p>
                         <p class="text-gray-600 text-xs mb-0">IBAN: {{ setting('bank_account_iban') }}</p>
-                        <p class="text-gray-600 text-xs mb-0">Title: {{ setting('site_name', 'Sallaamti') }}</p>
-                        @endif
                     </div>
+                    @endif
+                    @if (!setting('jazzcash_number') && !setting('bank_name'))
+                    <p class="text-red-600">Payment details have not been configured yet. Please contact support before sending any payment.</p>
+                    @endif
                 </div>
                 @if ($profile->payment_status === 'submitted')
                 <div class="p-4 bg-yellow-50 text-yellow-700 rounded text-sm">
@@ -53,7 +56,6 @@
                         <x-input-label value="Payment Method" />
                         <select name="payment_method" required class="border-gray-300 rounded-md w-full mt-1">
                             <option value="jazzcash">JazzCash</option>
-                            <!-- <option value="easypaisa">EasyPaisa</option> -->
                             <option value="bank_transfer">Bank Transfer</option>
                         </select>
                     </div>

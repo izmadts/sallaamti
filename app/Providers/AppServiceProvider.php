@@ -13,8 +13,9 @@ class AppServiceProvider extends ServiceProvider
     {
         // Fix for shared hosting MySQL key length limit
         Schema::defaultStringLength(191);
-        // Share latest 2 blog posts with ALL guest layout views
-        View::composer('layouts.guest', function ($view) {
+        // Share latest 2 blog posts with the shared footer partial (used by both
+        // the guest layout and the authenticated app layout)
+        View::composer('partials.footer', function ($view) {
             try {
                 $footerPosts = \App\Models\BlogPost::where('status', 'published')
                     ->orderByDesc('published_at')

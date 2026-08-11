@@ -5,9 +5,6 @@
 
     <div class="py-12">
         <div class="max-w-3xl mx-auto sm:px-6 lg:px-8 space-y-4">
-            @if (session('status'))
-            <div class="p-4 bg-green-50 text-green-700 rounded">{{ session('status') }}</div>
-            @endif
 
             <a href="{{ route('admin.courses.lessons.create', $course) }}" class="inline-block bg-gray-800 text-white text-sm px-4 py-2 rounded">+ Add Lesson</a>
             <a href="{{ route('admin.courses.quiz.edit', $course) }}" class="inline-block bg-blue-600 text-white text-sm px-4 py-2 rounded mb-4">Manage Quiz</a>

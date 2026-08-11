@@ -15,6 +15,13 @@ class VolunteerController extends Controller
 
     public function store(Request $request)
     {
+        // Honeypot: real visitors never see or fill this field, bots that
+        // auto-fill every input do. Pretend success so the bot doesn't
+        // learn to skip the field next time.
+        if ($request->filled('website')) {
+            return back()->with('status', 'Thank you! Your volunteer application has been received.');
+        }
+
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255', 'unique:volunteer_applications,email'],

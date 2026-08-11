@@ -19,6 +19,37 @@ class NikahPaymentAdminController extends Controller
         return view('admin.nikah.nikah-payments', compact('profiles'));
     }
 
+    public function bulkConfirm(Request $request)
+    {
+        $request->validate(['profile_ids' => ['required', 'array'], 'profile_ids.*' => ['integer', 'exists:nikah_profiles,id']]);
+
+        $profiles = NikahProfile::whereIn('id', $request->profile_ids)
+            ->where('payment_status', 'submitted')
+            ->get();
+
+        foreach ($profiles as $profile) {
+            $profile->update(['payment_status' => 'confirmed', 'payment_confirmed_at' => now()]);
+
+            try {
+                $profile->user->notify(new \App\Notifications\NikahPaymentConfirmed());
+            } catch (\Throwable $e) {
+                \Log::error('NikahPaymentConfirmed notification failed: ' . $e->getMessage());
+            }
+
+            if ($profile->verification_status === 'pending') {
+                \App\Models\User::role('admin')->each(function ($admin) use ($profile) {
+                    try {
+                        $admin->notify(new \App\Notifications\NewNikahProfilePendingVerification($profile));
+                    } catch (\Throwable $e) {
+                        \Log::error('NewNikahProfilePendingVerification notification failed: ' . $e->getMessage());
+                    }
+                });
+            }
+        }
+
+        return back()->with('status', "{$profiles->count()} payment(s) confirmed.");
+    }
+
     public function confirm(NikahProfile $profile)
     {
         $profile->update(['payment_status' => 'confirmed', 'payment_confirmed_at' => now()]);
@@ -29,6 +60,16 @@ class NikahPaymentAdminController extends Controller
             \Log::error('NikahPaymentConfirmed notification failed: ' . $e->getMessage());
         }
 
+        if ($profile->verification_status === 'pending') {
+            \App\Models\User::role('admin')->each(function ($admin) use ($profile) {
+                try {
+                    $admin->notify(new \App\Notifications\NewNikahProfilePendingVerification($profile));
+                } catch (\Throwable $e) {
+                    \Log::error('NewNikahProfilePendingVerification notification failed: ' . $e->getMessage());
+                }
+            });
+        }
+
         return back()->with('status', 'Payment confirmed.');
     }
 
@@ -36,10 +77,21 @@ class NikahPaymentAdminController extends Controller
     {
         $request->validate(['payment_rejection_reason' => 'required|string|max:500']);
 
-        $profile->update([
+        $updates = [
             'payment_status' => 'rejected',
             'payment_rejection_reason' => $request->payment_rejection_reason,
-        ]);
+        ];
+
+        // If this payment was previously confirmed and the profile already went
+        // through verification off the back of it, a retroactive rejection (e.g.
+        // fraud discovered later) must pull the profile back out of the public
+        // browse results — verified status can't outlive its own payment.
+        if ($profile->verification_status === 'verified') {
+            $updates['verification_status'] = 'rejected';
+            $updates['rejection_reason'] = 'Payment confirmation was revoked: ' . $request->payment_rejection_reason;
+        }
+
+        $profile->update($updates);
 
         return back()->with('status', 'Payment rejected. User will need to resubmit.');
     }

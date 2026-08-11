@@ -4,9 +4,6 @@
     </x-slot>
     <div class="space-y-6 max-w-6xl">
 
-        @if (session('status'))
-        <div class="p-4 bg-green-50 text-green-700 rounded-xl text-sm">✅ {{ session('status') }}</div>
-        @endif
 
         {{-- Stats --}}
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">

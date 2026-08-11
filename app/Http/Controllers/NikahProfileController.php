@@ -22,6 +22,7 @@ class NikahProfileController extends Controller
     public function store(Request $request)
     {
         $validated = $this->validateProfile($request);
+        $validated['sect'] = $this->resolveSect($request);
         $validated['user_id'] = Auth::id();
 
         if ($request->hasFile('cnic_front_image')) {
@@ -35,7 +36,8 @@ class NikahProfileController extends Controller
         }
 
         $validated['allow_photo_sharing'] = $request->has('allow_photo_sharing');
-        $validated['payment_amount'] = config('services.nikah.verification_fee');
+        $validated['open_to_polygamy'] = $request->has('open_to_polygamy');
+        $validated['payment_amount'] = setting('nikah_verification_fee', config('services.nikah.verification_fee'));
         $validated['public_token'] = Str::random(32);
 
         NikahProfile::create($validated);
@@ -75,7 +77,9 @@ class NikahProfileController extends Controller
     {
         $profile = Auth::user()->nikahProfile;
         $validated = $this->validateProfile($request, $profile);
+        $validated['sect'] = $this->resolveSect($request);
         $validated['allow_photo_sharing'] = $request->has('allow_photo_sharing');
+        $validated['open_to_polygamy'] = $request->has('open_to_polygamy');
 
         if ($request->hasFile('cnic_front_image')) {
             $validated['cnic_front_image'] = $request->file('cnic_front_image')->store('nikah/cnic', 'private');
@@ -111,6 +115,7 @@ class NikahProfileController extends Controller
 
         $query = NikahProfile::where('verification_status', 'verified')
             ->where('is_active', true)
+            ->whereNull('suspended_at')
             ->where('visibility', 'public')
             ->where('user_id', '!=', Auth::id())
             ->whereNotIn('id', $blockedIds) // ← correct position: inside the query
@@ -138,12 +143,29 @@ class NikahProfileController extends Controller
         if ($request->filled('education')) {
             $query->where('education', 'like', '%' . $request->education . '%');
         }
+        if ($request->filled('ethnicity')) {
+            $query->where('ethnicity', 'like', '%' . $request->ethnicity . '%');
+        }
+        if ($request->filled('language')) {
+            $query->where('language', 'like', '%' . $request->language . '%');
+        }
+        if ($request->filled('prayer_frequency')) {
+            $query->where('prayer_frequency', $request->prayer_frequency);
+        }
+        if ($request->boolean('open_to_polygamy')) {
+            $query->where('open_to_polygamy', true);
+        }
 
-        $profiles = $query->get();
+        // Match % depends on comparing every candidate against the viewer's
+        // preferences in PHP, so we cap the working set instead of loading
+        // the entire filtered table into memory as the profile count grows.
+        $profiles = $query->orderByDesc('created_at')->limit(300)->get();
 
         // Calculate match % and sort descending
         $profiles = $profiles->map(function ($profile) use ($myProfile) {
-            $profile->match_percentage = $profile->matchPercentageWith($myProfile);
+            $breakdown = $profile->matchBreakdownWith($myProfile);
+            $profile->match_percentage = $breakdown['percentage'];
+            $profile->match_criteria = $breakdown['criteria'];
             return $profile;
         })->sortByDesc('match_percentage');
 
@@ -168,6 +190,7 @@ class NikahProfileController extends Controller
     {
         $myProfile = Auth::user()->nikahProfile;
         abort_unless($myProfile, 403);
+        abort_if(\App\Models\NikahBlock::existsBetween($myProfile->id, $profile->id), 403);
 
         $existing = NikahSavedProfile::where('nikah_profile_id', $myProfile->id)
             ->where('saved_profile_id', $profile->id)
@@ -203,19 +226,32 @@ class NikahProfileController extends Controller
             'age' => ['required', 'integer', 'min:18', 'max:70'],
             'height' => ['nullable', 'string', 'max:20'],
             'marital_status' => ['required', 'string', 'in:never_married,divorced,widowed,married,separated'],
-            'sect' => ['nullable', 'string', 'max:100'],
+            'open_to_polygamy' => ['nullable', 'boolean'],
+            'sect' => ['nullable', 'string', 'in:Sunni,Shia,Ahle Hadith,Deobandi,Other'],
+            'sect_other' => ['nullable', 'required_if:sect,Other', 'string', 'max:100'],
             'caste' => ['nullable', 'string', 'max:100'],
+            'prayer_frequency' => ['nullable', 'string', 'in:always,usually,sometimes,rarely'],
+            'hijab_or_beard' => ['nullable', 'string', 'in:yes,no,sometimes'],
+            'smokes' => ['nullable', 'string', 'in:no,occasionally,yes'],
+            'diet' => ['nullable', 'string', 'in:halal_only,halal_mostly,no_restriction'],
             'education' => ['nullable', 'string', 'max:255'],
             'profession' => ['nullable', 'string', 'max:255'],
             'city' => ['required', 'string', 'max:100'],
             'country' => ['nullable', 'string', 'max:100'],
+            'ethnicity' => ['nullable', 'string', 'max:100'],
+            'language' => ['nullable', 'string', 'max:100'],
             'family_type' => ['nullable', 'string', 'max:100'],
             'guardian_name' => ['required', 'string', 'max:255'],
             'guardian_contact' => ['required', 'string', 'max:20'],
             'guardian_relation' => ['nullable', 'string', 'max:100'],
             'about' => ['nullable', 'string', 'max:2000'],
             'expectations' => ['nullable', 'string', 'max:2000'],
-            'cnic_number' => [$profile?->cnic_number ? 'nullable' : 'required', 'string', 'max:20'],
+            'cnic_number' => [
+                $profile?->cnic_number ? 'nullable' : 'required',
+                'string',
+                'max:20',
+                \Illuminate\Validation\Rule::unique('nikah_profiles', 'cnic_number')->ignore($profile?->id),
+            ],
             'cnic_front_image' => [$profile?->cnic_front_image ? 'nullable' : 'required', 'image', 'max:4096'],
             'cnic_back_image' => [$profile?->cnic_back_image ? 'nullable' : 'required', 'image', 'max:4096'],
             'photo' => ['nullable', 'image', 'max:4096'],
@@ -227,19 +263,31 @@ class NikahProfileController extends Controller
             'pref_sect' => ['nullable', 'string', 'max:100'],
             'pref_education' => ['nullable', 'string', 'max:100'],
             'pref_marital_status' => ['nullable', 'string'],
+        ], [
+            'cnic_number.unique' => 'This CNIC number is already registered to another profile.',
         ]);
+    }
+
+    // The "Other" sect option pairs with a free-text box (sect_other) that only
+    // gets validated/shown when it's selected — resolve that pair down to the
+    // single string that actually gets stored.
+    private function resolveSect(Request $request): ?string
+    {
+        if ($request->input('sect') === 'Other') {
+            return $request->input('sect_other');
+        }
+        return $request->input('sect');
     }
     public function view(NikahProfile $profile)
     {
-        // Only show verified, active, public profiles
-        abort_unless(
-            $profile->verification_status === 'verified' &&
-                $profile->is_active &&
-                $profile->visibility === 'public',
-            404
-        );
+        // Only show verified, active, non-suspended, public profiles
+        abort_unless($profile->isSearchable(), 404);
 
         $myProfile = Auth::user()->nikahProfile;
+
+        if ($myProfile) {
+            abort_if(\App\Models\NikahBlock::existsBetween($myProfile->id, $profile->id), 404);
+        }
 
         // Check if there's a mutual accepted interest
         $hasAcceptedInterest = false;
@@ -269,7 +317,9 @@ class NikahProfileController extends Controller
             ->exists()
             : false;
 
-        $matchPercentage = $myProfile ? $profile->matchPercentageWith($myProfile) : 0;
+        $matchBreakdown = $myProfile ? $profile->matchBreakdownWith($myProfile) : ['percentage' => 0, 'criteria' => []];
+        $matchPercentage = $matchBreakdown['percentage'];
+        $matchCriteria = $matchBreakdown['criteria'];
 
         return view('nikah.profile-view', compact(
             'profile',
@@ -277,7 +327,8 @@ class NikahProfileController extends Controller
             'interest',
             'sentInterest',
             'isSaved',
-            'matchPercentage'
+            'matchPercentage',
+            'matchCriteria'
         ));
     }
 
@@ -285,10 +336,14 @@ class NikahProfileController extends Controller
     {
         $profile = NikahProfile::where('public_token', $token)->firstOrFail();
 
+        // Possession of the (unguessable, 32-char random) token is the access
+        // control here, so this deliberately ignores `visibility` — a Private
+        // profile is hidden from search/browse but must still open via the
+        // personal link its owner explicitly shared, otherwise "Private" is a
+        // one-way trap with no way to ever be seen by anyone. Suspension still
+        // applies though — a moderation action must hide the profile everywhere.
         abort_unless(
-            $profile->verification_status === 'verified' &&
-                $profile->is_active &&
-                $profile->visibility === 'public',
+            $profile->verification_status === 'verified' && $profile->is_active && !$profile->isSuspended(),
             404
         );
 

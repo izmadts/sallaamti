@@ -13,52 +13,34 @@ class NikahPhotoController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'photo' => ['required', 'image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
+            'photos' => ['required', 'array'],
+            'photos.*' => ['image', 'mimes:jpg,jpeg,png,webp', 'max:5120'],
         ]);
 
         $profile = Auth::user()->nikahProfile;
         abort_unless($profile, 403, 'No Nikah profile found.');
 
-        // Max 5 photos
-        abort_if($profile->photos()->count() >= 5, 422, 'Maximum 5 photos allowed.');
+        $existingCount = $profile->photos()->count();
+        abort_if($existingCount >= 5, 422, 'Maximum 5 photos allowed.');
 
-        // Store on PRIVATE disk — never public
-        $path = $request->file('photo')->store('nikah/photos', 'private');
+        $files = array_slice($request->file('photos', []), 0, 5 - $existingCount);
+        $nextOrder = ($profile->photos()->max('order') ?? -1) + 1;
 
-        $photo = $profile->photos()->create([
-            'path' => $path,
-            'is_primary' => $profile->photos()->count() === 0, // first photo = primary
-        ]);
+        foreach ($files as $index => $file) {
+            $path = $file->store('nikah/photos', 'private');
 
-        return back()->with('status', 'Photo uploaded successfully.');
+            $profile->photos()->create([
+                'path' => $path,
+                'is_primary' => $existingCount === 0 && $index === 0,
+                'order' => $nextOrder + $index,
+            ]);
+        }
+
+        $skipped = count($request->file('photos', [])) - count($files);
+        $status = 'Photo(s) uploaded successfully.' . ($skipped > 0 ? " {$skipped} skipped — maximum 5 photos allowed." : '');
+
+        return back()->with('status', $status);
     }
-    ////////////////////Old Store
-    // public function store(Request $request)
-    // {
-    //     $profile = Auth::user()->nikahProfile;
-    //     abort_unless($profile, 404);
-
-    //     // Max 5 photos
-    //     abort_if($profile->photos()->count() >= 5, 422, 'Maximum 5 photos allowed.');
-
-    //     $request->validate([
-    //         'photos.*' => ['required', 'image', 'max:4096'],
-    //     ]);
-
-    //     foreach ($request->file('photos', []) as $index => $file) {
-    //         $path = $file->store('nikah/photos', 'private');
-    //         $isFirst = $profile->photos()->count() === 0 && $index === 0;
-
-    //         NikahPhoto::create([
-    //             'nikah_profile_id' => $profile->id,
-    //             'path' => $path,
-    //             'is_primary' => $isFirst,
-    //             'order' => $profile->photos()->max('order') + 1,
-    //         ]);
-    //     }
-
-    //     return back()->with('status', 'Photos uploaded successfully.');
-    // }
 
     public function destroy(NikahPhoto $photo)
     {

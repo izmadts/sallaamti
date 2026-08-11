@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Course;
 use App\Models\Lesson;
+use App\Support\HtmlSanitizer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -100,6 +101,7 @@ class CourseAdminController extends Controller
 
         $validated['course_id'] = $course->id;
         $validated['order'] = $validated['order'] ?? ($course->lessons()->max('order') + 1);
+        $validated['content'] = HtmlSanitizer::clean($validated['content'] ?? null);
 
         if ($request->hasFile('file')) {
             $validated['file_path'] = $request->file('file')->store('lessons/files', 'public');
@@ -140,6 +142,7 @@ class CourseAdminController extends Controller
             $validated['file_name'] = null;
         }
         unset($validated['file'], $validated['remove_file']);
+        $validated['content'] = HtmlSanitizer::clean($validated['content'] ?? null);
 
         $lesson->update($validated);
 

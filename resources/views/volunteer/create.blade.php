@@ -13,12 +13,6 @@
     <section class="py-16 bg-cream">
         <div class="max-w-5xl mx-auto px-4">
 
-            @if (session('status'))
-            <div class="mb-6 p-4 rounded-xl text-green-700 flex items-center gap-3" style="background: #f0fdf4; border: 1px solid #bbf7d0">
-                <i class="fa fa-check-circle text-xl flex-shrink-0"></i>
-                <div>{{ session('status') }}</div>
-            </div>
-            @endif
 
             <div class="grid lg:grid-cols-3 gap-8">
 
@@ -37,24 +31,29 @@
 
                         <form method="POST" action="{{ route('volunteer.store') }}" class="space-y-5">
                             @csrf
+                            {{-- Honeypot: hidden from real visitors, bots that auto-fill every field will trip it --}}
+                            <div class="absolute -left-[9999px]" aria-hidden="true">
+                                <label for="website">Leave this field empty</label>
+                                <input type="text" name="website" id="website" tabindex="-1" autocomplete="off">
+                            </div>
 
                             {{-- Name + Email --}}
                             <div class="grid sm:grid-cols-2 gap-4">
                                 <div>
-                                    <label class="auth-label">Full Name <span class="text-red-400">*</span></label>
+                                    <label for="volunteer-name" class="auth-label">Full Name <span class="text-red-400">*</span></label>
                                     <div class="auth-input-wrap">
                                         <i class="fa fa-user auth-icon"></i>
-                                        <input type="text" name="name" value="{{ old('name', auth()->user()?->name) }}" required
+                                        <input id="volunteer-name" type="text" name="name" value="{{ old('name', auth()->user()?->name) }}" required
                                             class="auth-input @error('name') auth-input-error @enderror"
                                             placeholder="Your full name">
                                     </div>
                                     <x-input-error :messages="$errors->get('name')" class="mt-1" />
                                 </div>
                                 <div>
-                                    <label class="auth-label">Email Address <span class="text-red-400">*</span></label>
+                                    <label for="volunteer-email" class="auth-label">Email Address <span class="text-red-400">*</span></label>
                                     <div class="auth-input-wrap">
                                         <i class="fa fa-envelope auth-icon"></i>
-                                        <input type="email" name="email" value="{{ old('email', auth()->user()?->email) }}" required
+                                        <input id="volunteer-email" type="email" name="email" value="{{ old('email', auth()->user()?->email) }}" required
                                             class="auth-input @error('email') auth-input-error @enderror"
                                             placeholder="your@email.com">
                                     </div>
@@ -65,28 +64,28 @@
                             {{-- Phone + City --}}
                             <div class="grid sm:grid-cols-2 gap-4">
                                 <div>
-                                    <label class="auth-label">Phone / WhatsApp <span class="text-red-400">*</span></label>
+                                    <label for="volunteer-phone" class="auth-label">Phone / WhatsApp <span class="text-red-400">*</span></label>
                                     <div class="auth-input-wrap">
                                         <i class="fa fa-phone auth-icon"></i>
-                                        <input type="text" name="phone" value="{{ old('phone', auth()->user()?->phone) }}" required
+                                        <input id="volunteer-phone" type="text" name="phone" value="{{ old('phone', auth()->user()?->phone) }}" required
                                             class="auth-input @error('phone') auth-input-error @enderror"
                                             placeholder="+92 3XX XXXXXXX">
                                     </div>
                                     <x-input-error :messages="$errors->get('phone')" class="mt-1" />
                                 </div>
                                 <div>
-                                    <label class="auth-label">City / Country</label>
+                                    <label for="volunteer-city" class="auth-label">City / Country</label>
                                     <div class="auth-input-wrap">
                                         <i class="fa fa-map-marker-alt auth-icon"></i>
-                                        <input type="text" name="city" value="{{ old('city', auth()->user()?->city) }}"
+                                        <input id="volunteer-city" type="text" name="city" value="{{ old('city', auth()->user()?->city) }}"
                                             class="auth-input" placeholder="Karachi, London, Dubai...">
                                     </div>
                                 </div>
                             </div>
 
                             {{-- Area of Interest --}}
-                            <div>
-                                <label class="auth-label">Area of Interest <span class="text-red-400">*</span></label>
+                            <fieldset>
+                                <legend class="auth-label">Area of Interest <span class="text-red-400">*</span></legend>
                                 <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 mt-2">
                                     @foreach ([
                                     ['Teaching (Quran)', '👩‍🏫', 'teaching'],
@@ -111,14 +110,14 @@
                                     @endforeach
                                 </div>
                                 <x-input-error :messages="$errors->get('area_of_interest')" class="mt-1" />
-                            </div>
+                            </fieldset>
 
                             {{-- Availability --}}
                             <div>
-                                <label class="auth-label">Weekly Availability</label>
+                                <label for="volunteer-availability" class="auth-label">Weekly Availability</label>
                                 <div class="auth-input-wrap">
                                     <i class="fa fa-clock auth-icon"></i>
-                                    <select name="availability" class="auth-input">
+                                    <select id="volunteer-availability" name="availability" class="auth-input">
                                         <option value="">Select your availability</option>
                                         <option value="1-2 hours" {{ old('availability') === '1-2 hours' ? 'selected' : '' }}>1–2 hours per week</option>
                                         <option value="3-5 hours" {{ old('availability') === '3-5 hours' ? 'selected' : '' }}>3–5 hours per week</option>
@@ -130,10 +129,10 @@
 
                             {{-- Skills --}}
                             <div>
-                                <label class="auth-label">Your Skills / Qualifications</label>
+                                <label for="volunteer-skills" class="auth-label">Your Skills / Qualifications</label>
                                 <div class="auth-input-wrap">
                                     <i class="fa fa-star auth-icon"></i>
-                                    <input type="text" name="skills" value="{{ old('skills') }}"
+                                    <input id="volunteer-skills" type="text" name="skills" value="{{ old('skills') }}"
                                         class="auth-input"
                                         placeholder="e.g. Hafiz, Web Developer, Graphic Designer, Counselor...">
                                 </div>
@@ -141,8 +140,8 @@
 
                             {{-- Message --}}
                             <div>
-                                <label class="auth-label">Why do you want to volunteer? <span class="text-red-400">*</span></label>
-                                <textarea name="message" rows="4" required
+                                <label for="volunteer-message" class="auth-label">Why do you want to volunteer? <span class="text-red-400">*</span></label>
+                                <textarea id="volunteer-message" name="message" rows="4" required
                                     class="auth-input w-full resize-none @error('message') auth-input-error @enderror"
                                     style="padding-left: 1rem"
                                     placeholder="Tell us about yourself, your motivation, and how you'd like to contribute to the Sallaamti mission...">{{ old('message') }}</textarea>

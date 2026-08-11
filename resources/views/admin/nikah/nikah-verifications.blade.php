@@ -6,9 +6,61 @@
     <div class="py-12">
         <div class="max-w-6xl mx-auto sm:px-6 lg:px-8 space-y-6">
 
-            @if (session('status'))
-            <div class="p-4 bg-green-50 text-green-700 rounded">{{ session('status') }}</div>
-            @endif
+            <!-- Module Stats -->
+            <div class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-8 gap-3">
+                <div class="bg-white rounded-lg shadow-sm p-3 text-center">
+                    <p class="text-xl font-bold text-gray-800">{{ $stats['total'] }}</p>
+                    <p class="text-xs text-gray-500">Total Profiles</p>
+                </div>
+                <div class="bg-white rounded-lg shadow-sm p-3 text-center">
+                    <p class="text-xl font-bold text-green-600">{{ $stats['verified'] }}</p>
+                    <p class="text-xs text-gray-500">Verified</p>
+                </div>
+                <div class="bg-white rounded-lg shadow-sm p-3 text-center">
+                    <p class="text-xl font-bold text-yellow-600">{{ $stats['pending'] }}</p>
+                    <p class="text-xs text-gray-500">Pending Review</p>
+                </div>
+                <div class="bg-white rounded-lg shadow-sm p-3 text-center">
+                    <p class="text-xl font-bold text-red-600">{{ $stats['rejected'] }}</p>
+                    <p class="text-xs text-gray-500">Rejected</p>
+                </div>
+                <div class="bg-white rounded-lg shadow-sm p-3 text-center">
+                    <a href="{{ route('admin.nikah.payments') }}" class="block">
+                        <p class="text-xl font-bold text-blue-600">{{ $stats['pending_payments'] }}</p>
+                        <p class="text-xs text-gray-500">Pending Payments</p>
+                    </a>
+                </div>
+                <div class="bg-white rounded-lg shadow-sm p-3 text-center">
+                    <p class="text-xl font-bold text-gray-800">{{ $stats['male'] }} / {{ $stats['female'] }}</p>
+                    <p class="text-xs text-gray-500">Male / Female</p>
+                </div>
+                <div class="bg-white rounded-lg shadow-sm p-3 text-center">
+                    <p class="text-xl font-bold text-gray-800">{{ $stats['new_this_week'] }}</p>
+                    <p class="text-xs text-gray-500">New This Week</p>
+                </div>
+                <div class="bg-white rounded-lg shadow-sm p-3 text-center">
+                    <a href="{{ route('admin.nikah.reports') }}" class="block">
+                        <p class="text-xl font-bold text-orange-600">⚠</p>
+                        <p class="text-xs text-gray-500">Reports Queue</p>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Bulk approve (checkboxes below attach via the form="" attribute) -->
+            <form id="bulkApproveForm" method="POST" action="{{ route('admin.nikah.verifications.bulk-approve') }}"></form>
+            <div class="bg-white p-3 rounded-lg shadow-sm flex items-center justify-between">
+                <p class="text-xs text-gray-500">Select profiles with confirmed payment below, then bulk-approve.</p>
+                <button type="submit" form="bulkApproveForm" onclick="return confirm('Approve all selected profiles?')"
+                    class="bg-green-600 text-white text-sm px-4 py-2 rounded hover:bg-green-700">✅ Approve Selected</button>
+            </div>
+
+            <!-- Bulk remind (separate checkbox set, only shown on unpaid/rejected profiles) -->
+            <form id="bulkRemindForm" method="POST" action="{{ route('admin.nikah.verifications.bulk-remind') }}"></form>
+            <div class="bg-white p-3 rounded-lg shadow-sm flex items-center justify-between">
+                <p class="text-xs text-gray-500">Select profiles stuck on the payment step, then nudge them to finish and get verified.</p>
+                <button type="submit" form="bulkRemindForm" onclick="return confirm('Send a completion reminder email to all selected profiles?')"
+                    class="bg-indigo-600 text-white text-sm px-4 py-2 rounded hover:bg-indigo-700">📧 Remind Selected</button>
+            </div>
 
             <!-- Filters -->
             <form method="GET" class="bg-white p-4 rounded-lg shadow-sm flex flex-wrap gap-3 items-end">
@@ -42,6 +94,9 @@
             <div class="bg-white shadow-sm rounded-lg p-6">
                 <div class="flex justify-between items-start flex-wrap gap-3">
                     <div class="flex gap-4">
+                        @if ($profile->payment_status === 'confirmed' && $profile->verification_status !== 'verified')
+                        <input type="checkbox" name="profile_ids[]" value="{{ $profile->id }}" form="bulkApproveForm" class="mt-1 rounded" title="Select for bulk approval">
+                        @endif
                         @if ($profile->photo)
                         <img src="{{ route('nikah.file', [$profile, 'photo']) }}" class="w-20 h-20 object-cover rounded-lg border">
                         @else
@@ -52,7 +107,28 @@
                             <p class="text-sm text-gray-500">{{ $profile->user->email }}</p>
                             <p class="text-sm text-gray-500">{{ $profile->age }} yrs, {{ ucfirst($profile->user->gender) }}, {{ $profile->city }}</p>
                             <p class="text-sm text-gray-500">CNIC: {{ $profile->cnic_number }}</p>
-                            <p class="text-sm text-gray-500">Guardian: {{ $profile->guardian_name }} ({{ $profile->guardian_contact }})</p>
+                            <p class="text-sm text-gray-500">
+                                Guardian: {{ $profile->guardian_name }} ({{ $profile->guardian_contact }})
+                                @if ($profile->isGuardianVerified())
+                                <span class="text-purple-600">✓ Verified</span>
+                                @else
+                                <form method="POST" action="{{ route('admin.nikah.verify-guardian', $profile) }}" class="inline">
+                                    @csrf
+                                    <button class="text-xs text-purple-600 hover:underline">Mark Guardian Verified</button>
+                                </form>
+                                @endif
+                            </p>
+                            @if (($guardianContactCounts[$profile->guardian_contact] ?? 0) > 1)
+                            <p class="text-xs text-orange-600 mt-1">⚠ This guardian contact number appears on {{ $guardianContactCounts[$profile->guardian_contact] }} profiles on this page — review for possible duplicate/fake accounts.</p>
+                            @endif
+                            @if ($profile->isSuspended())
+                            <p class="text-xs text-red-600 mt-1">⛔ Suspended: {{ $profile->suspension_reason }}
+                                <form method="POST" action="{{ route('admin.nikah.unsuspend', $profile) }}" class="inline">
+                                    @csrf
+                                    <button class="underline">Unsuspend</button>
+                                </form>
+                            </p>
+                            @endif
                         </div>
                         <!-- CNIC Images -->
                         <div class="mt-4 flex gap-4 flex-wrap">
@@ -109,6 +185,14 @@
                         ⏳ Payment Pending (Not Submitted)
                     </button>
                     @endif
+
+                    @if (in_array($profile->payment_status, ['unpaid', 'rejected']))
+                    <input type="checkbox" name="profile_ids[]" value="{{ $profile->id }}" form="bulkRemindForm" class="ml-2 align-middle rounded" title="Select for bulk reminder">
+                    <form method="POST" action="{{ route('admin.nikah.remind', $profile) }}" class="inline">
+                        @csrf
+                        <button class="text-sm bg-indigo-100 text-indigo-700 px-3 py-2 rounded hover:bg-indigo-200">📧 Send Reminder</button>
+                    </form>
+                    @endif
                 </div>
 
                 <!-- Actions -->
@@ -128,6 +212,25 @@
                     </form>
                     @endif
                 </div>
+
+                <!-- Moderation Notes -->
+                <details class="mt-4">
+                    <summary class="text-xs text-gray-500 cursor-pointer">📝 Moderation Notes ({{ $profile->moderationNotes->count() }})</summary>
+                    <div class="mt-2 space-y-2">
+                        @foreach ($profile->moderationNotes as $note)
+                        <div class="bg-gray-50 rounded p-2 text-xs text-gray-600">
+                            <span class="font-semibold">{{ $note->admin->name }}</span>
+                            <span class="text-gray-400">{{ $note->created_at->format('d M Y, h:i A') }}</span>
+                            <p class="mt-0.5">{{ $note->note }}</p>
+                        </div>
+                        @endforeach
+                        <form method="POST" action="{{ route('admin.nikah.notes.store', $profile) }}" class="flex gap-2">
+                            @csrf
+                            <input type="text" name="note" placeholder="Add an internal note (not visible to the member)" class="flex-1 border-gray-300 rounded text-xs px-2 py-1" required>
+                            <button class="bg-gray-600 text-white text-xs px-3 py-1 rounded hover:bg-gray-700">Add</button>
+                        </form>
+                    </div>
+                </details>
 
             </div>
             @empty

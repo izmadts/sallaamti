@@ -6,9 +6,6 @@
     <div class="py-12">
         <div class="max-w-5xl mx-auto sm:px-6 lg:px-8 space-y-6">
 
-            @if (session('status'))
-            <div class="p-4 bg-green-50 text-green-700 rounded">{{ session('status') }}</div>
-            @endif
 
             {{-- Daily Link --}}
             <div class="bg-white rounded-lg shadow-sm p-6">

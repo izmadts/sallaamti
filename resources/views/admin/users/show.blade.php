@@ -9,12 +9,6 @@
     <div class="py-12">
         <div class="max-w-3xl mx-auto sm:px-6 lg:px-8 space-y-6">
 
-            @if (session('status'))
-            <div class="p-4 bg-green-50 text-green-700 rounded">{{ session('status') }}</div>
-            @endif
-            @if (session('error'))
-            <div class="p-4 bg-red-50 text-red-700 rounded">{{ session('error') }}</div>
-            @endif
 
             {{-- Profile Summary --}}
             <div class="bg-white rounded-lg shadow-sm p-6 flex items-center gap-4">

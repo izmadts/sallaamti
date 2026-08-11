@@ -9,9 +9,6 @@
 
     <div class="w-full space-y-6">
 
-        @if (session('status'))
-        <div class="p-4 bg-green-50 text-green-700 rounded-lg text-sm">✅ {{ session('status') }}</div>
-        @endif
 
         <form method="POST" action="{{ route('admin.settings.update') }}" class="space-y-6">
             @csrf

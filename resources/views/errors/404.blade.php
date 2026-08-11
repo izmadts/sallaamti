@@ -1,22 +1,24 @@
 <x-guest-layout>
+    <section class="min-h-[70vh] flex items-center justify-center py-20 bg-cream">
+        <div class="max-w-lg mx-auto px-4 text-center">
 
+            <div class="w-24 h-24 rounded-full flex items-center justify-center text-5xl mx-auto mb-6 shadow-lg"
+                style="background: linear-gradient(135deg, #b8962e, #0d6b6b)">
+                🧭
+            </div>
 
-        <!-- 404 Start -->
-        <div class="container-fluid py-5 wow fadeIn" data-wow-delay="0.1s">
-            <div class="container text-center py-5">
-                <div class="row justify-content-center">
-                    <div class="col-lg-6">
-                        <i class="bi bi-exclamation-triangle display-1 text-primary"></i>
-                        <h1 class="display-1">404</h1>
-                        <h1 class="mb-4">Page Not Found</h1>
-                        <p class="mb-4">We’re sorry, the page you have looked for does not exist in our website! Maybe go to our home page or try to use a search?</p>
-                        <a class="btn btn-primary py-3 px-4" href="{{ url('/') }}">Go Back To Home</a>
-                    </div>
-                </div>
+            <p class="text-sm font-semibold tracking-widest text-[--teal] uppercase mb-2">Error 404</p>
+            <h1 class="text-3xl font-extrabold text-gray-800 mb-3">Page Not Found</h1>
+            <p class="text-gray-500 mb-8">We couldn't find the page you were looking for. It may have moved, or the link might be out of date.</p>
+
+            <div class="flex gap-3 justify-center flex-wrap">
+                <a href="{{ url('/') }}" class="btn-base btn-teal px-6 py-2.5 font-semibold">
+                    Back to Home
+                </a>
+                <a href="{{ url('/contact') }}" class="btn-base btn-gold px-6 py-2.5 font-semibold">
+                    Contact Us
+                </a>
             </div>
         </div>
-        <!-- 404 End -->
-
-
-        
+    </section>
 </x-guest-layout>

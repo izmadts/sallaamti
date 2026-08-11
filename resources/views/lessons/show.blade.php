@@ -18,9 +18,6 @@
 
             <!-- Content -->
             <div class="bg-white rounded-lg shadow-sm p-6 lg:col-span-3">
-                @if (session('status'))
-                <div class="p-3 bg-green-50 text-green-700 rounded mb-4 text-sm">{{ session('status') }}</div>
-                @endif
 
                 <h3 class="font-semibold text-xl mb-4">{{ $lesson->title }}</h3>
 
@@ -46,9 +43,15 @@
                     @if ($isCompleted)
                     <span class="text-green-600 text-sm font-medium">✅ Completed</span>
                     @else
-                    <form method="POST" action="{{ route('lessons.complete', $lesson) }}">
+                    <form method="POST" action="{{ route('lessons.complete', $lesson) }}"
+                        x-data="{ remaining: {{ (int) $secondsRemaining }} }"
+                        x-init="remaining > 0 && setInterval(() => remaining > 0 && remaining--, 1000)">
                         @csrf
-                        <button class="bg-green-600 text-white px-5 py-2 rounded text-sm hover:bg-green-700">Mark as Complete</button>
+                        <button type="submit" :disabled="remaining > 0"
+                            class="bg-green-600 text-white px-5 py-2 rounded text-sm hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed">
+                            <span x-show="remaining === 0">Mark as Complete</span>
+                            <span x-show="remaining > 0" x-text="'Review the lesson (' + remaining + 's)'"></span>
+                        </button>
                     </form>
                     @endif
                 </div>

@@ -15,12 +15,19 @@ class NikahProfile extends Model
         'age',
         'height',
         'marital_status',
+        'open_to_polygamy',
         'sect',
         'caste',
+        'prayer_frequency',
+        'hijab_or_beard',
+        'smokes',
+        'diet',
         'education',
         'profession',
         'city',
         'country',
+        'ethnicity',
+        'language',
         'family_type',
         'guardian_name',
         'guardian_contact',
@@ -36,6 +43,10 @@ class NikahProfile extends Model
         'rejection_reason',
         'visibility',
         'is_active',
+        'suspended_at',
+        'suspension_reason',
+        'guardian_verified_at',
+        'last_active_at',
         'payment_status',
         'payment_amount',
         'payment_method',
@@ -50,6 +61,19 @@ class NikahProfile extends Model
         'pref_education',
         'pref_marital_status',
     ];
+
+    protected function casts(): array
+    {
+        return [
+            'open_to_polygamy' => 'boolean',
+            'allow_photo_sharing' => 'boolean',
+            'is_active' => 'boolean',
+            'suspended_at' => 'datetime',
+            'guardian_verified_at' => 'datetime',
+            'last_active_at' => 'datetime',
+            'payment_confirmed_at' => 'datetime',
+        ];
+    }
 
     public function user()
     {
@@ -71,62 +95,142 @@ class NikahProfile extends Model
     {
         return $this->verification_status === 'verified'
             && $this->is_active
+            && !$this->isSuspended()
             && $this->visibility === 'public';
     }
-    
+
+    public function isSuspended(): bool
+    {
+        return $this->suspended_at !== null;
+    }
+
     public function isPaymentConfirmed(): bool
     {
         return $this->payment_status === 'confirmed';
     }
 
+    public function isGuardianVerified(): bool
+    {
+        return $this->guardian_verified_at !== null;
+    }
+
+    // Trust badge stack — three independently-earned signals, shown instead of
+    // one binary "Verified" so a seeker can see exactly what's been checked.
+    public function trustBadges(): array
+    {
+        return [
+            'payment' => $this->isPaymentConfirmed(),
+            'cnic' => $this->verification_status === 'verified',
+            'guardian' => $this->isGuardianVerified(),
+        ];
+    }
+
     public function matchPercentageWith(NikahProfile $viewer): int
     {
-        $score = 0;
-        $total = 0;
+        return $this->matchBreakdownWith($viewer)['percentage'];
+    }
+
+    // Same scoring as matchPercentageWith(), but returns the per-criterion
+    // breakdown so the UI can explain "why 82%?" instead of a bare number.
+    public function matchBreakdownWith(NikahProfile $viewer): array
+    {
+        $criteria = [];
 
         // Age match (viewer's preference vs this profile's age)
         if ($viewer->pref_min_age && $viewer->pref_max_age) {
-            $total += 25;
-            if ($this->age >= $viewer->pref_min_age && $this->age <= $viewer->pref_max_age) {
-                $score += 25;
-            }
+            $criteria[] = [
+                'label' => 'Age (' . $viewer->pref_min_age . '-' . $viewer->pref_max_age . ')',
+                'weight' => 20,
+                'matched' => $this->age >= $viewer->pref_min_age && $this->age <= $viewer->pref_max_age,
+            ];
         }
 
         // City match
         if ($viewer->pref_city) {
-            $total += 20;
-            if (strtolower($this->city) === strtolower($viewer->pref_city)) {
-                $score += 20;
-            }
+            $criteria[] = [
+                'label' => 'City (' . $viewer->pref_city . ')',
+                'weight' => 15,
+                'matched' => strtolower($this->city) === strtolower($viewer->pref_city),
+            ];
         }
 
         // Sect match
         if ($viewer->pref_sect) {
-            $total += 20;
-            if (strtolower($this->sect ?? '') === strtolower($viewer->pref_sect)) {
-                $score += 20;
-            }
+            $criteria[] = [
+                'label' => 'Sect (' . $viewer->pref_sect . ')',
+                'weight' => 15,
+                'matched' => strtolower($this->sect ?? '') === strtolower($viewer->pref_sect),
+            ];
         }
 
         // Education match
         if ($viewer->pref_education) {
-            $total += 15;
-            if (str_contains(strtolower($this->education ?? ''), strtolower($viewer->pref_education))) {
-                $score += 15;
-            }
+            $criteria[] = [
+                'label' => 'Education (' . $viewer->pref_education . ')',
+                'weight' => 10,
+                'matched' => str_contains(strtolower($this->education ?? ''), strtolower($viewer->pref_education)),
+            ];
         }
 
         // Marital status match
         if ($viewer->pref_marital_status) {
-            $total += 20;
-            if ($this->marital_status === $viewer->pref_marital_status) {
-                $score += 20;
-            }
+            $criteria[] = [
+                'label' => 'Marital status',
+                'weight' => 15,
+                'matched' => $this->marital_status === $viewer->pref_marital_status,
+            ];
         }
 
-        if ($total === 0) return 0;
+        // Deen/lifestyle — assortative: people usually seek a similar practice
+        // level, so these compare the viewer's own values against the
+        // candidate's rather than needing a separate set of preference fields.
+        if ($viewer->prayer_frequency) {
+            $criteria[] = [
+                'label' => 'Prayer regularity',
+                'weight' => 15,
+                'matched' => $this->prayer_frequency === $viewer->prayer_frequency,
+            ];
+        }
 
-        return (int) round(($score / $total) * 100);
+        if ($viewer->hijab_or_beard) {
+            $criteria[] = [
+                'label' => 'Hijab/Beard',
+                'weight' => 10,
+                'matched' => $this->hijab_or_beard === $viewer->hijab_or_beard,
+            ];
+        }
+
+        if ($viewer->smokes) {
+            $criteria[] = [
+                'label' => 'Smoking',
+                'weight' => 5,
+                'matched' => $this->smokes === $viewer->smokes,
+            ];
+        }
+
+        if ($viewer->diet) {
+            $criteria[] = [
+                'label' => 'Diet',
+                'weight' => 5,
+                'matched' => $this->diet === $viewer->diet,
+            ];
+        }
+
+        if ($viewer->ethnicity) {
+            $criteria[] = [
+                'label' => 'Ethnicity',
+                'weight' => 5,
+                'matched' => strtolower($this->ethnicity ?? '') === strtolower($viewer->ethnicity),
+            ];
+        }
+
+        $total = array_sum(array_column($criteria, 'weight'));
+        $score = array_sum(array_map(fn($c) => $c['matched'] ? $c['weight'] : 0, $criteria));
+
+        return [
+            'percentage' => $total === 0 ? 0 : (int) round(($score / $total) * 100),
+            'criteria' => $criteria,
+        ];
     }
     public function savedProfiles()
     {
@@ -151,5 +255,37 @@ class NikahProfile extends Model
     {
         return $this->photos()->where('is_primary', true)->first()
             ?? $this->photos()->first();
+    }
+
+    public function moderationNotes()
+    {
+        return $this->hasMany(NikahModerationNote::class)->latest();
+    }
+
+    // Percentage of the optional-but-valuable fields a seeker has filled in —
+    // shown as a nudge on their profile page, not used for matching or search.
+    public function completenessPercentage(): int
+    {
+        $fields = [
+            $this->height,
+            $this->sect,
+            $this->caste,
+            $this->education,
+            $this->profession,
+            $this->family_type,
+            $this->guardian_relation,
+            $this->about,
+            $this->expectations,
+            $this->pref_min_age && $this->pref_max_age,
+        ];
+
+        $filled = count(array_filter($fields, fn($v) => !empty($v)));
+        $total = count($fields) + 1; // +1 for the photo check below
+
+        if ($this->photos()->exists()) {
+            $filled++;
+        }
+
+        return (int) round(($filled / $total) * 100);
     }
 }

@@ -2,18 +2,44 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\NikahBlock;
 use App\Models\NikahInterest;
 use App\Models\NikahProfile;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\RateLimiter;
 
 class NikahInterestController extends Controller
 {
+    /** Blocks mass-sending interest requests (spam/harassment) across the browse grid. */
+    private function guardAgainstBruteForce(string $key): void
+    {
+        abort_if(
+            RateLimiter::tooManyAttempts($key, 20),
+            429,
+            'Too many interest requests sent. Please wait before sending more.'
+        );
+        RateLimiter::hit($key, 3600);
+    }
+
     public function send(NikahProfile $profile)
     {
         $myProfile = Auth::user()->nikahProfile;
 
         if (!$myProfile) {
             return redirect()->route('nikah.create');
+        }
+
+        $this->guardAgainstBruteForce('nikah-interest-send:' . Auth::id());
+
+        abort_if(NikahBlock::existsBetween($myProfile->id, $profile->id), 403);
+
+        $wasDeclined = NikahInterest::where('sender_profile_id', $myProfile->id)
+            ->where('receiver_profile_id', $profile->id)
+            ->where('status', 'declined')
+            ->exists();
+
+        if ($wasDeclined) {
+            return back()->with('status', 'This person already declined your interest — you can\'t resend it.');
         }
 
         $interest = NikahInterest::firstOrCreate([
@@ -43,7 +69,7 @@ class NikahInterestController extends Controller
     public function accept(NikahInterest $interest)
     {
         $myProfile = Auth::user()->nikahProfile;
-        abort_unless($interest->receiver_profile_id === $myProfile->id, 403);
+        abort_unless($myProfile && $interest->receiver_profile_id === $myProfile->id, 403);
 
         $interest->update(['status' => 'accepted', 'responded_at' => now()]);
 
@@ -59,9 +85,15 @@ class NikahInterestController extends Controller
     public function decline(NikahInterest $interest)
     {
         $myProfile = Auth::user()->nikahProfile;
-        abort_unless($interest->receiver_profile_id === $myProfile->id, 403);
+        abort_unless($myProfile && $interest->receiver_profile_id === $myProfile->id, 403);
 
         $interest->update(['status' => 'declined', 'responded_at' => now()]);
+
+        try {
+            $interest->sender->user->notify(new \App\Notifications\NikahInterestDeclined($interest));
+        } catch (\Throwable $e) {
+            \Log::error('NikahInterestDeclined notification failed: ' . $e->getMessage());
+        }
 
         return back()->with('status', 'Interest declined.');
     }

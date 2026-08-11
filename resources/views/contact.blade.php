@@ -88,6 +88,11 @@
 
                     <form action="{{ route('contact.store') }}" method="POST" class="space-y-5">
                         @csrf
+                        {{-- Honeypot: hidden from real visitors, bots that auto-fill every field will trip it --}}
+                        <div class="absolute -left-[9999px]" aria-hidden="true">
+                            <label for="website">Leave this field empty</label>
+                            <input type="text" name="website" id="website" tabindex="-1" autocomplete="off">
+                        </div>
 
                         {{-- Subject tabs --}}
                         <div x-data="{ subject: '{{ old('subject_type', 'general') }}' }">

@@ -44,14 +44,71 @@
                                     <option value="married">Married</option>
                                 </select>
                             </div>
-                            <div>
+                            <div x-data="{ sect: '{{ old('sect', '') }}' }">
                                 <x-input-label for="sect" value="Sect" />
-                                <select id="sect" name="sect" required class="border-gray-300 rounded-md shadow-sm w-full mt-1">
-                                    <option value="Suni">Suni</option>
+                                <select id="sect" name="sect" x-model="sect" required class="border-gray-300 rounded-md shadow-sm w-full mt-1">
+                                    <option value="">Select Sect</option>
+                                    <option value="Sunni">Sunni</option>
                                     <option value="Shia">Shia</option>
-                                    <option value="Alhadith">Alhadith</option>
+                                    <option value="Ahle Hadith">Ahle Hadith</option>
                                     <option value="Deobandi">Deobandi</option>
                                     <option value="Other">Other</option>
+                                </select>
+                                <div x-show="sect === 'Other'" x-cloak class="mt-2">
+                                    <x-text-input name="sect_other" type="text" class="w-full" placeholder="Please specify your sect" :value="old('sect_other')" />
+                                </div>
+                            </div>
+                            <div>
+                                <x-input-label for="caste" value="Caste (optional)" />
+                                <x-text-input id="caste" name="caste" type="text" class="w-full mt-1" :value="old('caste')" />
+                            </div>
+                        </div>
+                        <div class="mt-4 flex items-center gap-2">
+                            <input type="checkbox" id="open_to_polygamy" name="open_to_polygamy" value="1" {{ old('open_to_polygamy') ? 'checked' : '' }} class="rounded">
+                            <x-input-label for="open_to_polygamy" value="I am open to a polygamous marriage (e.g. as/marrying a second wife)" />
+                        </div>
+                    </div>
+
+                    <!-- Deen & Lifestyle -->
+                    <div>
+                        <h3 class="font-semibold text-gray-700 mb-3 border-b pb-2">Deen & Lifestyle</h3>
+                        <p class="text-sm text-gray-500 mb-3">These help us match you with someone at a similar stage of practice — all optional, but the more you share, the better your matches.</p>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <x-input-label for="prayer_frequency" value="Prayer (Salah) Regularity" />
+                                <select id="prayer_frequency" name="prayer_frequency" class="border-gray-300 rounded-md shadow-sm w-full mt-1">
+                                    <option value="">Prefer not to say</option>
+                                    <option value="always" {{ old('prayer_frequency') === 'always' ? 'selected' : '' }}>Always — 5 times a day</option>
+                                    <option value="usually" {{ old('prayer_frequency') === 'usually' ? 'selected' : '' }}>Usually</option>
+                                    <option value="sometimes" {{ old('prayer_frequency') === 'sometimes' ? 'selected' : '' }}>Sometimes</option>
+                                    <option value="rarely" {{ old('prayer_frequency') === 'rarely' ? 'selected' : '' }}>Rarely</option>
+                                </select>
+                            </div>
+                            <div>
+                                <x-input-label for="hijab_or_beard" value="Hijab (for sisters) / Beard (for brothers)" />
+                                <select id="hijab_or_beard" name="hijab_or_beard" class="border-gray-300 rounded-md shadow-sm w-full mt-1">
+                                    <option value="">Prefer not to say</option>
+                                    <option value="yes" {{ old('hijab_or_beard') === 'yes' ? 'selected' : '' }}>Yes</option>
+                                    <option value="sometimes" {{ old('hijab_or_beard') === 'sometimes' ? 'selected' : '' }}>Sometimes</option>
+                                    <option value="no" {{ old('hijab_or_beard') === 'no' ? 'selected' : '' }}>No</option>
+                                </select>
+                            </div>
+                            <div>
+                                <x-input-label for="smokes" value="Smoking" />
+                                <select id="smokes" name="smokes" class="border-gray-300 rounded-md shadow-sm w-full mt-1">
+                                    <option value="">Prefer not to say</option>
+                                    <option value="no" {{ old('smokes') === 'no' ? 'selected' : '' }}>No</option>
+                                    <option value="occasionally" {{ old('smokes') === 'occasionally' ? 'selected' : '' }}>Occasionally</option>
+                                    <option value="yes" {{ old('smokes') === 'yes' ? 'selected' : '' }}>Yes</option>
+                                </select>
+                            </div>
+                            <div>
+                                <x-input-label for="diet" value="Diet" />
+                                <select id="diet" name="diet" class="border-gray-300 rounded-md shadow-sm w-full mt-1">
+                                    <option value="">Prefer not to say</option>
+                                    <option value="halal_only" {{ old('diet') === 'halal_only' ? 'selected' : '' }}>Halal only</option>
+                                    <option value="halal_mostly" {{ old('diet') === 'halal_mostly' ? 'selected' : '' }}>Halal, mostly</option>
+                                    <option value="no_restriction" {{ old('diet') === 'no_restriction' ? 'selected' : '' }}>No restriction</option>
                                 </select>
                             </div>
                         </div>
@@ -76,6 +133,14 @@
                             <div>
                                 <x-input-label for="country" value="Country" />
                                 <x-text-input id="country" name="country" type="text" class="w-full mt-1" :value="old('country', 'Pakistan')" />
+                            </div>
+                            <div>
+                                <x-input-label for="ethnicity" value="Ethnicity (optional)" />
+                                <x-text-input id="ethnicity" name="ethnicity" type="text" class="w-full mt-1" :value="old('ethnicity')" placeholder="e.g. Punjabi, Pashtun, Sindhi" />
+                            </div>
+                            <div>
+                                <x-input-label for="language" value="Language(s) Spoken (optional)" />
+                                <x-text-input id="language" name="language" type="text" class="w-full mt-1" :value="old('language')" placeholder="e.g. Urdu, English" />
                             </div>
                         </div>
                     </div>
@@ -152,8 +217,8 @@
                     <div>
                         <x-input-label for="visibility" value="Profile Visibility" />
                         <select id="visibility" name="visibility" required class="border-gray-300 rounded-md shadow-sm w-full mt-1">
-                            <option value="public">Public (visible in search after verification)</option>
-                            <option value="private">Private (only visible if you share manually — coming soon)</option>
+                            <option value="public">Public (visible in Browse Matches search after verification)</option>
+                            <option value="private">Private (hidden from search — only visible to people you personally send your share link to)</option>
                         </select>
                     </div>
 

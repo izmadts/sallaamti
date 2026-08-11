@@ -36,7 +36,6 @@ use App\Http\Controllers\Admin\SubscriberAdminController;
 use App\Http\Controllers\SubscriberController;
 use App\Http\Controllers\Admin\UserManagementController;
 use App\Http\Controllers\Admin\TestimonialController;
-use App\Http\Controllers\NewsletterController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\BlogController;
 use App\Http\Controllers\Admin\BlogPostController;
@@ -52,21 +51,10 @@ use App\Http\Controllers\Admin\SupportQueryAdminController;
 // ============================================================
 
 Route::get('/', function () {
-    if (auth()->check()) {
-        return redirect()->route('dashboard');
-    }
     $banners = \App\Models\Banner::where('is_active', true)->orderBy('order')->get();
     $testimonials = \App\Models\Testimonial::where('is_active', true)->orderBy('order')->get();
     return view('index', compact('banners', 'testimonials'));
 })->name('index');
-// Route::get('/', function () {
-//     if (auth()->check()) {
-//         return redirect()->route('dashboard');
-//     }
-//     $banners = \App\Models\Banner::active()->get();
-//     $testimonials = \App\Models\Testimonial::where('is_active', true)->orderBy('order')->get();
-//     return view('index', compact('banners', 'testimonials'));
-// })->name('home');
 // Static pages
 Route::get('/about', function () {
     $teamMembers = \App\Models\TeamMember::active()->orderBy('order')->get();
@@ -110,11 +98,10 @@ Route::middleware('throttle:10,1')->group(function () {
     Route::post('/subscribe', [SubscriberController::class, 'store'])->name('subscribe');
 });
 
-// Newsletter
-
-Route::post('/newsletter/subscribe', [NewsletterController::class, 'subscribe'])->name('newsletter.subscribe');
+// Newsletter — subscribe is above under throttle:10,1 (the /subscribe route);
+// verify/unsubscribe both use the subscriber's own token, never a raw ID.
 Route::get('/subscriber/verify/{token}', [SubscriberController::class, 'verify'])->name('subscriber.verify');
-Route::get('/subscriber/unsubscribe/{id}', [SubscriberController::class, 'unsubscribe'])->name('subscriber.unsubscribe');
+Route::get('/subscriber/unsubscribe/{token}', [SubscriberController::class, 'unsubscribe'])->name('subscriber.unsubscribe');
 
 // Certificate verification (public — no login needed)
 Route::get('/verify-certificate/{certificateNumber?}', [CertificateController::class, 'verify'])->name('certificate.verify');
@@ -149,6 +136,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     })->name('notifications.markAllRead');
 
     // --- NIKAH MODULE ---
+    Route::middleware('nikah.activity')->group(function () {
     Route::get('/nikah/create', [NikahProfileController::class, 'create'])->name('nikah.create');
     Route::post('/nikah', [NikahProfileController::class, 'store'])->name('nikah.store');
     Route::get('/nikah/my-profile', [NikahProfileController::class, 'show'])->name('nikah.show');
@@ -172,8 +160,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/nikah/photos/{photo}/primary', [NikahPhotoController::class, 'setPrimary'])->name('nikah.photos.primary');
     Route::get('/nikah/photos/{photo}', [NikahPhotoController::class, 'show'])->name('nikah.photos.show');
     Route::post('/nikah/block/{profile}', [NikahSafetyController::class, 'block'])->name('nikah.block');
+    Route::get('/nikah/blocked', [NikahSafetyController::class, 'blockedList'])->name('nikah.blocked');
+    Route::delete('/nikah/block/{block}', [NikahSafetyController::class, 'unblock'])->name('nikah.unblock');
     Route::post('/nikah/report/{profile}', [NikahSafetyController::class, 'report'])->name('nikah.report');
     Route::post('/nikah/toggle-active', [NikahSafetyController::class, 'toggleActive'])->name('nikah.toggle-active');
+    });
 
     // --- QURAN COURSES ---
     Route::post('/courses/{course:slug}/enroll', [CourseController::class, 'enroll'])->name('courses.enroll');
@@ -249,13 +240,22 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 
     // Nikah Management
     Route::get('/nikah-verifications', [NikahVerificationController::class, 'index'])->name('nikah.verifications');
+    Route::post('/nikah-verifications/bulk-approve', [NikahVerificationController::class, 'bulkApprove'])->name('nikah.verifications.bulk-approve');
     Route::post('/nikah-verifications/{profile}/approve', [NikahVerificationController::class, 'approve'])->name('nikah.approve');
     Route::post('/nikah-verifications/{profile}/reject', [NikahVerificationController::class, 'reject'])->name('nikah.reject');
+    Route::post('/nikah-verifications/{profile}/verify-guardian', [NikahVerificationController::class, 'verifyGuardian'])->name('nikah.verify-guardian');
+    Route::post('/nikah-verifications/{profile}/remind', [NikahVerificationController::class, 'sendReminder'])->name('nikah.remind');
+    Route::post('/nikah-verifications/bulk-remind', [NikahVerificationController::class, 'bulkRemind'])->name('nikah.verifications.bulk-remind');
+    Route::post('/nikah-verifications/{profile}/notes', [NikahVerificationController::class, 'addNote'])->name('nikah.notes.store');
+    Route::post('/nikah-verifications/{profile}/unsuspend', [NikahSafetyController::class, 'unsuspendProfile'])->name('nikah.unsuspend');
     Route::get('/nikah-payments', [NikahPaymentAdminController::class, 'index'])->name('nikah.payments');
+    Route::post('/nikah-payments/bulk-confirm', [NikahPaymentAdminController::class, 'bulkConfirm'])->name('nikah.payments.bulk-confirm');
     Route::post('/nikah-payments/{profile}/confirm', [NikahPaymentAdminController::class, 'confirm'])->name('nikah.payments.confirm');
     Route::post('/nikah-payments/{profile}/reject', [NikahPaymentAdminController::class, 'reject'])->name('nikah.payments.reject');
     Route::get('nikah-reports', [NikahSafetyController::class, 'adminReports'])->name('nikah.reports');
     Route::post('nikah-reports/{report}/dismiss', [NikahSafetyController::class, 'dismissReport'])->name('nikah.reports.dismiss');
+    Route::post('nikah-reports/{report}/suspend', [NikahSafetyController::class, 'suspendReportedProfile'])->name('nikah.reports.suspend');
+    Route::get('nikah-reports/{report}/conversation', [NikahSafetyController::class, 'reportConversation'])->name('nikah.reports.conversation');
 
     // Quran Courses Management
     Route::resource('courses', CourseAdminController::class);

@@ -17,10 +17,12 @@ return Application::configure(basePath: dirname(__DIR__))
         'active' => \App\Http\Middleware\EnsureUserIsActive::class,
         'maintenance' => \App\Http\Middleware\MaintenanceMode::class,
         'blog.manage' => \App\Http\Middleware\EnsureCanManageBlog::class,
+        'nikah.activity' => \App\Http\Middleware\TrackNikahActivity::class,
         ]);
     })->withMiddleware(function (Middleware $middleware) {
     $middleware->web(append: [
         \App\Http\Middleware\MaintenanceMode::class,
+        \App\Http\Middleware\EnsureUserIsActive::class,
     ]);
 })->withExceptions(function (Exceptions $exceptions): void {
         //

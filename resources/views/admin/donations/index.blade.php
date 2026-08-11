@@ -5,9 +5,6 @@
     <div class="py-12">
         <div class="max-w-5xl mx-auto sm:px-6 lg:px-8 space-y-4">
 
-            @if (session('status'))
-            <div class="p-4 bg-green-50 text-green-700 rounded">{{ session('status') }}</div>
-            @endif
 
             <div class="bg-white rounded-lg shadow-sm p-4 flex justify-between items-center">
                 <p class="text-sm text-gray-600">Total Confirmed Donations</p>

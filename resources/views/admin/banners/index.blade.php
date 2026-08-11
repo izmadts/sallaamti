@@ -6,9 +6,6 @@
         </div>
     </x-slot>
     <div class="max-w-4xl space-y-4">
-        @if (session('status'))
-        <div class="p-4 bg-green-50 text-green-700 rounded-xl text-sm">✅ {{ session('status') }}</div>
-        @endif
         @forelse ($banners as $banner)
         <div class="bg-white rounded-xl shadow-sm p-4 flex gap-4 items-center">
             <img src="{{ Storage::url($banner->image) }}" class="w-24 h-16 object-cover rounded-lg flex-shrink-0">

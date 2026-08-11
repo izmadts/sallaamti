@@ -81,25 +81,26 @@ class SettingsController extends Controller
             'social_tiktok'          => 'social',
             'gtm_id'                 => 'integrations',
             'meta_domain_verification' => 'integrations',
-            'seo_home_title'       => ['nullable', 'string', 'max:60'],
-            'seo_home_description' => ['nullable', 'string', 'max:160'],
-            'seo_keywords'         => ['nullable', 'string', 'max:500'],
-            'seo_og_image'         => ['nullable', 'image', 'max:2048'],
-            'google_verification'  => ['nullable', 'string', 'max:255'],
+            'seo_home_title'       => 'seo',
+            'seo_home_description' => 'seo',
+            'seo_keywords'         => 'seo',
+            'google_verification'  => 'seo',
         ];
-        if ($request->hasFile('seo_og_image')) {
-            if (setting('seo_og_image')) {
-                Storage::disk('public')->delete(setting('seo_og_image'));
-            }
-            $validated['seo_og_image'] = $request->file('seo_og_image')
-                ->store('settings', 'public');
-        }
+
         foreach ($groups as $key => $group) {
             $value = $key === 'maintenance_mode'
                 ? ($request->has('maintenance_mode') ? '1' : '0')
                 : $request->input($key, '');
 
             Setting::set($key, $value, $group);
+        }
+
+        if ($request->hasFile('seo_og_image')) {
+            if (setting('seo_og_image')) {
+                Storage::disk('public')->delete(setting('seo_og_image'));
+            }
+            $path = $request->file('seo_og_image')->store('settings', 'public');
+            Setting::set('seo_og_image', $path, 'seo');
         }
 
         return back()->with('status', 'Settings saved successfully.');

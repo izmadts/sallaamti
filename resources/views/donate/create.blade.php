@@ -37,17 +37,6 @@
     <section class="py-16 bg-cream">
         <div class="max-w-4xl mx-auto px-4">
 
-            @if (session('status'))
-            <div class="mb-8 p-5 rounded-2xl text-green-700 flex items-start gap-4"
-                style="background: #f0fdf4; border: 1px solid #bbf7d0">
-                <div class="text-3xl flex-shrink-0">✅</div>
-                <div>
-                    <p class="font-bold mb-1">JazakAllah Khair! Donation Submitted.</p>
-                    <p class="text-sm text-green-600">{{ session('status') }} Our team will confirm within 24 hours, in sha Allah.</p>
-                </div>
-            </div>
-            @endif
-
             <div class="grid lg:grid-cols-5 gap-8">
 
                 {{-- ===== FORM (wider) ===== --}}
@@ -72,13 +61,18 @@
                         <form method="POST" action="{{ route('donate.store') }}"
                             enctype="multipart/form-data" class="space-y-7">
                             @csrf
+                            {{-- Honeypot: hidden from real visitors, bots that auto-fill every field will trip it --}}
+                            <div class="absolute -left-[9999px]" aria-hidden="true">
+                                <label for="website">Leave this field empty</label>
+                                <input type="text" name="website" id="website" tabindex="-1" autocomplete="off">
+                            </div>
 
                             {{-- STEP 1: Amount --}}
-                            <div>
+                            <fieldset>
                                 <div class="flex items-center gap-3 mb-4">
                                     <div class="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0"
                                         style="background: var(--teal)">1</div>
-                                    <label class="font-bold text-gray-800">Choose an Amount</label>
+                                    <legend class="font-bold text-gray-800">Choose an Amount</legend>
                                 </div>
 
                                 {{-- Quick amounts --}}
@@ -117,14 +111,14 @@
                                 @error('amount')
                                 <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                                 @enderror
-                            </div>
+                            </fieldset>
 
                             {{-- STEP 2: Payment Method --}}
-                            <div>
+                            <fieldset>
                                 <div class="flex items-center gap-3 mb-4">
                                     <div class="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0"
                                         style="background: var(--teal)">2</div>
-                                    <label class="font-bold text-gray-800">Pay Using</label>
+                                    <legend class="font-bold text-gray-800">Pay Using</legend>
                                 </div>
 
                                 <div class="grid grid-cols-2 gap-3 mb-4" x-data="{ method: '{{ old('payment_method', '') }}' }">
@@ -207,14 +201,14 @@
                                 @error('payment_method')
                                 <p class="text-red-500 text-xs">{{ $message }}</p>
                                 @enderror
-                            </div>
+                            </fieldset>
 
                             {{-- STEP 3: Proof --}}
                             <div>
                                 <div class="flex items-center gap-3 mb-4">
                                     <div class="w-7 h-7 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0"
                                         style="background: var(--teal)">3</div>
-                                    <label class="font-bold text-gray-800">Upload Payment Screenshot (Optional)</label>
+                                    <label for="screenshot" class="font-bold text-gray-800">Upload Payment Screenshot (Optional)</label>
                                 </div>
 
                                 <div id="uploadArea"
@@ -243,18 +237,20 @@
                                 <p class="text-xs text-gray-400 mb-3 font-medium uppercase tracking-wider">Optional — helps us send you a receipt</p>
                                 <div class="grid sm:grid-cols-2 gap-3">
                                     <div>
+                                        <label for="donor_name" class="sr-only">Your name</label>
                                         <div class="flex items-center border border-gray-200 rounded-xl px-3 py-2.5 gap-2 focus-within:border-teal-500 transition-colors">
                                             <i class="fa fa-user text-gray-300 text-xs w-4"></i>
-                                            <input type="text" name="donor_name"
+                                            <input id="donor_name" type="text" name="donor_name"
                                                 value="{{ old('donor_name', auth()->user()?->name) }}"
                                                 class="flex-1 outline-none text-sm text-gray-700 bg-transparent"
                                                 placeholder="Your name">
                                         </div>
                                     </div>
                                     <div>
+                                        <label for="donor_email" class="sr-only">Email for receipt</label>
                                         <div class="flex items-center border border-gray-200 rounded-xl px-3 py-2.5 gap-2 focus-within:border-teal-500 transition-colors">
                                             <i class="fa fa-envelope text-gray-300 text-xs w-4"></i>
-                                            <input type="email" name="donor_email"
+                                            <input id="donor_email" type="email" name="donor_email"
                                                 value="{{ old('donor_email', auth()->user()?->email) }}"
                                                 class="flex-1 outline-none text-sm text-gray-700 bg-transparent"
                                                 placeholder="Email for receipt">

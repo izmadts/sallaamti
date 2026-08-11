@@ -28,7 +28,7 @@ class NikahPaymentController extends Controller
         }
 
         $validated = $request->validate([
-            'payment_method' => ['required', 'in:jazzcash,easypaisa,bank_transfer'],
+            'payment_method' => ['required', 'in:jazzcash,bank_transfer'],
             'payment_reference' => ['required', 'string', 'max:100'],
             'payment_screenshot' => ['required', 'image', 'max:4096'],
         ]);
@@ -38,6 +38,14 @@ class NikahPaymentController extends Controller
         $validated['payment_rejection_reason'] = null;
 
         $profile->update($validated);
+
+        \App\Models\User::role('admin')->each(function ($admin) use ($profile) {
+            try {
+                $admin->notify(new \App\Notifications\NewNikahPaymentSubmitted($profile));
+            } catch (\Throwable $e) {
+                \Log::error('NewNikahPaymentSubmitted notification failed: ' . $e->getMessage());
+            }
+        });
 
         return redirect()->route('nikah.show')->with('status', 'Payment proof submitted! Our team will confirm it shortly.');
     }

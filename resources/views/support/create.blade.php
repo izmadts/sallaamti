@@ -19,8 +19,8 @@
                     @csrf
 
                     {{-- Category --}}
-                    <div>
-                        <label class="auth-label">Category <span class="text-red-400">*</span></label>
+                    <fieldset>
+                        <legend class="auth-label">Category <span class="text-red-400">*</span></legend>
                         <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 mt-2">
                             @foreach ([
                             ['marital', '💑', 'Marital Issues'],
@@ -42,14 +42,14 @@
                             @endforeach
                         </div>
                         <x-input-error :messages="$errors->get('category')" class="mt-1" />
-                    </div>
+                    </fieldset>
 
                     {{-- Subject --}}
                     <div>
-                        <label class="auth-label">Subject <span class="text-red-400">*</span></label>
+                        <label for="support-subject" class="auth-label">Subject <span class="text-red-400">*</span></label>
                         <div class="auth-input-wrap">
                             <i class="fa fa-tag auth-icon"></i>
-                            <input type="text" name="subject" value="{{ old('subject') }}" required
+                            <input id="support-subject" type="text" name="subject" value="{{ old('subject') }}" required
                                 class="auth-input @error('subject') auth-input-error @enderror"
                                 placeholder="Brief description of your query">
                         </div>
@@ -57,8 +57,8 @@
                     </div>
 
                     {{-- Priority --}}
-                    <div>
-                        <label class="auth-label">Priority</label>
+                    <fieldset>
+                        <legend class="auth-label">Priority</legend>
                         <div class="flex gap-3 mt-2">
                             @foreach (['low' => ['🟢', 'Low'], 'medium' => ['🟡', 'Medium'], 'high' => ['🔴', 'Urgent']] as $val => $label)
                             <label class="cursor-pointer flex-1">
@@ -71,12 +71,12 @@
                             </label>
                             @endforeach
                         </div>
-                    </div>
+                    </fieldset>
 
                     {{-- Description --}}
                     <div>
-                        <label class="auth-label">Describe Your Situation <span class="text-red-400">*</span></label>
-                        <textarea name="description" rows="6" required
+                        <label for="support-description" class="auth-label">Describe Your Situation <span class="text-red-400">*</span></label>
+                        <textarea id="support-description" name="description" rows="6" required
                             class="auth-input w-full resize-none @error('description') auth-input-error @enderror"
                             style="padding-left: 1rem; padding-top: 0.75rem"
                             placeholder="Please describe your situation in detail. The more information you provide, the better we can help you. All information is kept strictly confidential.">{{ old('description') }}</textarea>

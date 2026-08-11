@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Course;
 use App\Models\Enrollment;
+use App\Models\LessonProgress;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Http\Request;
 
@@ -54,12 +55,31 @@ class CourseController extends Controller
     }
     public function myLearning()
     {
-        $enrollments = Auth::user()->enrollments()->with('course')->latest()->get();
+        $enrollments = Auth::user()->enrollments()
+            ->with(['course' => fn ($q) => $q->withCount('lessons')])
+            ->latest()
+            ->get();
 
-        $courses = $enrollments->map(function ($enrollment) {
+        $courseIds = $enrollments->pluck('course_id');
+
+        // One aggregated query for completed-lesson counts across every
+        // enrolled course, instead of 3 queries per course via progressFor().
+        $completedCounts = LessonProgress::query()
+            ->join('lessons', 'lessons.id', '=', 'lesson_progress.lesson_id')
+            ->where('lesson_progress.user_id', Auth::id())
+            ->whereNotNull('lesson_progress.completed_at')
+            ->whereIn('lessons.course_id', $courseIds)
+            ->selectRaw('lessons.course_id as course_id, count(*) as completed')
+            ->groupBy('lessons.course_id')
+            ->pluck('completed', 'course_id');
+
+        $courses = $enrollments->map(function ($enrollment) use ($completedCounts) {
+            $total = $enrollment->course->lessons_count;
+            $completed = $completedCounts[$enrollment->course_id] ?? 0;
+
             return [
                 'course' => $enrollment->course,
-                'progress' => $enrollment->course->progressFor(Auth::user()),
+                'progress' => $total > 0 ? (int) round(($completed / $total) * 100) : 0,
                 'enrolled_at' => $enrollment->created_at,
             ];
         });

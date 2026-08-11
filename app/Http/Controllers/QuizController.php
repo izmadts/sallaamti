@@ -6,9 +6,21 @@ use App\Models\Course;
 use App\Models\QuizAttempt;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\RateLimiter;
 
 class QuizController extends Controller
 {
+    /** Blocks brute-forcing quiz answers via repeated resubmission. */
+    private function guardAgainstBruteForce(string $key): void
+    {
+        abort_if(
+            RateLimiter::tooManyAttempts($key, 10),
+            429,
+            'Too many attempts. Please wait before trying this quiz again.'
+        );
+        RateLimiter::hit($key, 3600);
+    }
+
     public function show(Course $course)
     {
         abort_unless($course->isEnrolledBy(Auth::user()), 403, 'Enroll in this course first.');
@@ -26,8 +38,12 @@ class QuizController extends Controller
 
     public function submit(Request $request, Course $course)
     {
+        abort_unless($course->isEnrolledBy(Auth::user()), 403, 'Enroll in this course first.');
+
         $quiz = $course->quiz;
         abort_unless($quiz, 404);
+
+        $this->guardAgainstBruteForce("quiz-submit:{$quiz->id}:" . Auth::id());
 
         $questions = $quiz->questions;
         $answers = $request->input('answers', []);
@@ -71,8 +87,12 @@ class QuizController extends Controller
 
     public function submitLessonQuiz(Request $request, \App\Models\Lesson $lesson)
     {
+        abort_unless($lesson->course->isEnrolledBy(Auth::user()), 403, 'Enroll in this course first.');
+
         $quiz = $lesson->quiz;
         abort_unless($quiz, 404);
+
+        $this->guardAgainstBruteForce("quiz-submit:{$quiz->id}:" . Auth::id());
 
         $questions = $quiz->questions;
         $answers = $request->input('answers', []);

@@ -9,13 +9,28 @@ class Setting extends Model
 {
     protected $fillable = ['key', 'value', 'group'];
 
-    // Get a setting value by key, with optional default
+    // Get a setting value by key, with optional default.
+    // Only the row's actual value is cached forever — an unseeded key is
+    // never cached, so a later call with the real default (or once the row
+    // is created) isn't stuck behind whatever default happened to be passed
+    // by the first caller.
     public static function get(string $key, mixed $default = null): mixed
     {
-        return Cache::rememberForever("setting_{$key}", function () use ($key, $default) {
-            $setting = static::where('key', $key)->first();
-            return $setting ? $setting->value : $default;
-        });
+        $cacheKey = "setting_{$key}";
+
+        if (Cache::has($cacheKey)) {
+            return Cache::get($cacheKey);
+        }
+
+        $setting = static::where('key', $key)->first();
+
+        if (!$setting) {
+            return $default;
+        }
+
+        Cache::forever($cacheKey, $setting->value);
+
+        return $setting->value;
     }
 
     // Set a setting value (creates or updates)

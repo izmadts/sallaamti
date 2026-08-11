@@ -6,9 +6,6 @@
     </x-slot>
 
     <div class="max-w-4xl space-y-4">
-        @if (session('status'))
-        <div class="p-4 bg-green-50 text-green-700 rounded-lg text-sm">✅ {{ session('status') }}</div>
-        @endif
 
         <div class="flex justify-end">
             <a href="{{ route('admin.certificates.create') }}" class="bg-teal-700 text-white text-sm px-4 py-2 rounded hover:bg-teal-800">+ Generate Certificate</a>

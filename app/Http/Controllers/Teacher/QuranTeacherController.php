@@ -73,6 +73,7 @@ class QuranTeacherController extends Controller
     public function storeAssessment(Request $request, QuranClassGroup $group, QuranGroupStudent $student)
     {
         abort_unless($group->teacher_id === Auth::id(), 403);
+        abort_unless($student->quran_class_group_id === $group->id, 403);
 
         $validated = $request->validate([
             'type' => ['required', 'in:weekly_quiz,monthly_test,quarterly_exam,annual_exam'],
@@ -94,6 +95,7 @@ class QuranTeacherController extends Controller
     public function storeProgressReport(Request $request, QuranClassGroup $group, QuranGroupStudent $student)
     {
         abort_unless($group->teacher_id === Auth::id(), 403);
+        abort_unless($student->quran_class_group_id === $group->id, 403);
 
         $validated = $request->validate([
             'month' => ['required', 'string'],

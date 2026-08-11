@@ -19,6 +19,14 @@ class DonationController extends Controller
 
     public function store(Request $request)
 {
+    // Honeypot: real visitors never see or fill this field, bots that
+    // auto-fill every input do. Pretend success so the bot doesn't learn
+    // to skip the field next time.
+    if ($request->filled('website')) {
+        return redirect()->route('donate.create')
+            ->with('status', 'JazakAllah Khair! Your donation has been submitted. We will verify within 24 hours.');
+    }
+
     $validated = $request->validate([
         'amount'              => ['required', 'numeric', 'min:100'],
         'payment_method'      => ['required', 'in:bank_transfer,international'],
@@ -52,8 +60,8 @@ class DonationController extends Controller
         // Guest donor — send mail directly
         try {
             \Mail::to($request->donor_email)
-                ->send(new \App\Mail\GuestDonationReceived($donation));
-        } catch (\Exception $e) {
+                ->send(new DonationSubmitted($donation));
+        } catch (\Throwable $e) {
             // Silently fail — don't break the flow if mail fails
             \Log::error('Guest donation email failed: ' . $e->getMessage());
         }

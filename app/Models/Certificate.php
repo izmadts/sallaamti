@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Str;
 use Endroid\QrCode\QrCode;
 use Endroid\QrCode\Writer\PngWriter;
 
@@ -32,7 +33,7 @@ class Certificate extends Model
 
     public static function generateNumber(string $prefix = 'SLM'): string
     {
-        return $prefix . '-' . now()->format('Y') . '-' . strtoupper(uniqid());
+        return $prefix . '-' . now()->format('Y') . '-' . strtoupper(Str::random(10));
     }
 
 

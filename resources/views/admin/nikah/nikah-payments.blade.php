@@ -6,17 +6,25 @@
     <div class="py-12">
         <div class="max-w-4xl mx-auto sm:px-6 lg:px-8 space-y-4">
 
-            @if (session('status'))
-            <div class="p-4 bg-green-50 text-green-700 rounded">{{ session('status') }}</div>
+            <form id="bulkConfirmForm" method="POST" action="{{ route('admin.nikah.payments.bulk-confirm') }}"></form>
+            @if ($profiles->isNotEmpty())
+            <div class="bg-white p-3 rounded-lg shadow-sm flex items-center justify-between">
+                <p class="text-xs text-gray-500">Select payments below, then bulk-confirm.</p>
+                <button type="submit" form="bulkConfirmForm" onclick="return confirm('Confirm all selected payments?')"
+                    class="bg-green-600 text-white text-sm px-4 py-2 rounded hover:bg-green-700">✅ Confirm Selected</button>
+            </div>
             @endif
 
             @forelse ($profiles as $profile)
             <div class="bg-white shadow-sm rounded-lg p-6">
                 <div class="flex justify-between items-start">
-                    <div>
-                        <h3 class="font-semibold">{{ $profile->user->name }} ({{ $profile->user->email }})</h3>
-                        <p class="text-sm text-gray-500">Amount: Rs. {{ number_format($profile->payment_amount) }} via {{ ucfirst(str_replace('_', ' ', $profile->payment_method)) }}</p>
-                        <p class="text-sm text-gray-500">Reference: {{ $profile->payment_reference }}</p>
+                    <div class="flex gap-3">
+                        <input type="checkbox" name="profile_ids[]" value="{{ $profile->id }}" form="bulkConfirmForm" class="mt-1 rounded" title="Select for bulk confirmation">
+                        <div>
+                            <h3 class="font-semibold">{{ $profile->user->name }} ({{ $profile->user->email }})</h3>
+                            <p class="text-sm text-gray-500">Amount: Rs. {{ number_format($profile->payment_amount) }} via {{ ucfirst(str_replace('_', ' ', $profile->payment_method)) }}</p>
+                            <p class="text-sm text-gray-500">Reference: {{ $profile->payment_reference }}</p>
+                        </div>
                     </div>
                     <span class="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full">Submitted</span>
                 </div>

@@ -8,13 +8,28 @@
     <div class="py-12">
         <div class="max-w-3xl mx-auto sm:px-6 lg:px-8">
 
-            @if (session('status'))
-            <div class="mb-4 p-4 bg-green-50 text-green-700 rounded">
-                {{ session('status') }}
-            </div>
-            @endif
 
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
+                @if ($profile->isSuspended())
+                <div class="mb-6 bg-red-50 border border-red-200 rounded-lg p-4">
+                    <p class="text-sm font-semibold text-red-800">⛔ Your profile has been suspended by our moderation team</p>
+                    <p class="text-sm text-red-700 mt-1">Reason: {{ $profile->suspension_reason }}</p>
+                    <p class="text-xs text-red-600 mt-2">Your profile is hidden from search and cannot be reactivated from this page. Please contact support if you believe this is a mistake.</p>
+                </div>
+                @endif
+                @php $completeness = $profile->completenessPercentage(); @endphp
+                @if ($completeness < 100)
+                <div class="mb-6 bg-gray-50 border border-gray-200 rounded-lg p-4">
+                    <div class="flex justify-between items-center mb-1">
+                        <p class="text-sm font-medium text-gray-700">Profile Completeness</p>
+                        <p class="text-sm font-semibold text-teal-700">{{ $completeness }}%</p>
+                    </div>
+                    <div class="w-full bg-gray-200 rounded-full h-2">
+                        <div class="bg-teal-600 h-2 rounded-full" style="width: {{ $completeness }}%"></div>
+                    </div>
+                    <p class="text-xs text-gray-500 mt-2">A more complete profile gets more interest. <a href="{{ route('nikah.edit') }}" class="text-teal-700 hover:underline">Add missing details →</a></p>
+                </div>
+                @endif
                 <div class="flex">
                     <div class="mb-6 flex-1">
                         @if ($profile->payment_status === 'unpaid')
@@ -51,11 +66,20 @@
                         @endif
                     </div>
                 </div>
+
+                {{-- Trust Badge Stack --}}
+                @php $badges = $profile->trustBadges(); @endphp
+                <div class="mb-6 flex flex-wrap gap-2">
+                    <span class="text-xs px-2 py-1 rounded-full {{ $badges['cnic'] ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-400' }}">🪪 CNIC {{ $badges['cnic'] ? 'Verified' : 'Not yet verified' }}</span>
+                    <span class="text-xs px-2 py-1 rounded-full {{ $badges['payment'] ? 'bg-blue-100 text-blue-800' : 'bg-gray-100 text-gray-400' }}">💳 Payment {{ $badges['payment'] ? 'Verified' : 'Not yet verified' }}</span>
+                    <span class="text-xs px-2 py-1 rounded-full {{ $badges['guardian'] ? 'bg-purple-100 text-purple-800' : 'bg-gray-100 text-gray-400' }}">👨‍👩‍👦 Guardian {{ $badges['guardian'] ? 'Verified' : 'Not yet verified' }}</span>
+                </div>
+
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                     <div>
                         @if ($profile->photo)
                         <div class="mb-6">
-                            <img src="{{ route('nikah.file', [$profile, 'photo']) }}" class="w-32 h-32 object-cover rounded-lg">
+                            <img src="{{ route('nikah.file', [$profile, 'photo']) }}" alt="Your profile photo" class="w-32 h-32 object-cover rounded-lg">
                         </div>
                         @endif
                         <h3 class="font-semibold text-gray-700 mb-2 border-b pb-1">Basic Information</h3>
@@ -97,6 +121,40 @@
                             <div class="flex justify-between">
                                 <dt class="text-gray-500">Country</dt>
                                 <dd>{{ $profile->country }}</dd>
+                            </div>
+                            <div class="flex justify-between">
+                                <dt class="text-gray-500">Ethnicity</dt>
+                                <dd>{{ $profile->ethnicity ?: '—' }}</dd>
+                            </div>
+                            <div class="flex justify-between">
+                                <dt class="text-gray-500">Language</dt>
+                                <dd>{{ $profile->language ?: '—' }}</dd>
+                            </div>
+                            <div class="flex justify-between">
+                                <dt class="text-gray-500">Open to Polygamy</dt>
+                                <dd>{{ $profile->open_to_polygamy ? 'Yes' : 'No' }}</dd>
+                            </div>
+                        </dl>
+                    </div>
+
+                    <div>
+                        <h3 class="font-semibold text-gray-700 mb-2 border-b pb-1">Deen & Lifestyle</h3>
+                        <dl class="text-sm space-y-1">
+                            <div class="flex justify-between">
+                                <dt class="text-gray-500">Prayer Regularity</dt>
+                                <dd>{{ $profile->prayer_frequency ? ucfirst($profile->prayer_frequency) : '—' }}</dd>
+                            </div>
+                            <div class="flex justify-between">
+                                <dt class="text-gray-500">Hijab/Beard</dt>
+                                <dd>{{ $profile->hijab_or_beard ? ucfirst($profile->hijab_or_beard) : '—' }}</dd>
+                            </div>
+                            <div class="flex justify-between">
+                                <dt class="text-gray-500">Smoking</dt>
+                                <dd>{{ $profile->smokes ? ucfirst($profile->smokes) : '—' }}</dd>
+                            </div>
+                            <div class="flex justify-between">
+                                <dt class="text-gray-500">Diet</dt>
+                                <dd>{{ $profile->diet ? ucfirst(str_replace('_', ' ', $profile->diet)) : '—' }}</dd>
                             </div>
                         </dl>
                     </div>
@@ -146,7 +204,7 @@
                     <div class="flex flex-wrap gap-3 mb-4">
                         @foreach ($profile->photos as $photo)
                         <div class="relative">
-                            <img src="{{ route('nikah.photos.show', $photo) }}" class="w-24 h-24 object-cover rounded-lg border-2 {{ $photo->is_primary ? 'border-pink-500' : 'border-gray-200' }}">
+                            <img src="{{ route('nikah.photos.show', $photo) }}" alt="{{ $photo->is_primary ? 'Primary profile photo' : 'Profile photo' }}" class="w-24 h-24 object-cover rounded-lg border-2 {{ $photo->is_primary ? 'border-pink-500' : 'border-gray-200' }}">
 
                             @if ($photo->is_primary)
                             <span class="absolute top-1 left-1 text-xs bg-pink-500 text-white px-1 rounded">Primary</span>
@@ -202,18 +260,20 @@
                     <a href="{{ route('nikah.edit') }}" class="inline-flex items-center px-4 py-2 bg-gray-800 text-white text-sm font-medium rounded-md hover:bg-gray-700">
                         Edit Profile
                     </a>
+                    @unless ($profile->isSuspended())
                     <form method="POST" action="{{ route('nikah.toggle-active') }}" class="inline">
                         @csrf
                         <button class="px-4 py-2 text-sm rounded {{ $profile->is_active ? 'bg-gray-200 text-gray-700' : 'bg-green-600 text-white' }}">
                             {{ $profile->is_active ? 'Hide My Profile' : 'Activate My Profile' }}
                         </button>
                     </form>
+                    @endunless
                 </div>
 
-                @if ($profile->verification_status === 'verified' && $profile->is_active && $profile->visibility === 'public')
+                @if ($profile->verification_status === 'verified' && $profile->is_active && !$profile->isSuspended())
                 <div class="mt-6 bg-teal-50 border border-teal-100 rounded-lg p-5">
                     <h3 class="font-semibold text-gray-700 mb-1">📤 Share My Profile</h3>
-                    <p class="text-xs text-gray-500 mb-3">A safe preview link (no photos, no guardian contact) — share it on WhatsApp or anywhere else to invite people to view your profile on Sallaamti.</p>
+                    <p class="text-xs text-gray-500 mb-3">A safe preview link (no photos, no guardian contact) — share it on WhatsApp or anywhere else to invite people to view your profile on Sallaamti. This link works even if your visibility is set to Private below — it's the only way people can view a Private profile.</p>
                     @php $shareUrl = route('nikah.public-view', $profile->public_token); @endphp
                     <div class="flex gap-2 items-center mb-3">
                         <input type="text" readonly value="{{ $shareUrl }}" id="nikah-share-link" class="flex-1 border-gray-300 rounded-md text-xs bg-white">

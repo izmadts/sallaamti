@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\ActivityPost;
+use App\Support\HtmlSanitizer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -31,6 +32,7 @@ class ActivityPostController extends Controller
 
         $validated['is_active'] = $request->has('is_active');
         $validated['order'] = ActivityPost::max('order') + 1;
+        $validated['description'] = HtmlSanitizer::clean($validated['description']);
 
         if ($request->hasFile('photo')) {
             $validated['photo'] = $request->file('photo')->store('activity-posts', 'public');
@@ -56,6 +58,7 @@ class ActivityPostController extends Controller
         ]);
 
         $validated['is_active'] = $request->has('is_active');
+        $validated['description'] = HtmlSanitizer::clean($validated['description']);
 
         if ($request->hasFile('photo')) {
             if ($activity_post->photo) Storage::disk('public')->delete($activity_post->photo);

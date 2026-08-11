@@ -37,14 +37,79 @@
                             <div>
                                 <x-input-label for="marital_status" value="Marital Status" />
                                 <select id="marital_status" name="marital_status" required class="border-gray-300 rounded-md shadow-sm w-full mt-1">
-                                    @foreach (['never_married' => 'Never Married', 'divorced' => 'Divorced', 'widowed' => 'Widowed', 'married' => 'Married (Second Wife)'] as $val => $label)
+                                    @foreach (['never_married' => 'Never Married', 'divorced' => 'Divorced', 'widowed' => 'Widowed', 'separated' => 'Separated', 'married' => 'Married (Second Wife)'] as $val => $label)
                                     <option value="{{ $val }}" {{ old('marital_status', $profile->marital_status) === $val ? 'selected' : '' }}>{{ $label }}</option>
                                     @endforeach
                                 </select>
                             </div>
-                            <div>
+                            @php
+                                $knownSects = ['Sunni', 'Shia', 'Ahle Hadith', 'Deobandi'];
+                                $currentSect = old('sect', $profile->sect);
+                                $isOtherSect = $currentSect && !in_array($currentSect, $knownSects);
+                            @endphp
+                            <div x-data="{ sect: '{{ $isOtherSect ? 'Other' : $currentSect }}' }">
                                 <x-input-label for="sect" value="Sect" />
-                                <x-text-input id="sect" name="sect" type="text" class="w-full mt-1" :value="old('sect', $profile->sect)" />
+                                <select id="sect" name="sect" x-model="sect" required class="border-gray-300 rounded-md shadow-sm w-full mt-1">
+                                    <option value="">Select Sect</option>
+                                    <option value="Sunni">Sunni</option>
+                                    <option value="Shia">Shia</option>
+                                    <option value="Ahle Hadith">Ahle Hadith</option>
+                                    <option value="Deobandi">Deobandi</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                                <div x-show="sect === 'Other'" x-cloak class="mt-2">
+                                    <x-text-input name="sect_other" type="text" class="w-full" placeholder="Please specify your sect" :value="old('sect_other', $isOtherSect ? $currentSect : '')" />
+                                </div>
+                            </div>
+                            <div>
+                                <x-input-label for="caste" value="Caste (optional)" />
+                                <x-text-input id="caste" name="caste" type="text" class="w-full mt-1" :value="old('caste', $profile->caste)" />
+                            </div>
+                        </div>
+                        <div class="mt-4 flex items-center gap-2">
+                            <input type="checkbox" id="open_to_polygamy" name="open_to_polygamy" value="1" {{ old('open_to_polygamy', $profile->open_to_polygamy) ? 'checked' : '' }} class="rounded">
+                            <x-input-label for="open_to_polygamy" value="I am open to a polygamous marriage (e.g. as/marrying a second wife)" />
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3 class="font-semibold text-gray-700 mb-3 border-b pb-2">Deen & Lifestyle</h3>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <x-input-label for="prayer_frequency" value="Prayer (Salah) Regularity" />
+                                <select id="prayer_frequency" name="prayer_frequency" class="border-gray-300 rounded-md shadow-sm w-full mt-1">
+                                    <option value="">Prefer not to say</option>
+                                    @foreach (['always' => 'Always — 5 times a day', 'usually' => 'Usually', 'sometimes' => 'Sometimes', 'rarely' => 'Rarely'] as $val => $label)
+                                    <option value="{{ $val }}" {{ old('prayer_frequency', $profile->prayer_frequency) === $val ? 'selected' : '' }}>{{ $label }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div>
+                                <x-input-label for="hijab_or_beard" value="Hijab (for sisters) / Beard (for brothers)" />
+                                <select id="hijab_or_beard" name="hijab_or_beard" class="border-gray-300 rounded-md shadow-sm w-full mt-1">
+                                    <option value="">Prefer not to say</option>
+                                    @foreach (['yes' => 'Yes', 'sometimes' => 'Sometimes', 'no' => 'No'] as $val => $label)
+                                    <option value="{{ $val }}" {{ old('hijab_or_beard', $profile->hijab_or_beard) === $val ? 'selected' : '' }}>{{ $label }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div>
+                                <x-input-label for="smokes" value="Smoking" />
+                                <select id="smokes" name="smokes" class="border-gray-300 rounded-md shadow-sm w-full mt-1">
+                                    <option value="">Prefer not to say</option>
+                                    @foreach (['no' => 'No', 'occasionally' => 'Occasionally', 'yes' => 'Yes'] as $val => $label)
+                                    <option value="{{ $val }}" {{ old('smokes', $profile->smokes) === $val ? 'selected' : '' }}>{{ $label }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div>
+                                <x-input-label for="diet" value="Diet" />
+                                <select id="diet" name="diet" class="border-gray-300 rounded-md shadow-sm w-full mt-1">
+                                    <option value="">Prefer not to say</option>
+                                    @foreach (['halal_only' => 'Halal only', 'halal_mostly' => 'Halal, mostly', 'no_restriction' => 'No restriction'] as $val => $label)
+                                    <option value="{{ $val }}" {{ old('diet', $profile->diet) === $val ? 'selected' : '' }}>{{ $label }}</option>
+                                    @endforeach
+                                </select>
                             </div>
                         </div>
                     </div>
@@ -67,6 +132,14 @@
                             <div>
                                 <x-input-label for="country" value="Country" />
                                 <x-text-input id="country" name="country" type="text" class="w-full mt-1" :value="old('country', $profile->country)" />
+                            </div>
+                            <div>
+                                <x-input-label for="ethnicity" value="Ethnicity (optional)" />
+                                <x-text-input id="ethnicity" name="ethnicity" type="text" class="w-full mt-1" :value="old('ethnicity', $profile->ethnicity)" placeholder="e.g. Punjabi, Pashtun, Sindhi" />
+                            </div>
+                            <div>
+                                <x-input-label for="language" value="Language(s) Spoken (optional)" />
+                                <x-text-input id="language" name="language" type="text" class="w-full mt-1" :value="old('language', $profile->language)" placeholder="e.g. Urdu, English" />
                             </div>
                         </div>
                     </div>
@@ -109,10 +182,7 @@
 
                     <div>
                         <h3 class="font-semibold text-gray-700 mb-3 border-b pb-2">Verification</h3>
-                        <p class="text-sm text-gray-500 mb-3">Leave file fields blank to keep your current uploads. Changing your CNIC photo will trigger re-verification.</p>
                         <div>
-                            <h3 class="font-semibold text-gray-700 mb-3 border-b pb-2">Verification</h3>
-
                             @if ($profile->cnic_number && $profile->cnic_front_image && $profile->cnic_back_image)
                             <div class="bg-gray-50 border border-gray-200 rounded p-4 text-sm text-gray-600">
                                 <p class="font-medium text-gray-700 mb-1">🔒 CNIC Verification Submitted</p>
@@ -120,6 +190,7 @@
                                 <p class="mt-1">Your CNIC details are locked and cannot be changed here. If you need to update your CNIC, please contact support.</p>
                             </div>
                             @else
+                            <p class="text-sm text-gray-500 mb-3">Leave file fields blank to keep your current uploads.</p>
                             <p class="text-sm text-gray-500 mb-3">Your CNIC will only be used for verification and is never shown publicly.</p>
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 @if (!$profile->cnic_number)
@@ -145,7 +216,7 @@
                         </div>
                         <hr class="mt-4 border-b">
                         <div class="mt-4 flex items-center gap-2">
-                            <input type="checkbox" id="allow_photo_sharing" name="allow_photo_sharing" value="1" checked class="rounded">
+                            <input type="checkbox" id="allow_photo_sharing" name="allow_photo_sharing" value="1" {{ old('allow_photo_sharing', $profile->allow_photo_sharing) ? 'checked' : '' }} class="rounded">
                             <x-input-label for="allow_photo_sharing" value="Allow my photo to be shared with a match after mutual interest is accepted" />
                         </div>
                         <div class="mt-4">
@@ -157,8 +228,8 @@
                     <div>
                         <x-input-label for="visibility" value="Profile Visibility" />
                         <select id="visibility" name="visibility" required class="border-gray-300 rounded-md shadow-sm w-full mt-1">
-                            <option value="public" {{ old('visibility', $profile->visibility) === 'public' ? 'selected' : '' }}>Public</option>
-                            <option value="private" {{ old('visibility', $profile->visibility) === 'private' ? 'selected' : '' }}>Private</option>
+                            <option value="public" {{ old('visibility', $profile->visibility) === 'public' ? 'selected' : '' }}>Public (visible in Browse Matches search)</option>
+                            <option value="private" {{ old('visibility', $profile->visibility) === 'private' ? 'selected' : '' }}>Private (hidden from search — only visible via your share link)</option>
                         </select>
                     </div>
                     <div>

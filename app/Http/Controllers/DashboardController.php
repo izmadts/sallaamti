@@ -2,13 +2,54 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\QuranClassGroup;
+use App\Models\QuranGroupStudent;
+use App\Models\QuranLiveCourse;
 use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
 {
     public function index()
     {
-        $user = Auth::user()->load([
+        $authUser = Auth::user();
+
+        // Teacher and counselor accounts get their own purpose-built panels
+        // instead of the member dashboard (Nikah/course-enrollment cards
+        // that don't apply to their role).
+        if ($authUser->hasRole('teacher')) {
+            return $this->teacherDashboard($authUser);
+        }
+
+        if ($authUser->hasRole('counselor')) {
+            return view('dashboard.counselor', ['user' => $authUser]);
+        }
+
+        return $this->memberDashboard($authUser);
+    }
+
+    private function teacherDashboard($authUser)
+    {
+        $courses = QuranLiveCourse::where('teacher_id', $authUser->id)->get();
+        $groupIds = QuranClassGroup::where('teacher_id', $authUser->id)->pluck('id');
+
+        $stats = [
+            'total_courses' => $courses->count(),
+            'total_students' => QuranGroupStudent::whereIn('quran_class_group_id', $groupIds)
+                ->where('status', 'active')
+                ->count(),
+            'todays_links_posted' => $courses->filter(fn ($course) => $course->todaysLink())->count(),
+        ];
+
+        return view('dashboard.teacher', [
+            'user' => $authUser,
+            'courses' => $courses,
+            'stats' => $stats,
+        ]);
+    }
+
+    private function memberDashboard($authUser)
+    {
+        $user = $authUser->load([
             'nikahProfile',
             'enrollments.course',
             'certificates.course',

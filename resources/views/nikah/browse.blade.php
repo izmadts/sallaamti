@@ -19,9 +19,6 @@
     <div class="py-4">
         <div class="max-w-6xl mx-auto sm:px-6 lg:px-8 space-y-6">
 
-            @if (session('status'))
-            <div class="p-4 bg-green-50 text-green-700 rounded-lg">{{ session('status') }}</div>
-            @endif
 
             {{-- Preferences reminder --}}
             @if (!$myProfile->pref_min_age && !$myProfile->pref_city && !$myProfile->pref_sect)
@@ -62,6 +59,28 @@
                     <label class="text-xs text-gray-500">Education</label>
                     <input type="text" name="education" value="{{ request('education') }}" class="border-gray-300 rounded text-sm block w-24">
                 </div>
+                <div>
+                    <label class="text-xs text-gray-500">Ethnicity</label>
+                    <input type="text" name="ethnicity" value="{{ request('ethnicity') }}" class="border-gray-300 rounded text-sm block w-24">
+                </div>
+                <div>
+                    <label class="text-xs text-gray-500">Language</label>
+                    <input type="text" name="language" value="{{ request('language') }}" class="border-gray-300 rounded text-sm block w-24">
+                </div>
+                <div>
+                    <label class="text-xs text-gray-500">Prayer Regularity</label>
+                    <select name="prayer_frequency" class="border-gray-300 rounded text-sm block">
+                        <option value="">Any</option>
+                        <option value="always" {{ request('prayer_frequency') === 'always' ? 'selected' : '' }}>Always</option>
+                        <option value="usually" {{ request('prayer_frequency') === 'usually' ? 'selected' : '' }}>Usually</option>
+                        <option value="sometimes" {{ request('prayer_frequency') === 'sometimes' ? 'selected' : '' }}>Sometimes</option>
+                        <option value="rarely" {{ request('prayer_frequency') === 'rarely' ? 'selected' : '' }}>Rarely</option>
+                    </select>
+                </div>
+                <div class="flex items-center gap-1.5 pb-2">
+                    <input type="checkbox" id="open_to_polygamy" name="open_to_polygamy" value="1" {{ request()->boolean('open_to_polygamy') ? 'checked' : '' }} class="rounded">
+                    <label for="open_to_polygamy" class="text-xs text-gray-500">Open to polygamy</label>
+                </div>
                 <button class="bg-gray-800 text-white text-sm px-4 py-2 rounded">🔍 Search</button>
                 <a href="{{ route('nikah.browse') }}" class="text-sm text-gray-400">Reset</a>
             </form>
@@ -94,12 +113,21 @@
 
                     {{-- Photo --}}
                     <div class="relative h-48 bg-gray-100 flex items-center justify-center">
-                        {{-- Inside the photo div, after the match % badge --}}
-                        <div class="absolute top-2 left-1">
-                            <span class="text-xs bg-green-500 text-white px-2 py-0.5 rounded-full shadow">✅ Verified</span>
+                        {{-- Trust badge stack — independently-earned signals instead of one binary "Verified" --}}
+                        <div class="absolute top-2 left-1 flex flex-col gap-1 items-start">
+                            @php $badges = $profile->trustBadges(); @endphp
+                            @if ($badges['cnic'])
+                            <span class="text-xs bg-green-500 text-white px-2 py-0.5 rounded-full shadow" title="CNIC verified by our team">🪪 CNIC Verified</span>
+                            @endif
+                            @if ($badges['payment'])
+                            <span class="text-xs bg-blue-500 text-white px-2 py-0.5 rounded-full shadow" title="Verification fee payment confirmed">💳 Payment Verified</span>
+                            @endif
+                            @if ($badges['guardian'])
+                            <span class="text-xs bg-purple-500 text-white px-2 py-0.5 rounded-full shadow" title="Guardian contact confirmed by our team">👨‍👩‍👦 Guardian Verified</span>
+                            @endif
                         </div>
                         @if ($profile->photos->first())
-                        <img src="{{ route('nikah.photos.show', $profile->photos->first()) }}" class="w-full h-full object-cover blur-md">
+                        <img src="{{ route('nikah.photos.show', $profile->photos->first()) }}" alt="Profile photo (blurred until you connect)" class="w-full h-full object-cover blur-md">
                         <div class="absolute inset-0 flex items-center justify-center text-gray-400 text-sm">🔒 Photo hidden</div>
                         @else
                         <div class="text-5xl">👤</div>
@@ -129,6 +157,18 @@
                                                ($profile->match_percentage >= 50 ? 'bg-yellow-500' : 'bg-gray-400') }}"
                                     style="width: {{ $profile->match_percentage }}%"></div>
                             </div>
+                            @if (!empty($profile->match_criteria))
+                            <details class="mt-1">
+                                <summary class="text-xs text-teal-700 cursor-pointer">Why {{ $profile->match_percentage }}%?</summary>
+                                <ul class="mt-1 space-y-0.5">
+                                    @foreach ($profile->match_criteria as $c)
+                                    <li class="text-xs {{ $c['matched'] ? 'text-green-600' : 'text-gray-400' }}">
+                                        {{ $c['matched'] ? '✓' : '✗' }} {{ $c['label'] }}
+                                    </li>
+                                    @endforeach
+                                </ul>
+                            </details>
+                            @endif
                         </div>
                         @endif
 
@@ -139,7 +179,14 @@
                                 @if ($profile->profession)<p class="text-xs text-gray-500">💼 {{ $profile->profession }}</p>@endif
                                 @if ($profile->education)<p class="text-xs text-gray-500">🎓 {{ $profile->education }}</p>@endif
                                 @if ($profile->sect)<p class="text-xs text-gray-500">☪️ {{ $profile->sect }}</p>@endif
+                                @if ($profile->ethnicity)<p class="text-xs text-gray-500">🌍 {{ $profile->ethnicity }}</p>@endif
                                 <p class="text-xs text-gray-400">{{ ucfirst(str_replace('_', ' ', $profile->marital_status)) }}</p>
+                                <p class="text-xs text-gray-400">
+                                    Member since {{ $profile->created_at->format('M Y') }}
+                                    @if ($profile->last_active_at && $profile->last_active_at->gt(now()->subDays(7)))
+                                    · <span class="text-green-600">Active {{ $profile->last_active_at->diffForHumans() }}</span>
+                                    @endif
+                                </p>
                             </div>
                         </a>
 

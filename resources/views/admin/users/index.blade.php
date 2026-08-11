@@ -9,12 +9,6 @@
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-4">
 
-            @if (session('status'))
-            <div class="p-4 bg-green-50 text-green-700 rounded">{{ session('status') }}</div>
-            @endif
-            @if (session('error'))
-            <div class="p-4 bg-red-50 text-red-700 rounded">{{ session('error') }}</div>
-            @endif
 
             {{-- Filters --}}
             <form method="GET" class="bg-white p-4 rounded-lg shadow-sm flex flex-wrap gap-3 items-end">

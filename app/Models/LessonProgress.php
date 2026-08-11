@@ -6,11 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class LessonProgress extends Model
 {
-    protected $fillable = ['user_id', 'lesson_id', 'completed_at'];
+    protected $fillable = ['user_id', 'lesson_id', 'started_at', 'completed_at'];
 
     protected function casts(): array
     {
-        return ['completed_at' => 'datetime'];
+        return ['started_at' => 'datetime', 'completed_at' => 'datetime'];
     }
 
     public function user()

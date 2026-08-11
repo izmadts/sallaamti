@@ -7,9 +7,6 @@
     </x-slot>
     <div class="py-12">
         <div class="max-w-4xl mx-auto sm:px-6 lg:px-8 space-y-4">
-            @if (session('status'))
-            <div class="p-4 bg-green-50 text-green-700 rounded-xl">✅ {{ session('status') }}</div>
-            @endif
             @forelse ($queries as $query)
             <a href="{{ route('support.show', $query) }}"
                 class="block bg-white rounded-xl shadow-sm p-5 hover:shadow-md transition-shadow">

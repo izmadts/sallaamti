@@ -10,7 +10,18 @@ class NikahVerificationController extends Controller
 {
     public function index(Request $request)
     {
-        $query = NikahProfile::with('user');
+        $stats = [
+            'total' => NikahProfile::count(),
+            'verified' => NikahProfile::where('verification_status', 'verified')->count(),
+            'pending' => NikahProfile::where('verification_status', 'pending')->count(),
+            'rejected' => NikahProfile::where('verification_status', 'rejected')->count(),
+            'pending_payments' => NikahProfile::where('payment_status', 'submitted')->count(),
+            'male' => NikahProfile::whereHas('user', fn($q) => $q->where('gender', 'male'))->count(),
+            'female' => NikahProfile::whereHas('user', fn($q) => $q->where('gender', 'female'))->count(),
+            'new_this_week' => NikahProfile::where('created_at', '>=', now()->subDays(7))->count(),
+        ];
+
+        $query = NikahProfile::with(['user', 'moderationNotes.admin']);
 
         // Filter by verification status
         if ($request->filled('status') && $request->status !== 'all') {
@@ -39,7 +50,94 @@ class NikahVerificationController extends Controller
 
         $profiles = $query->latest()->paginate(10)->withQueryString();
 
-        return view('admin.nikah.nikah-verifications', compact('profiles'));
+        // Guardian-phone reuse is a soft fraud signal, not a hard block —
+        // siblings can legitimately share one guardian's contact number, so
+        // this is surfaced for admin judgment rather than validated away.
+        $guardianContactCounts = NikahProfile::whereIn('guardian_contact', $profiles->pluck('guardian_contact')->filter())
+            ->selectRaw('guardian_contact, count(*) as total')
+            ->groupBy('guardian_contact')
+            ->having('total', '>', 1)
+            ->pluck('total', 'guardian_contact');
+
+        return view('admin.nikah.nikah-verifications', compact('profiles', 'stats', 'guardianContactCounts'));
+    }
+
+    public function verifyGuardian(NikahProfile $profile)
+    {
+        $profile->update(['guardian_verified_at' => now()]);
+
+        return back()->with('status', 'Guardian contact marked as verified.');
+    }
+
+    public function sendReminder(NikahProfile $profile)
+    {
+        abort_unless(in_array($profile->payment_status, ['unpaid', 'rejected']), 422, 'This profile is already past the payment step — nothing to remind them about.');
+
+        try {
+            $profile->user->notify(new \App\Notifications\NikahProfileCompletionReminder($profile));
+        } catch (\Throwable $e) {
+            \Log::error('NikahProfileCompletionReminder notification failed: ' . $e->getMessage());
+            return back()->with('status', 'Could not send reminder — check the mail log.');
+        }
+
+        return back()->with('status', 'Reminder email sent to ' . $profile->user->name . '.');
+    }
+
+    public function bulkRemind(Request $request)
+    {
+        $request->validate(['profile_ids' => ['required', 'array'], 'profile_ids.*' => ['integer', 'exists:nikah_profiles,id']]);
+
+        $profiles = NikahProfile::whereIn('id', $request->profile_ids)
+            ->whereIn('payment_status', ['unpaid', 'rejected'])
+            ->get();
+
+        foreach ($profiles as $profile) {
+            try {
+                $profile->user->notify(new \App\Notifications\NikahProfileCompletionReminder($profile));
+            } catch (\Throwable $e) {
+                \Log::error('NikahProfileCompletionReminder notification failed: ' . $e->getMessage());
+            }
+        }
+
+        return back()->with('status', "Reminder sent to {$profiles->count()} profile(s).");
+    }
+
+    public function addNote(Request $request, NikahProfile $profile)
+    {
+        $request->validate(['note' => ['required', 'string', 'max:1000']]);
+
+        $profile->moderationNotes()->create([
+            'admin_id' => auth()->id(),
+            'note' => $request->note,
+        ]);
+
+        return back()->with('status', 'Note added.');
+    }
+
+    public function bulkApprove(Request $request)
+    {
+        $request->validate(['profile_ids' => ['required', 'array'], 'profile_ids.*' => ['integer', 'exists:nikah_profiles,id']]);
+
+        $profiles = NikahProfile::whereIn('id', $request->profile_ids)
+            ->where('payment_status', 'confirmed')
+            ->get();
+
+        foreach ($profiles as $profile) {
+            $profile->update(['verification_status' => 'verified', 'rejection_reason' => null]);
+            try {
+                $profile->user->notify(new \App\Notifications\NikahProfileVerified());
+            } catch (\Throwable $e) {
+                \Log::error('NikahProfileVerified notification failed: ' . $e->getMessage());
+            }
+        }
+
+        $skipped = count($request->profile_ids) - $profiles->count();
+        $status = "{$profiles->count()} profile(s) approved.";
+        if ($skipped > 0) {
+            $status .= " {$skipped} skipped — payment not confirmed yet.";
+        }
+
+        return back()->with('status', $status);
     }
 
     public function approve(NikahProfile $profile)

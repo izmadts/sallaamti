@@ -6,9 +6,6 @@
     <div class="py-12">
         <div class="max-w-6xl mx-auto sm:px-6 lg:px-8 space-y-4">
 
-            @if (session('status'))
-            <div class="p-4 bg-green-50 text-green-700 rounded">{{ session('status') }}</div>
-            @endif
 
             @forelse ($admissions as $admission)
             <div class="bg-white shadow-sm rounded-lg p-5">

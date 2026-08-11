@@ -40,6 +40,12 @@
 
     </p>
 
+    <p style="font-size: 12px; color: #888;">
+
+        <a href="{{ route('subscriber.unsubscribe', $subscriber->unsubscribe_token) }}" style="color: #888;">Unsubscribe</a>
+
+    </p>
+
 </body>
 
 </html>

@@ -16,15 +16,13 @@
     {{-- Tailwind via Vite --}}
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
+    {{--
+        Shared tokens (--teal, --gold, ...) and .auth-*/.btn-* component
+        classes now live in resources/css/app.css so pages under both
+        this layout and layouts/app.blade.php render identically. Only
+        this page's own wrapper/card chrome stays here.
+    --}}
     <style>
-        :root {
-            --teal: #0d6b6b;
-            --teal-dark: #095555;
-            --teal-light: #e8f5f5;
-            --gold: #b8962e;
-            --cream: #fdfaf3;
-        }
-
         body {
             font-family: 'Open Sans', sans-serif;
             background: var(--cream);
@@ -65,133 +63,6 @@
             z-index: 1;
         }
 
-        /* ===== AUTH FORM ELEMENTS ===== */
-        .auth-label {
-            display: block;
-            font-size: 13px;
-            font-weight: 600;
-            color: #374151;
-            margin-bottom: 6px;
-        }
-
-        .auth-input-wrap {
-            position: relative;
-            display: flex;
-            align-items: center;
-        }
-
-        .auth-icon {
-            position: absolute;
-            left: 14px;
-            color: #9ca3af;
-            font-size: 13px;
-            z-index: 1;
-            pointer-events: none;
-        }
-
-        .auth-input {
-            width: 100%;
-            padding: 11px 14px 11px 38px;
-            border: 2px solid #e5e7eb;
-            border-radius: 10px;
-            font-size: 14px;
-            color: #1f2937;
-            background: #fff;
-            transition: border-color 0.2s, box-shadow 0.2s;
-            outline: none;
-            appearance: none;
-            -webkit-appearance: none;
-        }
-
-        .auth-input:focus {
-            border-color: var(--teal);
-            box-shadow: 0 0 0 3px rgba(13, 107, 107, 0.1);
-        }
-
-        .auth-input-error {
-            border-color: #f87171 !important;
-        }
-
-        .auth-eye-btn {
-            position: absolute;
-            right: 12px;
-            color: #9ca3af;
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: 4px;
-            font-size: 13px;
-        }
-
-        .auth-eye-btn:hover {
-            color: var(--teal);
-        }
-
-        .auth-checkbox {
-            width: 16px;
-            height: 16px;
-            border: 2px solid #d1d5db;
-            border-radius: 4px;
-            accent-color: var(--teal);
-            cursor: pointer;
-        }
-
-        .auth-divider {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin: 4px 0;
-        }
-
-        .auth-divider::before,
-        .auth-divider::after {
-            content: '';
-            flex: 1;
-            height: 1px;
-            background: #e5e7eb;
-        }
-
-        .auth-divider span {
-            font-size: 12px;
-            color: #9ca3af;
-            font-weight: 500;
-        }
-
-        /* ===== BUTTONS ===== */
-        .btn-base {
-            display: inline-block;
-            border-radius: 0.5rem;
-            cursor: pointer;
-            border: 2px solid transparent;
-            text-decoration: none;
-            text-align: center;
-            transition: all 0.2s ease;
-            font-weight: 500;
-            line-height: 1.5;
-        }
-
-        .btn-teal {
-            background: var(--teal);
-            border-color: var(--teal);
-            color: #fff !important;
-        }
-
-        .btn-teal:hover {
-            background: var(--teal-dark);
-            border-color: var(--teal-dark);
-        }
-
-        .btn-gold {
-            background: var(--gold);
-            border-color: var(--gold);
-            color: #fff !important;
-        }
-
-        .btn-gold:hover {
-            background: #9a7b25;
-            border-color: #9a7b25;
-        }
-
         /* ===== MOBILE ===== */
         @media (max-width: 575px) {
             .auth-card {
@@ -205,7 +76,7 @@
 
     {{-- Subtle back to home link --}}
     <a href="{{ url('/') }}"
-        class="fixed top-4 left-4 z-50 flex items-center gap-2 text-xs font-medium text-gray-400 hover:text-teal-700 transition-colors">
+        class="fixed top-4 left-4 z-50 flex items-center gap-2 text-xs font-medium text-gray-500 hover:text-teal-700 transition-colors">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
         </svg>

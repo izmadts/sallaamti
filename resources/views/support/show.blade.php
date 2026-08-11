@@ -8,9 +8,6 @@
     <div class="py-12">
         <div class="max-w-3xl mx-auto sm:px-6 lg:px-8 space-y-5">
 
-            @if (session('status'))
-            <div class="p-4 bg-green-50 text-green-700 rounded-xl">✅ {{ session('status') }}</div>
-            @endif
 
             {{-- Query Details --}}
             <div class="bg-white rounded-2xl shadow-sm p-6">

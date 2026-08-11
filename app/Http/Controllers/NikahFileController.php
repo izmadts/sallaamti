@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\NikahBlock;
 use App\Models\NikahProfile;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -40,6 +41,7 @@ class NikahFileController extends Controller
         // Rule 4: Photo — other users only see it if allowed AND mutually accepted
         abort_unless($profile->allow_photo_sharing, 403);
         abort_unless($myProfile, 403);
+        abort_if(NikahBlock::existsBetween($myProfile->id, $profile->id), 403);
 
         $hasAcceptedInterest = $profile->receivedInterests()
             ->where('sender_profile_id', $myProfile->id)

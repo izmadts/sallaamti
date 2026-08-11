@@ -22,6 +22,7 @@ class SubscriberController extends Controller
         $subscriber = Subscriber::create([
             'email' => $request->email,
             'verification_token' => $token,
+            'unsubscribe_token' => Str::random(64),
         ]);
         try {
             Mail::send('emails.subscriber-verification', [
@@ -52,9 +53,9 @@ class SubscriberController extends Controller
                 'Your email has been verified successfully. Thank you for subscribing.'
             );
     }
-    public function unsubscribe($id)
+    public function unsubscribe($token)
     {
-        $subscriber = Subscriber::findOrFail($id);
+        $subscriber = Subscriber::where('unsubscribe_token', $token)->firstOrFail();
         $subscriber->update([
             'is_active' => false,
             'unsubscribed_at' => now()

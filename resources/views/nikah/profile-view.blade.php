@@ -9,9 +9,6 @@
     <div class="py-12">
         <div class="max-w-4xl mx-auto sm:px-6 lg:px-8 space-y-6">
 
-            @if (session('status'))
-            <div class="p-4 bg-green-50 text-green-700 rounded-lg">{{ session('status') }}</div>
-            @endif
 
             {{-- Header Card --}}
             <div class="bg-white rounded-xl shadow-sm overflow-hidden">
@@ -20,6 +17,7 @@
                 <div class="h-48 bg-gradient-to-br {{ $profile->user->gender === 'female' ? 'from-pink-100 to-rose-200' : 'from-blue-100 to-indigo-200' }} relative flex items-center justify-center">
                     @if ($hasAcceptedInterest && $profile->photos->isNotEmpty())
                     <img src="{{ route('nikah.photos.show', $profile->photos->first()) }}"
+                        alt="{{ $profile->age }} yrs, {{ $profile->city }}"
                         class="w-32 h-32 rounded-full object-cover border-4 border-white shadow-lg">
                     @else
                     <div class="w-32 h-32 rounded-full bg-white shadow-lg flex items-center justify-center text-5xl border-4 border-white">
@@ -34,11 +32,18 @@
                     @endif
                     @endif
 
-                    {{-- Verification Badge --}}
-                    <div class="absolute top-2 left-1">
-                        <span class="flex items-center gap-1 bg-green-500 text-white text-xs font-semibold px-3 py-1.5 rounded-full shadow">
-                            ✅ Verified Profile
-                        </span>
+                    {{-- Trust badge stack — independently-earned signals instead of one binary "Verified" --}}
+                    @php $badges = $profile->trustBadges(); @endphp
+                    <div class="absolute top-2 left-1 flex flex-col gap-1 items-start">
+                        @if ($badges['cnic'])
+                        <span class="flex items-center gap-1 bg-green-500 text-white text-xs font-semibold px-3 py-1.5 rounded-full shadow">🪪 CNIC Verified</span>
+                        @endif
+                        @if ($badges['payment'])
+                        <span class="flex items-center gap-1 bg-blue-500 text-white text-xs font-semibold px-3 py-1.5 rounded-full shadow">💳 Payment Verified</span>
+                        @endif
+                        @if ($badges['guardian'])
+                        <span class="flex items-center gap-1 bg-purple-500 text-white text-xs font-semibold px-3 py-1.5 rounded-full shadow">👨‍👩‍👦 Guardian Verified</span>
+                        @endif
                     </div>
 
                     {{-- Match % badge --}}
@@ -64,6 +69,12 @@
                             <p class="text-gray-500 mt-1">
                                 {{ ucfirst(str_replace('_', ' ', $profile->marital_status)) }}
                                 @if ($profile->sect) · {{ $profile->sect }} @endif
+                            </p>
+                            <p class="text-xs text-gray-400 mt-1">
+                                Member since {{ $profile->created_at->format('M Y') }}
+                                @if ($profile->last_active_at && $profile->last_active_at->gt(now()->subDays(7)))
+                                · <span class="text-green-600">Active {{ $profile->last_active_at->diffForHumans() }}</span>
+                                @endif
                             </p>
                         </div>
 
@@ -178,17 +189,16 @@
 
                 {{-- Right: Details Sidebar --}}
                 <div class="space-y-4">
-                    {{-- Verification Trust Badge --}}
+                    {{-- Trust Badge Stack --}}
                     <div class="bg-green-50 border border-green-200 rounded-xl p-4">
                         <div class="flex items-center gap-2 mb-2">
                             <span class="text-green-600 text-lg">✅</span>
-                            <h4 class="font-semibold text-green-800 text-sm">Verified Profile</h4>
+                            <h4 class="font-semibold text-green-800 text-sm">Trust & Safety</h4>
                         </div>
-                        <ul class="text-xs text-green-700 space-y-1">
-                            <li>✓ CNIC verified by admin</li>
-                            <li>✓ Guardian details confirmed</li>
-                            <li>✓ Payment confirmed</li>
-                            <li>✓ Profile reviewed by Sallaamti team</li>
+                        <ul class="text-xs space-y-1">
+                            <li class="{{ $badges['cnic'] ? 'text-green-700' : 'text-gray-400' }}">{{ $badges['cnic'] ? '✓' : '○' }} CNIC verified by admin</li>
+                            <li class="{{ $badges['payment'] ? 'text-green-700' : 'text-gray-400' }}">{{ $badges['payment'] ? '✓' : '○' }} Verification fee payment confirmed</li>
+                            <li class="{{ $badges['guardian'] ? 'text-green-700' : 'text-gray-400' }}">{{ $badges['guardian'] ? '✓' : '○' }} Guardian contact confirmed by admin</li>
                         </ul>
                     </div>
                     <div class="bg-white rounded-xl shadow-sm p-6">
@@ -236,8 +246,58 @@
                                 <dd>{{ $profile->family_type }}</dd>
                             </div>
                             @endif
+                            @if ($profile->ethnicity)
+                            <div class="flex justify-between">
+                                <dt class="text-gray-500">Ethnicity</dt>
+                                <dd>{{ $profile->ethnicity }}</dd>
+                            </div>
+                            @endif
+                            @if ($profile->language)
+                            <div class="flex justify-between">
+                                <dt class="text-gray-500">Language</dt>
+                                <dd>{{ $profile->language }}</dd>
+                            </div>
+                            @endif
+                            @if ($profile->open_to_polygamy)
+                            <div class="flex justify-between">
+                                <dt class="text-gray-500">Polygamy</dt>
+                                <dd>Open to it</dd>
+                            </div>
+                            @endif
                         </dl>
                     </div>
+
+                    @if ($profile->prayer_frequency || $profile->hijab_or_beard || $profile->smokes || $profile->diet)
+                    <div class="bg-white rounded-xl shadow-sm p-6">
+                        <h4 class="font-semibold text-gray-700 mb-3 border-b pb-2">Deen & Lifestyle</h4>
+                        <dl class="text-sm space-y-2">
+                            @if ($profile->prayer_frequency)
+                            <div class="flex justify-between">
+                                <dt class="text-gray-500">Prayer Regularity</dt>
+                                <dd>{{ ucfirst($profile->prayer_frequency) }}</dd>
+                            </div>
+                            @endif
+                            @if ($profile->hijab_or_beard)
+                            <div class="flex justify-between">
+                                <dt class="text-gray-500">Hijab/Beard</dt>
+                                <dd>{{ ucfirst($profile->hijab_or_beard) }}</dd>
+                            </div>
+                            @endif
+                            @if ($profile->smokes)
+                            <div class="flex justify-between">
+                                <dt class="text-gray-500">Smoking</dt>
+                                <dd>{{ ucfirst($profile->smokes) }}</dd>
+                            </div>
+                            @endif
+                            @if ($profile->diet)
+                            <div class="flex justify-between">
+                                <dt class="text-gray-500">Diet</dt>
+                                <dd>{{ ucfirst(str_replace('_', ' ', $profile->diet)) }}</dd>
+                            </div>
+                            @endif
+                        </dl>
+                    </div>
+                    @endif
 
                     {{-- Match Score --}}
                     @if ($matchPercentage > 0)
@@ -253,6 +313,15 @@
                             <div class="h-2 rounded-full {{ $matchPercentage >= 80 ? 'bg-green-500' : ($matchPercentage >= 50 ? 'bg-yellow-400' : 'bg-gray-300') }}"
                                 style="width: {{ $matchPercentage }}%"></div>
                         </div>
+                        @if (!empty($matchCriteria))
+                        <ul class="mt-3 space-y-1">
+                            @foreach ($matchCriteria as $c)
+                            <li class="text-xs {{ $c['matched'] ? 'text-green-600' : 'text-gray-400' }}">
+                                {{ $c['matched'] ? '✓' : '✗' }} {{ $c['label'] }}
+                            </li>
+                            @endforeach
+                        </ul>
+                        @endif
                         <a href="{{ route('nikah.edit') }}" class="block text-center text-xs text-gray-400 hover:underline mt-2">
                             Improve by updating your preferences →
                         </a>

@@ -6,9 +6,6 @@
     <div class="py-12">
         <div class="max-w-5xl mx-auto sm:px-6 lg:px-8 space-y-8">
 
-            @if (session('status'))
-            <div class="p-4 bg-green-50 text-green-700 rounded">{{ session('status') }}</div>
-            @endif
 
             <div>
 
@@ -19,7 +16,7 @@
                         <div>
                             <div class="flex items-center gap-4">
                                 @if ($interest->status === 'accepted' && $interest->sender->photo)
-                                <img src="{{ route('nikah.file', [$interest->sender, 'photo']) }}" class="w-16 h-20 object-cover rounded-full">
+                                <img src="{{ route('nikah.file', [$interest->sender, 'photo']) }}" alt="{{ $interest->sender->age }} yrs, {{ $interest->sender->city }}" class="w-16 h-20 object-cover rounded-full">
                                 @endif
                                 <div>
                                     <p class="font-medium">{{ $interest->sender->age }} yrs, {{ $interest->sender->city }}</p>
@@ -65,7 +62,7 @@
                                     <div class="bg-white rounded-lg shadow-sm p-4 flex justify-between items-center">
                                         <div class="flex items-center gap-4">
                                             @if ($interest->status === 'accepted' && $interest->receiver->photo)
-                                            <img src="{{ route('nikah.file', [$interest->receiver, 'photo']) }}" class="w-20 h-20 object-cover rounded-full">
+                                            <img src="{{ route('nikah.file', [$interest->receiver, 'photo']) }}" alt="{{ $interest->receiver->age }} yrs, {{ $interest->receiver->city }}" class="w-20 h-20 object-cover rounded-full">
                                             @endif
                                             <div>
                                                 <p class="font-medium">{{ $interest->receiver->age }} yrs, {{ $interest->receiver->city }}</p>
