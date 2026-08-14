@@ -1,6 +1,6 @@
 {{-- resources/views/components/admin-layout.blade.php --}}
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" dir="{{ ($isRtl ?? false) ? 'rtl' : 'ltr' }}">
 
 <head>
     <meta charset="utf-8">
@@ -165,6 +165,15 @@
                           {{ request()->routeIs('admin.subscribers*') ? 'bg-teal-700 text-white' : 'text-teal-100 hover:bg-teal-800' }}">
                     <span class="text-base">📧</span> Newsletter
                 </a>
+                <a href="{{ route('admin.counseling-bookings.index') }}"
+                    class="flex items-center justify-between gap-3 px-3 py-2 rounded-lg transition
+                          {{ request()->routeIs('admin.counseling-bookings*') ? 'bg-teal-700 text-white' : 'text-teal-100 hover:bg-teal-800' }}">
+                    <span class="flex items-center gap-3"><span class="text-base">🗓️</span> Counseling Bookings</span>
+                    @php $pendingBookings = \App\Models\CounselingBooking::where('status', 'requested')->count(); @endphp
+                    @if ($pendingBookings > 0)
+                    <span class="bg-yellow-400 text-yellow-900 text-xs font-bold px-1.5 py-0.5 rounded-full">{{ $pendingBookings }}</span>
+                    @endif
+                </a>
                 <p class="text-teal-500 text-xs uppercase tracking-widest px-3 pt-4 pb-1">FrontEnd</p>
                 <a href="{{ route('admin.banners.index') }}"
                     class="flex items-center gap-3 px-3 py-2 rounded-lg transition
@@ -203,6 +212,16 @@
                     class="flex items-center gap-3 px-3 py-2 rounded-lg transition
                           {{ request()->routeIs('admin.settings*') ? 'bg-teal-700 text-white' : 'text-teal-100 hover:bg-teal-800' }}">
                     <span class="text-base">⚙️</span> Settings
+                </a>
+                <a href="{{ route('admin.languages.index') }}"
+                    class="flex items-center gap-3 px-3 py-2 rounded-lg transition
+                          {{ request()->routeIs('admin.languages*') ? 'bg-teal-700 text-white' : 'text-teal-100 hover:bg-teal-800' }}">
+                    <span class="text-base">🌐</span> Languages
+                </a>
+                <a href="{{ route('admin.translations.index') }}"
+                    class="flex items-center gap-3 px-3 py-2 rounded-lg transition
+                          {{ request()->routeIs('admin.translations*') ? 'bg-teal-700 text-white' : 'text-teal-100 hover:bg-teal-800' }}">
+                    <span class="text-base">🈺</span> Translations
                 </a>
                 @else
                 @hasanyrole(['manager', 'blogger'])
@@ -251,6 +270,7 @@
 
                 {{-- Admin info --}}
                 <div class="flex items-center gap-3">
+                    <x-language-switcher />
                     <span class="text-xs text-gray-400 hidden sm:block">{{ now()->format('d M Y') }}</span>
                     <img src="{{ Auth::user()->avatarUrl() }}" class="w-8 h-8 rounded-full object-cover">
                     <span class="text-sm text-gray-700 hidden sm:block">{{ Auth::user()->name }}</span>

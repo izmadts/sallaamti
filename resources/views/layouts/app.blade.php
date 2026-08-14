@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" dir="{{ ($isRtl ?? false) ? 'rtl' : 'ltr' }}">
 
 <head>
  <meta charset="utf-8">
@@ -36,6 +36,9 @@
  @include('partials.gtm-body')
  <div class="min-h-screen bg-gray-100">
  @include('layouts.navigation')
+ @auth
+ @include('components.profile-completion-banner')
+ @endauth
 
  <!-- Page Heading -->
  @isset($header)

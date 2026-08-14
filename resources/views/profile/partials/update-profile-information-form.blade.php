@@ -55,6 +55,29 @@
  @endif
  </div>
 
+ <div>
+ <x-input-label for="phone" :value="__('db.WhatsApp / Phone Number')" />
+ <x-text-input id="phone" name="phone" type="text" class="mt-1 block w-full" :value="old('phone', $user->phone)" autocomplete="tel" />
+ <x-input-error class="mt-2" :messages="$errors->get('phone')" />
+ </div>
+
+ <div class="grid grid-cols-2 gap-4">
+ <div>
+ <x-input-label for="gender" :value="__('db.Gender')" />
+ <select id="gender" name="gender" class="mt-1 block w-full border-gray-300 rounded-md shadow-sm">
+ <option value="">{{ __('db.Select') }}</option>
+ <option value="male" {{ old('gender', $user->gender) === 'male' ? 'selected' : '' }}>{{ __('db.Male') }}</option>
+ <option value="female" {{ old('gender', $user->gender) === 'female' ? 'selected' : '' }}>{{ __('db.Female') }}</option>
+ </select>
+ <x-input-error class="mt-2" :messages="$errors->get('gender')" />
+ </div>
+ <div>
+ <x-input-label for="city" :value="__('db.City')" />
+ <x-text-input id="city" name="city" type="text" class="mt-1 block w-full" :value="old('city', $user->city)" />
+ <x-input-error class="mt-2" :messages="$errors->get('city')" />
+ </div>
+ </div>
+
  <div class="flex items-center gap-4">
  <x-primary-button>{{ __('Save') }}</x-primary-button>
 

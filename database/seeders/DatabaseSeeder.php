@@ -30,6 +30,8 @@ class DatabaseSeeder extends Seeder
             SettingsSeeder::class,
             BannerSeeder::class,
             TestimonialSeeder::class,
+            LanguageSeeder::class,
+            TranslationSeeder::class,
         ]);
     }    
 }

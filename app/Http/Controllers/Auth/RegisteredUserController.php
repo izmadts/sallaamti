@@ -2,19 +2,21 @@
 
 namespace App\Http\Controllers\Auth;
 
+use App\Http\Controllers\Auth\Concerns\RegistersMinimalUsers;
 use App\Http\Controllers\Controller;
 use App\Models\User;
-use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
+use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules;
 use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
 class RegisteredUserController extends Controller
 {
+    use RegistersMinimalUsers;
+
     /**
      * Display the registration view.
      */
@@ -32,25 +34,26 @@ class RegisteredUserController extends Controller
     {
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'string', 'lowercase', 'email', 'max:255', 'unique:' . User::class],
-            'phone' => ['required', 'string', 'max:20', 'unique:' . User::class],
-            'gender' => ['required', 'in:male,female'],
-            'city' => ['nullable', 'string', 'max:100'],
+            'identifier' => ['required', 'string', 'max:255'],
             'password' => ['required', 'confirmed', Rules\Password::defaults()],
         ]);
 
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'phone' => $request->phone,
-            'gender' => $request->gender,
-            'city' => $request->city,
-            'password' => Hash::make($request->password),
+        $identifier = trim($request->identifier);
+        $isEmail = (bool) filter_var($identifier, FILTER_VALIDATE_EMAIL);
+
+        $request->validate([
+            'identifier' => [
+                $isEmail ? 'email' : 'string',
+                Rule::unique(User::class, $isEmail ? 'email' : 'phone'),
+            ],
         ]);
 
-        $user->assignRole('member');
-
-        event(new Registered($user));
+        $user = $this->createMinimalUser(
+            $request->name,
+            $isEmail ? strtolower($identifier) : null,
+            $isEmail ? null : $identifier,
+            $request->password
+        );
 
         Auth::login($user);
 

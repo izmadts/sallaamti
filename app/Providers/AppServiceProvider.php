@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\View;
 use App\Models\BlogPost;
@@ -13,6 +14,15 @@ class AppServiceProvider extends ServiceProvider
     {
         // Fix for shared hosting MySQL key length limit
         Schema::defaultStringLength(191);
+
+        // db.* translation keys are the verbatim English string (see
+        // App\Models\Translation) — so an untranslated string (including all
+        // of English itself, which is never seeded) should fall back to that
+        // verbatim text instead of showing the raw "db.Some String" key.
+        Lang::handleMissingKeysUsing(function (string $key) {
+            return str_starts_with($key, 'db.') ? substr($key, 3) : $key;
+        });
+
         // Share latest 2 blog posts with the shared footer partial (used by both
         // the guest layout and the authenticated app layout)
         View::composer('partials.footer', function ($view) {
@@ -26,6 +36,17 @@ class AppServiceProvider extends ServiceProvider
             }
 
             $view->with('footerPosts', $footerPosts);
+        });
+
+        // Shares the current user's profile-completion percentage with the
+        // banner component, dropped into layouts.app once, globally — same
+        // pattern as the footer composer above.
+        View::composer('components.profile-completion-banner', function ($view) {
+            $percent = auth()->check()
+                ? \App\Http\Controllers\DashboardController::calculateProfileCompletion(auth()->user())
+                : 100;
+
+            $view->with('profileCompletionPercent', $percent);
         });
     }
 

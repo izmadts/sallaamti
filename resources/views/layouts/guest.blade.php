@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" dir="{{ ($isRtl ?? false) ? 'rtl' : 'ltr' }}">
 
 <head>
  <meta charset="utf-8">
@@ -130,25 +130,26 @@
  </a>
  </div>
  <div class="flex items-center gap-3">
- <span class="text-gray-300 hidden lg:inline mr-1">Follow Us:</span>
+ <span class="text-gray-300 hidden lg:inline mr-1">{{ __('db.Follow Us:') }}</span>
  <a class="text-gray-200 hover:text-white px-1" href="{{ setting('social_facebook') }}" target="_blank"><i class="fab fa-facebook-f"></i></a>
  <a class="text-gray-200 hover:text-white px-1" href="{{ setting('social_tiktok') }}" target="_blank"><i class="fab fa-tiktok"></i></a>
  <a class="text-gray-200 hover:text-white px-1" href="{{ setting('social_youtube') }}" target="_blank"><i class="fab fa-youtube"></i></a>
  <a class="text-gray-200 hover:text-white px-1 mr-2" href="{{ setting('social_instagram') }}" target="_blank"><i class="fab fa-instagram"></i></a>
+ <x-language-switcher dark />
  @auth
  <a href="{{ route('dashboard') }}"
  class="inline-flex items-center rounded-md bg-[--teal] px-4 py-2 text-white text-sm font-medium hover:bg-[--teal-dark] transition">
- <i class="fa fa-tachometer-alt mr-1"></i> Dashboard
+ <i class="fa fa-tachometer-alt mr-1"></i> {{ __('db.Dashboard') }}
  </a>
  @else
  <a href="{{ route('login') }}"
  class="inline-flex items-center rounded-md border border-[--teal] px-4 py-2 text-[--teal] text-sm font-medium hover:bg-[--teal] hover:text-white transition">
- <i class="fa fa-lock mr-1"></i> Log in
+ <i class="fa fa-lock mr-1"></i> {{ __('db.Log in') }}
  </a>
  @if (Route::has('register'))
  <a href="{{ route('register') }}"
  class="inline-flex items-center rounded-md border border-[--teal] px-4 py-2 text-[--teal] text-sm font-medium hover:bg-[--teal] hover:text-white transition ml-2">
- <i class="fa fa-user-plus mr-1"></i> Register
+ <i class="fa fa-user-plus mr-1"></i> {{ __('db.Register') }}
  </a>
  @endif
  @endauth
@@ -167,12 +168,12 @@
  @auth
  <a href="{{ route('dashboard') }}"
  class="inline-flex items-center rounded-md bg-[--teal] text-white text-sm font-medium px-3 py-1.5">
- <i class="fa fa-th-large mr-1"></i>Dashboard
+ <i class="fa fa-th-large mr-1"></i>{{ __('db.Dashboard') }}
  </a>
  @else
  <a href="{{ route('login') }}"
  class="inline-flex items-center rounded-md border border-[--teal] text-[--teal] text-sm font-medium px-3 py-1.5">
- Login
+ {{ __('db.Login') }}
  </a>
  @endauth
  </div>
@@ -196,19 +197,21 @@
  <!-- Nav links -->
  <div class="hidden lg:flex lg:items-center lg:ml-auto lg:mx-auto">
  <div class="flex items-center gap-1">
- <a href="{{ url('/') }}" class="px-3 py-2 text-sm font-medium {{ request()->is('/') ? 'text-[--teal]' : 'text-[--text-dark] hover:text-[--teal]' }}">Home</a>
- <a href="{{ url('/about') }}" class="px-3 py-2 text-sm font-medium {{ request()->is('about') ? 'text-[--teal]' : 'text-[--text-dark] hover:text-[--teal]' }}">About</a>
- <a href="{{ url('/activities') }}" class="px-3 py-2 text-sm font-medium {{ request()->is('activities') ? 'text-[--teal]' : 'text-[--text-dark] hover:text-[--teal]' }}">Activities</a>
- <a href="{{ route('blog.index') }}" class="px-3 py-2 text-sm font-medium {{ request()->routeIs('blog.*') ? 'text-[--teal]' : 'text-[--text-dark] hover:text-[--teal]' }}">Blog</a>
- <a href="{{ url('/events') }}" class="px-3 py-2 text-sm font-medium {{ request()->is('events') ? 'text-[--teal]' : 'text-[--text-dark] hover:text-[--teal]' }}">Events</a>
- <a href="{{ url('/team') }}" class="px-3 py-2 text-sm font-medium {{ request()->is('team') ? 'text-[--teal]' : 'text-[--text-dark] hover:text-[--teal]' }}">Team</a>
- <a href="{{ url('/contact') }}" class="px-3 py-2 text-sm font-medium {{ request()->is('contact') ? 'text-[--teal]' : 'text-[--text-dark] hover:text-[--teal]' }}">Contact</a>
+ <a href="{{ url('/') }}" class="px-3 py-2 text-sm font-medium {{ request()->is('/') ? 'text-[--teal]' : 'text-[--text-dark] hover:text-[--teal]' }}">{{ __('db.Home') }}</a>
+ <a href="{{ url('/about') }}" class="px-3 py-2 text-sm font-medium {{ request()->is('about') ? 'text-[--teal]' : 'text-[--text-dark] hover:text-[--teal]' }}">{{ __('db.About') }}</a>
+ <a href="{{ url('/activities') }}" class="px-3 py-2 text-sm font-medium {{ request()->is('activities') ? 'text-[--teal]' : 'text-[--text-dark] hover:text-[--teal]' }}">{{ __('db.Activities') }}</a>
+ <a href="{{ route('blog.index') }}" class="px-3 py-2 text-sm font-medium {{ request()->routeIs('blog.*') ? 'text-[--teal]' : 'text-[--text-dark] hover:text-[--teal]' }}">{{ __('db.Blog') }}</a>
+ <a href="{{ url('/events') }}" class="px-3 py-2 text-sm font-medium {{ request()->is('events') ? 'text-[--teal]' : 'text-[--text-dark] hover:text-[--teal]' }}">{{ __('db.Events') }}</a>
+ <a href="{{ url('/team') }}" class="px-3 py-2 text-sm font-medium {{ request()->is('team') ? 'text-[--teal]' : 'text-[--text-dark] hover:text-[--teal]' }}">{{ __('db.Team') }}</a>
+ <a href="{{ url('/contact') }}" class="px-3 py-2 text-sm font-medium {{ request()->is('contact') ? 'text-[--teal]' : 'text-[--text-dark] hover:text-[--teal]' }}">{{ __('db.Contact') }}</a>
  </div>
  </div>
  <!-- Desktop CTA buttons -->
  <div class="hidden lg:flex items-center gap-2 ml-2">
- <a href="{{ url('/donate') }}" class="inline-flex items-center rounded-md bg-[--teal] text-white font-medium py-2 px-4 hover:bg-[--teal-dark] transition">💝 Donate</a>
- <a href="{{ url('/volunteer') }}" class="inline-flex items-center rounded-md border border-[--teal] text-[--teal] font-medium py-2 px-4 hover:bg-[--teal] hover:text-white transition">🤝 Volunteer</a>
+ <a href="{{ route('nikah.create') }}" class="inline-flex items-center rounded-full text-white font-semibold text-sm py-2 px-4 hover:brightness-110 transition" style="background: #b8962e">💍 {{ __('db.Find a Match') }}</a>
+ <a href="{{ route('counseling.book.start') }}" class="inline-flex items-center rounded-full border border-[--teal] text-[--teal] font-semibold text-sm py-2 px-4 hover:bg-[--teal] hover:text-white transition">🤝 {{ __('db.Get Counseling') }}</a>
+ <a href="{{ url('/donate') }}" class="inline-flex items-center rounded-md bg-[--teal] text-white font-medium py-2 px-4 hover:bg-[--teal-dark] transition">💝 {{ __('db.Donate') }}</a>
+ <a href="{{ url('/volunteer') }}" class="inline-flex items-center rounded-md border border-[--teal] text-[--teal] font-medium py-2 px-4 hover:bg-[--teal] hover:text-white transition">🤝 {{ __('db.Volunteer') }}</a>
  </div>
  </nav>
  <!-- Mobile collapse panel -->
@@ -217,20 +220,22 @@
  x-transition
  class="lg:hidden pb-4" id="mobile-menu">
  <div class="flex flex-col">
- <a href="{{ url('/') }}" class="py-2 text-sm font-medium {{ request()->is('/') ? 'text-[--teal]' : 'text-[--text-dark]' }}">Home</a>
- <a href="{{ url('/about') }}" class="py-2 text-sm font-medium {{ request()->is('about') ? 'text-[--teal]' : 'text-[--text-dark]' }}">About</a>
- <a href="{{ url('/activities') }}" class="py-2 text-sm font-medium {{ request()->is('activities') ? 'text-[--teal]' : 'text-[--text-dark]' }}">Activities</a>
- <a href="{{ route('blog.index') }}" class="py-2 text-sm font-medium {{ request()->routeIs('blog.*') ? 'text-[--teal]' : 'text-[--text-dark]' }}">Blog</a>
- <a href="{{ url('/events') }}" class="py-2 text-sm font-medium {{ request()->is('events') ? 'text-[--teal]' : 'text-[--text-dark]' }}">Events</a>
- <a href="{{ url('/team') }}" class="py-2 text-sm font-medium {{ request()->is('team') ? 'text-[--teal]' : 'text-[--text-dark]' }}">Team</a>
- <a href="{{ url('/contact') }}" class="py-2 text-sm font-medium {{ request()->is('contact') ? 'text-[--teal]' : 'text-[--text-dark]' }}">Contact</a>
+ <a href="{{ url('/') }}" class="py-2 text-sm font-medium {{ request()->is('/') ? 'text-[--teal]' : 'text-[--text-dark]' }}">{{ __('db.Home') }}</a>
+ <a href="{{ url('/about') }}" class="py-2 text-sm font-medium {{ request()->is('about') ? 'text-[--teal]' : 'text-[--text-dark]' }}">{{ __('db.About') }}</a>
+ <a href="{{ url('/activities') }}" class="py-2 text-sm font-medium {{ request()->is('activities') ? 'text-[--teal]' : 'text-[--text-dark]' }}">{{ __('db.Activities') }}</a>
+ <a href="{{ route('blog.index') }}" class="py-2 text-sm font-medium {{ request()->routeIs('blog.*') ? 'text-[--teal]' : 'text-[--text-dark]' }}">{{ __('db.Blog') }}</a>
+ <a href="{{ url('/events') }}" class="py-2 text-sm font-medium {{ request()->is('events') ? 'text-[--teal]' : 'text-[--text-dark]' }}">{{ __('db.Events') }}</a>
+ <a href="{{ url('/team') }}" class="py-2 text-sm font-medium {{ request()->is('team') ? 'text-[--teal]' : 'text-[--text-dark]' }}">{{ __('db.Team') }}</a>
+ <a href="{{ url('/contact') }}" class="py-2 text-sm font-medium {{ request()->is('contact') ? 'text-[--teal]' : 'text-[--text-dark]' }}">{{ __('db.Contact') }}</a>
  <div class="border-t my-2"></div>
- <a href="{{ url('/donate') }}" class="py-2 text-sm font-semibold text-[--teal]">💝 Donate</a>
- <a href="{{ url('/volunteer') }}" class="py-2 text-sm font-semibold text-[--teal]">🤝 Volunteer</a>
- <a href="{{ route('courses.index') }}" class="py-2 text-sm">📖 Quran Courses</a>
- <a href="{{ route('quran-live.index') }}" class="py-2 text-sm">🎥 Live Classes</a>
+ <a href="{{ route('nikah.create') }}" class="py-2 text-sm font-semibold" style="color: #b8962e">💍 {{ __('db.Find a Match') }}</a>
+ <a href="{{ route('counseling.book.start') }}" class="py-2 text-sm font-semibold text-[--teal]">🤝 {{ __('db.Get Counseling') }}</a>
+ <a href="{{ url('/donate') }}" class="py-2 text-sm font-semibold text-[--teal]">💝 {{ __('db.Donate') }}</a>
+ <a href="{{ url('/volunteer') }}" class="py-2 text-sm font-semibold text-[--teal]">🤝 {{ __('db.Volunteer') }}</a>
+ <a href="{{ route('courses.index') }}" class="py-2 text-sm">📖 {{ __('db.Quran Courses') }}</a>
+ <a href="{{ route('quran-live.index') }}" class="py-2 text-sm">🎥 {{ __('db.Live Classes') }}</a>
  @guest
- <a href="{{ route('register') }}" class="py-2 text-sm font-semibold">📝 Register Free</a>
+ <a href="{{ route('register') }}" class="py-2 text-sm font-semibold">📝 {{ __('db.Register Free') }}</a>
  @endguest
  </div>
  </div>

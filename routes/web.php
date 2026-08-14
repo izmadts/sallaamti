@@ -5,6 +5,7 @@ use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\NikahProfileController;
+use App\Http\Controllers\NikahProfileWizardController;
 use App\Http\Controllers\Admin\NikahVerificationController;
 use App\Http\Controllers\NikahInterestController;
 use App\Http\Controllers\NikahFileController;
@@ -45,10 +46,19 @@ use App\Http\Controllers\Admin\ActivityPostController;
 use App\Http\Controllers\Admin\CertificateAdminController;
 use App\Http\Controllers\SupportQueryController;
 use App\Http\Controllers\Admin\SupportQueryAdminController;
+use App\Http\Controllers\LanguageSwitchController;
+use App\Http\Controllers\Admin\LanguageController;
+use App\Http\Controllers\Admin\TranslationController;
+use App\Http\Controllers\CounselingBookingController;
+use App\Http\Controllers\Counselor\AvailabilityController as CounselorAvailabilityController;
+use App\Http\Controllers\Counselor\BookingController as CounselorBookingController;
+use App\Http\Controllers\Admin\CounselingBookingAdminController;
 
 // ============================================================
 // PUBLIC ROUTES (no auth required)
 // ============================================================
+
+Route::get('/language/switch/{code}', [LanguageSwitchController::class, 'switch'])->name('language.switch');
 
 Route::get('/', function () {
     $banners = \App\Models\Banner::where('is_active', true)->orderBy('order')->get();
@@ -137,7 +147,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     // --- NIKAH MODULE ---
     Route::middleware('nikah.activity')->group(function () {
-    Route::get('/nikah/create', [NikahProfileController::class, 'create'])->name('nikah.create');
+    Route::get('/nikah/create', [NikahProfileWizardController::class, 'start'])->name('nikah.create');
+    Route::get('/nikah/create/step/{step}', [NikahProfileWizardController::class, 'showStep'])->name('nikah.create.step');
+    Route::post('/nikah/create/step/{step}', [NikahProfileWizardController::class, 'saveStep'])->name('nikah.create.step.save');
+    Route::get('/nikah/create/review', [NikahProfileWizardController::class, 'review'])->name('nikah.create.review');
+    Route::post('/nikah/create/finalize', [NikahProfileWizardController::class, 'finalize'])->name('nikah.create.finalize');
     Route::post('/nikah', [NikahProfileController::class, 'store'])->name('nikah.store');
     Route::get('/nikah/my-profile', [NikahProfileController::class, 'show'])->name('nikah.show');
     Route::get('/nikah/my-profile/edit', [NikahProfileController::class, 'edit'])->name('nikah.edit');
@@ -200,6 +214,19 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/support', [SupportQueryController::class, 'index'])->name('support.index');
     Route::get('/support/create', [SupportQueryController::class, 'create'])->name('support.create');
     Route::post('/support', [SupportQueryController::class, 'store'])->name('support.store');
+
+    // --- FAMILY COUNSELING BOOKING ---
+    // Must be registered before the /support/{query} wildcard below, or that
+    // route's implicit model binding would swallow these literal paths first.
+    Route::get('/support/book', [CounselingBookingController::class, 'start'])->name('counseling.book.start');
+    Route::get('/support/book/step/{step}', [CounselingBookingController::class, 'showStep'])->name('counseling.book.step');
+    Route::post('/support/book/step/{step}', [CounselingBookingController::class, 'saveStep'])->name('counseling.book.step.save');
+    Route::get('/support/book/review', [CounselingBookingController::class, 'review'])->name('counseling.book.review');
+    Route::post('/support/book/finalize', [CounselingBookingController::class, 'finalize'])->name('counseling.book.finalize');
+    Route::get('/support/bookings', [CounselingBookingController::class, 'index'])->name('counseling.bookings.index');
+    Route::get('/support/bookings/{booking}', [CounselingBookingController::class, 'show'])->name('counseling.bookings.show');
+    Route::post('/support/bookings/{booking}/cancel', [CounselingBookingController::class, 'cancel'])->name('counseling.bookings.cancel');
+
     Route::get('/support/{query}', [SupportQueryController::class, 'show'])->name('support.show');
     Route::post('/support/{query}/reply', [SupportQueryController::class, 'reply'])->name('support.reply');
 });
@@ -307,6 +334,25 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::post('support/{query}/assign', [SupportQueryAdminController::class, 'assign'])->name('support.assign');
     Route::post('support/{query}/status', [SupportQueryAdminController::class, 'updateStatus'])->name('support.status');
     Route::post('support/{query}/reply', [SupportQueryAdminController::class, 'reply'])->name('support.reply');
+
+    // Localization
+    Route::get('languages', [LanguageController::class, 'index'])->name('languages.index');
+    Route::post('languages', [LanguageController::class, 'store'])->name('languages.store');
+    Route::put('languages/{language}', [LanguageController::class, 'update'])->name('languages.update');
+    Route::delete('languages/{language}', [LanguageController::class, 'destroy'])->name('languages.destroy');
+    Route::post('languages/{language}/set-default', [LanguageController::class, 'setDefault'])->name('languages.set-default');
+
+    Route::get('translations', [TranslationController::class, 'index'])->name('translations.index');
+    Route::get('translations/fetch/{locale}', [TranslationController::class, 'fetchByLocale'])->name('translations.fetch');
+    Route::post('translations', [TranslationController::class, 'store'])->name('translations.store');
+    Route::put('translations/{translation}', [TranslationController::class, 'update'])->name('translations.update');
+    Route::delete('translations/{translation}', [TranslationController::class, 'destroy'])->name('translations.destroy');
+
+    // Counseling Bookings
+    Route::get('counseling-bookings', [CounselingBookingAdminController::class, 'index'])->name('counseling-bookings.index');
+    Route::get('counseling-bookings/{booking}', [CounselingBookingAdminController::class, 'show'])->name('counseling-bookings.show');
+    Route::post('counseling-bookings/{booking}/reassign', [CounselingBookingAdminController::class, 'reassign'])->name('counseling-bookings.reassign');
+    Route::post('counseling-bookings/{booking}/cancel', [CounselingBookingAdminController::class, 'cancel'])->name('counseling-bookings.cancel');
 });
 
 // ============================================================
@@ -337,6 +383,21 @@ Route::middleware(['auth', 'teacher'])->prefix('teacher')->name('teacher.')->gro
     Route::get('/students', [QuranTeacherController::class, 'students'])->name('students.index');
     Route::get('/students/{student}', [QuranTeacherController::class, 'studentDetail'])->name('students.show');
     Route::get('/schedule', [QuranTeacherController::class, 'schedule'])->name('schedule');
+});
+
+// ============================================================
+// COUNSELOR ROUTES
+// ============================================================
+
+Route::middleware(['auth', 'counselor'])->prefix('counselor')->name('counselor.')->group(function () {
+    Route::get('/availability', [CounselorAvailabilityController::class, 'index'])->name('availability.index');
+    Route::post('/availability', [CounselorAvailabilityController::class, 'store'])->name('availability.store');
+    Route::delete('/availability/{availability}', [CounselorAvailabilityController::class, 'destroy'])->name('availability.destroy');
+    Route::get('/bookings', [CounselorBookingController::class, 'index'])->name('bookings.index');
+    Route::post('/bookings/{booking}/confirm', [CounselorBookingController::class, 'confirm'])->name('bookings.confirm');
+    Route::post('/bookings/{booking}/complete', [CounselorBookingController::class, 'complete'])->name('bookings.complete');
+    Route::post('/bookings/{booking}/cancel', [CounselorBookingController::class, 'cancel'])->name('bookings.cancel');
+    Route::post('/bookings/{booking}/no-show', [CounselorBookingController::class, 'markNoShow'])->name('bookings.no-show');
 });
 
 require __DIR__ . '/auth.php';

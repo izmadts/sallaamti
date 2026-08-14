@@ -17,29 +17,29 @@
 
  <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')"
  class="text-white hover:bg-teal-600 px-3 py-2 rounded-md text-sm">
- 🏠 Dashboard
+ 🏠 {{ __('db.Dashboard') }}
  </x-nav-link>
 
  {{-- Site Dropdown — public pages stay reachable after login --}}
  <x-dropdown align="left" width="48">
  <x-slot name="trigger">
  <button class="inline-flex items-center px-3 py-2 rounded-md text-sm font-medium text-white hover:bg-teal-600 focus:outline-none transition">
- 🌐 Website
+ 🌐 {{ __('db.Website') }}
  <svg class="ms-1 h-4 w-4 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
  <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
  </svg>
  </button>
  </x-slot>
  <x-slot name="content">
- <x-dropdown-link :href="route('index')">🏡 Home Page</x-dropdown-link>
- <x-dropdown-link :href="url('/about')">ℹ️ About Us</x-dropdown-link>
- <x-dropdown-link :href="url('/activities')">📅 Activities</x-dropdown-link>
- <x-dropdown-link :href="url('/events')">🎉 Events</x-dropdown-link>
- <x-dropdown-link :href="url('/sermons')">🎙️ Sermons</x-dropdown-link>
- <x-dropdown-link :href="route('blog.index')">📰 Blog</x-dropdown-link>
- <x-dropdown-link :href="url('/team')">👥 Our Team</x-dropdown-link>
- <x-dropdown-link :href="url('/testimonial')">💬 Testimonials</x-dropdown-link>
- <x-dropdown-link :href="url('/contact')">✉️ Contact</x-dropdown-link>
+ <x-dropdown-link :href="route('index')">🏡 {{ __('db.Home Page') }}</x-dropdown-link>
+ <x-dropdown-link :href="url('/about')">ℹ️ {{ __('db.About Us') }}</x-dropdown-link>
+ <x-dropdown-link :href="url('/activities')">📅 {{ __('db.Activities') }}</x-dropdown-link>
+ <x-dropdown-link :href="url('/events')">🎉 {{ __('db.Events') }}</x-dropdown-link>
+ <x-dropdown-link :href="url('/sermons')">🎙️ {{ __('db.Sermons') }}</x-dropdown-link>
+ <x-dropdown-link :href="route('blog.index')">📰 {{ __('db.Blog') }}</x-dropdown-link>
+ <x-dropdown-link :href="url('/team')">👥 {{ __('db.Our Team') }}</x-dropdown-link>
+ <x-dropdown-link :href="url('/testimonial')">💬 {{ __('db.Testimonials') }}</x-dropdown-link>
+ <x-dropdown-link :href="url('/contact')">✉️ {{ __('db.Contact') }}</x-dropdown-link>
  </x-slot>
  </x-dropdown>
 
@@ -48,22 +48,22 @@
  <x-slot name="trigger">
  <button class="inline-flex items-center px-3 py-2 rounded-md text-sm font-medium text-white hover:bg-teal-600 focus:outline-none transition
  {{ request()->routeIs('courses.*') || request()->routeIs('lessons.*') || request()->routeIs('quran-live.*') || request()->routeIs('quiz.*') || request()->routeIs('certificate.*') ? 'bg-teal-800' : '' }}">
- 📖 Quran
+ 📖 {{ __('db.Quran') }}
  <svg class="ms-1 h-4 w-4 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
  <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
  </svg>
  </button>
  </x-slot>
  <x-slot name="content">
- <div class="px-3 py-1 text-xs text-gray-400 font-semibold uppercase tracking-wider">Self-Paced</div>
- <x-dropdown-link :href="route('courses.index')">📖 Browse Courses</x-dropdown-link>
- <x-dropdown-link :href="route('courses.my-learning')">📚 My Learning</x-dropdown-link>
- <x-dropdown-link :href="route('certificate.index')">🎓 My Certificates</x-dropdown-link>
+ <div class="px-3 py-1 text-xs text-gray-400 font-semibold uppercase tracking-wider">{{ __('db.Self-Paced') }}</div>
+ <x-dropdown-link :href="route('courses.index')">📖 {{ __('db.Browse Courses') }}</x-dropdown-link>
+ <x-dropdown-link :href="route('courses.my-learning')">📚 {{ __('db.My Learning') }}</x-dropdown-link>
+ <x-dropdown-link :href="route('certificate.index')">🎓 {{ __('db.My Certificates') }}</x-dropdown-link>
  <div class="border-t border-gray-100 my-1"></div>
- <div class="px-3 py-1 text-xs text-gray-400 font-semibold uppercase tracking-wider">Live Classes</div>
- <x-dropdown-link :href="route('quran-live.index')">🎥 Browse Live Courses</x-dropdown-link>
- <x-dropdown-link :href="route('quran-live.my-class')">📡 My Class & Link</x-dropdown-link>
- <x-dropdown-link :href="route('quran-live.my-progress')">📊 My Progress</x-dropdown-link>
+ <div class="px-3 py-1 text-xs text-gray-400 font-semibold uppercase tracking-wider">{{ __('db.Live Classes') }}</div>
+ <x-dropdown-link :href="route('quran-live.index')">🎥 {{ __('db.Browse Live Courses') }}</x-dropdown-link>
+ <x-dropdown-link :href="route('quran-live.my-class')">📡 {{ __('db.My Class & Link') }}</x-dropdown-link>
+ <x-dropdown-link :href="route('quran-live.my-progress')">📊 {{ __('db.My Progress') }}</x-dropdown-link>
  </x-slot>
  </x-dropdown>
 
@@ -72,7 +72,7 @@
  <x-slot name="trigger">
  <button class="inline-flex items-center px-3 py-2 rounded-md text-sm font-medium text-white hover:bg-teal-600 focus:outline-none transition
  {{ request()->routeIs('nikah.*') ? 'bg-teal-800' : '' }}">
- 💍 Nikah
+ 💍 {{ __('db.Nikah') }}
  @if (Auth::user()?->nikahProfile?->verification_status === 'pending')
  <span class="ml-1 w-2 h-2 rounded-full bg-yellow-400 inline-block"></span>
  @elseif (Auth::user()?->nikahProfile?->verification_status === 'verified')
@@ -85,37 +85,37 @@
  </x-slot>
  <x-slot name="content">
  <x-dropdown-link :href="Auth::user()?->nikahProfile ? route('nikah.show') : route('nikah.create')">
- 👤 My Profile
+ 👤 {{ __('db.My Profile') }}
  @if (Auth::user()?->nikahProfile?->verification_status === 'pending')
- <span class="ml-1 text-xs text-yellow-600">(Pending)</span>
+ <span class="ml-1 text-xs text-yellow-600">({{ __('db.Pending') }})</span>
  @elseif (Auth::user()?->nikahProfile?->verification_status === 'verified')
  <span class="ml-1 text-xs text-green-600">✓</span>
  @endif
  </x-dropdown-link>
- <x-dropdown-link :href="route('nikah.browse')">🔍 Browse Matches</x-dropdown-link>
- <x-dropdown-link :href="route('nikah.interests')">💌 My Interests</x-dropdown-link>
- <x-dropdown-link :href="route('nikah.saved')">★ Saved Profiles</x-dropdown-link>
- <x-dropdown-link :href="route('nikah.blocked')">🚫 Blocked Profiles</x-dropdown-link>
+ <x-dropdown-link :href="route('nikah.browse')">🔍 {{ __('db.Browse Matches') }}</x-dropdown-link>
+ <x-dropdown-link :href="route('nikah.interests')">💌 {{ __('db.My Interests') }}</x-dropdown-link>
+ <x-dropdown-link :href="route('nikah.saved')">★ {{ __('db.Saved Profiles') }}</x-dropdown-link>
+ <x-dropdown-link :href="route('nikah.blocked')">🚫 {{ __('db.Blocked Profiles') }}</x-dropdown-link>
  </x-slot>
  </x-dropdown>
  <x-nav-link :href="route('support.index')" :active="request()->routeIs('support.*')"
  class="text-white hover:bg-teal-600 px-3 py-2 rounded-md text-sm">
- 🤝 Family Support
+ 🤝 {{ __('db.Family Support') }}
  </x-nav-link>
  <x-nav-link :href="route('volunteer.create')" :active="request()->routeIs('volunteer.*')"
  class="text-white hover:bg-teal-600 px-3 py-2 rounded-md text-sm">
- 🤝 Volunteer
+ 🤝 {{ __('db.Volunteer') }}
  </x-nav-link>
 
  <x-nav-link :href="route('donate.create')" :active="request()->routeIs('donate.*') || request()->routeIs('donations.*')"
  class="text-white hover:bg-teal-600 px-3 py-2 rounded-md text-sm">
- 💝 Donate
+ 💝 {{ __('db.Donate') }}
  </x-nav-link>
 
  @role('admin')
  <x-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.*')"
  class="text-white hover:bg-teal-600 px-3 py-2 rounded-md text-sm">
- ⚙️ Admin
+ ⚙️ {{ __('db.Admin') }}
  </x-nav-link>
  @endrole
 
@@ -124,15 +124,15 @@
  <x-slot name="trigger">
  <button class="inline-flex items-center px-3 py-2 rounded-md text-sm font-medium text-white hover:bg-teal-600 focus:outline-none transition
  {{ request()->routeIs('teacher.*') ? 'bg-teal-800' : '' }}">
- 👩‍🏫 Teach
+ 👩‍🏫 {{ __('db.Teach') }}
  <svg class="ms-1 h-4 w-4 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
  <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
  </svg>
  </button>
  </x-slot>
  <x-slot name="content">
- <x-dropdown-link :href="route('teacher.courses.index')">📚 My Courses</x-dropdown-link>
- <x-dropdown-link :href="route('teacher.groups.index')">👥 My Class Groups</x-dropdown-link>
+ <x-dropdown-link :href="route('teacher.courses.index')">📚 {{ __('db.My Courses') }}</x-dropdown-link>
+ <x-dropdown-link :href="route('teacher.groups.index')">👥 {{ __('db.My Class Groups') }}</x-dropdown-link>
  </x-slot>
  </x-dropdown>
  @endrole
@@ -140,7 +140,7 @@
  @hasanyrole(['manager', 'blogger'])
  <x-nav-link :href="route('admin.blog-posts.index')" :active="request()->routeIs('admin.blog-posts*')"
  class="text-white hover:bg-teal-600 px-3 py-2 rounded-md text-sm">
- 📝 Blog Posts
+ 📝 {{ __('db.Blog Posts') }}
  </x-nav-link>
  @endhasanyrole
 
@@ -149,6 +149,19 @@
 
  {{-- Right: Bell + Avatar --}}
  <div class="hidden sm:flex sm:items-center sm:ms-6 gap-2">
+
+ {{-- Flagship CTAs --}}
+ <a href="{{ route('nikah.create') }}"
+ class="inline-flex items-center gap-1 text-white text-xs font-semibold px-3 py-1.5 rounded-full hover:brightness-110 transition"
+ style="background: #b8962e">
+ 💍 {{ __('db.Find a Match') }}
+ </a>
+ <a href="{{ route('counseling.book.start') }}"
+ class="inline-flex items-center gap-1 text-teal-800 bg-white text-xs font-semibold px-3 py-1.5 rounded-full hover:bg-gray-100 transition">
+ 🤝 {{ __('db.Get Counseling') }}
+ </a>
+
+ <x-language-switcher dark />
 
  {{-- Notification Bell --}}
  <div class="relative" x-data="{ open: false }">
@@ -164,11 +177,11 @@
  <div x-show="open" @click.away="open = false" x-cloak
  class="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg py-1 z-50 border border-gray-100">
  <div class="px-4 py-2 border-b border-gray-100 flex justify-between items-center">
- <span class="text-xs font-semibold text-gray-700">Notifications</span>
+ <span class="text-xs font-semibold text-gray-700">{{ __('db.Notifications') }}</span>
  @if ((Auth::user()?->unreadNotifications?->count() ?? 0) > 0)
  <form method="POST" action="{{ route('notifications.markAllRead') }}">
  @csrf
- <button class="text-xs text-gray-400 hover:text-gray-600">Mark all read</button>
+ <button class="text-xs text-gray-400 hover:text-gray-600">{{ __('db.Mark all read') }}</button>
  </form>
  @endif
  </div>
@@ -176,11 +189,11 @@
  <a href="{{ $notification->data['url'] ?? '#' }}"
  class="block px-4 py-3 text-sm hover:bg-gray-50 border-b border-gray-50 last:border-0
  {{ $notification->read_at ? 'text-gray-500' : 'text-gray-800 font-medium bg-blue-50' }}">
- {{ $notification->data['message'] ?? 'Notification' }}
+ {{ $notification->data['message'] ?? __('db.Notification') }}
  <span class="block text-xs text-gray-400 mt-0.5">{{ $notification->created_at->diffForHumans() }}</span>
  </a>
  @empty
- <p class="px-4 py-3 text-sm text-gray-500">No notifications yet.</p>
+ <p class="px-4 py-3 text-sm text-gray-500">{{ __('db.No notifications yet.') }}</p>
  @endforelse
  </div>
  </div>
@@ -203,20 +216,20 @@
  <p class="text-xs font-semibold text-gray-800">{{ Auth::user()?->name }}</p>
  <p class="text-xs text-gray-500">{{ Auth::user()?->email }}</p>
  </div>
- <x-dropdown-link :href="route('profile.edit')">👤 My Profile</x-dropdown-link>
- <x-dropdown-link :href="route('courses.my-learning')">📚 My Learning</x-dropdown-link>
- <x-dropdown-link :href="route('quran-live.my-class')">📡 My Quran Class</x-dropdown-link>
- <x-dropdown-link :href="route('nikah.interests')">💌 My Interests</x-dropdown-link>
- <x-dropdown-link :href="route('nikah.saved')">★ Saved Profiles</x-dropdown-link>
- <x-dropdown-link :href="route('certificate.index')">🎓 My Certificates</x-dropdown-link>
- <x-dropdown-link :href="route('donate.my')">💝 My Donations</x-dropdown-link>
- <x-dropdown-link :href="route('support.index')">🤝 My Support Queries</x-dropdown-link>
+ <x-dropdown-link :href="route('profile.edit')">👤 {{ __('db.My Profile') }}</x-dropdown-link>
+ <x-dropdown-link :href="route('courses.my-learning')">📚 {{ __('db.My Learning') }}</x-dropdown-link>
+ <x-dropdown-link :href="route('quran-live.my-class')">📡 {{ __('db.My Quran Class') }}</x-dropdown-link>
+ <x-dropdown-link :href="route('nikah.interests')">💌 {{ __('db.My Interests') }}</x-dropdown-link>
+ <x-dropdown-link :href="route('nikah.saved')">★ {{ __('db.Saved Profiles') }}</x-dropdown-link>
+ <x-dropdown-link :href="route('certificate.index')">🎓 {{ __('db.My Certificates') }}</x-dropdown-link>
+ <x-dropdown-link :href="route('donate.my')">💝 {{ __('db.My Donations') }}</x-dropdown-link>
+ <x-dropdown-link :href="route('support.index')">🤝 {{ __('db.My Support Queries') }}</x-dropdown-link>
  <div class="border-t border-gray-100 my-1"></div>
  <form method="POST" action="{{ route('logout') }}">
  @csrf
  <x-dropdown-link :href="route('logout')"
  onclick="event.preventDefault(); this.closest('form').submit();">
- 🚪 Log Out
+ 🚪 {{ __('db.Log Out') }}
  </x-dropdown-link>
  </form>
  </x-slot>
@@ -240,10 +253,10 @@
  @forelse (Auth::user()?->notifications?->take(5) ?? [] as $notification)
  <a href="{{ $notification->data['url'] ?? '#' }}"
  class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 {{ $notification->read_at ? '' : 'font-semibold bg-blue-50' }}">
- {{ $notification->data['message'] ?? 'Notification' }}
+ {{ $notification->data['message'] ?? __('db.Notification') }}
  </a>
  @empty
- <p class="px-4 py-2 text-sm text-gray-500">No notifications yet.</p>
+ <p class="px-4 py-2 text-sm text-gray-500">{{ __('db.No notifications yet.') }}</p>
  @endforelse
  </div>
  </div>
@@ -267,6 +280,13 @@
  {{-- Mobile Menu --}}
  <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden bg-teal-800">
  <div class="pt-2 pb-3 space-y-1 px-2">
+
+ {{-- Flagship CTAs --}}
+ <div class="flex gap-2 px-1 pb-2">
+ <a href="{{ route('nikah.create') }}" class="flex-1 text-center text-white text-sm font-semibold px-3 py-2 rounded-lg" style="background: #b8962e">💍 {{ __('db.Find a Match') }}</a>
+ <a href="{{ route('counseling.book.start') }}" class="flex-1 text-center text-white text-sm font-semibold px-3 py-2 rounded-lg border border-white/30">🤝 {{ __('db.Get Counseling') }}</a>
+ </div>
+
  <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" class="text-white">
  🏠 Dashboard
  </x-responsive-nav-link>
@@ -299,6 +319,7 @@
  <x-responsive-nav-link :href="route('volunteer.create')" class="text-white">🤝 Volunteer</x-responsive-nav-link>
  <x-responsive-nav-link :href="route('donate.create')" class="text-white">💝 Donate</x-responsive-nav-link>
  <x-responsive-nav-link :href="route('certificate.index')" class="text-white">🎓 My Certificates</x-responsive-nav-link>
+ <x-responsive-nav-link :href="route('counseling.book.start')" class="text-white">🤝 Book Counseling Session</x-responsive-nav-link>
  <x-responsive-nav-link :href="route('support.index')" class="text-white">🤝 Support Queries</x-responsive-nav-link>
  @role('admin')
  <div class="px-3 py-1 text-xs text-teal-300 font-semibold uppercase tracking-wider mt-2">Admin</div>
@@ -355,44 +376,55 @@
 
  {{-- Desktop guest links --}}
  <div class="hidden sm:flex items-center gap-3">
+ <x-language-switcher dark />
  <a href="{{ url('/') }}"
  class="text-white/80 hover:text-white text-sm font-medium transition-colors">
- Home
+ {{ __('db.Home') }}
  </a>
  <a href="{{ url('/about') }}"
  class="text-white/80 hover:text-white text-sm font-medium transition-colors">
- About
+ {{ __('db.About') }}
  </a>
  <a href="{{ route('courses.index') }}"
  class="text-white/80 hover:text-white text-sm font-medium transition-colors">
- Courses
+ {{ __('db.Courses') }}
  </a>
  <a href="{{ url('/contact') }}"
  class="text-white/80 hover:text-white text-sm font-medium transition-colors">
- Contact
+ {{ __('db.Contact') }}
  </a>
  <div class="w-px h-5 bg-white/20 mx-1"></div>
+ <a href="{{ route('nikah.create') }}"
+ class="inline-flex items-center gap-1 text-white text-xs font-semibold px-3 py-1.5 rounded-full hover:brightness-110 transition"
+ style="background: #b8962e">
+ 💍 {{ __('db.Find a Match') }}
+ </a>
+ <a href="{{ route('counseling.book.start') }}"
+ class="inline-flex items-center gap-1 text-white/90 hover:text-white text-xs font-semibold px-3 py-1.5 rounded-full border border-white/30 hover:bg-white/10 transition">
+ 🤝 {{ __('db.Get Counseling') }}
+ </a>
  <a href="{{ route('login') }}"
  class="text-white/90 hover:text-white text-sm font-medium border border-white/30 px-4 py-1.5 rounded-lg hover:bg-white/10 transition-all">
- Log In
+ {{ __('db.Log In') }}
  </a>
  <a href="{{ route('register') }}"
  class="text-white text-sm font-semibold px-4 py-1.5 rounded-lg transition-all"
  style="background: #b8962e">
- Register Free
+ {{ __('db.Register Free') }}
  </a>
  </div>
 
  {{-- Mobile guest buttons --}}
  <div class="flex sm:hidden items-center gap-2">
+ <x-language-switcher dark />
  <a href="{{ route('login') }}"
  class="text-white text-sm font-medium border border-white/30 px-3 py-1.5 rounded-lg hover:bg-white/10 transition-all">
- Log In
+ {{ __('db.Log In') }}
  </a>
  <a href="{{ route('register') }}"
  class="text-white text-sm font-semibold px-3 py-1.5 rounded-lg transition-all"
  style="background: #b8962e">
- Register
+ {{ __('db.Register') }}
  </a>
  </div>
 

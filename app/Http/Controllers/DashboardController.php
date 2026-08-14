@@ -21,7 +21,7 @@ class DashboardController extends Controller
         }
 
         if ($authUser->hasRole('counselor')) {
-            return view('dashboard.counselor', ['user' => $authUser]);
+            return $this->counselorDashboard($authUser);
         }
 
         return $this->memberDashboard($authUser);
@@ -45,6 +45,24 @@ class DashboardController extends Controller
             'courses' => $courses,
             'stats' => $stats,
         ]);
+    }
+
+    private function counselorDashboard($authUser)
+    {
+        $stats = [
+            'pending_requests' => \App\Models\CounselingBooking::where('counselor_id', $authUser->id)->where('status', 'requested')->count(),
+            'upcoming' => \App\Models\CounselingBooking::where('counselor_id', $authUser->id)->whereIn('status', ['requested', 'confirmed'])->count(),
+            'completed_total' => \App\Models\CounselingBooking::where('counselor_id', $authUser->id)->where('status', 'completed')->count(),
+        ];
+
+        $nextBookings = \App\Models\CounselingBooking::where('counselor_id', $authUser->id)
+            ->whereIn('status', ['requested', 'confirmed'])
+            ->with('member')
+            ->orderBy('scheduled_at')
+            ->take(5)
+            ->get();
+
+        return view('dashboard.counselor', ['user' => $authUser, 'stats' => $stats, 'nextBookings' => $nextBookings]);
     }
 
     private function memberDashboard($authUser)
@@ -95,7 +113,7 @@ class DashboardController extends Controller
         ));
     }
 
-    private function calculateProfileCompletion($user): int
+    public static function calculateProfileCompletion($user): int
     {
         $fields = [
             'name' => filled($user->name),
@@ -104,6 +122,8 @@ class DashboardController extends Controller
             'gender' => filled($user->gender),
             'city' => filled($user->city),
             'avatar' => filled($user->avatar),
+            'verified' => filled($user->email_verified_at),
+            'nikah_profile_started' => (bool) $user->nikahProfile,
         ];
 
         $completed = collect($fields)->filter()->count();

@@ -1,0 +1,23 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(cd \"D:\\\\xampp\\\\htdocs\\\\salepro\"; echo \"--- migrations ---\"; find database/migrations -iname \"*language*\" -o -iname \"*translation*\" -o -iname \"*lang*\" 2>/dev/null; echo \"--- models ---\"; find app/Models -iname \"*language*\" -o -iname \"*translation*\" -o -iname \"*lang*\" 2>/dev/null; echo \"--- controllers ---\"; find app/Http/Controllers -iname \"*language*\" -o -iname \"*translation*\" -o -iname \"*lang*\" 2>/dev/null; echo \"--- middleware ---\"; find app/Http/Middleware -iname \"*local*\" -o -iname \"*lang*\" 2>/dev/null)",
+      "Read(//d/xampp/htdocs/salepro/**)",
+      "Read(//d/xampp/htdocs/salepro/database/migrations/**)",
+      "Read(//d/xampp/htdocs/salepro/app/Models/**)",
+      "Read(//d/xampp/htdocs/salepro/app/Http/Controllers/**)",
+      "Bash(cd \"D:\\\\xampp\\\\htdocs\\\\salepro\"; grep -i \"joedixon\\\\|mcamara\\\\|localization\" composer.json composer.lock 2>/dev/null | head -30; echo \"---routes---\"; grep -rn \"language\\\\|Language\\\\|translation\\\\|Translation\" routes/web.php routes/admin.php 2>/dev/null | head -80)",
+      "Bash(xargs grep -li \"locale\\\\|lang\")",
+      "Read(//d/xampp/htdocs/salepro/routes/**)",
+      "Read(//d/xampp/htdocs/salepro/app/Http/Middleware/**)",
+      "Bash(cd \"D:\\\\xampp\\\\htdocs\\\\salepro\"; grep -rn \"setLocale\\\\|app\\(\\)->getLocale\\\\|App::setLocale\\\\|'locale'\" app/Providers app/Http bootstrap config/app.php 2>/dev/null)",
+      "Bash(cd \"D:\\\\xampp\\\\htdocs\\\\salepro\"; find app/Helpers -type f; echo \"---\"; grep -n \"'db\\\\.\\\\|trans_key\\\\|function __\\\\|function trans\" app/Helpers/helpers.php | head -30)",
+      "Read(//d/xampp/htdocs/salepro/app/Providers/**)",
+      "Read(//d/xampp/htdocs/salepro/app/Helpers/**)",
+      "Bash(cd \"D:\\\\xampp\\\\htdocs\\\\salepro\"; grep -rln \"language_switch\\\\|languages_list\\\\|switchLanguage\" resources/views 2>/dev/null)",
+      "Read(//d/xampp/htdocs/salepro/resources/views/**)",
+      "Read(//d/xampp/htdocs/salepro/resources/views/backend/layout/**)",
+      "Read(//d/xampp/htdocs/salepro/resources/views/backend/**)"
+    ]
+  }
+}

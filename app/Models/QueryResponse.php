@@ -10,6 +10,6 @@ class QueryResponse extends Model
 {
     protected $fillable = ['support_query_id', 'responder_id', 'message', 'is_internal'];
 
-    public function query() { return $this->belongsTo(SupportQuery::class, 'support_query_id'); }
+    public function supportQuery() { return $this->belongsTo(SupportQuery::class, 'support_query_id'); }
     public function responder() { return $this->belongsTo(User::class, 'responder_id'); }
 }

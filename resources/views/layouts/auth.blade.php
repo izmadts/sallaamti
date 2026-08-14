@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" dir="{{ ($isRtl ?? false) ? 'rtl' : 'ltr' }}">
 
 <head>
     <meta charset="utf-8">
@@ -76,12 +76,16 @@
 
     {{-- Subtle back to home link --}}
     <a href="{{ url('/') }}"
-        class="fixed top-4 left-4 z-50 flex items-center gap-2 text-xs font-medium text-gray-500 hover:text-teal-700 transition-colors">
+        class="fixed top-4 start-4 z-50 flex items-center gap-2 text-xs font-medium text-gray-500 hover:text-teal-700 transition-colors">
         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
         </svg>
         Back to Sallaamti
     </a>
+
+    <div class="fixed top-4 end-4 z-50">
+        <x-language-switcher />
+    </div>
 
     {{ $slot }}
 

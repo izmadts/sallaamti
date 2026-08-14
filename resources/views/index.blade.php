@@ -63,32 +63,32 @@
                     <div class="lg:col-span-7">
                         <span class="hero-eyebrow">بِسْمِ اللَّهِ الرَّحْمَنِ الرَّحِيمِ</span>
                         <h1 class="hero-title">
-                            Learn Quran.<br>
-                            Find Your <span class="text-gold">Match.</span><br>
-                            Build Community.
+                            {{ __('db.Learn Quran.') }}<br>
+                            {{ __('db.Find Your') }} <span class="text-gold">{{ __('db.Match.') }}</span><br>
+                            {{ __('db.Build Community.') }}
                         </h1>
                         <p class="hero-subtitle">
-                            Join thousands of Muslims worldwide learning the Quran with expert teachers, finding halal matches, and growing together in faith.
+                            {{ __('db.Join thousands of Muslims worldwide learning the Quran with expert teachers, finding halal matches, and growing together in faith.') }}
                         </p>
                         <div class="flex gap-3 flex-wrap mt-6">
                             @auth
                             <a href="{{ route('dashboard') }}" class="btn-gold btn-base text-lg px-8 py-3 font-semibold">
-                                Go to Dashboard <i class="fa fa-arrow-right ml-2"></i>
+                                {{ __('db.Go to Dashboard') }} <i class="fa fa-arrow-right ml-2"></i>
                             </a>
                             @else
                             <a href="{{ route('register') }}" class="btn-gold btn-base text-lg px-8 py-3 font-semibold">
-                                Join Free Today <i class="fa fa-arrow-right ml-2"></i>
+                                {{ __('db.Join Free Today') }} <i class="fa fa-arrow-right ml-2"></i>
                             </a>
                             <a href="{{ route('courses.index') }}" class="btn-outline-light btn-base text-lg px-8 py-3">
-                                Browse Courses
+                                {{ __('db.Browse Courses') }}
                             </a>
                             @endauth
                         </div>
                         <div class="hero-trust-bar flex gap-4 mt-4 flex-wrap">
-                            <span class="trust-item"><i class="fa fa-check-circle text-gold mr-1"></i>Free to Join</span>
-                            <span class="trust-item"><i class="fa fa-check-circle text-gold mr-1"></i>Expert Teachers</span>
-                            <span class="trust-item"><i class="fa fa-check-circle text-gold mr-1"></i>Global Access</span>
-                            <span class="trust-item"><i class="fa fa-check-circle text-gold mr-1"></i>Certified Courses</span>
+                            <span class="trust-item"><i class="fa fa-check-circle text-gold mr-1"></i>{{ __('db.Free to Join') }}</span>
+                            <span class="trust-item"><i class="fa fa-check-circle text-gold mr-1"></i>{{ __('db.Expert Teachers') }}</span>
+                            <span class="trust-item"><i class="fa fa-check-circle text-gold mr-1"></i>{{ __('db.Global Access') }}</span>
+                            <span class="trust-item"><i class="fa fa-check-circle text-gold mr-1"></i>{{ __('db.Certified Courses') }}</span>
                         </div>
                     </div>
 
@@ -96,19 +96,19 @@
                         <div class="hero-card-stack">
                             <div class="floating-card fc-1">
                                 <span class="fc-icon">📖</span>
-                                <div><strong>Quran Learning</strong><small>Nazrah · Tajweed · Translation</small></div>
+                                <div><strong>{{ __('db.Quran Learning') }}</strong><small>{{ __('db.Nazrah · Tajweed · Translation') }}</small></div>
                             </div>
                             <div class="floating-card fc-2">
                                 <span class="fc-icon">🎥</span>
-                                <div><strong>Live Classes</strong><small>One-to-One & Group</small></div>
+                                <div><strong>{{ __('db.Live Classes') }}</strong><small>{{ __('db.One-to-One & Group') }}</small></div>
                             </div>
                             <div class="floating-card fc-3">
                                 <span class="fc-icon">💍</span>
-                                <div><strong>Nikah Platform</strong><small>Verified · Guardian-mediated</small></div>
+                                <div><strong>{{ __('db.Nikah Platform') }}</strong><small>{{ __('db.Verified · Guardian-mediated') }}</small></div>
                             </div>
                             <div class="floating-card fc-4">
                                 <span class="fc-icon">🎓</span>
-                                <div><strong>Certificates</strong><small>Internationally recognized</small></div>
+                                <div><strong>{{ __('db.Certificates') }}</strong><small>{{ __('db.Internationally recognized') }}</small></div>
                             </div>
                         </div>
                     </div>
@@ -146,20 +146,50 @@
             <div class="grid grid-cols-2 lg:grid-cols-4 gap-6 text-center text-white">
                 <div class="stat-item">
                     <span class="stat-number" data-target="{{ \App\Models\User::count() }}">0</span>
-                    <span class="stat-label">Members Worldwide</span>
+                    <span class="stat-label">{{ __('db.Members Worldwide') }}</span>
                 </div>
                 <div class="stat-item">
                     <span class="stat-number" data-target="{{ \App\Models\Enrollment::count() }}">0</span>
-                    <span class="stat-label">Course Enrollments</span>
+                    <span class="stat-label">{{ __('db.Course Enrollments') }}</span>
                 </div>
                 <div class="stat-item">
                     <span class="stat-number" data-target="{{ \App\Models\Certificate::count() }}">0</span>
-                    <span class="stat-label">Certificates Issued</span>
+                    <span class="stat-label">{{ __('db.Certificates Issued') }}</span>
                 </div>
                 <div class="stat-item">
                     <span class="stat-number" data-target="{{ \App\Models\NikahProfile::where('verification_status','verified')->count() }}">0</span>
-                    <span class="stat-label">Verified Nikah Profiles</span>
+                    <span class="stat-label">{{ __('db.Verified Nikah Profiles') }}</span>
                 </div>
+            </div>
+        </div>
+    </section>
+
+    {{-- ============================================================ --}}
+    {{-- FLAGSHIP: NIKAH & FAMILY COUNSELING --}}
+    {{-- ============================================================ --}}
+    <section class="py-16" style="background: linear-gradient(135deg, #0d6b6b 0%, #0a5555 100%)">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="text-center mb-10">
+                <span class="text-gold text-sm font-semibold uppercase tracking-widest">{{ __('db.Our Most-Loved Services') }}</span>
+                <h2 class="text-white text-3xl font-bold mt-2">{{ __('db.Find a Match. Find Support.') }}</h2>
+            </div>
+            <div class="grid md:grid-cols-2 gap-6">
+                <a href="{{ route('nikah.create') }}" class="group bg-white rounded-2xl p-8 flex flex-col hover:-translate-y-1 transition-transform shadow-xl">
+                    <span class="text-4xl mb-3">💍</span>
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">{{ __('db.Nikah Matchmaking') }}</h3>
+                    <p class="text-gray-500 mb-5 flex-1">{{ __('db.A guided, step-by-step profile builder — verified, guardian-mediated, and built for serious intentions.') }}</p>
+                    <span class="inline-flex items-center gap-2 font-semibold text-teal-700 group-hover:gap-3 transition-all">
+                        {{ __('db.Create Your Profile') }} <i class="fa fa-arrow-right"></i>
+                    </span>
+                </a>
+                <a href="{{ route('counseling.book.start') }}" class="group bg-white rounded-2xl p-8 flex flex-col hover:-translate-y-1 transition-transform shadow-xl">
+                    <span class="text-4xl mb-3">🤝</span>
+                    <h3 class="text-xl font-bold text-gray-800 mb-2">{{ __('db.Family Counseling') }}</h3>
+                    <p class="text-gray-500 mb-5 flex-1">{{ __('db.Book a private session with a qualified counselor in a few simple steps — marital, parenting, or spiritual guidance.') }}</p>
+                    <span class="inline-flex items-center gap-2 font-semibold text-teal-700 group-hover:gap-3 transition-all">
+                        {{ __('db.Book a Session') }} <i class="fa fa-arrow-right"></i>
+                    </span>
+                </a>
             </div>
         </div>
     </section>
