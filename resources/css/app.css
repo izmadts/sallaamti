@@ -3,6 +3,41 @@
 @tailwind utilities;
 
 /*
+ * Mobile-app feel: snappier taps, no browser bounce/rubber-banding,
+ * no blue tap-flash on links/buttons, and safe-area padding so fixed
+ * bars never sit under a notch or the home-indicator strip.
+ */
+@layer base {
+    html {
+        overscroll-behavior-y: none;
+    }
+
+    body {
+        -webkit-tap-highlight-color: transparent;
+        overscroll-behavior-y: none;
+    }
+
+    a,
+    button {
+        touch-action: manipulation;
+    }
+}
+
+@layer utilities {
+    .pt-safe {
+        padding-top: env(safe-area-inset-top);
+    }
+
+    .pb-safe {
+        padding-bottom: env(safe-area-inset-bottom);
+    }
+
+    .safe-bottom-nav {
+        padding-bottom: max(env(safe-area-inset-bottom), 0.5rem);
+    }
+}
+
+/*
  * Shared design tokens + form component classes.
  *
  * These originated in resources/views/layouts/auth.blade.php as an

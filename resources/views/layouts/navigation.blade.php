@@ -385,6 +385,32 @@
  </div>
  </div>
 
+ {{-- ===== MOBILE APP-STYLE BOTTOM TAB BAR ===== --}}
+ <div class="sm:hidden fixed bottom-0 inset-x-0 z-40 bg-teal-800 border-t border-teal-900 safe-bottom-nav">
+ <div class="grid grid-cols-5">
+ <a href="{{ route('dashboard') }}" class="flex flex-col items-center justify-center gap-0.5 py-2 text-[11px] font-medium {{ request()->routeIs('dashboard') ? 'text-white' : 'text-teal-300' }}">
+ <span class="text-lg leading-none">🏠</span>
+ {{ __('db.Home') }}
+ </a>
+ <a href="{{ Auth::user()?->nikahProfile ? route('nikah.show') : route('nikah.create') }}" class="flex flex-col items-center justify-center gap-0.5 py-2 text-[11px] font-medium {{ request()->routeIs('nikah.*') ? 'text-white' : 'text-teal-300' }}">
+ <span class="text-lg leading-none">💍</span>
+ {{ __('db.Nikah') }}
+ </a>
+ <a href="{{ route('counseling.book.start') }}" class="flex flex-col items-center justify-center gap-0.5 py-2 text-[11px] font-medium {{ request()->routeIs('counseling.*') || request()->routeIs('support.*') ? 'text-white' : 'text-teal-300' }}">
+ <span class="text-lg leading-none">🤝</span>
+ {{ __('db.Support') }}
+ </a>
+ <a href="{{ route('courses.index') }}" class="flex flex-col items-center justify-center gap-0.5 py-2 text-[11px] font-medium {{ request()->routeIs('courses.*') || request()->routeIs('quran-live.*') ? 'text-white' : 'text-teal-300' }}">
+ <span class="text-lg leading-none">📖</span>
+ {{ __('db.Quran') }}
+ </a>
+ <button type="button" @click="open = !open" class="flex flex-col items-center justify-center gap-0.5 py-2 text-[11px] font-medium" :class="open ? 'text-white' : 'text-teal-300'">
+ <span class="text-lg leading-none">☰</span>
+ {{ __('db.Menu') }}
+ </button>
+ </div>
+ </div>
+
  @else
  {{-- ===== GUEST NAV — simple, clean ===== --}}
  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

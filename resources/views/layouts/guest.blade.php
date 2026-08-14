@@ -3,7 +3,12 @@
 
 <head>
  <meta charset="utf-8">
- <meta name="viewport" content="width=device-width, initial-scale=1">
+ <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+ <meta name="theme-color" content="#0d6b6b">
+ <meta name="mobile-web-app-capable" content="yes">
+ <meta name="apple-mobile-web-app-capable" content="yes">
+ <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+ <link rel="manifest" href="{{ asset('site.webmanifest') }}">
  <meta name="csrf-token" content="{{ csrf_token() }}">
  {{-- ===== PRIMARY META ===== --}}
  <title>@yield('title', setting('seo_home_title', setting('site_name') . ' | ' . setting('site_tagline')))</title>
@@ -99,7 +104,7 @@
 
 </head>
 
-<body class="antialiased font-sans">
+<body class="antialiased font-sans pb-16 sm:pb-0">
  @include('partials.gtm-body')
  <!-- Spinner -->
  <div id="spinner"
@@ -247,6 +252,32 @@
  {{ $slot }}
  </main>
  @include('partials.footer')
+
+ {{-- ===== MOBILE APP-STYLE BOTTOM TAB BAR (guests) ===== --}}
+ <div class="sm:hidden fixed bottom-0 inset-x-0 z-40 bg-white border-t border-gray-200 safe-bottom-nav shadow-[0_-2px_8px_rgba(0,0,0,0.06)]">
+ <div class="grid grid-cols-5">
+ <a href="{{ url('/') }}" class="flex flex-col items-center justify-center gap-0.5 py-2 text-[11px] font-medium {{ request()->is('/') ? 'text-[--teal]' : 'text-gray-500' }}">
+ <span class="text-lg leading-none">🏠</span>
+ {{ __('db.Home') }}
+ </a>
+ <a href="{{ route('courses.index') }}" class="flex flex-col items-center justify-center gap-0.5 py-2 text-[11px] font-medium {{ request()->routeIs('courses.*') || request()->routeIs('quran-live.*') ? 'text-[--teal]' : 'text-gray-500' }}">
+ <span class="text-lg leading-none">📖</span>
+ {{ __('db.Quran') }}
+ </a>
+ <a href="{{ route('nikah.create') }}" class="flex flex-col items-center justify-center gap-0.5 py-2 text-[11px] font-medium {{ request()->routeIs('nikah.*') ? 'text-[--teal]' : 'text-gray-500' }}">
+ <span class="text-lg leading-none">💍</span>
+ {{ __('db.Nikah') }}
+ </a>
+ <a href="{{ route('counseling.book.start') }}" class="flex flex-col items-center justify-center gap-0.5 py-2 text-[11px] font-medium {{ request()->routeIs('counseling.*') ? 'text-[--teal]' : 'text-gray-500' }}">
+ <span class="text-lg leading-none">🤝</span>
+ {{ __('db.Support') }}
+ </a>
+ <a href="{{ route('register') }}" class="flex flex-col items-center justify-center gap-0.5 py-2 text-[11px] font-semibold" style="color: var(--gold)">
+ <span class="text-lg leading-none">✨</span>
+ {{ __('db.Join') }}
+ </a>
+ </div>
+ </div>
 </body>
 
 </html>
