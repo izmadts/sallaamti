@@ -81,6 +81,8 @@ return [
     // ---- Profile completion ----
     'Complete Your Profile' => 'اپنی پروفائل مکمل کریں',
     'Your profile is :percent% complete' => 'آپ کی پروفائل :percent% مکمل ہے',
+    'Complete Your Nikah Profile' => 'اپنی نکاح پروفائل مکمل کریں',
+    'Your Nikah profile is :percent% complete' => 'آپ کی نکاح پروفائل :percent% مکمل ہے',
 
     // ---- Auth (login/register/password/OTP) ----
     'Welcome Back' => 'خوش آمدید',

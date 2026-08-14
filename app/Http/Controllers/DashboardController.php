@@ -73,9 +73,6 @@ class DashboardController extends Controller
             'certificates.course',
         ]);
 
-        // Profile completion percentage
-        $profileCompletion = $this->calculateProfileCompletion($user);
-
         // Quran courses progress
         $enrollments = $user->enrollments->map(function ($enrollment) use ($user) {
             return [
@@ -103,7 +100,6 @@ class DashboardController extends Controller
 
         return view('dashboard', compact(
             'user',
-            'profileCompletion',
             'enrollments',
             'nikahProfile',
             'liveSubscriptions',
@@ -111,22 +107,5 @@ class DashboardController extends Controller
             'unreadCount',
             'certificates'
         ));
-    }
-
-    public static function calculateProfileCompletion($user): int
-    {
-        $fields = [
-            'name' => filled($user->name),
-            'email' => filled($user->email),
-            'phone' => filled($user->phone),
-            'gender' => filled($user->gender),
-            'city' => filled($user->city),
-            'avatar' => filled($user->avatar),
-            'verified' => filled($user->email_verified_at),
-            'nikah_profile_started' => (bool) $user->nikahProfile,
-        ];
-
-        $completed = collect($fields)->filter()->count();
-        return (int) round(($completed / count($fields)) * 100);
     }
 }

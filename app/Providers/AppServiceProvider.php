@@ -38,15 +38,15 @@ class AppServiceProvider extends ServiceProvider
             $view->with('footerPosts', $footerPosts);
         });
 
-        // Shares the current user's profile-completion percentage with the
-        // banner component, dropped into layouts.app once, globally — same
-        // pattern as the footer composer above.
+        // Shares the current user's Nikah-profile completion percentage with
+        // the banner component, dropped into layouts.app once, globally —
+        // same pattern as the footer composer above. Only Nikah users (i.e.
+        // those who have started a Nikah profile) ever see this nudge; it's
+        // null for everyone else so the banner stays hidden.
         View::composer('components.profile-completion-banner', function ($view) {
-            $percent = auth()->check()
-                ? \App\Http\Controllers\DashboardController::calculateProfileCompletion(auth()->user())
-                : 100;
+            $nikahProfile = auth()->check() ? auth()->user()->nikahProfile : null;
 
-            $view->with('profileCompletionPercent', $percent);
+            $view->with('profileCompletionPercent', $nikahProfile?->completenessPercentage());
         });
     }
 
