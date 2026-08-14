@@ -244,6 +244,18 @@
  </div>
  <!-- /Header -->
  <main class="w-full px-2 bg-white shadow-md overflow-hidden sm:rounded-lg">
+ @if ($errors->any())
+ <div class="max-w-4xl mx-auto px-4 pt-6">
+ <x-alert type="error">
+ <strong>{{ __('db.Please fix the following:') }}</strong>
+ <ul class="list-disc ms-5 mt-1">
+ @foreach ($errors->all() as $error)
+ <li>{{ $error }}</li>
+ @endforeach
+ </ul>
+ </x-alert>
+ </div>
+ @endif
  @if (session('success') || session('status') || session('error') || session('info') || session('warning'))
  <div class="max-w-4xl mx-auto px-4 pt-6">
  <x-flash-messages />

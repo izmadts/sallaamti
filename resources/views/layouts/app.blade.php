@@ -57,6 +57,18 @@
 
  <!-- Page Content -->
  <main>
+ @if ($errors->any())
+ <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
+ <x-alert type="error">
+ <strong>{{ __('db.Please fix the following:') }}</strong>
+ <ul class="list-disc ms-5 mt-1">
+ @foreach ($errors->all() as $error)
+ <li>{{ $error }}</li>
+ @endforeach
+ </ul>
+ </x-alert>
+ </div>
+ @endif
  @if (session('success') || session('status') || session('error') || session('info') || session('warning'))
  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6">
  <x-flash-messages />
