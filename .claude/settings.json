@@ -17,7 +17,8 @@
       "Bash(cd \"D:\\\\xampp\\\\htdocs\\\\salepro\"; grep -rln \"language_switch\\\\|languages_list\\\\|switchLanguage\" resources/views 2>/dev/null)",
       "Read(//d/xampp/htdocs/salepro/resources/views/**)",
       "Read(//d/xampp/htdocs/salepro/resources/views/backend/layout/**)",
-      "Read(//d/xampp/htdocs/salepro/resources/views/backend/**)"
+      "Read(//d/xampp/htdocs/salepro/resources/views/backend/**)",
+      "Bash(xargs -I{} echo {})"
     ]
   }
 }
