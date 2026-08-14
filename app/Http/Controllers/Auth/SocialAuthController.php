@@ -85,6 +85,11 @@ class SocialAuthController extends Controller
             $user->save();
         }
 
+        if ($user->isDeactivated()) {
+            $user->reactivate();
+            session()->flash('status', 'Welcome back! Your account has been reactivated.');
+        }
+
         Auth::login($user);
 
         session()->flash('conversion_event', 'user_login');

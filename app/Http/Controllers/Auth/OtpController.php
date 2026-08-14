@@ -91,6 +91,11 @@ class OtpController extends Controller
 
         $user->save();
 
+        if ($user->isDeactivated()) {
+            $user->reactivate();
+            session()->flash('status', 'Welcome back! Your account has been reactivated.');
+        }
+
         Auth::login($user);
 
         session()->forget('otp_pending');

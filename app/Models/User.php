@@ -32,9 +32,30 @@ class User extends Authenticatable
     {
         return [
             'email_verified_at' => 'datetime',
+            'deactivated_at' => 'datetime',
             'password' => 'hashed',
         ];
     }
+
+    public function isDeactivated(): bool
+    {
+        return $this->deactivated_at !== null;
+    }
+
+    public function deactivate(): void
+    {
+        $this->forceFill(['deactivated_at' => now()])->save();
+
+        $this->nikahProfile()->update(['is_active' => false]);
+    }
+
+    public function reactivate(): void
+    {
+        $this->forceFill(['deactivated_at' => null])->save();
+
+        $this->nikahProfile()->update(['is_active' => true]);
+    }
+
     public function nikahProfile()
     {
         return $this->hasOne(NikahProfile::class);

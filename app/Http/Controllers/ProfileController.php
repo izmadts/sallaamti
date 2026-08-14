@@ -42,7 +42,11 @@ class ProfileController extends Controller
     }
 
     /**
-     * Delete the user's account.
+     * Deactivate the user's account. Not an immediate hard delete — the
+     * account and its data stay intact for 30 days so the member can
+     * change their mind just by logging back in (see AuthenticatedSessionController),
+     * after which SendAccountDeletionReminders / PurgeDeactivatedAccounts
+     * permanently erases anything still deactivated.
      */
     public function destroy(Request $request): RedirectResponse
     {
@@ -52,13 +56,13 @@ class ProfileController extends Controller
 
         $user = $request->user();
 
-        Auth::logout();
+        $user->deactivate();
 
-        $user->delete();
+        Auth::logout();
 
         $request->session()->invalidate();
         $request->session()->regenerateToken();
 
-        return Redirect::to('/');
+        return Redirect::to('/')->with('status', 'Your account has been deactivated. Your data will be kept safe for 30 days — log back in anytime during that window to reactivate it. After 30 days it will be permanently deleted.');
     }
 }
