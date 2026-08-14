@@ -82,6 +82,8 @@ Route::get('/team', function () {
 });
 Route::get('/testimonial', fn() => view('testimonial'));
 Route::get('/contact', fn() => view('contact'));
+Route::get('/privacy-policy', fn() => view('privacy-policy'))->name('privacy-policy');
+Route::get('/terms-of-service', fn() => view('terms-of-service'))->name('terms-of-service');
 
 // Public module pages (browsable without login)
 Route::get('/courses', [CourseController::class, 'index'])->name('courses.index');

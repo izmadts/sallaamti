@@ -251,6 +251,11 @@
                     <p class="text-xs text-gray-400 mt-2">
                         Lets visitors register/sign in with one tap instead of filling a form. Each provider needs a Client ID and Client Secret from its own developer console, and that console needs to know the exact "Redirect URI" below — copy it in exactly, trailing slashes and all.
                     </p>
+                    <p class="text-xs text-gray-400 mt-2">
+                        Both Google and Facebook also require a live <strong>Privacy Policy</strong> and <strong>Terms of Service</strong> URL during app verification — Sallaamti's are already public and linked in the site footer:
+                        <br>{{ route('privacy-policy') }}
+                        <br>{{ route('terms-of-service') }}
+                    </p>
                 </div>
 
                 {{-- Google --}}

@@ -355,6 +355,7 @@ return [
     'Menu' => 'مینو',
     'Join' => 'شامل ہوں',
     'Change language' => 'زبان تبدیل کریں',
+    'Last updated' => 'آخری تازہ کاری',
     'Language' => 'زبان',
     'Free to Join' => 'شمولیت مفت ہے',
     'Expert Teachers' => 'ماہر اساتذہ',

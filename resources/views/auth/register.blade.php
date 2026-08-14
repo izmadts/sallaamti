@@ -81,9 +81,9 @@
                     <input type="checkbox" id="terms" required class="auth-checkbox mt-0.5 flex-shrink-0">
                     <label for="terms" class="text-xs text-gray-500 leading-relaxed">
                         {{ __("db.I agree to Sallaamti's") }}
-                        <a href="#" style="color: var(--teal)">{{ __('db.Terms of Service') }}</a>
+                        <a href="{{ route('terms-of-service') }}" target="_blank" style="color: var(--teal)">{{ __('db.Terms of Service') }}</a>
                         {{ __('db.and') }}
-                        <a href="#" style="color: var(--teal)">{{ __('db.Privacy Policy') }}</a>.
+                        <a href="{{ route('privacy-policy') }}" target="_blank" style="color: var(--teal)">{{ __('db.Privacy Policy') }}</a>.
                         {{ __('db.I understand this is an Islamic platform built on trust and values.') }}
                     </label>
                 </div>

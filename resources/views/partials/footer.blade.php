@@ -149,9 +149,13 @@
     </div>
     <div class="border-t border-gray-700">
         <div class="max-w-7xl mx-auto px-4 py-4">
-            <div class="flex flex-col md:flex-row items-center justify-between gap-2 text-gray-400 text-sm">
+            <div class="flex flex-col md:flex-row items-center justify-between gap-3 text-gray-400 text-sm">
                 <div class="text-center md:text-left">
-                    &copy; <a class="border-b border-gray-500" href="#">www.sallaamti.com</a>, {{ __('db.All Right Reserved.') }}
+                    &copy; <a class="border-b border-gray-500" href="{{ url('/') }}">www.sallaamti.com</a>, {{ __('db.All Right Reserved.') }}
+                    <span class="mx-2 text-gray-600">·</span>
+                    <a class="hover:text-white" href="{{ route('privacy-policy') }}">{{ __('db.Privacy Policy') }}</a>
+                    <span class="mx-2 text-gray-600">·</span>
+                    <a class="hover:text-white" href="{{ route('terms-of-service') }}">{{ __('db.Terms of Service') }}</a>
                 </div>
                 <div class="text-center md:text-right">
                     {{ __('db.Designed & Developed By') }} <a class="border-b border-gray-500" href="https://izmadts.com">IZMAdts</a>
