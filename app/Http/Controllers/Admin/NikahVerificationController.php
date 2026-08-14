@@ -62,6 +62,32 @@ class NikahVerificationController extends Controller
         return view('admin.nikah.nikah-verifications', compact('profiles', 'stats', 'guardianContactCounts'));
     }
 
+    public function show(NikahProfile $profile)
+    {
+        $profile->load(['user', 'moderationNotes.admin']);
+
+        return view('admin.nikah.show', compact('profile'));
+    }
+
+    public function contact(Request $request, NikahProfile $profile)
+    {
+        $request->validate(['message' => ['required', 'string', 'max:2000']]);
+
+        try {
+            $profile->user->notify(new \App\Notifications\NikahAdminMessage($request->message));
+        } catch (\Throwable $e) {
+            \Log::error('NikahAdminMessage notification failed: ' . $e->getMessage());
+            return back()->with('error', 'Could not send the message — check the mail log.');
+        }
+
+        $profile->moderationNotes()->create([
+            'admin_id' => auth()->id(),
+            'note' => "Contacted member: \"{$request->message}\"",
+        ]);
+
+        return back()->with('status', 'Message sent to ' . $profile->user->name . '.');
+    }
+
     public function verifyGuardian(NikahProfile $profile)
     {
         $profile->update(['guardian_verified_at' => now()]);

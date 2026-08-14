@@ -8,7 +8,7 @@
 
 
             <div class="bg-white rounded-lg shadow-sm p-6">
-                <h3 class="font-semibold text-gray-700 mb-2">Fee Amount: Rs. {{ number_format($profile->payment_amount ?? setting('nikah_verification_fee', config('services.nikah.verification_fee'))) }}</h3>
+                <h3 class="font-semibold text-gray-700 mb-2">Fee Amount: Rs. {{ number_format($profile->payment_status === 'confirmed' ? $profile->payment_amount : setting('nikah_verification_fee', config('services.nikah.verification_fee'))) }}</h3>
                 <p class="text-sm text-gray-500 mb-4">A verification fee confirms your serious intent and helps us maintain a trustworthy matchmaking community. Please send the amount via JazzCash or EasyPaisa to the number below, then submit your payment details for confirmation.</p>
 
                 <div class="bg-gray-50 border border-gray-200 rounded p-4 text-sm mb-6 space-y-4">

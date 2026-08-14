@@ -155,11 +155,16 @@
 
                     </div>
 
-                    <span class="text-xs px-2 py-1 rounded-full
-                            {{ $profile->verification_status === 'verified' ? 'bg-green-100 text-green-800' :
-                               ($profile->verification_status === 'rejected' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800') }}">
-                        {{ ucfirst($profile->verification_status) }}
-                    </span>
+                    <div class="flex flex-col items-end gap-2">
+                        <span class="text-xs px-2 py-1 rounded-full
+                                {{ $profile->verification_status === 'verified' ? 'bg-green-100 text-green-800' :
+                                   ($profile->verification_status === 'rejected' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800') }}">
+                            {{ ucfirst($profile->verification_status) }}
+                        </span>
+                        <a href="{{ route('admin.nikah.show', $profile) }}" class="text-xs text-blue-600 hover:underline whitespace-nowrap">
+                            🔍 View Full Details
+                        </a>
+                    </div>
                 </div>
 
                 @if ($profile->rejection_reason)

@@ -53,6 +53,8 @@
         --teal-light: #e8f5f5;
         --gold: #b8962e;
         --cream: #fdfaf3;
+        --text-dark: #1a1a2e;
+        --text-muted: #6c757d;
     }
 
     .auth-label {

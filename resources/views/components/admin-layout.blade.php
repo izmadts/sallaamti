@@ -279,7 +279,7 @@
 
             {{-- Scrollable page content --}}
             <main class="flex-1 overflow-y-auto p-6">
-                @if ($errors->any())
+                @if (isset($errors) && $errors->any())
                 <div class="mb-6">
                     <x-alert type="error">
                         <strong>Please fix the following before saving:</strong>

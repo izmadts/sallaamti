@@ -271,6 +271,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 
     // Nikah Management
     Route::get('/nikah-verifications', [NikahVerificationController::class, 'index'])->name('nikah.verifications');
+    Route::get('/nikah-verifications/{profile}', [NikahVerificationController::class, 'show'])->name('nikah.show');
+    Route::post('/nikah-verifications/{profile}/contact', [NikahVerificationController::class, 'contact'])->name('nikah.contact');
     Route::post('/nikah-verifications/bulk-approve', [NikahVerificationController::class, 'bulkApprove'])->name('nikah.verifications.bulk-approve');
     Route::post('/nikah-verifications/{profile}/approve', [NikahVerificationController::class, 'approve'])->name('nikah.approve');
     Route::post('/nikah-verifications/{profile}/reject', [NikahVerificationController::class, 'reject'])->name('nikah.reject');

@@ -244,7 +244,7 @@
  </div>
  <!-- /Header -->
  <main class="w-full px-2 bg-white shadow-md overflow-hidden sm:rounded-lg">
- @if ($errors->any())
+ @if (isset($errors) && $errors->any())
  <div class="max-w-4xl mx-auto px-4 pt-6">
  <x-alert type="error">
  <strong>{{ __('db.Please fix the following:') }}</strong>
