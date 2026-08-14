@@ -279,6 +279,18 @@
 
             {{-- Scrollable page content --}}
             <main class="flex-1 overflow-y-auto p-6">
+                @if ($errors->any())
+                <div class="mb-6">
+                    <x-alert type="error">
+                        <strong>Please fix the following before saving:</strong>
+                        <ul class="list-disc ms-5 mt-1">
+                            @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </x-alert>
+                </div>
+                @endif
                 <x-flash-messages />
                 {{ $slot }}
             </main>

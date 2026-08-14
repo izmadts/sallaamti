@@ -19,7 +19,7 @@
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                         <x-input-label value="Site Name" />
-                        <x-text-input name="site_name" class="w-full mt-1" :value="$settings['site_name'] ?? ''" required />
+                        <x-text-input name="site_name" class="w-full mt-1" :value="($settings['site_name'] ?? '') ?: 'Sallaamti'" required />
                     </div>
                     <div>
                         <x-input-label value="Tagline" />
@@ -112,7 +112,7 @@
                     </div>
                     <div>
                         <x-input-label value="Nikah Verification Fee (Rs.)" />
-                        <x-text-input name="nikah_verification_fee" type="number" class="w-full mt-1" :value="$settings['nikah_verification_fee'] ?? '500'" />
+                        <x-text-input name="nikah_verification_fee" type="number" class="w-full mt-1" :value="($settings['nikah_verification_fee'] ?? '') ?: '500'" />
                     </div>
                 </div>
             </div>
