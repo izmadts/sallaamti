@@ -6,7 +6,7 @@ use App\Models\NikahInterest;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
 
-class NikahInterestDeclined extends Notification
+class NikahInterestDeclined extends Notification implements ShouldQueue
 {
     use Queueable;
 

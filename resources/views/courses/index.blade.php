@@ -10,26 +10,26 @@
         <div class="max-w-7xl mx-auto px-4 py-16 relative z-10 w-full">
             <div class="grid lg:grid-cols-2 gap-8 items-center">
                 <div>
-                    <span class="section-eyebrow" style="color: rgba(255,255,255,0.7)">Quran & Islamic Learning</span>
+                    <span class="section-eyebrow" style="color: rgba(255,255,255,0.7)">{{ __('db.Quran & Islamic Learning') }}</span>
                     <h1 class="text-4xl md:text-5xl font-extrabold text-white mt-2 mb-3">
-                        Self-Paced Courses
+                        {{ __('db.Self-Paced Courses') }}
                     </h1>
                     <p class="text-white/70 text-lg max-w-xl">
-                        Structured Quran courses — Naazira, Tajweed, Translation, Arabic Grammar, Seerah & Hadith. Learn at your own pace, earn a certificate.
+                        {{ __('db.Structured Quran courses — Naazira, Tajweed, Translation, Arabic Grammar, Seerah & Hadith. Learn at your own pace, earn a certificate.') }}
                     </p>
                 </div>
                 <div class="hidden lg:flex justify-end gap-4">
                     <div class="bg-white/10 backdrop-blur rounded-2xl p-5 text-center text-white">
                         <div class="text-3xl font-extrabold" style="color: #b8962e">{{ \App\Models\Course::where('is_published',true)->count() }}+</div>
-                        <div class="text-xs text-white/70 mt-1 uppercase tracking-wider">Courses</div>
+                        <div class="text-xs text-white/70 mt-1 uppercase tracking-wider">{{ __('db.Courses') }}</div>
                     </div>
                     <div class="bg-white/10 backdrop-blur rounded-2xl p-5 text-center text-white">
                         <div class="text-3xl font-extrabold" style="color: #b8962e">{{ \App\Models\Enrollment::count() }}+</div>
-                        <div class="text-xs text-white/70 mt-1 uppercase tracking-wider">Enrollments</div>
+                        <div class="text-xs text-white/70 mt-1 uppercase tracking-wider">{{ __('db.Enrollments') }}</div>
                     </div>
                     <div class="bg-white/10 backdrop-blur rounded-2xl p-5 text-center text-white">
                         <div class="text-3xl font-extrabold" style="color: #b8962e">{{ \App\Models\Certificate::count() }}+</div>
-                        <div class="text-xs text-white/70 mt-1 uppercase tracking-wider">Certificates</div>
+                        <div class="text-xs text-white/70 mt-1 uppercase tracking-wider">{{ __('db.Certificates') }}</div>
                     </div>
                 </div>
             </div>
@@ -46,7 +46,7 @@
                     class="flex-shrink-0 px-4 py-2 rounded-full text-sm font-semibold transition-all duration-200 border-2
                 {{ !request('category') ? 'text-white border-transparent' : 'border-gray-200 text-gray-600 hover:border-teal-500 hover:text-teal-700' }}"
                     style="{{ !request('category') ? 'background: #0d6b6b; border-color: #0d6b6b' : '' }}">
-                    🌟 All Courses
+                    🌟 {{ __('db.All Courses') }}
                 </a>
                 @foreach ($categories as $cat)
                 @php
@@ -78,16 +78,16 @@
             {{-- Results bar --}}
             <div class="flex justify-between items-center mb-6 flex-wrap gap-3">
                 <p class="text-sm text-gray-500">
-                    Showing <strong class="text-gray-800">{{ $courses->total() }}</strong> course(s)
+                    {{ __('db.Showing') }} <strong class="text-gray-800">{{ $courses->total() }}</strong> {{ __('db.course(s)') }}
                     @if (request('category'))
-                    in <strong class="text-gray-800">{{ request('category') }}</strong>
-                    <a href="{{ route('courses.index') }}" class="ml-2 text-xs text-red-400 hover:text-red-600">✕ Clear filter</a>
+                    {{ __('db.in') }} <strong class="text-gray-800">{{ request('category') }}</strong>
+                    <a href="{{ route('courses.index') }}" class="ml-2 text-xs text-red-400 hover:text-red-600">✕ {{ __('db.Clear filter') }}</a>
                     @endif
                 </p>
                 @guest
                 <a href="{{ route('register') }}"
                     class="btn-base btn-gold text-sm px-5 py-2 font-semibold">
-                    Join Free to Enroll →
+                    {{ __('db.Join Free to Enroll →') }}
                 </a>
                 @endguest
             </div>
@@ -126,7 +126,7 @@
                         <div class="absolute top-3 left-3">
                             <span class="text-xs font-bold px-2.5 py-1 rounded-full text-white shadow-sm"
                                 style="background: {{ $color }}">
-                                {{ $course->category ?? 'Course' }}
+                                {{ $course->category ?? __('db.Course') }}
                             </span>
                         </div>
 
@@ -134,7 +134,7 @@
                         @if ($isEnrolled)
                         <div class="absolute top-3 right-3">
                             <span class="text-xs font-bold px-2.5 py-1 rounded-full bg-green-500 text-white shadow-sm">
-                                ✅ Enrolled
+                                ✅ {{ __('db.Enrolled') }}
                             </span>
                         </div>
                         @endif
@@ -176,7 +176,7 @@
                                 <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
                                 </svg>
-                                {{ $course->enrollments_count ?? 0 }} enrolled
+                                {{ $course->enrollments_count ?? 0 }} {{ __('db.enrolled') }}
                             </span>
                         </div>
 
@@ -184,7 +184,7 @@
                         @if ($isEnrolled)
                         <div class="mb-4">
                             <div class="flex justify-between text-xs mb-1">
-                                <span class="text-gray-500">Progress</span>
+                                <span class="text-gray-500">{{ __('db.Progress') }}</span>
                                 <span class="font-semibold" style="color: #0d6b6b">{{ $progress }}%</span>
                             </div>
                             <div class="w-full bg-gray-100 rounded-full h-1.5">
@@ -193,7 +193,7 @@
                                 </div>
                             </div>
                             @if ($progress === 100)
-                            <p class="text-xs text-green-600 mt-1 font-semibold">🎉 Completed! Get your certificate.</p>
+                            <p class="text-xs text-green-600 mt-1 font-semibold">🎉 {{ __('db.Completed! Get your certificate.') }}</p>
                             @endif
                         </div>
                         @endif
@@ -206,20 +206,20 @@
                         <a href="{{ route('courses.show', $course) }}"
                             class="block text-center py-2.5 rounded-xl text-sm font-semibold text-white transition-all"
                             style="background: {{ $progress === 100 ? '#16a34a' : '#0d6b6b' }}">
-                            {{ $progress === 100 ? '🏆 Get Certificate' : '▶ Continue Learning' }}
+                            {{ $progress === 100 ? '🏆 '.__('db.Get Certificate') : '▶ '.__('db.Continue Learning') }}
                         </a>
                         @else
                         @auth
                         <a href="{{ route('courses.show', $course) }}"
                             class="block text-center py-2.5 rounded-xl text-sm font-semibold transition-all border-2"
                             style="border-color: #0d6b6b; color: #0d6b6b">
-                            Enroll Now — Free
+                            {{ __('db.Enroll Now — Free') }}
                         </a>
                         @else
                         <a href="{{ route('register') }}"
                             class="block text-center py-2.5 rounded-xl text-sm font-semibold text-white transition-all"
                             style="background: #b8962e">
-                            Register to Enroll
+                            {{ __('db.Register to Enroll') }}
                         </a>
                         @endauth
                         @endif
@@ -230,17 +230,17 @@
                 @empty
                 <div class="col-span-full py-20 text-center">
                     <div class="text-6xl mb-4">📚</div>
-                    <h3 class="text-xl font-bold text-gray-700 mb-2">No Courses Found</h3>
+                    <h3 class="text-xl font-bold text-gray-700 mb-2">{{ __('db.No Courses Found') }}</h3>
                     <p class="text-gray-400 mb-6">
                         @if (request('category'))
-                        No courses in the <strong>{{ request('category') }}</strong> category yet.
+                        {{ __('db.No courses in the') }} <strong>{{ request('category') }}</strong> {{ __('db.category yet.') }}
                         @else
-                        No courses published yet. Check back soon!
+                        {{ __('db.No courses published yet. Check back soon!') }}
                         @endif
                     </p>
                     @if (request('category'))
                     <a href="{{ route('courses.index') }}" class="btn-base btn-teal px-6 py-2 text-sm">
-                        View All Courses
+                        {{ __('db.View All Courses') }}
                     </a>
                     @endif
                 </div>
@@ -265,17 +265,17 @@
         <div class="max-w-3xl mx-auto px-4 text-center">
             <div class="text-4xl mb-3">🎓</div>
             <h2 class="text-2xl md:text-3xl font-extrabold text-white mb-3">
-                Ready to Start Learning?
+                {{ __('db.Ready to Start Learning?') }}
             </h2>
             <p class="text-white/70 mb-6">
-                Join thousands of Muslims learning Quran online. Create a free account and enroll in any course instantly.
+                {{ __('db.Join thousands of Muslims learning Quran online. Create a free account and enroll in any course instantly.') }}
             </p>
             <div class="flex gap-3 justify-center flex-wrap">
                 <a href="{{ route('register') }}" class="btn-base btn-gold px-8 py-3 font-semibold">
-                    Register Free <i class="fa fa-arrow-right ml-2"></i>
+                    {{ __('db.Register Free') }} <i class="fa fa-arrow-right ml-2"></i>
                 </a>
                 <a href="{{ route('login') }}" class="btn-base btn-outline-light px-8 py-3">
-                    Log In
+                    {{ __('db.Log In') }}
                 </a>
             </div>
         </div>

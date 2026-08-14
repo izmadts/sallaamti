@@ -33,6 +33,13 @@ class Language extends Model
         return static::active()->where('language', $code)->first();
     }
 
+    public static function activeCodes(): array
+    {
+        return Cache::rememberForever('active_language_codes', function () {
+            return static::active()->pluck('language')->all();
+        });
+    }
+
     public static function setDefaultLanguage(int $id): self
     {
         $language = static::findOrFail($id);
@@ -49,5 +56,6 @@ class Language extends Model
     {
         Cache::forget('default_language');
         Cache::forget('languages_list');
+        Cache::forget('active_language_codes');
     }
 }

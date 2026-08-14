@@ -281,6 +281,11 @@
  <div :class="{'block': open, 'hidden': ! open}" class="hidden sm:hidden bg-teal-800">
  <div class="pt-2 pb-3 space-y-1 px-2">
 
+ {{-- Language switcher --}}
+ <div class="flex justify-end px-1 pb-2">
+ <x-language-switcher dark />
+ </div>
+
  {{-- Flagship CTAs --}}
  <div class="flex gap-2 px-1 pb-2">
  <a href="{{ route('nikah.create') }}" class="flex-1 text-center text-white text-sm font-semibold px-3 py-2 rounded-lg" style="background: #b8962e">💍 {{ __('db.Find a Match') }}</a>

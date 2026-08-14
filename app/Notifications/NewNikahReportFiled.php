@@ -7,7 +7,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
 use Illuminate\Notifications\Messages\MailMessage;
 
-class NewNikahReportFiled extends Notification
+class NewNikahReportFiled extends Notification implements ShouldQueue
 {
     use Queueable;
 

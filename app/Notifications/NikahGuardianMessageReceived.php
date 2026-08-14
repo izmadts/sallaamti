@@ -7,7 +7,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
 use Illuminate\Notifications\Messages\MailMessage;
 
-class NikahGuardianMessageReceived extends Notification
+class NikahGuardianMessageReceived extends Notification implements ShouldQueue
 {
     use Queueable;
 

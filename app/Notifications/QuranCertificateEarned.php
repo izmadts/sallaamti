@@ -7,7 +7,7 @@ use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class QuranCertificateEarned extends Notification
+class QuranCertificateEarned extends Notification implements ShouldQueue
 {
     use Queueable;
 

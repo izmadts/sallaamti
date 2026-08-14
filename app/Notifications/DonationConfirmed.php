@@ -7,7 +7,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
 use Illuminate\Notifications\Messages\MailMessage;
 
-class DonationConfirmed extends Notification
+class DonationConfirmed extends Notification implements ShouldQueue
 {
     use Queueable;
 

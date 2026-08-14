@@ -7,7 +7,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
 use Illuminate\Notifications\Messages\MailMessage;
 
-class QuranProgressReportReady extends Notification
+class QuranProgressReportReady extends Notification implements ShouldQueue
 {
     use Queueable;
 

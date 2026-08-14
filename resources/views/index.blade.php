@@ -77,11 +77,12 @@
                             </a>
                             @else
                             <a href="{{ route('register') }}" class="btn-gold btn-base text-lg px-8 py-3 font-semibold">
-                                {{ __('db.Join Free Today') }} <i class="fa fa-arrow-right ml-2"></i>
+                                {{ __('db.Register Today') }} <i class="fa fa-arrow-right ml-2"></i>
                             </a>
-                            <a href="{{ route('courses.index') }}" class="btn-outline-light btn-base text-lg px-8 py-3">
+                            {{-- Browse Courses CTA hidden for now --}}
+                            {{-- <a href="{{ route('courses.index') }}" class="btn-outline-light btn-base text-lg px-8 py-3">
                                 {{ __('db.Browse Courses') }}
-                            </a>
+                            </a> --}}
                             @endauth
                         </div>
                         <div class="hero-trust-bar flex gap-4 mt-4 flex-wrap">

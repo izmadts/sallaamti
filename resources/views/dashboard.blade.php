@@ -16,22 +16,6 @@
     <div class="py-8">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
 
-            {{-- Profile Completion Banner --}}
-            @if ($profileCompletion < 100)
-                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-4 flex justify-between items-center">
-                <div class="flex-1">
-                    <p class="text-sm font-medium text-yellow-800">Complete your profile to get the most out of Sallaamti</p>
-                    <div class="mt-2 w-full bg-yellow-200 rounded-full h-2">
-                        <div class="bg-yellow-500 h-2 rounded-full transition-all" style="width: {{ $profileCompletion }}%"></div>
-                    </div>
-                    <p class="text-xs text-yellow-700 mt-1">{{ $profileCompletion }}% complete</p>
-                </div>
-                <a href="{{ route('profile.edit') }}" class="ml-4 text-sm bg-yellow-500 text-white px-3 py-1.5 rounded hover:bg-yellow-600 whitespace-nowrap">
-                    Complete →
-                </a>
-        </div>
-        @endif
-
         {{-- Stats Row --}}
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
             <a href="{{ route('courses.my-learning') }}" class="bg-white rounded-lg shadow-sm p-5 text-center hover:shadow-md transition border-l-4 border-green-500">

@@ -7,7 +7,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class CounselingBookingCancelled extends Notification
+class CounselingBookingCancelled extends Notification implements ShouldQueue
 {
     use Queueable;
 

@@ -6,7 +6,7 @@ use App\Models\QuranClassGroup;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Notification;
 
-class QuranClassAssigned extends Notification
+class QuranClassAssigned extends Notification implements ShouldQueue
 {
     use Queueable;
 

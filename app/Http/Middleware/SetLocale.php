@@ -24,6 +24,14 @@ class SetLocale
             $language = Language::findActiveByCode($cookieCode);
         }
 
+        if (!$language) {
+            $activeCodes = Language::activeCodes();
+
+            if ($preferred = $request->getPreferredLanguage($activeCodes)) {
+                $language = Language::findActiveByCode($preferred);
+            }
+        }
+
         $language ??= Language::getDefaultLanguage();
 
         $locale = $language->language ?? 'en';

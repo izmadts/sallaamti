@@ -7,7 +7,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class CounselingBookingReminder extends Notification
+class CounselingBookingReminder extends Notification implements ShouldQueue
 {
     use Queueable;
 

@@ -6,7 +6,7 @@ use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class OtpCodeMail extends Notification
+class OtpCodeMail extends Notification implements ShouldQueue
 {
     use Queueable;
 

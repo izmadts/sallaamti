@@ -10,6 +10,7 @@
     <link rel="icon" type="image/x-icon" href="{{ asset('images/favicon.png') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://use.fontawesome.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css" />
 
@@ -29,9 +30,45 @@
             min-height: 100vh;
         }
 
+        /* ===== AUTH TOPBAR ===== */
+        .auth-topbar {
+            position: sticky;
+            top: 0;
+            z-index: 50;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            padding: 14px 20px;
+            background: rgba(253, 250, 243, 0.9);
+            backdrop-filter: blur(6px);
+            border-bottom: 1px solid rgba(13, 107, 107, 0.08);
+        }
+
+        .auth-topbar-brand {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+            min-width: 0;
+        }
+
+        .auth-topbar-brand img {
+            height: 32px;
+            width: auto;
+            flex-shrink: 0;
+        }
+
+        .auth-topbar-brand span {
+            font-weight: 700;
+            font-size: 1rem;
+            color: var(--teal);
+            white-space: nowrap;
+        }
+
         /* ===== AUTH WRAPPER ===== */
         .auth-wrapper {
-            min-height: 100vh;
+            min-height: calc(100vh - 62px);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -74,16 +111,12 @@
 
 <body>
 
-    {{-- Subtle back to home link --}}
-    <a href="{{ url('/') }}"
-        class="fixed top-4 start-4 z-50 flex items-center gap-2 text-xs font-medium text-gray-500 hover:text-teal-700 transition-colors">
-        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
-        </svg>
-        Back to Sallaamti
-    </a>
+    <div class="auth-topbar">
+        <a href="{{ url('/') }}" class="auth-topbar-brand">
+            <img src="{{ asset('img/logo.png') }}" alt="{{ setting('site_name', 'Sallaamti') }}">
+            <span>{{ setting('site_name', 'Sallaamti') }}</span>
+        </a>
 
-    <div class="fixed top-4 end-4 z-50">
         <x-language-switcher />
     </div>
 

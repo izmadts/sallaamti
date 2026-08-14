@@ -67,11 +67,6 @@
  <link rel="icon" type="image/x-icon" href="{{ asset('images/favicon.png') }}">
  <link rel="apple-touch-icon" href="{{ asset('images/favicon.png') }}">
 
- {{-- Preload critical font --}}
- <link rel="preconnect" href="https://fonts.googleapis.com">
- <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
- <link rel="dns-prefetch" href="https://fonts.googleapis.com">
-
  {{-- Preload hero image (first banner) --}}
  @php $firstBanner = \App\Models\Banner::active()->first(); @endphp
  @if ($firstBanner)
@@ -84,13 +79,13 @@
 
  <!-- Fonts -->
  <link rel="preconnect" href="https://fonts.bunny.net">
- <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
  <link rel="preconnect" href="https://fonts.googleapis.com">
  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
- <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700&family=Pacifico&display=swap" rel="stylesheet">
- <!-- Icon fonts (kept — swap for an SVG icon set later if you want to drop these) -->
+ <link rel="preconnect" href="https://use.fontawesome.com" crossorigin>
+ <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
+ <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+ <!-- Icon font -->
  <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.15.4/css/all.css" />
- <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.4.1/font/bootstrap-icons.css" rel="stylesheet">
 
  <link rel="stylesheet" href="{{ asset('css/style.css') }}" />
 
@@ -163,8 +158,9 @@
  <a href="{{ url('/') }}" class="shrink-0">
  <x-application-logo />
  </a>
- <!-- Mobile: auth button before hamburger -->
+ <!-- Mobile: language switcher + auth button before hamburger -->
  <div class="flex lg:hidden items-center gap-2 ml-auto mr-2">
+ <x-language-switcher />
  @auth
  <a href="{{ route('dashboard') }}"
  class="inline-flex items-center rounded-md bg-[--teal] text-white text-sm font-medium px-3 py-1.5">
