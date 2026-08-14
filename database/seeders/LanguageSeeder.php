@@ -11,12 +11,12 @@ class LanguageSeeder extends Seeder
     {
         Language::updateOrCreate(
             ['language' => 'en'],
-            ['name' => 'English', 'is_rtl' => false, 'is_active' => true, 'is_default' => true]
+            ['name' => 'English', 'flag' => '🇺🇸', 'is_rtl' => false, 'is_active' => true, 'is_default' => true]
         );
 
         Language::updateOrCreate(
             ['language' => 'ur'],
-            ['name' => 'اردو', 'is_rtl' => true, 'is_active' => true, 'is_default' => false]
+            ['name' => 'اردو', 'flag' => '🇵🇰', 'is_rtl' => true, 'is_active' => true, 'is_default' => false]
         );
 
         Language::forgetCachedLanguage();

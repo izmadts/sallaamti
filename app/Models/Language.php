@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Cache;
 
 class Language extends Model
 {
-    protected $fillable = ['language', 'name', 'is_rtl', 'is_active', 'is_default'];
+    protected $fillable = ['language', 'name', 'flag', 'is_rtl', 'is_active', 'is_default'];
 
     protected $casts = [
         'is_rtl' => 'boolean',

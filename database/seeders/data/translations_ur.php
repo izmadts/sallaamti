@@ -354,6 +354,8 @@ return [
     'Support' => 'معاونت',
     'Menu' => 'مینو',
     'Join' => 'شامل ہوں',
+    'Change language' => 'زبان تبدیل کریں',
+    'Language' => 'زبان',
     'Free to Join' => 'شمولیت مفت ہے',
     'Expert Teachers' => 'ماہر اساتذہ',
     'Global Access' => 'عالمی رسائی',

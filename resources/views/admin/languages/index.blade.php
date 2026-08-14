@@ -14,6 +14,8 @@
             <form method="POST" action="{{ route('admin.languages.update', $language) }}" class="p-4 flex flex-wrap gap-3 items-center">
                 @csrf @method('PUT')
                 <div class="w-16 text-xs font-mono text-gray-400">{{ $language->language }}</div>
+                <input type="text" name="flag" value="{{ $language->flag }}" maxlength="10" placeholder="🏳️"
+                    class="border border-gray-200 rounded-lg px-2 py-2 text-lg text-center w-14 focus:outline-none focus:border-teal-500">
                 <input type="text" name="name" value="{{ $language->name }}"
                     class="border border-gray-200 rounded-lg px-3 py-2 text-sm flex-1 min-w-[120px] focus:outline-none focus:border-teal-500">
                 <label class="flex items-center gap-1 text-xs text-gray-600">
@@ -59,6 +61,11 @@
                     <label class="block text-xs text-gray-500 mb-1">Display Name</label>
                     <input type="text" name="name" placeholder="e.g. العربية" required maxlength="50"
                         class="border border-gray-200 rounded-lg px-3 py-2 text-sm w-48 focus:outline-none focus:border-teal-500">
+                </div>
+                <div>
+                    <label class="block text-xs text-gray-500 mb-1">Flag</label>
+                    <input type="text" name="flag" placeholder="🏳️" maxlength="10"
+                        class="border border-gray-200 rounded-lg px-2 py-2 text-lg text-center w-16 focus:outline-none focus:border-teal-500">
                 </div>
                 <label class="flex items-center gap-1 text-xs text-gray-600 pb-2.5">
                     <input type="checkbox" name="is_rtl" value="1"> RTL

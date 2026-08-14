@@ -20,12 +20,14 @@ class LanguageController extends Controller
         $request->validate([
             'language' => ['required', 'string', 'max:10', 'unique:languages,language'],
             'name' => ['required', 'string', 'max:50'],
+            'flag' => ['nullable', 'string', 'max:10'],
             'is_rtl' => ['nullable', 'boolean'],
         ]);
 
         Language::create([
             'language' => $request->language,
             'name' => $request->name,
+            'flag' => $request->flag,
             'is_rtl' => $request->boolean('is_rtl'),
             'is_active' => true,
             'is_default' => Language::count() === 0,
@@ -40,12 +42,14 @@ class LanguageController extends Controller
     {
         $request->validate([
             'name' => ['required', 'string', 'max:50'],
+            'flag' => ['nullable', 'string', 'max:10'],
             'is_rtl' => ['nullable', 'boolean'],
             'is_active' => ['nullable', 'boolean'],
         ]);
 
         $language->update([
             'name' => $request->name,
+            'flag' => $request->flag,
             'is_rtl' => $request->boolean('is_rtl'),
             'is_active' => $request->boolean('is_active'),
         ]);

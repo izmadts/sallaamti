@@ -165,7 +165,7 @@
  </a>
  <!-- Mobile: language switcher + auth button before hamburger -->
  <div class="flex lg:hidden items-center gap-2 ml-auto mr-2">
- <x-language-switcher />
+ <x-language-switcher compact />
  @auth
  <a href="{{ route('dashboard') }}"
  class="inline-flex items-center rounded-md bg-[--teal] text-white text-sm font-medium px-3 py-1.5">
