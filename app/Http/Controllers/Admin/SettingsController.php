@@ -75,6 +75,13 @@ class SettingsController extends Controller
             'seo_keywords'         => ['nullable', 'string', 'max:500'],
             'seo_og_image'         => ['nullable', 'image', 'max:2048'],
             'google_verification'  => ['nullable', 'string', 'max:255'],
+
+            'google_client_id'       => ['nullable', 'string', 'max:255'],
+            'google_client_secret'   => ['nullable', 'string', 'max:255'],
+            'google_login_enabled'   => ['nullable', 'boolean'],
+            'facebook_client_id'     => ['nullable', 'string', 'max:255'],
+            'facebook_client_secret' => ['nullable', 'string', 'max:255'],
+            'facebook_login_enabled' => ['nullable', 'boolean'],
         ]);
 
         // Save each setting
@@ -109,11 +116,20 @@ class SettingsController extends Controller
             'seo_home_description' => 'seo',
             'seo_keywords'         => 'seo',
             'google_verification'  => 'seo',
+
+            'google_client_id'       => 'oauth',
+            'google_client_secret'   => 'oauth',
+            'google_login_enabled'   => 'oauth',
+            'facebook_client_id'     => 'oauth',
+            'facebook_client_secret' => 'oauth',
+            'facebook_login_enabled' => 'oauth',
         ];
 
+        $checkboxKeys = ['maintenance_mode', 'google_login_enabled', 'facebook_login_enabled'];
+
         foreach ($groups as $key => $group) {
-            $value = $key === 'maintenance_mode'
-                ? ($request->has('maintenance_mode') ? '1' : '0')
+            $value = in_array($key, $checkboxKeys, true)
+                ? ($request->has($key) ? '1' : '0')
                 : $request->input($key, '');
 
             Setting::set($key, $value, $group);

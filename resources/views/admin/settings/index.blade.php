@@ -244,6 +244,94 @@
                     </div>
                 </div>
             </div>
+            {{-- Social Login (Google / Facebook) --}}
+            <div class="bg-white rounded-lg shadow-sm p-6 space-y-6">
+                <div>
+                    <h3 class="font-semibold text-gray-700 border-b pb-2">🔐 Social Login (Google / Facebook)</h3>
+                    <p class="text-xs text-gray-400 mt-2">
+                        Lets visitors register/sign in with one tap instead of filling a form. Each provider needs a Client ID and Client Secret from its own developer console, and that console needs to know the exact "Redirect URI" below — copy it in exactly, trailing slashes and all.
+                    </p>
+                </div>
+
+                {{-- Google --}}
+                <div class="border border-gray-100 rounded-lg p-4 space-y-3">
+                    <div class="flex items-center justify-between">
+                        <h4 class="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                            <i class="fab fa-google text-red-500"></i> Google
+                        </h4>
+                        <label class="flex items-center gap-2 text-xs text-gray-600">
+                            <input type="checkbox" name="google_login_enabled" value="1"
+                                {{ ($settings['google_login_enabled'] ?? '1') === '1' ? 'checked' : '' }}
+                                class="rounded border-gray-300 text-teal-600">
+                            Enabled
+                        </label>
+                    </div>
+
+                    <ol class="text-xs text-gray-500 list-decimal ms-4 space-y-0.5">
+                        <li>Go to <span class="font-mono">console.cloud.google.com/apis/credentials</span> and create an "OAuth client ID" (type: Web application).</li>
+                        <li>Under "Authorized redirect URIs", paste the URL below exactly.</li>
+                        <li>Copy the generated Client ID and Client Secret into the two fields below.</li>
+                    </ol>
+
+                    <div>
+                        <x-input-label value="Authorized redirect URI" />
+                        <input type="text" readonly value="{{ route('social.callback', 'google') }}"
+                            onclick="this.select()"
+                            class="w-full mt-1 border border-gray-200 rounded-lg px-3 py-2 text-sm bg-gray-50 font-mono text-gray-600">
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <x-input-label value="Client ID" />
+                            <x-text-input name="google_client_id" class="w-full mt-1" :value="$settings['google_client_id'] ?? ''" placeholder="xxxxxxxx.apps.googleusercontent.com" />
+                        </div>
+                        <div>
+                            <x-input-label value="Client Secret" />
+                            <x-text-input name="google_client_secret" class="w-full mt-1" :value="$settings['google_client_secret'] ?? ''" placeholder="GOCSPX-..." />
+                        </div>
+                    </div>
+                </div>
+
+                {{-- Facebook --}}
+                <div class="border border-gray-100 rounded-lg p-4 space-y-3">
+                    <div class="flex items-center justify-between">
+                        <h4 class="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                            <i class="fab fa-facebook text-blue-600"></i> Facebook
+                        </h4>
+                        <label class="flex items-center gap-2 text-xs text-gray-600">
+                            <input type="checkbox" name="facebook_login_enabled" value="1"
+                                {{ ($settings['facebook_login_enabled'] ?? '1') === '1' ? 'checked' : '' }}
+                                class="rounded border-gray-300 text-teal-600">
+                            Enabled
+                        </label>
+                    </div>
+
+                    <ol class="text-xs text-gray-500 list-decimal ms-4 space-y-0.5">
+                        <li>Go to <span class="font-mono">developers.facebook.com/apps</span>, create an app, and add the "Facebook Login" product.</li>
+                        <li>Under Facebook Login → Settings, add the URL below to "Valid OAuth Redirect URIs".</li>
+                        <li>Copy the App ID and App Secret (Settings → Basic) into the two fields below.</li>
+                    </ol>
+
+                    <div>
+                        <x-input-label value="Valid OAuth redirect URI" />
+                        <input type="text" readonly value="{{ route('social.callback', 'facebook') }}"
+                            onclick="this.select()"
+                            class="w-full mt-1 border border-gray-200 rounded-lg px-3 py-2 text-sm bg-gray-50 font-mono text-gray-600">
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <x-input-label value="App ID" />
+                            <x-text-input name="facebook_client_id" class="w-full mt-1" :value="$settings['facebook_client_id'] ?? ''" placeholder="1234567890123456" />
+                        </div>
+                        <div>
+                            <x-input-label value="App Secret" />
+                            <x-text-input name="facebook_client_secret" class="w-full mt-1" :value="$settings['facebook_client_secret'] ?? ''" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
             <div class="flex justify-end">
                 <x-primary-button>Save Settings</x-primary-button>
             </div>

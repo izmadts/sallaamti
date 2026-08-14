@@ -56,18 +56,28 @@
                     {{ __('db.Sign In') }} <i class="fa fa-arrow-right ml-2"></i>
                 </button>
 
+                @php
+                    $googleReady = \App\Http\Controllers\Auth\SocialAuthController::isEnabled('google');
+                    $facebookReady = \App\Http\Controllers\Auth\SocialAuthController::isEnabled('facebook');
+                @endphp
+                @if ($googleReady || $facebookReady)
                 <div class="auth-divider"><span>{{ __('db.or continue with') }}</span></div>
 
-                <div class="grid grid-cols-2 gap-3">
+                <div class="grid {{ $googleReady && $facebookReady ? 'grid-cols-2' : 'grid-cols-1' }} gap-3">
+                    @if ($googleReady)
                     <a href="{{ route('social.redirect', 'google') }}"
                         class="flex items-center justify-center gap-2 border border-gray-300 rounded-lg py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 transition">
                         <i class="fab fa-google text-red-500"></i> Google
                     </a>
+                    @endif
+                    @if ($facebookReady)
                     <a href="{{ route('social.redirect', 'facebook') }}"
                         class="flex items-center justify-center gap-2 border border-gray-300 rounded-lg py-2.5 text-sm font-medium text-gray-700 hover:bg-gray-50 transition">
                         <i class="fab fa-facebook text-blue-600"></i> Facebook
                     </a>
+                    @endif
                 </div>
+                @endif
 
                 <div class="auth-divider"><span>{{ __('db.or') }}</span></div>
 
