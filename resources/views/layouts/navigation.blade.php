@@ -67,18 +67,18 @@
  </x-slot>
  </x-dropdown>
 
- {{-- Nikah Dropdown --}}
+ {{-- Nikah Dropdown — prominent gold pill, single entry point for every Nikah action --}}
  <x-dropdown align="left" width="52">
  <x-slot name="trigger">
- <button class="inline-flex items-center px-3 py-2 rounded-md text-sm font-medium text-white hover:bg-teal-600 focus:outline-none transition
- {{ request()->routeIs('nikah.*') ? 'bg-teal-800' : '' }}">
+ <button class="inline-flex items-center gap-1 px-4 py-2 rounded-full text-sm font-semibold text-white focus:outline-none hover:brightness-110 transition"
+ style="background: #b8962e">
  💍 {{ __('db.Nikah') }}
  @if (Auth::user()?->nikahProfile?->verification_status === 'pending')
- <span class="ml-1 w-2 h-2 rounded-full bg-yellow-400 inline-block"></span>
+ <span class="w-2 h-2 rounded-full bg-yellow-200 inline-block"></span>
  @elseif (Auth::user()?->nikahProfile?->verification_status === 'verified')
- <span class="ml-1 w-2 h-2 rounded-full bg-green-400 inline-block"></span>
+ <span class="w-2 h-2 rounded-full bg-green-300 inline-block"></span>
  @endif
- <svg class="ms-1 h-4 w-4 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+ <svg class="ms-0.5 h-4 w-4 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
  <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
  </svg>
  </button>
@@ -98,10 +98,24 @@
  <x-dropdown-link :href="route('nikah.blocked')">🚫 {{ __('db.Blocked Profiles') }}</x-dropdown-link>
  </x-slot>
  </x-dropdown>
- <x-nav-link :href="route('support.index')" :active="request()->routeIs('support.*')"
- class="text-white hover:bg-teal-600 px-3 py-2 rounded-md text-sm">
+
+ {{-- Family Support Dropdown — prominent white pill, single entry point for every counseling action --}}
+ <x-dropdown align="left" width="56">
+ <x-slot name="trigger">
+ <button class="inline-flex items-center gap-1 px-4 py-2 rounded-full text-sm font-semibold text-teal-800 bg-white focus:outline-none hover:bg-gray-100 transition">
  🤝 {{ __('db.Family Support') }}
- </x-nav-link>
+ <svg class="ms-0.5 h-4 w-4 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+ <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+ </svg>
+ </button>
+ </x-slot>
+ <x-slot name="content">
+ <x-dropdown-link :href="route('counseling.book.start')">📅 {{ __('db.Book Counseling Session') }}</x-dropdown-link>
+ <x-dropdown-link :href="route('counseling.bookings.index')">🗓️ {{ __('db.My Bookings') }}</x-dropdown-link>
+ <x-dropdown-link :href="route('support.index')">💬 {{ __('db.Support Queries') }}</x-dropdown-link>
+ </x-slot>
+ </x-dropdown>
+
  <x-nav-link :href="route('volunteer.create')" :active="request()->routeIs('volunteer.*')"
  class="text-white hover:bg-teal-600 px-3 py-2 rounded-md text-sm">
  🤝 {{ __('db.Volunteer') }}
@@ -149,17 +163,6 @@
 
  {{-- Right: Bell + Avatar --}}
  <div class="hidden sm:flex sm:items-center sm:ms-6 gap-2">
-
- {{-- Flagship CTAs --}}
- <a href="{{ route('nikah.create') }}"
- class="inline-flex items-center gap-1 text-white text-xs font-semibold px-3 py-1.5 rounded-full hover:brightness-110 transition"
- style="background: #b8962e">
- 💍 {{ __('db.Find a Match') }}
- </a>
- <a href="{{ route('counseling.book.start') }}"
- class="inline-flex items-center gap-1 text-teal-800 bg-white text-xs font-semibold px-3 py-1.5 rounded-full hover:bg-gray-100 transition">
- 🤝 {{ __('db.Get Counseling') }}
- </a>
 
  <x-language-switcher dark />
 
@@ -286,15 +289,36 @@
  <x-language-switcher dark />
  </div>
 
- {{-- Flagship CTAs --}}
- <div class="flex gap-2 px-1 pb-2">
- <a href="{{ route('nikah.create') }}" class="flex-1 text-center text-white text-sm font-semibold px-3 py-2 rounded-lg" style="background: #b8962e">💍 {{ __('db.Find a Match') }}</a>
- <a href="{{ route('counseling.book.start') }}" class="flex-1 text-center text-white text-sm font-semibold px-3 py-2 rounded-lg border border-white/30">🤝 {{ __('db.Get Counseling') }}</a>
- </div>
-
  <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" class="text-white">
  🏠 Dashboard
  </x-responsive-nav-link>
+
+ {{-- Nikah — prominent gold block, one place for every Nikah action --}}
+ <div class="rounded-lg mt-2 mb-1 overflow-hidden" style="background: rgba(184,150,46,0.18); border: 1px solid rgba(184,150,46,0.4);">
+ <div class="px-3 py-1.5 text-xs font-bold uppercase tracking-wider flex items-center gap-1" style="color: #e8c874">
+ 💍 {{ __('db.Nikah') }}
+ @if (Auth::user()?->nikahProfile?->verification_status === 'pending')
+ <span class="w-1.5 h-1.5 rounded-full bg-yellow-400 inline-block"></span>
+ @elseif (Auth::user()?->nikahProfile?->verification_status === 'verified')
+ <span class="w-1.5 h-1.5 rounded-full bg-green-400 inline-block"></span>
+ @endif
+ </div>
+ <x-responsive-nav-link :href="Auth::user()?->nikahProfile ? route('nikah.show') : route('nikah.create')" class="text-white">👤 {{ __('db.My Profile') }}</x-responsive-nav-link>
+ <x-responsive-nav-link :href="route('nikah.browse')" class="text-white">🔍 {{ __('db.Browse Matches') }}</x-responsive-nav-link>
+ <x-responsive-nav-link :href="route('nikah.interests')" class="text-white">💌 {{ __('db.My Interests') }}</x-responsive-nav-link>
+ <x-responsive-nav-link :href="route('nikah.saved')" class="text-white">★ {{ __('db.Saved Profiles') }}</x-responsive-nav-link>
+ <x-responsive-nav-link :href="route('nikah.blocked')" class="text-white">🚫 {{ __('db.Blocked Profiles') }}</x-responsive-nav-link>
+ </div>
+
+ {{-- Family Support — prominent teal/white block, one place for every counseling action --}}
+ <div class="rounded-lg mb-2 overflow-hidden bg-white/10 border border-white/25">
+ <div class="px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-white/90">
+ 🤝 {{ __('db.Family Support') }}
+ </div>
+ <x-responsive-nav-link :href="route('counseling.book.start')" class="text-white">📅 {{ __('db.Book Counseling Session') }}</x-responsive-nav-link>
+ <x-responsive-nav-link :href="route('counseling.bookings.index')" class="text-white">🗓️ {{ __('db.My Bookings') }}</x-responsive-nav-link>
+ <x-responsive-nav-link :href="route('support.index')" class="text-white">💬 {{ __('db.Support Queries') }}</x-responsive-nav-link>
+ </div>
 
  <div class="px-3 py-1 text-xs text-teal-300 font-semibold uppercase tracking-wider mt-2">Website</div>
  <x-responsive-nav-link :href="route('index')" class="text-white">🏡 Home Page</x-responsive-nav-link>
@@ -314,18 +338,10 @@
  <x-responsive-nav-link :href="route('quran-live.my-class')" class="text-white">📡 My Quran Class</x-responsive-nav-link>
  <x-responsive-nav-link :href="route('quran-live.my-progress')" class="text-white">📊 My Progress</x-responsive-nav-link>
 
- <div class="px-3 py-1 text-xs text-teal-300 font-semibold uppercase tracking-wider mt-2">Nikah</div>
- <x-responsive-nav-link :href="Auth::user()?->nikahProfile ? route('nikah.show') : route('nikah.create')" class="text-white">💍 My Nikah Profile</x-responsive-nav-link>
- <x-responsive-nav-link :href="route('nikah.browse')" class="text-white">🔍 Browse Matches</x-responsive-nav-link>
- <x-responsive-nav-link :href="route('nikah.interests')" class="text-white">💌 My Interests</x-responsive-nav-link>
- <x-responsive-nav-link :href="route('nikah.blocked')" class="text-white">🚫 Blocked Profiles</x-responsive-nav-link>
-
  <div class="px-3 py-1 text-xs text-teal-300 font-semibold uppercase tracking-wider mt-2">More</div>
  <x-responsive-nav-link :href="route('volunteer.create')" class="text-white">🤝 Volunteer</x-responsive-nav-link>
  <x-responsive-nav-link :href="route('donate.create')" class="text-white">💝 Donate</x-responsive-nav-link>
  <x-responsive-nav-link :href="route('certificate.index')" class="text-white">🎓 My Certificates</x-responsive-nav-link>
- <x-responsive-nav-link :href="route('counseling.book.start')" class="text-white">🤝 Book Counseling Session</x-responsive-nav-link>
- <x-responsive-nav-link :href="route('support.index')" class="text-white">🤝 Support Queries</x-responsive-nav-link>
  @role('admin')
  <div class="px-3 py-1 text-xs text-teal-300 font-semibold uppercase tracking-wider mt-2">Admin</div>
  <x-responsive-nav-link :href="route('admin.dashboard')" class="text-white">⚙️ Admin Dashboard</x-responsive-nav-link>

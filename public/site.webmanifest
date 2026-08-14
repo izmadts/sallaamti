@@ -1,0 +1,19 @@
+{
+    "name": "Sallaamti",
+    "short_name": "Sallaamti",
+    "description": "Learn Quran, find your Nikah match, and get family counseling — all in one place.",
+    "start_url": "/",
+    "scope": "/",
+    "display": "standalone",
+    "orientation": "portrait-primary",
+    "background_color": "#fdfaf3",
+    "theme_color": "#0d6b6b",
+    "icons": [
+        {
+            "src": "/images/favicon.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any maskable"
+        }
+    ]
+}

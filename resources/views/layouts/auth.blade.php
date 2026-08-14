@@ -59,11 +59,39 @@
             flex-shrink: 0;
         }
 
-        .auth-topbar-brand span {
-            font-weight: 700;
-            font-size: 1rem;
+        .auth-topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 0;
+        }
+
+        .auth-back-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            flex-shrink: 0;
+            border-radius: 999px;
             color: var(--teal);
-            white-space: nowrap;
+            background: rgba(13, 107, 107, 0.08);
+            border: none;
+            cursor: pointer;
+            transition: background 0.15s ease;
+        }
+
+        .auth-back-btn:hover {
+            background: rgba(13, 107, 107, 0.16);
+        }
+
+        .auth-back-btn svg {
+            width: 18px;
+            height: 18px;
+        }
+
+        :root[dir="rtl"] .auth-back-btn svg {
+            transform: scaleX(-1);
         }
 
         /* ===== AUTH WRAPPER ===== */
@@ -112,10 +140,17 @@
 <body>
 
     <div class="auth-topbar">
-        <a href="{{ url('/') }}" class="auth-topbar-brand">
-            <img src="{{ asset('img/logo.png') }}" alt="{{ setting('site_name', 'Sallaamti') }}">
-            <span>{{ setting('site_name', 'Sallaamti') }}</span>
-        </a>
+        <div class="auth-topbar-left">
+            <button type="button" class="auth-back-btn" aria-label="{{ __('db.Go back') }}"
+                onclick="window.history.length > 1 ? window.history.back() : (window.location.href = '{{ url('/') }}')">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+                </svg>
+            </button>
+            <a href="{{ url('/') }}" class="auth-topbar-brand">
+                <img src="{{ asset('img/logo.png') }}" alt="{{ setting('site_name', 'Sallaamti') }}">
+            </a>
+        </div>
 
         <x-language-switcher />
     </div>
