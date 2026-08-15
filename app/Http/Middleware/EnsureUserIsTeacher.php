@@ -10,9 +10,17 @@ class EnsureUserIsTeacher
 {
     public function handle(Request $request, Closure $next): Response
     {
-        if (!$request->user() || !$request->user()->hasRole('teacher')) {
+        if (!$request->user()) {
             abort(403, 'Unauthorized.');
         }
+
+        if (!$request->user()->hasRole('teacher')) {
+            session()->forget('url.intended');
+
+            return redirect()->route('dashboard')
+                ->with('error', "You don't have access to that page.");
+        }
+
         return $next($request);
     }
 }
