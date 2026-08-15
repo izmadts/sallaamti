@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Services\ImageOptimizer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -33,7 +34,7 @@ class NikahPaymentController extends Controller
             'payment_screenshot' => ['required', 'image', 'max:4096'],
         ]);
 
-        $validated['payment_screenshot'] = $request->file('payment_screenshot')->store('nikah/payments', 'private');
+        $validated['payment_screenshot'] = ImageOptimizer::store($request->file('payment_screenshot'), 'nikah/payments', 'private');
         $validated['payment_status'] = 'submitted';
         $validated['payment_rejection_reason'] = null;
         $validated['payment_amount'] = setting('nikah_verification_fee', config('services.nikah.verification_fee'));

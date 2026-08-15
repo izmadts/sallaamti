@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\NikahPhoto;
+use App\Services\ImageOptimizer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -27,7 +28,7 @@ class NikahPhotoController extends Controller
         $nextOrder = ($profile->photos()->max('order') ?? -1) + 1;
 
         foreach ($files as $index => $file) {
-            $path = $file->store('nikah/photos', 'private');
+            $path = ImageOptimizer::store($file, 'nikah/photos', 'private', maxDimension: 1200);
 
             $profile->photos()->create([
                 'path' => $path,

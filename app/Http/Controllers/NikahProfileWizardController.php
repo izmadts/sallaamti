@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Concerns\HasWizardSteps;
 use App\Http\Controllers\Concerns\ValidatesNikahProfile;
 use App\Models\NikahProfile;
+use App\Services\ImageOptimizer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
@@ -116,7 +117,9 @@ class NikahProfileWizardController extends Controller
             foreach (['cnic_front_image', 'cnic_back_image', 'photo'] as $file) {
                 if ($request->hasFile($file)) {
                     $disk = $file === 'photo' ? 'nikah/photos' : 'nikah/cnic';
-                    $validated[$file] = $request->file($file)->store($disk, 'private');
+                    $maxDimension = $file === 'photo' ? 1200 : 1600;
+                    $quality = $file === 'photo' ? 82 : 85;
+                    $validated[$file] = ImageOptimizer::store($request->file($file), $disk, 'private', maxDimension: $maxDimension, quality: $quality);
                 } elseif (!empty($existing[$file])) {
                     $validated[$file] = $existing[$file];
                 }

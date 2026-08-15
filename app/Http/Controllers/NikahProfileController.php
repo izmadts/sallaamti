@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Concerns\ValidatesNikahProfile;
 use App\Models\NikahProfile;
 use App\Models\NikahSavedProfile;
+use App\Services\ImageOptimizer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -21,13 +22,13 @@ class NikahProfileController extends Controller
         $validated['user_id'] = Auth::id();
 
         if ($request->hasFile('cnic_front_image')) {
-            $validated['cnic_front_image'] = $request->file('cnic_front_image')->store('nikah/cnic', 'private');
+            $validated['cnic_front_image'] = ImageOptimizer::store($request->file('cnic_front_image'), 'nikah/cnic', 'private', maxDimension: 1600, quality: 85);
         }
         if ($request->hasFile('cnic_back_image')) {
-            $validated['cnic_back_image'] = $request->file('cnic_back_image')->store('nikah/cnic', 'private');
+            $validated['cnic_back_image'] = ImageOptimizer::store($request->file('cnic_back_image'), 'nikah/cnic', 'private', maxDimension: 1600, quality: 85);
         }
         if ($request->hasFile('photo')) {
-            $validated['photo'] = $request->file('photo')->store('nikah/photos', 'private');
+            $validated['photo'] = ImageOptimizer::store($request->file('photo'), 'nikah/photos', 'private', maxDimension: 1200);
         }
 
         $validated['allow_photo_sharing'] = $request->has('allow_photo_sharing');
@@ -85,13 +86,13 @@ class NikahProfileController extends Controller
         }
 
         if ($request->hasFile('cnic_front_image')) {
-            $validated['cnic_front_image'] = $request->file('cnic_front_image')->store('nikah/cnic', 'private');
+            $validated['cnic_front_image'] = ImageOptimizer::store($request->file('cnic_front_image'), 'nikah/cnic', 'private', maxDimension: 1600, quality: 85);
         }
         if ($request->hasFile('cnic_back_image')) {
-            $validated['cnic_back_image'] = $request->file('cnic_back_image')->store('nikah/cnic', 'private');
+            $validated['cnic_back_image'] = ImageOptimizer::store($request->file('cnic_back_image'), 'nikah/cnic', 'private', maxDimension: 1600, quality: 85);
         }
         if ($request->hasFile('photo')) {
-            $validated['photo'] = $request->file('photo')->store('nikah/photos', 'private');
+            $validated['photo'] = ImageOptimizer::store($request->file('photo'), 'nikah/photos', 'private', maxDimension: 1200);
         }
 
         $profile->update($validated);

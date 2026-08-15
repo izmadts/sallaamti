@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Donation;
+use App\Services\ImageOptimizer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -47,8 +48,7 @@ class DonationController extends Controller
     $validated['payment_reference'] = $request->input('payment_reference', 'pending-admin-verify');
 
     if ($request->hasFile('payment_screenshot')) {
-        $validated['payment_screenshot'] = $request->file('payment_screenshot')
-            ->store('donations/screenshots', 'private');
+        $validated['payment_screenshot'] = ImageOptimizer::store($request->file('payment_screenshot'), 'donations/screenshots', 'private');
     }
 
     $donation = Donation::create($validated);
