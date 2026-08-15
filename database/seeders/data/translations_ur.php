@@ -418,4 +418,14 @@ return [
     'View All Courses' => 'تمام کورسز دیکھیں',
     'Ready to Start Learning?' => 'سیکھنا شروع کرنے کے لیے تیار ہیں؟',
     'Join thousands of Muslims learning Quran online. Create a free account and enroll in any course instantly.' => 'ہزاروں مسلمانوں کے ساتھ آن لائن قرآن سیکھیں۔ مفت اکاؤنٹ بنائیں اور فوری طور پر کسی بھی کورس میں داخلہ لیں۔',
+
+    // ---- Nikah payment trust banner ----
+    'One-time fee. No matchmaker. No agent. No hidden charges.' => 'ایک بار کی فیس۔ نہ رشتہ ایجنٹ، نہ کمیشن، نہ کوئی چھپا ہوا چارج۔',
+    "This small, one-time fee is not a service charge — it's how we keep Sallaamti's Nikah section safe. Pakistan has seen too many families lose time and trust to fake profiles and paid 'rishta' agents online. This fee filters out fake accounts and confirms every profile belongs to a real, serious family — so once verified, you speak directly with the interested family, with no middleman in between."
+        => 'یہ معمولی، ایک بار کی فیس کوئی سروس چارج نہیں — یہ صرف اس لیے ہے تاکہ سلامتی کا نکاح سیکشن محفوظ رہے۔ پاکستان میں بہت سے خاندان جعلی پروفائلز اور پیسے لینے والے "رشتہ ایجنٹس" کے ہاتھوں وقت اور اعتماد گنوا چکے ہیں۔ یہ فیس جعلی اکاؤنٹس کو روکتی ہے اور یقینی بناتی ہے کہ ہر پروفائل ایک حقیقی، سنجیدہ خاندان کی ہے — تصدیق کے بعد آپ براہ راست دلچسپی رکھنے والے خاندان سے بات کریں گے، کسی بیچ والے کے بغیر۔',
+    'Charged only once — never again' => 'صرف ایک بار — دوبارہ کبھی نہیں',
+    'Zero matchmaker or agent commission' => 'کوئی رشتہ ایجنٹ یا کمیشن نہیں',
+    'Direct contact with the interested family' => 'دلچسپی رکھنے والے خاندان سے براہ راست رابطہ',
+    'Your CNIC and payment details are never shown publicly' => 'آپ کا شناختی کارڈ اور ادائیگی کی تفصیلات کبھی عوامی طور پر ظاہر نہیں کی جاتیں',
+    "This is our small way of helping the Pakistani community make Nikah easy, honest, and safe — Insha'Allah." => 'یہ ہماری چھوٹی سی کوشش ہے تاکہ پاکستانی کمیونٹی کے لیے نکاح آسان، ایماندار اور محفوظ بن سکے — ان شاء اللہ۔',
 ];

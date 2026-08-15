@@ -7,6 +7,29 @@
         <div class="max-w-2xl mx-auto sm:px-6 lg:px-8 space-y-6">
 
 
+            <div class="rounded-xl border-2 p-5" style="border-color: var(--gold); background: linear-gradient(135deg, #fffbeb 0%, #f0fdfa 100%)">
+                <div class="flex items-start gap-3">
+                    <span class="text-2xl shrink-0">🛡️</span>
+                    <div>
+                        <h3 class="font-bold text-base mb-1" style="color: var(--teal)">
+                            {{ __('db.One-time fee. No matchmaker. No agent. No hidden charges.') }}
+                        </h3>
+                        <p class="text-sm text-gray-700 leading-relaxed">
+                            {{ __("db.This small, one-time fee is not a service charge — it's how we keep Sallaamti's Nikah section safe. Pakistan has seen too many families lose time and trust to fake profiles and paid 'rishta' agents online. This fee filters out fake accounts and confirms every profile belongs to a real, serious family — so once verified, you speak directly with the interested family, with no middleman in between.") }}
+                        </p>
+                        <ul class="mt-3 space-y-1 text-sm text-gray-700">
+                            <li>✅ {{ __('db.Charged only once — never again') }}</li>
+                            <li>✅ {{ __('db.Zero matchmaker or agent commission') }}</li>
+                            <li>✅ {{ __('db.Direct contact with the interested family') }}</li>
+                            <li>✅ {{ __('db.Your CNIC and payment details are never shown publicly') }}</li>
+                        </ul>
+                        <p class="mt-3 text-xs text-gray-500">
+                            {{ __("db.This is our small way of helping the Pakistani community make Nikah easy, honest, and safe — Insha'Allah.") }}
+                        </p>
+                    </div>
+                </div>
+            </div>
+
             <div class="bg-white rounded-lg shadow-sm p-6">
                 <h3 class="font-semibold text-gray-700 mb-2">Fee Amount: Rs. {{ number_format($profile->payment_status === 'confirmed' ? $profile->payment_amount : setting('nikah_verification_fee', config('services.nikah.verification_fee'))) }}</h3>
                 <p class="text-sm text-gray-500 mb-4">A verification fee confirms your serious intent and helps us maintain a trustworthy matchmaking community. Please send the amount via JazzCash or EasyPaisa to the number below, then submit your payment details for confirmation.</p>
