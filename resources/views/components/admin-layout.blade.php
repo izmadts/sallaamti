@@ -97,6 +97,11 @@
                 {{-- Nikah --}}
                 <p class="text-teal-500 text-xs uppercase tracking-widest px-3 pt-4 pb-1">Nikah</p>
 
+                <a href="{{ route('admin.nikah.profiles') }}"
+                    class="flex items-center gap-3 px-3 py-2 rounded-lg transition
+                          {{ request()->routeIs('admin.nikah.profiles') ? 'bg-teal-700 text-white' : 'text-teal-100 hover:bg-teal-800' }}">
+                    <span class="text-base">🗂️</span> All Profiles
+                </a>
                 <a href="{{ route('admin.nikah.payments') }}"
                     class="flex items-center justify-between gap-3 px-3 py-2 rounded-lg transition
                           {{ request()->routeIs('admin.nikah.payments*') ? 'bg-teal-700 text-white' : 'text-teal-100 hover:bg-teal-800' }}">

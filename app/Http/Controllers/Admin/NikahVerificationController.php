@@ -62,6 +62,53 @@ class NikahVerificationController extends Controller
         return view('admin.nikah.nikah-verifications', compact('profiles', 'stats', 'guardianContactCounts'));
     }
 
+    // A lightweight, browsable roster of every Nikah profile — separate from
+    // the moderation-queue-style `index()` above, which is cluttered with
+    // approve/reject/CNIC-review actions and isn't meant for just looking
+    // someone up.
+    public function directory(Request $request)
+    {
+        $query = NikahProfile::with('user');
+
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('city', 'like', "%{$search}%")
+                    ->orWhereHas('user', function ($uq) use ($search) {
+                        $uq->where('name', 'like', "%{$search}%")
+                            ->orWhere('email', 'like', "%{$search}%")
+                            ->orWhere('phone', 'like', "%{$search}%");
+                    });
+            });
+        }
+
+        if ($request->filled('gender')) {
+            $query->whereHas('user', fn ($q) => $q->where('gender', $request->gender));
+        }
+
+        if ($request->filled('verification_status')) {
+            $query->where('verification_status', $request->verification_status);
+        }
+
+        if ($request->filled('payment_status')) {
+            $query->where('payment_status', $request->payment_status);
+        }
+
+        if ($request->filled('active')) {
+            $query->where('is_active', $request->active === 'active');
+        }
+
+        $profiles = $query->latest()->paginate(25)->withQueryString();
+
+        $stats = [
+            'total' => NikahProfile::count(),
+            'active' => NikahProfile::where('is_active', true)->count(),
+            'suspended' => NikahProfile::whereNotNull('suspended_at')->count(),
+        ];
+
+        return view('admin.nikah.all-profiles', compact('profiles', 'stats'));
+    }
+
     public function show(NikahProfile $profile)
     {
         $profile->load(['user', 'moderationNotes.admin']);

@@ -270,6 +270,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::post('certificates', [CertificateAdminController::class, 'store'])->name('certificates.store');
 
     // Nikah Management
+    Route::get('/nikah-profiles', [NikahVerificationController::class, 'directory'])->name('nikah.profiles');
     Route::get('/nikah-verifications', [NikahVerificationController::class, 'index'])->name('nikah.verifications');
     Route::get('/nikah-verifications/{profile}', [NikahVerificationController::class, 'show'])->name('nikah.show');
     Route::post('/nikah-verifications/{profile}/contact', [NikahVerificationController::class, 'contact'])->name('nikah.contact');
