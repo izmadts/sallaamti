@@ -46,6 +46,7 @@
                     <h3 class="font-semibold text-gray-700 mb-4">My Modules</h3>
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
 
+                        @if (Auth::user()->quran_module_enabled)
                         {{-- Quran Self-Paced --}}
                         <a href="{{ route('courses.index') }}" class="border rounded-lg p-4 hover:shadow-md transition {{ $enrollments->count() > 0 ? 'border-green-200 bg-green-50' : 'border-gray-100' }}">
                             <div class="flex justify-between items-start">
@@ -69,7 +70,9 @@
                             <h4 class="font-medium text-gray-800 mt-2">Live Quran Classes</h4>
                             <p class="text-xs text-gray-500">Online live sessions with teacher</p>
                         </a>
+                        @endif
 
+                        @if (Auth::user()->nikah_module_enabled)
                         {{-- Nikah --}}
                         <a href="{{ $nikahProfile ? route('nikah.show') : route('nikah.create') }}" class="border rounded-lg p-4 hover:shadow-md transition {{ $nikahProfile ? 'border-pink-200 bg-pink-50' : 'border-gray-100' }}">
                             <div class="flex justify-between items-start">
@@ -93,7 +96,9 @@
                                 @endif
                             </p>
                         </a>
+                        @endif
 
+                        @if (Auth::user()->quran_module_enabled)
                         {{-- Certificates --}}
                         <a href="{{ route('certificate.index') }}" class="border rounded-lg p-4 hover:shadow-md transition {{ $certificates->count() > 0 ? 'border-yellow-200 bg-yellow-50' : 'border-gray-100' }}">
                             <div class="flex justify-between items-start">
@@ -105,12 +110,13 @@
                             <h4 class="font-medium text-gray-800 mt-2">Certificates</h4>
                             <p class="text-xs text-gray-500">Earned on course completion</p>
                         </a>
+                        @endif
 
                     </div>
                 </div>
 
                 {{-- Course Progress --}}
-                @if ($enrollments->count() > 0)
+                @if (Auth::user()->quran_module_enabled && $enrollments->count() > 0)
                 <div class="bg-white rounded-lg shadow-sm p-6">
                     <div class="flex justify-between items-center mb-4">
                         <h3 class="font-semibold text-gray-700">My Learning Progress</h3>
@@ -172,13 +178,21 @@
                     <h3 class="font-semibold text-gray-700 mb-4">Quick Links</h3>
                     <div class="space-y-2">
                         <a href="{{ route('profile.edit') }}" class="flex items-center gap-2 text-sm text-gray-600 hover:text-teal-600 py-1">👤 Edit Profile</a>
+                        @if (Auth::user()->quran_module_enabled)
                         <a href="{{ route('courses.index') }}" class="flex items-center gap-2 text-sm text-gray-600 hover:text-teal-600 py-1">📖 Browse Courses</a>
                         <a href="{{ route('quran-live.index') }}" class="flex items-center gap-2 text-sm text-gray-600 hover:text-teal-600 py-1">🎥 Live Classes</a>
                         <a href="{{ route('quran-live.my-class') }}" class="flex items-center gap-2 text-sm text-gray-600 hover:text-teal-600 py-1">📡 My Quran Class</a>
+                        @endif
+                        @if (Auth::user()->nikah_module_enabled)
                         <a href="{{ route('nikah.browse') }}" class="flex items-center gap-2 text-sm text-gray-600 hover:text-teal-600 py-1">💍 Browse Matches</a>
                         <a href="{{ route('nikah.interests') }}" class="flex items-center gap-2 text-sm text-gray-600 hover:text-teal-600 py-1">💌 My Interests</a>
+                        @endif
+                        @if (Auth::user()->counseling_module_enabled)
                         <a href="{{ route('support.create') }}" class="flex items-center gap-2 text-sm text-gray-600 hover:text-teal-600 py-1">🤝 Get Family Support</a>
+                        @endif
+                        @if (Auth::user()->quran_module_enabled)
                         <a href="{{ route('certificate.index') }}" class="flex items-center gap-2 text-sm text-gray-600 hover:text-teal-600 py-1">🎓 My Certificates</a>
+                        @endif
                         <a href="{{ route('volunteer.create') }}" class="flex items-center gap-2 text-sm text-gray-600 hover:text-teal-600 py-1">🤝 Volunteer</a>
                         <a href="{{ route('donate.create') }}" class="flex items-center gap-2 text-sm text-gray-600 hover:text-teal-600 py-1">💝 Donate</a>
                     </div>

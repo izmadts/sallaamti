@@ -44,6 +44,7 @@
  </x-dropdown>
 
  {{-- Quran Dropdown --}}
+ @if (Auth::user()->quran_module_enabled)
  <x-dropdown align="left" width="56">
  <x-slot name="trigger">
  <button class="inline-flex items-center px-3 py-2 rounded-md text-sm font-medium text-white hover:bg-teal-600 focus:outline-none transition
@@ -66,8 +67,10 @@
  <x-dropdown-link :href="route('quran-live.my-progress')">📊 {{ __('db.My Progress') }}</x-dropdown-link>
  </x-slot>
  </x-dropdown>
+ @endif
 
  {{-- Nikah Dropdown — prominent gold pill, single entry point for every Nikah action --}}
+ @if (Auth::user()->nikah_module_enabled)
  <x-dropdown align="left" width="52">
  <x-slot name="trigger">
  <button class="inline-flex items-center gap-1 px-4 py-2 rounded-full text-sm font-semibold text-white focus:outline-none hover:brightness-110 transition"
@@ -98,8 +101,10 @@
  <x-dropdown-link :href="route('nikah.blocked')">🚫 {{ __('db.Blocked Profiles') }}</x-dropdown-link>
  </x-slot>
  </x-dropdown>
+ @endif
 
  {{-- Family Support Dropdown — prominent white pill, single entry point for every counseling action --}}
+ @if (Auth::user()->counseling_module_enabled)
  <x-dropdown align="left" width="56">
  <x-slot name="trigger">
  <button class="inline-flex items-center gap-1 px-4 py-2 rounded-full text-sm font-semibold text-teal-800 bg-white focus:outline-none hover:bg-gray-100 transition">
@@ -115,6 +120,7 @@
  <x-dropdown-link :href="route('support.index')">💬 {{ __('db.Support Queries') }}</x-dropdown-link>
  </x-slot>
  </x-dropdown>
+ @endif
 
  <x-nav-link :href="route('volunteer.create')" :active="request()->routeIs('volunteer.*')"
  class="text-white hover:bg-teal-600 px-3 py-2 rounded-md text-sm">
@@ -220,13 +226,21 @@
  <p class="text-xs text-gray-500">{{ Auth::user()?->email }}</p>
  </div>
  <x-dropdown-link :href="route('profile.edit')">👤 {{ __('db.My Profile') }}</x-dropdown-link>
+ @if (Auth::user()->quran_module_enabled)
  <x-dropdown-link :href="route('courses.my-learning')">📚 {{ __('db.My Learning') }}</x-dropdown-link>
  <x-dropdown-link :href="route('quran-live.my-class')">📡 {{ __('db.My Quran Class') }}</x-dropdown-link>
+ @endif
+ @if (Auth::user()->nikah_module_enabled)
  <x-dropdown-link :href="route('nikah.interests')">💌 {{ __('db.My Interests') }}</x-dropdown-link>
  <x-dropdown-link :href="route('nikah.saved')">★ {{ __('db.Saved Profiles') }}</x-dropdown-link>
+ @endif
+ @if (Auth::user()->quran_module_enabled)
  <x-dropdown-link :href="route('certificate.index')">🎓 {{ __('db.My Certificates') }}</x-dropdown-link>
+ @endif
  <x-dropdown-link :href="route('donate.my')">💝 {{ __('db.My Donations') }}</x-dropdown-link>
+ @if (Auth::user()->counseling_module_enabled)
  <x-dropdown-link :href="route('support.index')">🤝 {{ __('db.My Support Queries') }}</x-dropdown-link>
+ @endif
  <div class="border-t border-gray-100 my-1"></div>
  <form method="POST" action="{{ route('logout') }}">
  @csrf
@@ -294,6 +308,7 @@
  </x-responsive-nav-link>
 
  {{-- Nikah — prominent gold block, one place for every Nikah action --}}
+ @if (Auth::user()->nikah_module_enabled)
  <div class="rounded-lg mt-2 mb-1 overflow-hidden" style="background: rgba(184,150,46,0.18); border: 1px solid rgba(184,150,46,0.4);">
  <div class="px-3 py-1.5 text-xs font-bold uppercase tracking-wider flex items-center gap-1" style="color: #e8c874">
  💍 {{ __('db.Nikah') }}
@@ -309,8 +324,10 @@
  <x-responsive-nav-link :href="route('nikah.saved')" class="text-white">★ {{ __('db.Saved Profiles') }}</x-responsive-nav-link>
  <x-responsive-nav-link :href="route('nikah.blocked')" class="text-white">🚫 {{ __('db.Blocked Profiles') }}</x-responsive-nav-link>
  </div>
+ @endif
 
  {{-- Family Support — prominent teal/white block, one place for every counseling action --}}
+ @if (Auth::user()->counseling_module_enabled)
  <div class="rounded-lg mb-2 overflow-hidden bg-white/10 border border-white/25">
  <div class="px-3 py-1.5 text-xs font-bold uppercase tracking-wider text-white/90">
  🤝 {{ __('db.Family Support') }}
@@ -319,6 +336,7 @@
  <x-responsive-nav-link :href="route('counseling.bookings.index')" class="text-white">🗓️ {{ __('db.My Bookings') }}</x-responsive-nav-link>
  <x-responsive-nav-link :href="route('support.index')" class="text-white">💬 {{ __('db.Support Queries') }}</x-responsive-nav-link>
  </div>
+ @endif
 
  <div class="px-3 py-1 text-xs text-teal-300 font-semibold uppercase tracking-wider mt-2">Website</div>
  <x-responsive-nav-link :href="route('index')" class="text-white">🏡 Home Page</x-responsive-nav-link>
@@ -331,17 +349,21 @@
  <x-responsive-nav-link :href="url('/testimonial')" class="text-white">💬 Testimonials</x-responsive-nav-link>
  <x-responsive-nav-link :href="url('/contact')" class="text-white">✉️ Contact</x-responsive-nav-link>
 
+ @if (Auth::user()->quran_module_enabled)
  <div class="px-3 py-1 text-xs text-teal-300 font-semibold uppercase tracking-wider mt-2">Quran Learning</div>
  <x-responsive-nav-link :href="route('courses.index')" class="text-white">📖 Browse Courses</x-responsive-nav-link>
  <x-responsive-nav-link :href="route('courses.my-learning')" class="text-white">📚 My Learning</x-responsive-nav-link>
  <x-responsive-nav-link :href="route('quran-live.index')" class="text-white">🎥 Live Classes</x-responsive-nav-link>
  <x-responsive-nav-link :href="route('quran-live.my-class')" class="text-white">📡 My Quran Class</x-responsive-nav-link>
  <x-responsive-nav-link :href="route('quran-live.my-progress')" class="text-white">📊 My Progress</x-responsive-nav-link>
+ @endif
 
  <div class="px-3 py-1 text-xs text-teal-300 font-semibold uppercase tracking-wider mt-2">More</div>
  <x-responsive-nav-link :href="route('volunteer.create')" class="text-white">🤝 Volunteer</x-responsive-nav-link>
  <x-responsive-nav-link :href="route('donate.create')" class="text-white">💝 Donate</x-responsive-nav-link>
+ @if (Auth::user()->quran_module_enabled)
  <x-responsive-nav-link :href="route('certificate.index')" class="text-white">🎓 My Certificates</x-responsive-nav-link>
+ @endif
  @role('admin')
  <div class="px-3 py-1 text-xs text-teal-300 font-semibold uppercase tracking-wider mt-2">Admin</div>
  <x-responsive-nav-link :href="route('admin.dashboard')" class="text-white">⚙️ Admin Dashboard</x-responsive-nav-link>
@@ -386,24 +408,39 @@
  </div>
 
  {{-- ===== MOBILE APP-STYLE BOTTOM TAB BAR ===== --}}
+ @php
+ $tabBarColsClass = match (2 + collect([
+ Auth::user()->nikah_module_enabled,
+ Auth::user()->counseling_module_enabled,
+ Auth::user()->quran_module_enabled,
+ ])->filter()->count()) {
+ 2 => 'grid-cols-2', 3 => 'grid-cols-3', 4 => 'grid-cols-4', default => 'grid-cols-5',
+ };
+ @endphp
  <div class="sm:hidden fixed bottom-0 inset-x-0 z-40 bg-teal-800 border-t border-teal-900 safe-bottom-nav">
- <div class="grid grid-cols-5">
+ <div class="grid {{ $tabBarColsClass }}">
  <a href="{{ route('dashboard') }}" class="flex flex-col items-center justify-center gap-0.5 py-2 text-[11px] font-medium {{ request()->routeIs('dashboard') ? 'text-white' : 'text-teal-300' }}">
  <span class="text-lg leading-none">🏠</span>
  {{ __('db.Home') }}
  </a>
+ @if (Auth::user()->nikah_module_enabled)
  <a href="{{ Auth::user()?->nikahProfile ? route('nikah.show') : route('nikah.create') }}" class="flex flex-col items-center justify-center gap-0.5 py-2 text-[11px] font-medium {{ request()->routeIs('nikah.*') ? 'text-white' : 'text-teal-300' }}">
  <span class="text-lg leading-none">💍</span>
  {{ __('db.Nikah') }}
  </a>
+ @endif
+ @if (Auth::user()->counseling_module_enabled)
  <a href="{{ route('counseling.book.start') }}" class="flex flex-col items-center justify-center gap-0.5 py-2 text-[11px] font-medium {{ request()->routeIs('counseling.*') || request()->routeIs('support.*') ? 'text-white' : 'text-teal-300' }}">
  <span class="text-lg leading-none">🤝</span>
  {{ __('db.Support') }}
  </a>
+ @endif
+ @if (Auth::user()->quran_module_enabled)
  <a href="{{ route('courses.index') }}" class="flex flex-col items-center justify-center gap-0.5 py-2 text-[11px] font-medium {{ request()->routeIs('courses.*') || request()->routeIs('quran-live.*') ? 'text-white' : 'text-teal-300' }}">
  <span class="text-lg leading-none">📖</span>
  {{ __('db.Quran') }}
  </a>
+ @endif
  <button type="button" @click="open = !open" class="flex flex-col items-center justify-center gap-0.5 py-2 text-[11px] font-medium" :class="open ? 'text-white' : 'text-teal-300'">
  <span class="text-lg leading-none">☰</span>
  {{ __('db.Menu') }}

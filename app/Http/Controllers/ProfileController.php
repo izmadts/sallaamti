@@ -51,6 +51,22 @@ class ProfileController extends Controller
         return Redirect::route('profile.edit')->with('status', 'profile-updated');
     }
 
+    // Which modules (Nikah / Quran / Family Support) show up in this
+    // member's nav and dashboard. Doesn't restrict access to anything they
+    // already have — e.g. an existing Nikah profile stays fully manageable
+    // even if they later uncheck it here, they just won't see it promoted
+    // in their menu.
+    public function updateModules(Request $request): RedirectResponse
+    {
+        $request->user()->update([
+            'nikah_module_enabled' => $request->boolean('nikah_module_enabled'),
+            'quran_module_enabled' => $request->boolean('quran_module_enabled'),
+            'counseling_module_enabled' => $request->boolean('counseling_module_enabled'),
+        ]);
+
+        return Redirect::route('profile.edit')->with('status', 'modules-updated');
+    }
+
     /**
      * Deactivate the user's account. Not an immediate hard delete — the
      * account and its data stay intact for 30 days so the member can

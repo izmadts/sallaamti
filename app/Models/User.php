@@ -21,6 +21,9 @@ class User extends Authenticatable
         'password',
         'provider',
         'provider_id',
+        'nikah_module_enabled',
+        'quran_module_enabled',
+        'counseling_module_enabled',
     ];
 
     protected $hidden = [
@@ -34,6 +37,9 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'deactivated_at' => 'datetime',
             'password' => 'hashed',
+            'nikah_module_enabled' => 'boolean',
+            'quran_module_enabled' => 'boolean',
+            'counseling_module_enabled' => 'boolean',
         ];
     }
 
