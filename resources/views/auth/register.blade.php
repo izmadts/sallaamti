@@ -76,6 +76,36 @@
                     <x-input-error :messages="$errors->get('password_confirmation')" class="mt-1" />
                 </div>
 
+                {{-- Interests — real, functional checkboxes (not just the trust badges above).
+                     Drives what shows up in this member's menu/dashboard after signup;
+                     changeable anytime from the profile page or the topbar. --}}
+                <div>
+                    <label class="auth-label">
+                        {{ __('db.What are you interested in?') }}
+                        <span class="text-gray-400 font-normal">({{ __('db.optional — change this anytime') }})</span>
+                    </label>
+                    <div class="flex flex-wrap gap-2 mt-1">
+                        <label class="flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-full border cursor-pointer transition hover:bg-gray-50"
+                            style="border-color: var(--gold); color: var(--teal)"
+                            title="{{ __('db.Turn this on and Nikah matchmaking shows in your menu. Turn it off and it stays hidden until you switch it back on — nothing is deleted either way.') }}">
+                            <input type="checkbox" name="nikah_module_enabled" value="1" checked class="auth-checkbox">
+                            💍 {{ __('db.Nikah Platform') }}
+                        </label>
+                        <label class="flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-full border cursor-pointer transition hover:bg-gray-50"
+                            style="border-color: var(--gold); color: var(--teal)"
+                            title="{{ __('db.Turn this on and Quran courses & live classes show in your menu. Turn it off and it stays hidden until you switch it back on — nothing is deleted either way.') }}">
+                            <input type="checkbox" name="quran_module_enabled" value="1" checked class="auth-checkbox">
+                            📖 {{ __('db.Quran Courses & Live Classes') }}
+                        </label>
+                        <label class="flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-full border cursor-pointer transition hover:bg-gray-50"
+                            style="border-color: var(--gold); color: var(--teal)"
+                            title="{{ __('db.Turn this on and Family Counseling booking shows in your menu. Turn it off and it stays hidden until you switch it back on — nothing is deleted either way.') }}">
+                            <input type="checkbox" name="counseling_module_enabled" value="1" checked class="auth-checkbox">
+                            🤝 {{ __('db.Family Support') }}
+                        </label>
+                    </div>
+                </div>
+
                 {{-- Terms --}}
                 <div class="flex items-start gap-2">
                     <input type="checkbox" id="terms" required class="auth-checkbox mt-0.5 flex-shrink-0">

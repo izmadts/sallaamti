@@ -55,6 +55,16 @@ class RegisteredUserController extends Controller
             $request->password
         );
 
+        // Interest checkboxes on the registration form — same columns the
+        // profile page's "Your Interests" section and the topbar toggle
+        // read/write, so whichever the member picks here is already in
+        // effect on their very first dashboard view.
+        $user->update([
+            'nikah_module_enabled' => $request->boolean('nikah_module_enabled'),
+            'quran_module_enabled' => $request->boolean('quran_module_enabled'),
+            'counseling_module_enabled' => $request->boolean('counseling_module_enabled'),
+        ]);
+
         Auth::login($user);
 
         session()->flash('conversion_event', 'user_registered');

@@ -207,6 +207,41 @@
  </div>
  </div>
 
+ {{-- Quick Modules Toggle — same enable/disable as the profile page's
+ "Your Interests" section, without leaving the current page. --}}
+ <x-dropdown align="right" width="64">
+ <x-slot name="trigger">
+ <button class="inline-flex items-center px-2 py-2 rounded-md text-white hover:bg-teal-600 focus:outline-none transition" title="{{ __('db.Show or hide modules in your menu') }}">
+ 🧩
+ </button>
+ </x-slot>
+ <x-slot name="content">
+ <form method="POST" action="{{ route('profile.modules.update') }}" class="px-4 py-3 space-y-2.5" @click.stop>
+ @csrf
+ @method('patch')
+ <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">{{ __('db.Show in my menu') }}</p>
+ <label class="flex items-center gap-2 text-sm text-gray-700 cursor-pointer"
+ title="{{ __('db.Turn this on and Nikah matchmaking shows in your menu. Turn it off and it stays hidden until you switch it back on — nothing is deleted either way.') }}">
+ <input type="checkbox" name="nikah_module_enabled" value="1" {{ Auth::user()->nikah_module_enabled ? 'checked' : '' }} class="rounded border-gray-300 text-teal-600 focus:ring-teal-500">
+ 💍 {{ __('db.Nikah') }}
+ </label>
+ <label class="flex items-center gap-2 text-sm text-gray-700 cursor-pointer"
+ title="{{ __('db.Turn this on and Quran courses & live classes show in your menu. Turn it off and it stays hidden until you switch it back on — nothing is deleted either way.') }}">
+ <input type="checkbox" name="quran_module_enabled" value="1" {{ Auth::user()->quran_module_enabled ? 'checked' : '' }} class="rounded border-gray-300 text-teal-600 focus:ring-teal-500">
+ 📖 {{ __('db.Quran Learning') }}
+ </label>
+ <label class="flex items-center gap-2 text-sm text-gray-700 cursor-pointer"
+ title="{{ __('db.Turn this on and Family Counseling booking shows in your menu. Turn it off and it stays hidden until you switch it back on — nothing is deleted either way.') }}">
+ <input type="checkbox" name="counseling_module_enabled" value="1" {{ Auth::user()->counseling_module_enabled ? 'checked' : '' }} class="rounded border-gray-300 text-teal-600 focus:ring-teal-500">
+ 🤝 {{ __('db.Family Support') }}
+ </label>
+ <button type="submit" class="w-full bg-teal-600 text-white text-xs font-semibold py-1.5 rounded hover:bg-teal-700 transition">
+ {{ __('db.Save') }}
+ </button>
+ </form>
+ </x-slot>
+ </x-dropdown>
+
  {{-- Avatar --}}
  <img src="{{ Auth::user()?->avatarUrl() }}" class="w-8 h-8 rounded-full object-cover border-2 border-white">
 
