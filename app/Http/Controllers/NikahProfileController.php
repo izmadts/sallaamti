@@ -76,6 +76,14 @@ class NikahProfileController extends Controller
         $validated['allow_photo_sharing'] = $request->has('allow_photo_sharing');
         $validated['open_to_polygamy'] = $request->has('open_to_polygamy');
 
+        // Gender isn't a NikahProfile column — it lives on the account and
+        // is never duplicated — but this form shows it too since matching
+        // depends on it. Write it straight through to the account instead.
+        $gender = $request->validate(['gender' => ['required', 'in:male,female']])['gender'];
+        if ($gender !== Auth::user()->gender) {
+            Auth::user()->update(['gender' => $gender]);
+        }
+
         if ($request->hasFile('cnic_front_image')) {
             $validated['cnic_front_image'] = $request->file('cnic_front_image')->store('nikah/cnic', 'private');
         }
@@ -103,8 +111,17 @@ class NikahProfileController extends Controller
                 ->with('status', 'Please create a free account to browse Nikah profiles.');
         }
         
+        // Matching is opposite-gender and reads straight from the account —
+        // if it's ever blank (legacy data, or the wizard's own guard was
+        // bypassed), `gender != NULL` matches nothing in SQL, so this would
+        // otherwise silently show an empty list with no explanation.
+        if (!Auth::user()->gender) {
+            return redirect()->route('profile.edit')
+                ->with('status', 'Please select your gender on your profile first — it\'s needed for Nikah matching.');
+        }
+
         $myProfile = Auth::user()->nikahProfile;
-      
+
         if (!$myProfile) {
             return redirect()->route('nikah.create')->with('status', 'Create your profile first to browse matches.');
         }

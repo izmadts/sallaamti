@@ -66,6 +66,7 @@ class NikahProfileWizardController extends Controller
             'steps' => $this->wizardSteps(),
             'stepTitles' => $this->stepTitles,
             'data' => $data,
+            'accountGender' => Auth::user()->gender,
         ]);
     }
 
@@ -89,7 +90,22 @@ class NikahProfileWizardController extends Controller
             }
         }
 
+        // Gender isn't a NikahProfile column — it lives on the account and
+        // is never duplicated — but matching is opposite-gender, so it must
+        // be set before a profile can be created. Collect it here instead
+        // of bouncing the member to a separate page.
+        if ($step === 'basic') {
+            $rules['gender'] = ['required', 'in:male,female'];
+        }
+
         $validated = $request->validate($rules, $this->nikahProfileMessages());
+
+        if ($step === 'basic') {
+            if ($validated['gender'] !== Auth::user()->gender) {
+                Auth::user()->update(['gender' => $validated['gender']]);
+            }
+            unset($validated['gender']);
+        }
 
         if ($step === 'deen') {
             $validated['sect'] = $this->resolveSect($request);

@@ -100,6 +100,7 @@ return [
     'Your full name' => 'آپ کا پورا نام',
     'Phone Number' => 'فون نمبر',
     'Gender' => 'صنف',
+    'This also updates your account profile — used for opposite-gender matching.' => 'یہ آپ کی اکاؤنٹ پروفائل کو بھی اپ ڈیٹ کرتا ہے — مخالف صنف کی میچنگ کے لیے استعمال ہوتا ہے۔',
     'Select' => 'منتخب کریں',
     'Male' => 'مرد',
     'Female' => 'عورت',

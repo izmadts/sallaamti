@@ -31,6 +31,16 @@
                                 <x-text-input id="age" name="age" type="number" class="w-full mt-1" :value="old('age', $profile->age)" required />
                             </div>
                             <div>
+                                <x-input-label for="gender" :value="__('db.Gender')" />
+                                @php $genderVal = old('gender', $profile->user->gender); @endphp
+                                <select id="gender" name="gender" required class="border-gray-300 rounded-md shadow-sm w-full mt-1">
+                                    <option value="">{{ __('db.Select') }}</option>
+                                    <option value="male" {{ $genderVal === 'male' ? 'selected' : '' }}>{{ __('db.Male') }}</option>
+                                    <option value="female" {{ $genderVal === 'female' ? 'selected' : '' }}>{{ __('db.Female') }}</option>
+                                </select>
+                                <p class="text-xs text-gray-400 mt-1">{{ __('db.This also updates your account profile — used for opposite-gender matching.') }}</p>
+                            </div>
+                            <div>
                                 <x-input-label for="height" value="Height" />
                                 <x-text-input id="height" name="height" type="text" class="w-full mt-1" :value="old('height', $profile->height)" />
                             </div>
