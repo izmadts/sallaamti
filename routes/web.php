@@ -32,6 +32,7 @@ use App\Http\Controllers\DonationController;
 use App\Http\Controllers\Admin\DonationAdminController;
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\SettingsController;
+use App\Http\Controllers\Admin\SystemMaintenanceController;
 use App\Http\Controllers\Admin\BannerController;
 use App\Http\Controllers\Admin\SubscriberAdminController;
 use App\Http\Controllers\SubscriberController;
@@ -254,6 +255,9 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::post('settings', [SettingsController::class, 'update'])->name('settings.update');
     Route::post('settings/demo-nikah-profiles/generate', [SettingsController::class, 'generateDemoNikahProfiles'])->name('settings.demo-nikah.generate');
     Route::post('settings/demo-nikah-profiles/remove', [SettingsController::class, 'removeDemoNikahProfiles'])->name('settings.demo-nikah.remove');
+    Route::get('maintenance', [SystemMaintenanceController::class, 'index'])->name('maintenance.index');
+    Route::post('maintenance/optimize-database', [SystemMaintenanceController::class, 'optimizeDatabase'])->name('maintenance.optimize-database');
+    Route::post('maintenance/optimize-images', [SystemMaintenanceController::class, 'optimizeImages'])->name('maintenance.optimize-images');
     Route::post('banners/reorder', [BannerController::class, 'reorder'])->name('banners.reorder');
     Route::post('banners/{banner}/toggle', [BannerController::class, 'toggle'])->name('banners.toggle');
     Route::resource('banners', BannerController::class);
@@ -273,6 +277,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/nikah-profiles', [NikahVerificationController::class, 'directory'])->name('nikah.profiles');
     Route::get('/nikah-verifications', [NikahVerificationController::class, 'index'])->name('nikah.verifications');
     Route::get('/nikah-verifications/{profile}', [NikahVerificationController::class, 'show'])->name('nikah.show');
+    Route::delete('/nikah-verifications/{profile}', [NikahVerificationController::class, 'destroy'])->name('nikah.destroy');
     Route::post('/nikah-verifications/{profile}/contact', [NikahVerificationController::class, 'contact'])->name('nikah.contact');
     Route::post('/nikah-verifications/bulk-approve', [NikahVerificationController::class, 'bulkApprove'])->name('nikah.verifications.bulk-approve');
     Route::post('/nikah-verifications/{profile}/approve', [NikahVerificationController::class, 'approve'])->name('nikah.approve');

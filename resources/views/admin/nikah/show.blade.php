@@ -272,6 +272,23 @@
                 </div>
             </div>
 
+            {{-- Danger Zone --}}
+            <div class="bg-red-50 border border-red-200 rounded-xl p-6">
+                <h4 class="font-semibold text-red-800 mb-1">⚠️ Danger Zone</h4>
+                <p class="text-xs text-red-700 mb-3">
+                    Permanently wipes this Nikah profile and everything tied to it — photos, CNIC images, payment screenshot, interests, saved/blocked lists, reports, and moderation notes.
+                    The member's account itself is not affected; they can start a fresh Nikah profile afterward. This cannot be undone.
+                </p>
+                <form method="POST" action="{{ route('admin.nikah.destroy', $profile) }}"
+                    onsubmit="return confirm('Permanently delete the Nikah profile and ALL associated data for {{ $profile->user->name }}? This cannot be undone.')">
+                    @csrf
+                    @method('DELETE')
+                    <button class="bg-red-600 text-white text-sm px-4 py-2 rounded hover:bg-red-700">
+                        🗑️ Permanently Delete Nikah Profile
+                    </button>
+                </form>
+            </div>
+
         </div>
     </div>
 </x-admin-layout>

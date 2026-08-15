@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\NikahProfile;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 
 class NikahVerificationController extends Controller
 {
@@ -114,6 +115,33 @@ class NikahVerificationController extends Controller
         $profile->load(['user', 'moderationNotes.admin']);
 
         return view('admin.nikah.show', compact('profile'));
+    }
+
+    // Complete, irreversible wipe — the user account itself stays intact,
+    // only the Nikah profile and everything tied to it (interests, saved
+    // profiles, blocks, reports, moderation notes, photos) disappears. The
+    // DB rows cascade automatically (all `cascadeOnDelete()`), but the
+    // actual files on disk don't, so those must be removed explicitly
+    // first — otherwise they'd become permanently orphaned dead weight.
+    public function destroy(NikahProfile $profile)
+    {
+        $profile->load('photos');
+
+        foreach (['photo', 'cnic_front_image', 'cnic_back_image', 'payment_screenshot'] as $field) {
+            if ($profile->$field) {
+                Storage::disk('private')->delete($profile->$field);
+            }
+        }
+
+        foreach ($profile->photos as $galleryPhoto) {
+            Storage::disk('private')->delete($galleryPhoto->path);
+        }
+
+        $memberName = $profile->user->name;
+        $profile->delete();
+
+        return redirect()->route('admin.nikah.profiles')
+            ->with('status', "Nikah profile and all associated data for {$memberName} permanently deleted.");
     }
 
     public function contact(Request $request, NikahProfile $profile)

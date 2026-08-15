@@ -36,6 +36,44 @@ class ImageOptimizer
         }
     }
 
+    // Re-processes every image already sitting in a directory, in place —
+    // same path, same filename, so nothing else referencing it (DB rows,
+    // other code) needs to change. Used by the admin Maintenance tool to
+    // shrink files that were uploaded before this optimizer existed. Only
+    // ever overwrites a file with a *smaller* result, and skips (never
+    // deletes or breaks) anything it can't decode — safe to re-run anytime.
+    public static function reoptimizeDirectory(string $directory, string $disk, int $maxDimension, int $quality): array
+    {
+        $stats = ['processed' => 0, 'skipped' => 0, 'bytesBefore' => 0, 'bytesAfter' => 0];
+
+        foreach (Storage::disk($disk)->allFiles($directory) as $path) {
+            $before = Storage::disk($disk)->size($path);
+
+            try {
+                $encoded = (string) static::manager()->read(Storage::disk($disk)->path($path))
+                    ->scaleDown(width: $maxDimension, height: $maxDimension)
+                    ->toJpeg(quality: $quality);
+
+                $after = strlen($encoded);
+
+                if ($after < $before) {
+                    Storage::disk($disk)->put($path, $encoded);
+                } else {
+                    $after = $before;
+                }
+
+                $stats['processed']++;
+                $stats['bytesBefore'] += $before;
+                $stats['bytesAfter'] += $after;
+            } catch (\Throwable $e) {
+                report($e);
+                $stats['skipped']++;
+            }
+        }
+
+        return $stats;
+    }
+
     protected static function manager(): ImageManager
     {
         return static::$manager ??= new ImageManager(new Driver());
