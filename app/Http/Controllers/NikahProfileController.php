@@ -284,6 +284,13 @@ class NikahProfileController extends Controller
             404
         );
 
+        // Remember this page so that if a visitor registers or logs in from
+        // here (e.g. to show interest), they land back on this exact profile
+        // instead of the generic dashboard.
+        if (!Auth::check()) {
+            session(['url.intended' => url()->current()]);
+        }
+
         return view('nikah.public-profile', compact('profile'));
     }
 }

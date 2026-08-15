@@ -59,6 +59,6 @@ class RegisteredUserController extends Controller
 
         session()->flash('conversion_event', 'user_registered');
 
-        return redirect(route('dashboard', absolute: false));
+        return redirect()->intended(route('dashboard', absolute: false));
     }
 }

@@ -61,6 +61,61 @@
             </div>
             @endif
 
+            {{-- Shareable profile summary --}}
+            <div class="bg-white rounded-xl shadow-sm p-6">
+                <h4 class="font-semibold text-gray-700 mb-1 border-b pb-2">📤 Share Profile Summary</h4>
+                <p class="text-xs text-gray-400 mt-2 mb-3">
+                    A ready-to-paste profile card for WhatsApp groups, Messenger or anywhere else — missing fields show as ***** instead of being left blank.
+                    Guardian contact, CNIC and payment details are never included.
+                </p>
+
+                @unless ($profile->verification_status === 'verified' && $profile->is_active && !$profile->isSuspended())
+                <p class="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 mb-3">
+                    ⚠️ The profile link below will only work once this profile is verified and active.
+                </p>
+                @endunless
+
+                <textarea id="nikah-share-text" readonly rows="6"
+                    class="w-full border border-gray-200 rounded-lg px-3 py-2 text-xs font-mono text-gray-600 focus:outline-none focus:border-teal-500">{{ $profile->shareSummary() }}</textarea>
+
+                <div class="flex gap-2 flex-wrap mt-3">
+                    <button type="button" onclick="nikahCopyShareSummary(this)"
+                        class="inline-flex items-center gap-2 bg-gray-100 text-gray-700 text-sm px-4 py-2 rounded-lg hover:bg-gray-200">
+                        📋 Copy Summary
+                    </button>
+                    <a href="https://wa.me/?text={{ urlencode($profile->shareSummary()) }}" target="_blank"
+                        class="inline-flex items-center gap-2 bg-green-500 text-white text-sm px-4 py-2 rounded-lg hover:bg-green-600">
+                        💬 WhatsApp
+                    </a>
+                    <button type="button" onclick="nikahShareSummary()"
+                        class="inline-flex items-center gap-2 bg-blue-600 text-white text-sm px-4 py-2 rounded-lg hover:bg-blue-700">
+                        📤 Share (Messenger & more)
+                    </button>
+                </div>
+            </div>
+
+            <script>
+                function nikahCopyShareSummary(btn) {
+                    const text = document.getElementById('nikah-share-text').value;
+                    navigator.clipboard.writeText(text).then(() => {
+                        if (btn) {
+                            const original = btn.innerHTML;
+                            btn.innerHTML = '✅ Copied!';
+                            setTimeout(() => btn.innerHTML = original, 1500);
+                        }
+                    });
+                }
+
+                function nikahShareSummary() {
+                    const text = document.getElementById('nikah-share-text').value;
+                    if (navigator.share) {
+                        navigator.share({ title: 'Sallaamti Nikah Profile', text });
+                    } else {
+                        nikahCopyShareSummary();
+                    }
+                }
+            </script>
+
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div class="lg:col-span-2 space-y-6">
 

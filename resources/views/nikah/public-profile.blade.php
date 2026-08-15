@@ -52,13 +52,27 @@
                 @endif
             </div>
 
-            {{-- Sign-up CTA --}}
+            {{-- Sign-up / show-interest CTA --}}
+            @auth
             <div class="rounded-xl p-6 text-center" style="background: linear-gradient(135deg, #0d6b6b 0%, #1a1a2e 100%);">
-                <p class="text-white font-semibold mb-3">🔒 Sign up on Sallaamti to see the full profile, photos & express interest</p>
-                <a href="{{ route('register') }}" class="inline-block bg-[--gold] text-white text-sm font-semibold px-6 py-3 rounded-lg" style="background:#b8962e">
-                    Join Free →
+                <p class="text-white font-semibold mb-3">💍 View the full profile, photos & show your interest</p>
+                <a href="{{ route('nikah.profile.view', $profile) }}" class="inline-block bg-[--gold] text-white text-sm font-semibold px-6 py-3 rounded-lg" style="background:#b8962e">
+                    View Full Profile →
                 </a>
             </div>
+            @else
+            <div class="rounded-xl p-6 text-center" style="background: linear-gradient(135deg, #0d6b6b 0%, #1a1a2e 100%);">
+                <p class="text-white font-semibold mb-3">🔒 Sign up on Sallaamti to see the full profile, photos & express interest</p>
+                <div class="flex gap-3 justify-center flex-wrap">
+                    <a href="{{ route('register') }}" class="inline-block bg-[--gold] text-white text-sm font-semibold px-6 py-3 rounded-lg" style="background:#b8962e">
+                        Join Free →
+                    </a>
+                    <a href="{{ route('login') }}" class="inline-block border border-white/50 text-white text-sm font-semibold px-6 py-3 rounded-lg hover:bg-white/10">
+                        {{ __('db.Login') }}
+                    </a>
+                </div>
+            </div>
+            @endauth
 
             {{-- Share --}}
             <div class="bg-white rounded-xl shadow-sm p-6 text-center">

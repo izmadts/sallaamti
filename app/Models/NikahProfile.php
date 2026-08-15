@@ -264,6 +264,46 @@ class NikahProfile extends Model
         return $this->hasMany(NikahModerationNote::class)->latest();
     }
 
+    // A ready-to-paste, plain-text profile card for admins to share in
+    // WhatsApp groups / Messenger / elsewhere while matchmaking. Deliberately
+    // excludes CNIC, guardian contact, and payment info — those stay
+    // internal. Missing fields render as ***** rather than being dropped, so
+    // the card keeps its shape wherever it's pasted.
+    public function shareSummary(): string
+    {
+        $field = fn ($value) => filled($value) ? $value : '*****';
+
+        $lines = [
+            '💍 *Sallaamti Nikah Profile* 💍',
+            '',
+            '👤 Age: ' . $field($this->age),
+            '📏 Height: ' . $field($this->height),
+            '💑 Marital Status: ' . $field($this->marital_status ? ucfirst(str_replace('_', ' ', $this->marital_status)) : null),
+            '🕌 Sect: ' . $field($this->sect),
+            '🎓 Education: ' . $field($this->education),
+            '💼 Profession: ' . $field($this->profession),
+            '🏙️ City: ' . $field($this->city) . ($this->country ? ', ' . $this->country : ''),
+            '👪 Family Type: ' . $field($this->family_type),
+            '🙏 Prayer: ' . $field($this->prayer_frequency ? ucfirst($this->prayer_frequency) : null),
+            '🧕 Hijab/Beard: ' . $field($this->hijab_or_beard ? ucfirst($this->hijab_or_beard) : null),
+            '🚭 Smoking: ' . $field($this->smokes ? ucfirst($this->smokes) : null),
+            '🍽️ Diet: ' . $field($this->diet ? ucfirst(str_replace('_', ' ', $this->diet)) : null),
+            '',
+            '📝 *About:*',
+            $field($this->about),
+            '',
+            '🔎 *Looking For:*',
+            $field($this->expectations),
+            '',
+            '👀 View full profile & show interest:',
+            route('nikah.public-view', $this->public_token),
+            '',
+            '✨ Register or log in free on Sallaamti.com to connect directly.',
+        ];
+
+        return implode("\n", $lines);
+    }
+
     // Percentage of the optional-but-valuable fields a seeker has filled in —
     // shown as a nudge on their profile page, not used for matching or search.
     public function completenessPercentage(): int

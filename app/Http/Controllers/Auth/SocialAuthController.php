@@ -94,6 +94,6 @@ class SocialAuthController extends Controller
 
         session()->flash('conversion_event', 'user_login');
 
-        return redirect(route('dashboard', absolute: false));
+        return redirect()->intended(route('dashboard', absolute: false));
     }
 }

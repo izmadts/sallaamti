@@ -101,6 +101,6 @@ class OtpController extends Controller
         session()->forget('otp_pending');
         session()->flash('conversion_event', $pending['purpose'] === 'registration' ? 'user_registered' : 'user_login');
 
-        return redirect(route('dashboard', absolute: false));
+        return redirect()->intended(route('dashboard', absolute: false));
     }
 }
