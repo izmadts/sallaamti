@@ -38,6 +38,15 @@ class ProfileController extends Controller
 
         $request->user()->save();
 
+        // Keep the account and Nikah profile's city in sync both ways — if
+        // they have a Nikah profile with no city of its own yet, carry this
+        // over instead of leaving it blank there.
+        if ($request->user()->city && $nikahProfile = $request->user()->nikahProfile) {
+            if (!$nikahProfile->city) {
+                $nikahProfile->update(['city' => $request->user()->city]);
+            }
+        }
+
         return Redirect::route('profile.edit')->with('status', 'profile-updated');
     }
 

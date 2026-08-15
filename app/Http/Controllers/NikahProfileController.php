@@ -88,6 +88,10 @@ class NikahProfileController extends Controller
 
         $profile->update($validated);
 
+        if (!empty($validated['city']) && !Auth::user()->city) {
+            Auth::user()->update(['city' => $validated['city']]);
+        }
+
         return redirect()->route('nikah.show')->with('status', 'Profile updated successfully.');
     }
 

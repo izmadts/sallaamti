@@ -127,7 +127,7 @@
                             </div>
                             <div>
                                 <x-input-label for="city" value="City" />
-                                <x-text-input id="city" name="city" type="text" class="w-full mt-1" :value="old('city', $profile->city)" required />
+                                <x-text-input id="city" name="city" type="text" class="w-full mt-1" :value="old('city', $profile->city ?: auth()->user()->city)" required />
                             </div>
                             <div>
                                 <x-input-label for="country" value="Country" />

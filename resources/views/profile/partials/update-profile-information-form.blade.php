@@ -73,7 +73,7 @@
  </div>
  <div>
  <x-input-label for="city" :value="__('db.City')" />
- <x-text-input id="city" name="city" type="text" class="mt-1 block w-full" :value="old('city', $user->city)" />
+ <x-text-input id="city" name="city" type="text" class="mt-1 block w-full" :value="old('city', $user->city ?: optional($user->nikahProfile)->city)" />
  <x-input-error class="mt-2" :messages="$errors->get('city')" />
  </div>
  </div>

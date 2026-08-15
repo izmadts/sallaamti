@@ -52,11 +52,20 @@ class NikahProfileWizardController extends Controller
 
         abort_unless(array_key_exists($step, $this->wizardStepFields), 404);
 
+        $data = $this->wizardStepData($step);
+
+        // Don't make members retype what they already told us on their main
+        // account profile — prefill from there the first time this step is
+        // shown, but never clobber anything they've already entered here.
+        if ($step === 'basic' && empty($data['city']) && Auth::user()->city) {
+            $data['city'] = Auth::user()->city;
+        }
+
         return view("nikah.wizard.step-{$step}", [
             'step' => $step,
             'steps' => $this->wizardSteps(),
             'stepTitles' => $this->stepTitles,
-            'data' => $this->wizardStepData($step),
+            'data' => $data,
         ]);
     }
 
@@ -143,6 +152,13 @@ class NikahProfileWizardController extends Controller
         $validated['public_token'] = Str::random(32);
 
         NikahProfile::create($validated);
+
+        // Keep the two profiles in sync both ways — if the account-level
+        // city was never set, this is real data the member just typed, so
+        // carry it over instead of leaving it blank.
+        if (!Auth::user()->city && !empty($validated['city'])) {
+            Auth::user()->update(['city' => $validated['city']]);
+        }
 
         $this->clearWizardSession();
         session()->flash('conversion_event', 'nikah_profile_created');
