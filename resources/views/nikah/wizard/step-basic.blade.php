@@ -24,8 +24,7 @@
                 <form method="POST" action="{{ route('nikah.create.step.save', 'basic') }}" class="space-y-6">
                     @csrf
 
-                    <div>
-                        <h3 class="font-semibold text-gray-700 mb-3 border-b pb-2">{{ __('db.Basic Information') }}</h3>
+                    <x-nikah-section :title="__('db.Basic Information')" icon="🧍" color="blue">
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                                 <x-input-label for="age" :value="__('db.Age')" />
@@ -73,7 +72,7 @@
                                 <x-text-input id="country" name="country" type="text" class="w-full mt-1" :value="old('country', $data['country'] ?? 'Pakistan')" />
                             </div>
                         </div>
-                    </div>
+                    </x-nikah-section>
 
                     <div class="flex justify-end">
                         <x-primary-button>{{ __('db.Next') }} →</x-primary-button>

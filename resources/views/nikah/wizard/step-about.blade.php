@@ -24,8 +24,7 @@
                 <form method="POST" action="{{ route('nikah.create.step.save', 'about') }}" class="space-y-6">
                     @csrf
 
-                    <div>
-                        <h3 class="font-semibold text-gray-700 mb-3 border-b pb-2">{{ __('db.About') }}</h3>
+                    <x-nikah-section :title="__('db.About')" icon="💬" color="purple">
                         <div class="space-y-4">
                             <div>
                                 <x-input-label for="about" :value="__('db.About Yourself')" />
@@ -36,11 +35,9 @@
                                 <textarea id="expectations" name="expectations" rows="3" class="border-gray-300 rounded-md shadow-sm w-full mt-1">{{ old('expectations', $data['expectations'] ?? '') }}</textarea>
                             </div>
                         </div>
-                    </div>
+                    </x-nikah-section>
 
-                    <div>
-                        <h3 class="font-semibold text-gray-700 mb-3 border-b pb-2">{{ __('db.Partner Preferences (optional)') }}</h3>
-                        <p class="text-sm text-gray-500 mb-3">{{ __('db.Tell us what you\'re looking for so we can surface better matches — none of this is required.') }}</p>
+                    <x-nikah-section :title="__('db.Partner Preferences (optional)')" icon="🎯" color="sky" :description="__('db.Tell us what you\'re looking for so we can surface better matches — none of this is required.')">
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                                 <x-input-label for="pref_min_age" :value="__('db.Minimum Age')" />
@@ -67,7 +64,7 @@
                                 <x-text-input id="pref_marital_status" name="pref_marital_status" type="text" class="w-full mt-1" :value="old('pref_marital_status', $data['pref_marital_status'] ?? '')" />
                             </div>
                         </div>
-                    </div>
+                    </x-nikah-section>
 
                     <div class="flex justify-between">
                         <a href="{{ route('nikah.create.step', 'deen') }}" class="btn-base text-gray-600 border border-gray-300 px-4 py-2 rounded-md hover:bg-gray-50">← {{ __('db.Back') }}</a>

@@ -24,8 +24,7 @@
                 <form method="POST" action="{{ route('nikah.create.step.save', 'family') }}" class="space-y-6">
                     @csrf
 
-                    <div>
-                        <h3 class="font-semibold text-gray-700 mb-3 border-b pb-2">{{ __('db.Family & Background') }}</h3>
+                    <x-nikah-section :title="__('db.Family & Background')" icon="👨‍👩‍👧" color="amber">
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                                 <x-input-label for="caste" :value="__('db.Caste (optional)')" />
@@ -56,7 +55,7 @@
                                 <x-text-input id="guardian_contact" name="guardian_contact" type="text" class="w-full mt-1" :value="old('guardian_contact', $data['guardian_contact'] ?? '')" required />
                             </div>
                         </div>
-                    </div>
+                    </x-nikah-section>
 
                     <div class="flex justify-between">
                         <a href="{{ route('nikah.create.step', 'basic') }}" class="btn-base text-gray-600 border border-gray-300 px-4 py-2 rounded-md hover:bg-gray-50">← {{ __('db.Back') }}</a>

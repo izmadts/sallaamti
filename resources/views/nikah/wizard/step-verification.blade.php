@@ -24,13 +24,12 @@
                 <form method="POST" action="{{ route('nikah.create.step.save', 'verification') }}" enctype="multipart/form-data" class="space-y-6">
                     @csrf
 
-                    <div>
-                        <h3 class="font-semibold text-gray-700 mb-3 border-b pb-2">{{ __('db.Verification (Required)') }}</h3>
-                        <p class="text-sm text-gray-500 mb-3">{{ __('db.Your CNIC will only be used for verification and is never shown publicly.') }}</p>
+                    <x-nikah-section :title="__('db.Verification (Required)')" icon="🪪" color="rose" :description="__('db.Your CNIC will only be used for verification and is never shown publicly.')">
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                                 <x-input-label for="cnic_number" :value="__('db.CNIC Number')" />
                                 <x-text-input id="cnic_number" name="cnic_number" type="text" class="w-full mt-1" :value="old('cnic_number', $data['cnic_number'] ?? '')" required />
+                                <p class="text-xs text-gray-400 mt-1">{{ __('db.Must be unique — one CNIC can only be used for one profile.') }}</p>
                             </div>
                             <div></div>
                             <div>
@@ -48,7 +47,7 @@
                                 @endif
                             </div>
                         </div>
-                        <hr class="mt-4 border-b">
+                        <hr class="mt-4 border-rose-200">
                         <div class="mt-4">
                             <x-input-label for="photo" :value="__('db.Your Nikah Profile Photo (private, shared only if you allow, hidden until mutual interest is accepted)')" />
                             <input id="photo" name="photo" type="file" accept="image/*" class="w-full mt-1" />
@@ -60,16 +59,15 @@
                             <input type="checkbox" id="allow_photo_sharing" name="allow_photo_sharing" value="1" {{ old('allow_photo_sharing', $data['allow_photo_sharing'] ?? true) ? 'checked' : '' }} class="rounded">
                             <x-input-label for="allow_photo_sharing" :value="__('db.Allow my photo to be shared with a match after mutual interest is accepted')" />
                         </div>
-                    </div>
+                    </x-nikah-section>
 
-                    <div>
-                        <x-input-label for="visibility" :value="__('db.Profile Visibility')" />
+                    <x-nikah-section :title="__('db.Profile Visibility')" icon="👁️" color="teal">
                         @php $vis = old('visibility', $data['visibility'] ?? 'public'); @endphp
-                        <select id="visibility" name="visibility" required class="border-gray-300 rounded-md shadow-sm w-full mt-1">
+                        <select id="visibility" name="visibility" required class="border-gray-300 rounded-md shadow-sm w-full">
                             <option value="public" {{ $vis === 'public' ? 'selected' : '' }}>{{ __('db.Public (visible in Browse Matches search after verification)') }}</option>
                             <option value="private" {{ $vis === 'private' ? 'selected' : '' }}>{{ __('db.Private (hidden from search — only visible to people you personally send your share link to)') }}</option>
                         </select>
-                    </div>
+                    </x-nikah-section>
 
                     <div class="flex justify-between">
                         <a href="{{ route('nikah.create.step', 'about') }}" class="btn-base text-gray-600 border border-gray-300 px-4 py-2 rounded-md hover:bg-gray-50">← {{ __('db.Back') }}</a>

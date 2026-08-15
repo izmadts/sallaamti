@@ -24,9 +24,7 @@
                 <form method="POST" action="{{ route('nikah.create.step.save', 'deen') }}" class="space-y-6">
                     @csrf
 
-                    <div>
-                        <h3 class="font-semibold text-gray-700 mb-3 border-b pb-2">{{ __('db.Deen & Lifestyle') }}</h3>
-                        <p class="text-sm text-gray-500 mb-3">{{ __('db.These help us match you with someone at a similar stage of practice — all optional, but the more you share, the better your matches.') }}</p>
+                    <x-nikah-section :title="__('db.Deen & Lifestyle')" icon="🕌" color="emerald" :description="__('db.These help us match you with someone at a similar stage of practice — all optional, but the more you share, the better your matches.')">
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div x-data="{ sect: '{{ old('sect', $data['sect'] ?? '') }}' }">
                                 <x-input-label for="sect" :value="__('db.Sect')" />
@@ -88,7 +86,7 @@
                             <input type="checkbox" id="open_to_polygamy" name="open_to_polygamy" value="1" {{ old('open_to_polygamy', $data['open_to_polygamy'] ?? false) ? 'checked' : '' }} class="rounded">
                             <x-input-label for="open_to_polygamy" :value="__('db.I am open to a polygamous marriage (e.g. as/marrying a second wife)')" />
                         </div>
-                    </div>
+                    </x-nikah-section>
 
                     <div class="flex justify-between">
                         <a href="{{ route('nikah.create.step', 'family') }}" class="btn-base text-gray-600 border border-gray-300 px-4 py-2 rounded-md hover:bg-gray-50">← {{ __('db.Back') }}</a>

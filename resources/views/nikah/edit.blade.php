@@ -1,7 +1,7 @@
 <x-app-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Edit Your Nikah Profile') }}
+            {{ __('db.Edit Your Nikah Profile') }}
         </h2>
     </x-slot>
 
@@ -9,8 +9,11 @@
         <div class="max-w-3xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
 
+                <p class="text-sm text-gray-500 mb-6">{{ __('db.Keep your profile up to date — a complete, honest profile gets better matches.') }}</p>
+
                 @if ($errors->any())
-                <div class="mb-4 p-4 bg-red-50 text-red-700 rounded">
+                <div class="mb-4 p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg">
+                    <p class="font-medium text-sm mb-1">{{ __('db.Please fix the following before saving:') }}</p>
                     <ul class="list-disc list-inside text-sm">
                         @foreach ($errors->all() as $error)
                         <li>{{ $error }}</li>
@@ -23,8 +26,7 @@
                     @csrf
                     @method('PUT')
 
-                    <div>
-                        <h3 class="font-semibold text-gray-700 mb-3 border-b pb-2">Basic Information</h3>
+                    <x-nikah-section :title="__('db.Basic Information')" icon="🧍" color="blue">
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                                 <x-input-label for="age" value="Age" />
@@ -80,10 +82,9 @@
                             <input type="checkbox" id="open_to_polygamy" name="open_to_polygamy" value="1" {{ old('open_to_polygamy', $profile->open_to_polygamy) ? 'checked' : '' }} class="rounded">
                             <x-input-label for="open_to_polygamy" value="I am open to a polygamous marriage (e.g. as/marrying a second wife)" />
                         </div>
-                    </div>
+                    </x-nikah-section>
 
-                    <div>
-                        <h3 class="font-semibold text-gray-700 mb-3 border-b pb-2">Deen & Lifestyle</h3>
+                    <x-nikah-section :title="__('db.Deen & Lifestyle')" icon="🕌" color="emerald">
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                                 <x-input-label for="prayer_frequency" value="Prayer (Salah) Regularity" />
@@ -122,10 +123,9 @@
                                 </select>
                             </div>
                         </div>
-                    </div>
+                    </x-nikah-section>
 
-                    <div>
-                        <h3 class="font-semibold text-gray-700 mb-3 border-b pb-2">Education & Profession</h3>
+                    <x-nikah-section :title="__('db.Education & Profession')" icon="🎓" color="indigo">
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                                 <x-input-label for="education" value="Education" />
@@ -152,10 +152,9 @@
                                 <x-text-input id="language" name="language" type="text" class="w-full mt-1" :value="old('language', $profile->language)" placeholder="e.g. Urdu, English" />
                             </div>
                         </div>
-                    </div>
+                    </x-nikah-section>
 
-                    <div>
-                        <h3 class="font-semibold text-gray-700 mb-3 border-b pb-2">Family & Guardian Information</h3>
+                    <x-nikah-section :title="__('db.Family & Guardian Information')" icon="👨‍👩‍👧" color="amber">
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                                 <x-input-label for="family_type" value="Family Type" />
@@ -174,10 +173,9 @@
                                 <x-text-input id="guardian_contact" name="guardian_contact" type="text" class="w-full mt-1" :value="old('guardian_contact', $profile->guardian_contact)" required />
                             </div>
                         </div>
-                    </div>
+                    </x-nikah-section>
 
-                    <div>
-                        <h3 class="font-semibold text-gray-700 mb-3 border-b pb-2">About</h3>
+                    <x-nikah-section :title="__('db.About')" icon="💬" color="purple">
                         <div class="space-y-4">
                             <div>
                                 <x-input-label for="about" value="About Yourself" />
@@ -188,25 +186,24 @@
                                 <textarea id="expectations" name="expectations" rows="3" class="border-gray-300 rounded-md shadow-sm w-full mt-1">{{ old('expectations', $profile->expectations) }}</textarea>
                             </div>
                         </div>
-                    </div>
+                    </x-nikah-section>
 
-                    <div>
-                        <h3 class="font-semibold text-gray-700 mb-3 border-b pb-2">Verification</h3>
+                    <x-nikah-section :title="__('db.Verification')" icon="🪪" color="rose" :description="__('db.Your CNIC is private and never shown publicly.')">
                         <div>
                             @if ($profile->cnic_number && $profile->cnic_front_image && $profile->cnic_back_image)
-                            <div class="bg-gray-50 border border-gray-200 rounded p-4 text-sm text-gray-600">
+                            <div class="bg-white border border-rose-200 rounded-lg p-4 text-sm text-gray-600">
                                 <p class="font-medium text-gray-700 mb-1">🔒 CNIC Verification Submitted</p>
                                 <p>CNIC Number: {{ $profile->cnic_number }}</p>
                                 <p class="mt-1">Your CNIC details are locked and cannot be changed here. If you need to update your CNIC, please contact support.</p>
                             </div>
                             @else
                             <p class="text-sm text-gray-500 mb-3">Leave file fields blank to keep your current uploads.</p>
-                            <p class="text-sm text-gray-500 mb-3">Your CNIC will only be used for verification and is never shown publicly.</p>
                             <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 @if (!$profile->cnic_number)
                                 <div>
                                     <x-input-label for="cnic_number" value="CNIC Number" />
                                     <x-text-input id="cnic_number" name="cnic_number" type="text" class="w-full mt-1" :value="old('cnic_number')" required />
+                                    <p class="text-xs text-gray-400 mt-1">{{ __('db.Must be unique — one CNIC can only be used for one profile.') }}</p>
                                 </div>
                                 @endif
                                 @if (!$profile->cnic_front_image)
@@ -224,7 +221,7 @@
                             </div>
                             @endif
                         </div>
-                        <hr class="mt-4 border-b">
+                        <hr class="mt-4 border-rose-200">
                         <div class="mt-4 flex items-center gap-2">
                             <input type="checkbox" id="allow_photo_sharing" name="allow_photo_sharing" value="1" {{ old('allow_photo_sharing', $profile->allow_photo_sharing) ? 'checked' : '' }} class="rounded">
                             <x-input-label for="allow_photo_sharing" value="Allow my photo to be shared with a match after mutual interest is accepted" />
@@ -233,17 +230,16 @@
                             <x-input-label for="photo" value="Your Photo (replace)" />
                             <input id="photo" name="photo" type="file" accept="image/*" class="w-full mt-1" />
                         </div>
-                    </div>
+                    </x-nikah-section>
 
-                    <div>
-                        <x-input-label for="visibility" value="Profile Visibility" />
-                        <select id="visibility" name="visibility" required class="border-gray-300 rounded-md shadow-sm w-full mt-1">
+                    <x-nikah-section :title="__('db.Profile Visibility')" icon="👁️" color="teal">
+                        <select id="visibility" name="visibility" required class="border-gray-300 rounded-md shadow-sm w-full">
                             <option value="public" {{ old('visibility', $profile->visibility) === 'public' ? 'selected' : '' }}>Public (visible in Browse Matches search)</option>
                             <option value="private" {{ old('visibility', $profile->visibility) === 'private' ? 'selected' : '' }}>Private (hidden from search — only visible via your share link)</option>
                         </select>
-                    </div>
-                    <div>
-                        <h3 class="font-semibold text-gray-700 mb-3 border-b pb-2">Match Preferences (improves match %)</h3>
+                    </x-nikah-section>
+
+                    <x-nikah-section :title="__('db.Match Preferences')" icon="🎯" color="sky" :description="__('db.Sharing these improves your match %.')">
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                                 <x-input-label value="Preferred Min Age" />
@@ -275,8 +271,9 @@
                                 </select>
                             </div>
                         </div>
-                    </div>
-                    <div class="flex justify-end gap-3">
+                    </x-nikah-section>
+
+                    <div class="flex justify-end gap-3 pt-2">
                         <a href="{{ route('nikah.show') }}" class="px-4 py-2 text-sm text-gray-600">Cancel</a>
                         <x-primary-button>Update Profile</x-primary-button>
                     </div>
