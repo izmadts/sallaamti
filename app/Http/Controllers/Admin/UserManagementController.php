@@ -12,7 +12,9 @@ class UserManagementController extends Controller
 {
     public function index(Request $request)
     {
-        $query = User::with('roles')->latest();
+        $query = User::with('roles', 'nikahProfile')
+            ->withCount(['enrollments', 'counselingBookings'])
+            ->latest();
 
         if ($request->filled('search')) {
             $search = $request->search;
@@ -29,6 +31,12 @@ class UserManagementController extends Controller
 
         if ($request->filled('status')) {
             $query->where('is_active', $request->status === 'active');
+        }
+
+        if ($request->filled('provider')) {
+            $request->provider === 'unknown'
+                ? $query->whereNull('provider')
+                : $query->where('provider', $request->provider);
         }
 
         $users = $query->paginate(15)->withQueryString();

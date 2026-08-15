@@ -75,9 +75,10 @@ class SocialAuthController extends Controller
             $user = $this->createMinimalUser(
                 $socialUser->getName() ?? $socialUser->getNickname() ?? 'Sallaamti User',
                 $socialUser->getEmail(),
-                null
+                null,
+                provider: $provider
             );
-            $user->update(['provider' => $provider, 'provider_id' => $socialUser->getId()]);
+            $user->update(['provider_id' => $socialUser->getId()]);
         }
 
         if (!$user->email_verified_at && $socialUser->getEmail()) {

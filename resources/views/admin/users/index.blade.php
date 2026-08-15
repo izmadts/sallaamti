@@ -33,18 +33,31 @@
                         <option value="inactive" {{ request('status') === 'inactive' ? 'selected' : '' }}>Inactive</option>
                     </select>
                 </div>
+                <div>
+                    <label class="text-xs text-gray-500">Joined Via</label>
+                    <select name="provider" class="border-gray-300 rounded text-sm block">
+                        <option value="">All</option>
+                        <option value="password" {{ request('provider') === 'password' ? 'selected' : '' }}>📧 Email/Password</option>
+                        <option value="whatsapp" {{ request('provider') === 'whatsapp' ? 'selected' : '' }}>💬 WhatsApp OTP</option>
+                        <option value="google" {{ request('provider') === 'google' ? 'selected' : '' }}>🔵 Google</option>
+                        <option value="facebook" {{ request('provider') === 'facebook' ? 'selected' : '' }}>🔷 Facebook</option>
+                        <option value="unknown" {{ request('provider') === 'unknown' ? 'selected' : '' }}>❓ Unknown</option>
+                    </select>
+                </div>
                 <button class="bg-gray-800 text-white text-sm px-4 py-2 rounded">Filter</button>
                 <a href="{{ route('admin.users.index') }}" class="text-sm text-gray-500 px-2">Reset</a>
             </form>
 
             {{-- User Table --}}
-            <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+            <div class="bg-white rounded-lg shadow-sm overflow-x-auto">
                 <table class="w-full text-sm">
                     <thead class="bg-gray-50 text-gray-500 text-xs uppercase">
                         <tr>
                             <th class="px-4 py-3 text-left">User</th>
                             <th class="px-4 py-3 text-left">Contact</th>
                             <th class="px-4 py-3 text-left">Roles</th>
+                            <th class="px-4 py-3 text-left whitespace-nowrap">Joined Via</th>
+                            <th class="px-4 py-3 text-left whitespace-nowrap">Engaged In</th>
                             <th class="px-4 py-3 text-left">Status</th>
                             <th class="px-4 py-3 text-left">Joined</th>
                             <th class="px-4 py-3 text-left">Actions</th>
@@ -80,6 +93,27 @@
                                     @endforelse
                                 </div>
                             </td>
+                            <td class="px-4 py-3 whitespace-nowrap">
+                                <span class="text-xs px-2 py-0.5 rounded-full bg-gray-100 text-gray-600">
+                                    {{ $user->joinSourceLabel() }}
+                                </span>
+                            </td>
+                            <td class="px-4 py-3">
+                                <div class="flex flex-wrap gap-1">
+                                    @if ($user->nikahProfile)
+                                    <span class="text-xs px-2 py-0.5 rounded-full bg-pink-100 text-pink-700 whitespace-nowrap">💍 Nikah</span>
+                                    @endif
+                                    @if ($user->enrollments_count > 0)
+                                    <span class="text-xs px-2 py-0.5 rounded-full bg-teal-100 text-teal-700 whitespace-nowrap">📖 Quran</span>
+                                    @endif
+                                    @if ($user->counseling_bookings_count > 0)
+                                    <span class="text-xs px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-700 whitespace-nowrap">🤝 Counseling</span>
+                                    @endif
+                                    @if (!$user->nikahProfile && $user->enrollments_count === 0 && $user->counseling_bookings_count === 0)
+                                    <span class="text-xs text-gray-400">—</span>
+                                    @endif
+                                </div>
+                            </td>
                             <td class="px-4 py-3">
                                 <span class="text-xs px-2 py-0.5 rounded-full {{ $user->is_active ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700' }}">
                                     {{ $user->is_active ? 'Active' : 'Inactive' }}
@@ -107,7 +141,7 @@
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="6" class="px-4 py-6 text-center text-gray-400">No users found.</td>
+                            <td colspan="8" class="px-4 py-6 text-center text-gray-400">No users found.</td>
                         </tr>
                         @endforelse
                     </tbody>

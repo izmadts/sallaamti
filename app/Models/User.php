@@ -80,4 +80,23 @@ class User extends Authenticatable
     {
         return $this->hasMany(Donation::class);
     }
+
+    public function counselingBookings()
+    {
+        return $this->hasMany(CounselingBooking::class, 'member_id');
+    }
+
+    // How this account was created — surfaced to admins so they can tell
+    // Google/Facebook/WhatsApp-OTP/direct-password signups apart. Accounts
+    // created before this was tracked have no `provider` value.
+    public function joinSourceLabel(): string
+    {
+        return match ($this->provider) {
+            'google' => '🔵 Google',
+            'facebook' => '🔷 Facebook',
+            'whatsapp' => '💬 WhatsApp OTP',
+            'password' => '📧 Email/Password',
+            default => '❓ Unknown',
+        };
+    }
 }

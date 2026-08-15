@@ -9,13 +9,14 @@ use Illuminate\Support\Str;
 
 trait RegistersMinimalUsers
 {
-    protected function createMinimalUser(string $name, ?string $email, ?string $phone, ?string $password = null): User
+    protected function createMinimalUser(string $name, ?string $email, ?string $phone, ?string $password = null, string $provider = 'password'): User
     {
         $user = User::create([
             'name' => $name,
             'email' => $email,
             'phone' => $phone,
             'password' => Hash::make($password ?? Str::random(40)),
+            'provider' => $provider,
         ]);
 
         $user->assignRole('member');
