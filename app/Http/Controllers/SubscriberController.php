@@ -8,6 +8,16 @@ class SubscriberController extends Controller
 {
     public function store(Request $request)
     {
+        // Honeypot: real visitors never see or fill this field, bots that
+        // auto-fill every input do. Pretend success so the bot doesn't
+        // learn to skip the field next time.
+        if ($request->filled('website')) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Please check your email to verify subscription.'
+            ]);
+        }
+
         $request->validate([
             'email' => 'required|email|max:255'
         ]);

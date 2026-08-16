@@ -11,6 +11,11 @@
                 <div class="relative mx-auto">
                     <form id="subscribeForm" action="{{ route('subscribe') }}" method="POST">
                         @csrf
+                        {{-- Honeypot: hidden from real visitors, bots that auto-fill every field will trip it --}}
+                        <div class="absolute -left-[9999px]" aria-hidden="true">
+                            <label for="subscribe_website">Leave this field empty</label>
+                            <input type="text" name="website" id="subscribe_website" tabindex="-1" autocomplete="off">
+                        </div>
                         <div class="relative mx-auto">
                             <input name="email"
                                 type="email"
