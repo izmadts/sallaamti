@@ -52,22 +52,11 @@
                                         $heightOptions[] = $ft . "'" . $in . '"';
                                     }
                                 }
-                                $heightVal = old('height', $profile->height);
-                                $heightIsOther = $heightVal && !in_array($heightVal, $heightOptions);
                             @endphp
-                            <div x-data="{ ht: '{{ $heightIsOther ? 'Other' : $heightVal }}' }">
+                            <div>
                                 <x-input-label for="height" value="Height" />
-                                <select id="height" name="height" x-model="ht" class="border-gray-300 rounded-md shadow-sm w-full mt-1"
-                                    title="{{ __('db.Optional — a fixed list keeps this consistent for matching.') }}">
-                                    <option value="">{{ __('db.Prefer not to say') }}</option>
-                                    @foreach ($heightOptions as $h)
-                                    <option value="{{ $h }}">{{ $h }}</option>
-                                    @endforeach
-                                    <option value="Other">{{ __('db.Other') }}</option>
-                                </select>
-                                <div x-show="ht === 'Other'" x-cloak class="mt-2">
-                                    <x-text-input name="height_other" type="text" class="w-full" placeholder="{{ __('db.e.g. 173cm') }}" :value="old('height_other', $heightIsOther ? $heightVal : '')" />
-                                </div>
+                                <x-searchable-select name="height" :options="$heightOptions" :value="old('height', $profile->height)"
+                                    placeholder="{{ __('db.Type to search, scroll, or pick from the list') }}" title="{{ __('db.Optional — a fixed list keeps this consistent for matching, but you can type any value.') }}" />
                             </div>
                             <div>
                                 <x-input-label for="marital_status" value="Marital Status" />
@@ -161,13 +150,8 @@
                             @php $educationLevels = ['Matric / O-Levels', 'Intermediate / A-Levels', "Bachelor's", "Master's", 'MPhil / MS', 'PhD', 'Madrassah / Islamic Education']; @endphp
                             <div>
                                 <x-input-label for="education" value="Education" />
-                                <x-text-input id="education" name="education" type="text" list="education-list" autocomplete="off" class="w-full mt-1" :value="old('education', $profile->education)"
-                                    placeholder="{{ __('db.Type to search, or pick from the list') }}" title="{{ __('db.Start typing to filter, or click the list to pick directly — you can also type something not listed.') }}" />
-                                <datalist id="education-list">
-                                    @foreach ($educationLevels as $lvl)
-                                    <option value="{{ $lvl }}">
-                                    @endforeach
-                                </datalist>
+                                <x-searchable-select name="education" :options="$educationLevels" :value="old('education', $profile->education)"
+                                    placeholder="{{ __('db.Type to search, scroll, or pick from the list') }}" title="{{ __('db.Start typing to filter, scroll the list, or click one to pick it — you can also type something not listed.') }}" />
                             </div>
                             <div>
                                 <x-input-label for="profession" value="Profession" />
@@ -226,24 +210,14 @@
                             @php $familyTypeOptions = ['Joint Family', 'Nuclear Family', 'Living with In-Laws']; @endphp
                             <div>
                                 <x-input-label for="family_type" value="Family Type" />
-                                <x-text-input id="family_type" name="family_type" type="text" list="family-type-list" autocomplete="off" class="w-full mt-1" :value="old('family_type', $profile->family_type)"
-                                    placeholder="{{ __('db.Type to search, or pick from the list') }}" title="{{ __('db.Do you live in a joint family or on your own as a separate household?') }}" />
-                                <datalist id="family-type-list">
-                                    @foreach ($familyTypeOptions as $ft)
-                                    <option value="{{ $ft }}">
-                                    @endforeach
-                                </datalist>
+                                <x-searchable-select name="family_type" :options="$familyTypeOptions" :value="old('family_type', $profile->family_type)"
+                                    placeholder="{{ __('db.Type to search, scroll, or pick from the list') }}" title="{{ __('db.Do you live in a joint family or on your own as a separate household?') }}" />
                             </div>
-                            @php $guardianRelOptions = ['Father', 'Mother', 'Brother', 'Sister', 'Uncle', 'Aunt', 'Grandfather', 'Grandmother']; @endphp
+                            @php $guardianRelOptions = ['Self', 'Father', 'Mother', 'Brother', 'Sister', 'Uncle', 'Aunt', 'Grandfather', 'Grandmother']; @endphp
                             <div>
                                 <x-input-label for="guardian_relation" value="Guardian Relation" />
-                                <x-text-input id="guardian_relation" name="guardian_relation" type="text" list="guardian-relation-list" autocomplete="off" class="w-full mt-1" :value="old('guardian_relation', $profile->guardian_relation)"
-                                    placeholder="{{ __('db.Type to search, or pick from the list') }}" title="{{ __('db.Your relationship to the guardian named below.') }}" />
-                                <datalist id="guardian-relation-list">
-                                    @foreach ($guardianRelOptions as $rel)
-                                    <option value="{{ $rel }}">
-                                    @endforeach
-                                </datalist>
+                                <x-searchable-select name="guardian_relation" :options="$guardianRelOptions" :value="old('guardian_relation', $profile->guardian_relation)"
+                                    placeholder="{{ __('db.Type to search, scroll, or pick from the list') }}" title="{{ __('db.Your relationship to the guardian named below — pick Self if you\'re acting as your own guardian.') }}" />
                             </div>
                             <div>
                                 <x-input-label for="guardian_name" value="Guardian Name" />

@@ -141,6 +141,13 @@
  class="inline-flex items-center rounded-md bg-[--teal] px-4 py-2 text-white text-sm font-medium hover:bg-[--teal-dark] transition">
  <i class="fa fa-tachometer-alt mr-1"></i> {{ __('db.Dashboard') }}
  </a>
+ <form method="POST" action="{{ route('logout') }}" class="inline-flex">
+ @csrf
+ <button type="submit"
+ class="inline-flex items-center rounded-md border border-gray-500 px-4 py-2 text-gray-200 text-sm font-medium hover:bg-white hover:text-[--teal-dark] transition">
+ <i class="fa fa-sign-out-alt mr-1"></i> {{ __('db.Log Out') }}
+ </button>
+ </form>
  @else
  <a href="{{ route('login') }}"
  class="inline-flex items-center rounded-md border border-[--teal] px-4 py-2 text-[--teal] text-sm font-medium hover:bg-[--teal] hover:text-white transition">
@@ -171,6 +178,13 @@
  class="inline-flex items-center rounded-md bg-[--teal] text-white text-sm font-medium px-3 py-1.5">
  <i class="fa fa-th-large mr-1"></i>{{ __('db.Dashboard') }}
  </a>
+ <form method="POST" action="{{ route('logout') }}" class="inline-flex">
+ @csrf
+ <button type="submit"
+ class="inline-flex items-center rounded-md border border-[--teal] text-[--teal] text-sm font-medium px-3 py-1.5">
+ <i class="fa fa-sign-out-alt"></i>
+ </button>
+ </form>
  @else
  <a href="{{ route('login') }}"
  class="inline-flex items-center rounded-md border border-[--teal] text-[--teal] text-sm font-medium px-3 py-1.5">

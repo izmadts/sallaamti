@@ -34,13 +34,8 @@
                             @php $familyTypeOptions = ['Joint Family', 'Nuclear Family', 'Living with In-Laws']; @endphp
                             <div>
                                 <x-input-label for="family_type" :value="__('db.Family Type')" />
-                                <x-text-input id="family_type" name="family_type" type="text" list="family-type-list" autocomplete="off" class="w-full mt-1" :value="old('family_type', $data['family_type'] ?? '')"
-                                    placeholder="{{ __('db.Type to search, or pick from the list') }}" title="{{ __('db.Do you live in a joint family or on your own as a separate household?') }}" />
-                                <datalist id="family-type-list">
-                                    @foreach ($familyTypeOptions as $ftOpt)
-                                    <option value="{{ $ftOpt }}">
-                                    @endforeach
-                                </datalist>
+                                <x-searchable-select name="family_type" :options="$familyTypeOptions" :value="old('family_type', $data['family_type'] ?? '')"
+                                    placeholder="{{ __('db.Type to search, scroll, or pick from the list') }}" title="{{ __('db.Do you live in a joint family or on your own as a separate household?') }}" />
                             </div>
                             <div>
                                 <x-input-label for="ethnicity" :value="__('db.Ethnicity (optional)')" />
@@ -67,16 +62,11 @@
                                     <x-text-input name="language_other" type="text" class="w-full" placeholder="{{ __('db.e.g. Balti, Hindko, Arabic') }}" :value="old('language_other', $data['language_other'] ?? '')" />
                                 </div>
                             </div>
-                            @php $guardianRelOptions = ['Father', 'Mother', 'Brother', 'Sister', 'Uncle', 'Aunt', 'Grandfather', 'Grandmother']; @endphp
+                            @php $guardianRelOptions = ['Self', 'Father', 'Mother', 'Brother', 'Sister', 'Uncle', 'Aunt', 'Grandfather', 'Grandmother']; @endphp
                             <div>
                                 <x-input-label for="guardian_relation" :value="__('db.Guardian Relation')" />
-                                <x-text-input id="guardian_relation" name="guardian_relation" type="text" list="guardian-relation-list" autocomplete="off" class="w-full mt-1" :value="old('guardian_relation', $data['guardian_relation'] ?? '')"
-                                    placeholder="{{ __('db.Type to search, or pick from the list') }}" title="{{ __('db.Your relationship to the guardian named below.') }}" />
-                                <datalist id="guardian-relation-list">
-                                    @foreach ($guardianRelOptions as $relOpt)
-                                    <option value="{{ $relOpt }}">
-                                    @endforeach
-                                </datalist>
+                                <x-searchable-select name="guardian_relation" :options="$guardianRelOptions" :value="old('guardian_relation', $data['guardian_relation'] ?? '')"
+                                    placeholder="{{ __('db.Type to search, scroll, or pick from the list') }}" title="{{ __('db.Your relationship to the guardian named below — pick Self if you\'re acting as your own guardian.') }}" />
                             </div>
                             <div>
                                 <x-input-label for="guardian_name" :value="__('db.Guardian Name')" />

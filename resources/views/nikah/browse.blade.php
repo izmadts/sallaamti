@@ -57,36 +57,24 @@
                         <option value="married" {{ request('marital_status') === 'married' ? 'selected' : '' }}>Married (Second Wife)</option>
                     </select>
                 </div>
-                <div>
+                @php $educationFilterOptions = ['Matric / O-Levels', 'Intermediate / A-Levels', "Bachelor's", "Master's", 'MPhil / MS', 'PhD', 'Madrassah / Islamic Education']; @endphp
+                <div class="w-32">
                     <label class="text-xs text-gray-500">Education</label>
-                    <input type="text" name="education" value="{{ request('education') }}" list="education-filter-list" autocomplete="off" placeholder="Type to search" class="border-gray-300 rounded text-sm block w-32">
-                    <datalist id="education-filter-list">
-                        @foreach (['Matric / O-Levels', 'Intermediate / A-Levels', "Bachelor's", "Master's", 'MPhil / MS', 'PhD', 'Madrassah / Islamic Education'] as $lvl)
-                        <option value="{{ $lvl }}">
-                        @endforeach
-                    </datalist>
+                    <x-searchable-select name="education" :options="$educationFilterOptions" :value="request('education')" class="text-sm" placeholder="Any" />
                 </div>
                 <div>
                     <label class="text-xs text-gray-500">Ethnicity</label>
                     <input type="text" name="ethnicity" value="{{ request('ethnicity') }}" class="border-gray-300 rounded text-sm block w-24">
                 </div>
-                <div>
+                @php $languageFilterOptions = ['Urdu', 'English', 'Punjabi', 'Pashto', 'Sindhi', 'Saraiki', 'Balochi']; @endphp
+                <div class="w-28">
                     <label class="text-xs text-gray-500">Language</label>
-                    <input type="text" name="language" value="{{ request('language') }}" list="language-filter-list" autocomplete="off" placeholder="Type to search" class="border-gray-300 rounded text-sm block w-28">
-                    <datalist id="language-filter-list">
-                        @foreach (['Urdu', 'English', 'Punjabi', 'Pashto', 'Sindhi', 'Saraiki', 'Balochi'] as $lang)
-                        <option value="{{ $lang }}">
-                        @endforeach
-                    </datalist>
+                    <x-searchable-select name="language" :options="$languageFilterOptions" :value="request('language')" class="text-sm" placeholder="Any" />
                 </div>
-                <div>
+                @php $familyTypeFilterOptions = ['Joint Family', 'Nuclear Family', 'Living with In-Laws']; @endphp
+                <div class="w-32">
                     <label class="text-xs text-gray-500">Family Type</label>
-                    <input type="text" name="family_type" value="{{ request('family_type') }}" list="family-type-filter-list" autocomplete="off" placeholder="Type to search" class="border-gray-300 rounded text-sm block w-32">
-                    <datalist id="family-type-filter-list">
-                        @foreach (['Joint Family', 'Nuclear Family', 'Living with In-Laws'] as $ft)
-                        <option value="{{ $ft }}">
-                        @endforeach
-                    </datalist>
+                    <x-searchable-select name="family_type" :options="$familyTypeFilterOptions" :value="request('family_type')" class="text-sm" placeholder="Any" />
                 </div>
                 @php
                     $heightFilterOptions = [];
@@ -97,23 +85,13 @@
                         }
                     }
                 @endphp
-                <div>
+                <div class="w-24">
                     <label class="text-xs text-gray-500">Min Height</label>
-                    <select name="min_height" class="border-gray-300 rounded text-sm block">
-                        <option value="">Any</option>
-                        @foreach ($heightFilterOptions as $h)
-                        <option value="{{ $h }}" {{ request('min_height') === $h ? 'selected' : '' }}>{{ $h }}</option>
-                        @endforeach
-                    </select>
+                    <x-searchable-select name="min_height" :options="$heightFilterOptions" :value="request('min_height')" class="text-sm" placeholder="Any" />
                 </div>
-                <div>
+                <div class="w-24">
                     <label class="text-xs text-gray-500">Max Height</label>
-                    <select name="max_height" class="border-gray-300 rounded text-sm block">
-                        <option value="">Any</option>
-                        @foreach ($heightFilterOptions as $h)
-                        <option value="{{ $h }}" {{ request('max_height') === $h ? 'selected' : '' }}>{{ $h }}</option>
-                        @endforeach
-                    </select>
+                    <x-searchable-select name="max_height" :options="$heightFilterOptions" :value="request('max_height')" class="text-sm" placeholder="Any" />
                 </div>
                 <div>
                     <label class="text-xs text-gray-500">Prayer Regularity</label>

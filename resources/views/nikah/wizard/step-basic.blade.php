@@ -50,28 +50,11 @@
                                         $heightOptions[] = $ft . "'" . $in . '"';
                                     }
                                 }
-                                // $data['height'] holds the already-resolved value from a prior
-                                // save (which is the custom text itself when "Other" was chosen,
-                                // not the literal sentinel) — so infer "Other" from a value that
-                                // doesn't match any fixed option, same as the edit form does.
-                                $heightVal = old('height', $data['height'] ?? '');
-                                $heightOtherRaw = old('height_other', $data['height_other'] ?? '');
-                                $heightIsOther = $heightVal === 'Other' || ($heightVal !== '' && !in_array($heightVal, $heightOptions));
-                                $heightOtherPrefill = $heightOtherRaw !== '' ? $heightOtherRaw : ($heightIsOther ? $heightVal : '');
                             @endphp
-                            <div x-data="{ ht: '{{ $heightIsOther ? 'Other' : $heightVal }}' }">
+                            <div>
                                 <x-input-label for="height" :value="__('db.Height')" />
-                                <select id="height" name="height" x-model="ht" class="border-gray-300 rounded-md shadow-sm w-full mt-1"
-                                    title="{{ __('db.Optional — a fixed list keeps this consistent for matching.') }}">
-                                    <option value="">{{ __('db.Prefer not to say') }}</option>
-                                    @foreach ($heightOptions as $h)
-                                    <option value="{{ $h }}">{{ $h }}</option>
-                                    @endforeach
-                                    <option value="Other">{{ __('db.Other') }}</option>
-                                </select>
-                                <div x-show="ht === 'Other'" x-cloak class="mt-2">
-                                    <x-text-input name="height_other" type="text" class="w-full" placeholder="{{ __('db.e.g. 173cm') }}" value="{{ $heightOtherPrefill }}" />
-                                </div>
+                                <x-searchable-select name="height" :options="$heightOptions" :value="old('height', $data['height'] ?? '')"
+                                    placeholder="{{ __('db.Type to search, scroll, or pick from the list') }}" title="{{ __('db.Optional — a fixed list keeps this consistent for matching, but you can type any value.') }}" />
                             </div>
                             <div>
                                 <x-input-label for="marital_status" :value="__('db.Marital Status')" />
@@ -88,17 +71,8 @@
                             @php $educationLevels = ['Matric / O-Levels', 'Intermediate / A-Levels', "Bachelor's", "Master's", 'MPhil / MS', 'PhD', 'Madrassah / Islamic Education']; @endphp
                             <div>
                                 <x-input-label for="education" :value="__('db.Education')" />
-                                <x-text-input id="education" name="education" type="text" list="education-list" autocomplete="off" class="w-full mt-1" :value="old('education', $data['education'] ?? '')"
-                                    placeholder="{{ __('db.Type to search, or pick from the list') }}" title="{{ __('db.Start typing to filter, or click the list to pick directly — you can also type something not listed.') }}" />
-                                {{-- A <datalist> option's value is both what's suggested AND what gets
-                                     submitted if picked, so it can't be translated the way a <select>
-                                     option's separate label/value pair can — kept in canonical English
-                                     so it stays consistent with what's actually stored and searched. --}}
-                                <datalist id="education-list">
-                                    @foreach ($educationLevels as $lvl)
-                                    <option value="{{ $lvl }}">
-                                    @endforeach
-                                </datalist>
+                                <x-searchable-select name="education" :options="$educationLevels" :value="old('education', $data['education'] ?? '')"
+                                    placeholder="{{ __('db.Type to search, scroll, or pick from the list') }}" title="{{ __('db.Start typing to filter, scroll the list, or click one to pick it — you can also type something not listed.') }}" />
                             </div>
                             <div>
                                 <x-input-label for="profession" :value="__('db.Profession')" />
