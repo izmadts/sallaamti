@@ -33,8 +33,14 @@
                             </div>
                             <div>
                                 <x-input-label for="family_type" :value="__('db.Family Type')" />
-                                <x-text-input id="family_type" name="family_type" type="text" class="w-full mt-1" :value="old('family_type', $data['family_type'] ?? '')"
-                                    placeholder="{{ __('db.e.g. Joint family / Nuclear family') }}" title="{{ __('db.Do you live in a joint family or on your own as a separate household?') }}" />
+                                @php $familyTypeVal = old('family_type', $data['family_type'] ?? ''); @endphp
+                                <select id="family_type" name="family_type" class="border-gray-300 rounded-md shadow-sm w-full mt-1"
+                                    title="{{ __('db.Do you live in a joint family or on your own as a separate household?') }}">
+                                    <option value="">{{ __('db.Prefer not to say') }}</option>
+                                    @foreach (['Joint Family', 'Nuclear Family', 'Living with In-Laws', 'Other'] as $ft)
+                                    <option value="{{ $ft }}" {{ $familyTypeVal === $ft ? 'selected' : '' }}>{{ __('db.' . $ft) }}</option>
+                                    @endforeach
+                                </select>
                             </div>
                             <div>
                                 <x-input-label for="ethnicity" :value="__('db.Ethnicity (optional)')" />
@@ -48,8 +54,14 @@
                             </div>
                             <div>
                                 <x-input-label for="guardian_relation" :value="__('db.Guardian Relation')" />
-                                <x-text-input id="guardian_relation" name="guardian_relation" type="text" class="w-full mt-1" :value="old('guardian_relation', $data['guardian_relation'] ?? '')"
-                                    placeholder="{{ __('db.e.g. Father, Brother, Uncle') }}" title="{{ __('db.Your relationship to the guardian named below.') }}" />
+                                @php $guardianRelVal = old('guardian_relation', $data['guardian_relation'] ?? ''); @endphp
+                                <select id="guardian_relation" name="guardian_relation" class="border-gray-300 rounded-md shadow-sm w-full mt-1"
+                                    title="{{ __('db.Your relationship to the guardian named below.') }}">
+                                    <option value="">{{ __('db.Select') }}</option>
+                                    @foreach (['Father', 'Mother', 'Brother', 'Sister', 'Uncle', 'Aunt', 'Grandfather', 'Grandmother', 'Other'] as $rel)
+                                    <option value="{{ $rel }}" {{ $guardianRelVal === $rel ? 'selected' : '' }}>{{ __('db.' . $rel) }}</option>
+                                    @endforeach
+                                </select>
                             </div>
                             <div>
                                 <x-input-label for="guardian_name" :value="__('db.Guardian Name')" />

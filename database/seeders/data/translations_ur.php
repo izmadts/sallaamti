@@ -470,4 +470,17 @@ return [
     'Caste' => 'ذات',
     'Looking For' => 'کیا تلاش ہے',
     'Partner Age Preference' => 'ساتھی کی عمر کی ترجیح',
+
+    // ---- Family type / guardian relation dropdowns ----
+    'Joint Family' => 'مشترکہ خاندان',
+    'Nuclear Family' => 'علیحدہ خاندان',
+    'Living with In-Laws' => 'سسرال کے ساتھ رہائش',
+    'Father' => 'والد',
+    'Mother' => 'والدہ',
+    'Brother' => 'بھائی',
+    'Sister' => 'بہن',
+    'Uncle' => 'چچا/ماموں',
+    'Aunt' => 'خالہ/پھوپھی',
+    'Grandfather' => 'دادا/نانا',
+    'Grandmother' => 'دادی/نانی',
 ];
