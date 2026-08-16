@@ -512,4 +512,8 @@ return [
     'No saved profiles yet. Check profiles and click ☆ to save them.' => 'ابھی تک کوئی محفوظ شدہ پروفائل نہیں۔ پروفائلز دیکھیں اور محفوظ کرنے کے لیے ☆ پر کلک کریں۔',
     'Public (others can check your profile)' => 'عوامی (دوسرے آپ کی پروفائل دیکھ سکتے ہیں)',
     'Public (others can check your profile, once verified)' => 'عوامی (تصدیق کے بعد دوسرے آپ کی پروفائل دیکھ سکتے ہیں)',
+
+    // ---- CNIC upload: explicit gallery-or-camera choice ----
+    'Upload from Gallery' => 'گیلری سے اپلوڈ کریں',
+    'Take a Photo' => 'تصویر لیں',
 ];

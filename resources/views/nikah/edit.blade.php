@@ -271,17 +271,13 @@
                                 @if (!$profile->cnic_front_image)
                                 <div>
                                     <x-input-label for="cnic_front_image" value="CNIC Photo (Front)" />
-                                    <input id="cnic_front_image" name="cnic_front_image" type="file" accept="image/*" capture="environment" class="w-full mt-1" required
-                                        title="{{ __('db.On a phone this opens your camera directly — or choose an existing photo from your gallery.') }}">
-                                    <p class="text-[11px] text-gray-400 mt-1">📷 {{ __('db.On mobile, tap to take the photo directly with your camera.') }}</p>
+                                    <x-photo-upload-field name="cnic_front_image" :required="true" />
                                 </div>
                                 @endif
                                 @if (!$profile->cnic_back_image)
                                 <div>
                                     <x-input-label for="cnic_back_image" value="CNIC Photo (Back)" />
-                                    <input id="cnic_back_image" name="cnic_back_image" type="file" accept="image/*" capture="environment" class="w-full mt-1" required
-                                        title="{{ __('db.On a phone this opens your camera directly — or choose an existing photo from your gallery.') }}">
-                                    <p class="text-[11px] text-gray-400 mt-1">📷 {{ __('db.On mobile, tap to take the photo directly with your camera.') }}</p>
+                                    <x-photo-upload-field name="cnic_back_image" :required="true" />
                                 </div>
                                 @endif
                             </div>
