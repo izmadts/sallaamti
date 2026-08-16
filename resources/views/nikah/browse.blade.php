@@ -143,7 +143,8 @@
                 @endforelse
             </div>
 
-            {{-- Infinite scroll status --}}
+            {{-- Infinite scroll status — auto-loads on scroll, but also offers an
+                 explicit button, since auto-scroll alone isn't always obvious/reliable. --}}
             <div id="infinite-scroll-sentinel" class="py-8 text-center">
                 <div id="infinite-scroll-loading" class="hidden items-center justify-center gap-2 text-sm text-gray-400">
                     <svg class="animate-spin h-4 w-4" style="color: var(--teal)" fill="none" viewBox="0 0 24 24">
@@ -152,6 +153,9 @@
                     </svg>
                     {{ __('db.Loading more profiles…') }}
                 </div>
+                <button id="infinite-scroll-load-more" type="button" class="{{ $paginated->hasMorePages() ? '' : 'hidden' }} text-sm font-semibold px-6 py-2.5 rounded-lg border-2 hover:bg-teal-50 transition" style="color: var(--teal); border-color: var(--teal)">
+                    {{ __('db.Load More Profiles') }} ↓
+                </button>
                 <p id="infinite-scroll-end" class="hidden text-sm text-gray-400">{{ __("db.You've reached the end — that's everyone matching your filters.") }}</p>
             </div>
         </div>
@@ -165,6 +169,7 @@
             const sentinel = document.getElementById('infinite-scroll-sentinel');
             const loadingEl = document.getElementById('infinite-scroll-loading');
             const endEl = document.getElementById('infinite-scroll-end');
+            const loadMoreBtn = document.getElementById('infinite-scroll-load-more');
 
             let page = 1;
             let hasMore = {{ $paginated->hasMorePages() ? 'true' : 'false' }};
@@ -178,6 +183,7 @@
             async function loadNextPage() {
                 if (loading || !hasMore) return;
                 loading = true;
+                loadMoreBtn.classList.add('hidden');
                 loadingEl.classList.remove('hidden');
                 loadingEl.classList.add('flex');
 
@@ -202,11 +208,15 @@
                 loading = false;
                 loadingEl.classList.add('hidden');
                 loadingEl.classList.remove('flex');
-                if (!hasMore) {
+                if (hasMore) {
+                    loadMoreBtn.classList.remove('hidden');
+                } else {
                     endEl.classList.remove('hidden');
                     observer.disconnect();
                 }
             }
+
+            loadMoreBtn.addEventListener('click', loadNextPage);
 
             const observer = new IntersectionObserver((entries) => {
                 if (entries[0].isIntersecting) loadNextPage();
