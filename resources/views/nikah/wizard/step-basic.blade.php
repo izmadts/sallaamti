@@ -85,26 +85,20 @@
                                     <option value="married" {{ $ms === 'married' ? 'selected' : '' }}>{{ __('db.Married') }}</option>
                                 </select>
                             </div>
-                            @php
-                                $educationLevels = ['Matric / O-Levels', 'Intermediate / A-Levels', "Bachelor's", "Master's", 'MPhil / MS', 'PhD', 'Madrassah / Islamic Education'];
-                                $eduVal = old('education', $data['education'] ?? '');
-                                $eduOtherRaw = old('education_other', $data['education_other'] ?? '');
-                                $eduIsOther = $eduVal === 'Other' || ($eduVal !== '' && !in_array($eduVal, $educationLevels));
-                                $eduOtherPrefill = $eduOtherRaw !== '' ? $eduOtherRaw : ($eduIsOther ? $eduVal : '');
-                            @endphp
-                            <div x-data="{ edu: '{{ $eduIsOther ? 'Other' : $eduVal }}' }">
+                            @php $educationLevels = ['Matric / O-Levels', 'Intermediate / A-Levels', "Bachelor's", "Master's", 'MPhil / MS', 'PhD', 'Madrassah / Islamic Education']; @endphp
+                            <div>
                                 <x-input-label for="education" :value="__('db.Education')" />
-                                <select id="education" name="education" x-model="edu" class="border-gray-300 rounded-md shadow-sm w-full mt-1"
-                                    title="{{ __('db.Your highest completed education level.') }}">
-                                    <option value="">{{ __('db.Prefer not to say') }}</option>
+                                <x-text-input id="education" name="education" type="text" list="education-list" autocomplete="off" class="w-full mt-1" :value="old('education', $data['education'] ?? '')"
+                                    placeholder="{{ __('db.Type to search, or pick from the list') }}" title="{{ __('db.Start typing to filter, or click the list to pick directly — you can also type something not listed.') }}" />
+                                {{-- A <datalist> option's value is both what's suggested AND what gets
+                                     submitted if picked, so it can't be translated the way a <select>
+                                     option's separate label/value pair can — kept in canonical English
+                                     so it stays consistent with what's actually stored and searched. --}}
+                                <datalist id="education-list">
                                     @foreach ($educationLevels as $lvl)
-                                    <option value="{{ $lvl }}">{{ __('db.' . $lvl) }}</option>
+                                    <option value="{{ $lvl }}">
                                     @endforeach
-                                    <option value="Other">{{ __('db.Other') }}</option>
-                                </select>
-                                <div x-show="edu === 'Other'" x-cloak class="mt-2">
-                                    <x-text-input name="education_other" type="text" class="w-full" placeholder="{{ __('db.e.g. Diploma in Nursing') }}" value="{{ $eduOtherPrefill }}" />
-                                </div>
+                                </datalist>
                             </div>
                             <div>
                                 <x-input-label for="profession" :value="__('db.Profession')" />

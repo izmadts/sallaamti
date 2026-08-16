@@ -158,24 +158,16 @@
 
                     <x-nikah-section :title="__('db.Education & Profession')" icon="🎓" color="indigo">
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            @php
-                                $educationLevels = ['Matric / O-Levels', 'Intermediate / A-Levels', "Bachelor's", "Master's", 'MPhil / MS', 'PhD', 'Madrassah / Islamic Education'];
-                                $educationVal = old('education', $profile->education);
-                                $educationIsOther = $educationVal && !in_array($educationVal, $educationLevels);
-                            @endphp
-                            <div x-data="{ edu: '{{ $educationIsOther ? 'Other' : $educationVal }}' }">
+                            @php $educationLevels = ['Matric / O-Levels', 'Intermediate / A-Levels', "Bachelor's", "Master's", 'MPhil / MS', 'PhD', 'Madrassah / Islamic Education']; @endphp
+                            <div>
                                 <x-input-label for="education" value="Education" />
-                                <select id="education" name="education" x-model="edu" class="border-gray-300 rounded-md shadow-sm w-full mt-1"
-                                    title="{{ __('db.Your highest completed education level.') }}">
-                                    <option value="">{{ __('db.Prefer not to say') }}</option>
+                                <x-text-input id="education" name="education" type="text" list="education-list" autocomplete="off" class="w-full mt-1" :value="old('education', $profile->education)"
+                                    placeholder="{{ __('db.Type to search, or pick from the list') }}" title="{{ __('db.Start typing to filter, or click the list to pick directly — you can also type something not listed.') }}" />
+                                <datalist id="education-list">
                                     @foreach ($educationLevels as $lvl)
-                                    <option value="{{ $lvl }}">{{ __('db.' . $lvl) }}</option>
+                                    <option value="{{ $lvl }}">
                                     @endforeach
-                                    <option value="Other">{{ __('db.Other') }}</option>
-                                </select>
-                                <div x-show="edu === 'Other'" x-cloak class="mt-2">
-                                    <x-text-input name="education_other" type="text" class="w-full" placeholder="{{ __('db.e.g. Diploma in Nursing') }}" :value="old('education_other', $educationIsOther ? $educationVal : '')" />
-                                </div>
+                                </datalist>
                             </div>
                             <div>
                                 <x-input-label for="profession" value="Profession" />
@@ -231,43 +223,27 @@
 
                     <x-nikah-section :title="__('db.Family & Guardian Information')" icon="👨‍👩‍👧" color="amber">
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            @php
-                                $familyTypeOptions = ['Joint Family', 'Nuclear Family', 'Living with In-Laws'];
-                                $familyTypeVal = old('family_type', $profile->family_type);
-                                $familyTypeIsOther = $familyTypeVal && !in_array($familyTypeVal, $familyTypeOptions);
-                            @endphp
-                            <div x-data="{ ft: '{{ $familyTypeIsOther ? 'Other' : $familyTypeVal }}' }">
+                            @php $familyTypeOptions = ['Joint Family', 'Nuclear Family', 'Living with In-Laws']; @endphp
+                            <div>
                                 <x-input-label for="family_type" value="Family Type" />
-                                <select id="family_type" name="family_type" x-model="ft" class="border-gray-300 rounded-md shadow-sm w-full mt-1"
-                                    title="{{ __('db.Do you live in a joint family or on your own as a separate household?') }}">
-                                    <option value="">{{ __('db.Prefer not to say') }}</option>
+                                <x-text-input id="family_type" name="family_type" type="text" list="family-type-list" autocomplete="off" class="w-full mt-1" :value="old('family_type', $profile->family_type)"
+                                    placeholder="{{ __('db.Type to search, or pick from the list') }}" title="{{ __('db.Do you live in a joint family or on your own as a separate household?') }}" />
+                                <datalist id="family-type-list">
                                     @foreach ($familyTypeOptions as $ft)
-                                    <option value="{{ $ft }}">{{ __('db.' . $ft) }}</option>
+                                    <option value="{{ $ft }}">
                                     @endforeach
-                                    <option value="Other">{{ __('db.Other') }}</option>
-                                </select>
-                                <div x-show="ft === 'Other'" x-cloak class="mt-2">
-                                    <x-text-input name="family_type_other" type="text" class="w-full" placeholder="{{ __('db.Please describe your family setup') }}" :value="old('family_type_other', $familyTypeIsOther ? $familyTypeVal : '')" />
-                                </div>
+                                </datalist>
                             </div>
-                            @php
-                                $guardianRelOptions = ['Father', 'Mother', 'Brother', 'Sister', 'Uncle', 'Aunt', 'Grandfather', 'Grandmother'];
-                                $guardianRelVal = old('guardian_relation', $profile->guardian_relation);
-                                $guardianRelIsOther = $guardianRelVal && !in_array($guardianRelVal, $guardianRelOptions);
-                            @endphp
-                            <div x-data="{ rel: '{{ $guardianRelIsOther ? 'Other' : $guardianRelVal }}' }">
+                            @php $guardianRelOptions = ['Father', 'Mother', 'Brother', 'Sister', 'Uncle', 'Aunt', 'Grandfather', 'Grandmother']; @endphp
+                            <div>
                                 <x-input-label for="guardian_relation" value="Guardian Relation" />
-                                <select id="guardian_relation" name="guardian_relation" x-model="rel" class="border-gray-300 rounded-md shadow-sm w-full mt-1"
-                                    title="{{ __('db.Your relationship to the guardian named below.') }}">
-                                    <option value="">{{ __('db.Select') }}</option>
+                                <x-text-input id="guardian_relation" name="guardian_relation" type="text" list="guardian-relation-list" autocomplete="off" class="w-full mt-1" :value="old('guardian_relation', $profile->guardian_relation)"
+                                    placeholder="{{ __('db.Type to search, or pick from the list') }}" title="{{ __('db.Your relationship to the guardian named below.') }}" />
+                                <datalist id="guardian-relation-list">
                                     @foreach ($guardianRelOptions as $rel)
-                                    <option value="{{ $rel }}">{{ __('db.' . $rel) }}</option>
+                                    <option value="{{ $rel }}">
                                     @endforeach
-                                    <option value="Other">{{ __('db.Other') }}</option>
-                                </select>
-                                <div x-show="rel === 'Other'" x-cloak class="mt-2">
-                                    <x-text-input name="guardian_relation_other" type="text" class="w-full" placeholder="{{ __('db.e.g. Cousin, Family Friend') }}" :value="old('guardian_relation_other', $guardianRelIsOther ? $guardianRelVal : '')" />
-                                </div>
+                                </datalist>
                             </div>
                             <div>
                                 <x-input-label for="guardian_name" value="Guardian Name" />

@@ -53,16 +53,18 @@
                         <option value="never_married" {{ request('marital_status') === 'never_married' ? 'selected' : '' }}>Never Married</option>
                         <option value="divorced" {{ request('marital_status') === 'divorced' ? 'selected' : '' }}>Divorced</option>
                         <option value="widowed" {{ request('marital_status') === 'widowed' ? 'selected' : '' }}>Widowed</option>
+                        <option value="separated" {{ request('marital_status') === 'separated' ? 'selected' : '' }}>Separated</option>
+                        <option value="married" {{ request('marital_status') === 'married' ? 'selected' : '' }}>Married (Second Wife)</option>
                     </select>
                 </div>
                 <div>
                     <label class="text-xs text-gray-500">Education</label>
-                    <select name="education" class="border-gray-300 rounded text-sm block">
-                        <option value="">Any</option>
+                    <input type="text" name="education" value="{{ request('education') }}" list="education-filter-list" autocomplete="off" placeholder="Type to search" class="border-gray-300 rounded text-sm block w-32">
+                    <datalist id="education-filter-list">
                         @foreach (['Matric / O-Levels', 'Intermediate / A-Levels', "Bachelor's", "Master's", 'MPhil / MS', 'PhD', 'Madrassah / Islamic Education'] as $lvl)
-                        <option value="{{ $lvl }}" {{ request('education') === $lvl ? 'selected' : '' }}>{{ __('db.' . $lvl) }}</option>
+                        <option value="{{ $lvl }}">
                         @endforeach
-                    </select>
+                    </datalist>
                 </div>
                 <div>
                     <label class="text-xs text-gray-500">Ethnicity</label>
@@ -70,37 +72,46 @@
                 </div>
                 <div>
                     <label class="text-xs text-gray-500">Language</label>
-                    <select name="language" class="border-gray-300 rounded text-sm block">
-                        <option value="">Any</option>
+                    <input type="text" name="language" value="{{ request('language') }}" list="language-filter-list" autocomplete="off" placeholder="Type to search" class="border-gray-300 rounded text-sm block w-28">
+                    <datalist id="language-filter-list">
                         @foreach (['Urdu', 'English', 'Punjabi', 'Pashto', 'Sindhi', 'Saraiki', 'Balochi'] as $lang)
-                        <option value="{{ $lang }}" {{ request('language') === $lang ? 'selected' : '' }}>{{ __('db.' . $lang) }}</option>
+                        <option value="{{ $lang }}">
                         @endforeach
-                    </select>
+                    </datalist>
                 </div>
                 <div>
                     <label class="text-xs text-gray-500">Family Type</label>
-                    <select name="family_type" class="border-gray-300 rounded text-sm block">
-                        <option value="">Any</option>
+                    <input type="text" name="family_type" value="{{ request('family_type') }}" list="family-type-filter-list" autocomplete="off" placeholder="Type to search" class="border-gray-300 rounded text-sm block w-32">
+                    <datalist id="family-type-filter-list">
                         @foreach (['Joint Family', 'Nuclear Family', 'Living with In-Laws'] as $ft)
-                        <option value="{{ $ft }}" {{ request('family_type') === $ft ? 'selected' : '' }}>{{ __('db.' . $ft) }}</option>
+                        <option value="{{ $ft }}">
+                        @endforeach
+                    </datalist>
+                </div>
+                @php
+                    $heightFilterOptions = [];
+                    for ($ft = 4; $ft <= 7; $ft++) {
+                        for ($in = 0; $in <= 11; $in++) {
+                            if ($ft === 7 && $in > 0) break;
+                            $heightFilterOptions[] = $ft . "'" . $in . '"';
+                        }
+                    }
+                @endphp
+                <div>
+                    <label class="text-xs text-gray-500">Min Height</label>
+                    <select name="min_height" class="border-gray-300 rounded text-sm block">
+                        <option value="">Any</option>
+                        @foreach ($heightFilterOptions as $h)
+                        <option value="{{ $h }}" {{ request('min_height') === $h ? 'selected' : '' }}>{{ $h }}</option>
                         @endforeach
                     </select>
                 </div>
                 <div>
-                    <label class="text-xs text-gray-500">Height</label>
-                    @php
-                        $heightFilterOptions = [];
-                        for ($ft = 4; $ft <= 7; $ft++) {
-                            for ($in = 0; $in <= 11; $in++) {
-                                if ($ft === 7 && $in > 0) break;
-                                $heightFilterOptions[] = $ft . "'" . $in . '"';
-                            }
-                        }
-                    @endphp
-                    <select name="height" class="border-gray-300 rounded text-sm block">
+                    <label class="text-xs text-gray-500">Max Height</label>
+                    <select name="max_height" class="border-gray-300 rounded text-sm block">
                         <option value="">Any</option>
                         @foreach ($heightFilterOptions as $h)
-                        <option value="{{ $h }}" {{ request('height') === $h ? 'selected' : '' }}>{{ $h }}</option>
+                        <option value="{{ $h }}" {{ request('max_height') === $h ? 'selected' : '' }}>{{ $h }}</option>
                         @endforeach
                     </select>
                 </div>

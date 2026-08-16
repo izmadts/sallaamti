@@ -19,11 +19,8 @@ class NikahProfileController extends Controller
     {
         $validated = $this->validateProfile($request);
         $validated['sect'] = $this->resolveSect($request);
-        $validated['education'] = $this->resolveEducation($request);
         $validated['language'] = $this->resolveLanguage($request);
         $validated['height'] = $this->resolveHeight($request);
-        $validated['family_type'] = $this->resolveFamilyType($request);
-        $validated['guardian_relation'] = $this->resolveGuardianRelation($request);
         $validated['user_id'] = Auth::id();
 
         if ($request->hasFile('cnic_front_image')) {
@@ -79,11 +76,8 @@ class NikahProfileController extends Controller
         $profile = Auth::user()->nikahProfile;
         $validated = $this->validateProfile($request, $profile);
         $validated['sect'] = $this->resolveSect($request);
-        $validated['education'] = $this->resolveEducation($request);
         $validated['language'] = $this->resolveLanguage($request);
         $validated['height'] = $this->resolveHeight($request);
-        $validated['family_type'] = $this->resolveFamilyType($request);
-        $validated['guardian_relation'] = $this->resolveGuardianRelation($request);
         $validated['allow_photo_sharing'] = $request->has('allow_photo_sharing');
         $validated['open_to_polygamy'] = $request->has('open_to_polygamy');
 
@@ -179,8 +173,24 @@ class NikahProfileController extends Controller
         if ($request->filled('family_type')) {
             $query->where('family_type', 'like', '%' . $request->family_type . '%');
         }
-        if ($request->filled('height')) {
-            $query->where('height', $request->height);
+        if ($request->filled('min_height') || $request->filled('max_height')) {
+            // Height is stored as free text (e.g. 5'8"), not a number, so a
+            // min/max range can't be a simple DB comparison — instead, build
+            // the fixed list of selectable heights with their inch value,
+            // narrow it to the requested range, and match against those
+            // exact strings. Any "Other" free-text height falls outside this
+            // range filter, same as it always has for the exact-match version.
+            $heightInches = [];
+            for ($ft = 4; $ft <= 7; $ft++) {
+                for ($in = 0; $in <= 11; $in++) {
+                    if ($ft === 7 && $in > 0) break;
+                    $heightInches[$ft . "'" . $in . '"'] = $ft * 12 + $in;
+                }
+            }
+            $minInches = $heightInches[$request->min_height] ?? min($heightInches);
+            $maxInches = $heightInches[$request->max_height] ?? max($heightInches);
+            $matchingHeights = array_keys(array_filter($heightInches, fn($inches) => $inches >= $minInches && $inches <= $maxInches));
+            $query->whereIn('height', $matchingHeights);
         }
         if ($request->filled('prayer_frequency')) {
             $query->where('prayer_frequency', $request->prayer_frequency);

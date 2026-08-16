@@ -27,7 +27,6 @@ trait ValidatesNikahProfile
             'smokes' => ['nullable', 'string', 'in:no,occasionally,yes'],
             'diet' => ['nullable', 'string', 'in:halal_only,halal_mostly,no_restriction'],
             'education' => ['nullable', 'string', 'max:255'],
-            'education_other' => ['nullable', 'required_if:education,Other', 'string', 'max:100'],
             'profession' => ['nullable', 'string', 'max:255'],
             'city' => ['required', 'string', 'max:100'],
             'country' => ['nullable', 'string', 'max:100'],
@@ -35,12 +34,10 @@ trait ValidatesNikahProfile
             'languages' => ['nullable', 'array'],
             'languages.*' => ['string', 'max:50'],
             'language_other' => ['nullable', 'string', 'max:100'],
-            'family_type' => ['nullable', 'string', 'max:100'],
-            'family_type_other' => ['nullable', 'required_if:family_type,Other', 'string', 'max:150'],
+            'family_type' => ['nullable', 'string', 'max:150'],
             'guardian_name' => ['required', 'string', 'max:255'],
             'guardian_contact' => ['required', 'string', 'max:20'],
             'guardian_relation' => ['nullable', 'string', 'max:100'],
-            'guardian_relation_other' => ['nullable', 'required_if:guardian_relation,Other', 'string', 'max:100'],
             'about' => ['nullable', 'string', 'max:2000'],
             'expectations' => ['nullable', 'string', 'max:2000'],
             'cnic_number' => [
@@ -86,15 +83,6 @@ trait ValidatesNikahProfile
         return $request->input('sect');
     }
 
-    // Same "Other" pattern as sect above, for the education dropdown.
-    protected function resolveEducation(Request $request): ?string
-    {
-        if ($request->input('education') === 'Other') {
-            return $request->input('education_other');
-        }
-        return $request->input('education');
-    }
-
     // Same "Other" pattern as sect above, for the height dropdown.
     protected function resolveHeight(Request $request): ?string
     {
@@ -102,24 +90,6 @@ trait ValidatesNikahProfile
             return $request->input('height_other');
         }
         return $request->input('height');
-    }
-
-    // Same "Other" pattern as sect above, for the family type dropdown.
-    protected function resolveFamilyType(Request $request): ?string
-    {
-        if ($request->input('family_type') === 'Other') {
-            return $request->input('family_type_other');
-        }
-        return $request->input('family_type');
-    }
-
-    // Same "Other" pattern as sect above, for the guardian relation dropdown.
-    protected function resolveGuardianRelation(Request $request): ?string
-    {
-        if ($request->input('guardian_relation') === 'Other') {
-            return $request->input('guardian_relation_other');
-        }
-        return $request->input('guardian_relation');
     }
 
     // Language is a multi-select checkbox group (languages[]) plus a free-text
