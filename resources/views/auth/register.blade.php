@@ -77,31 +77,45 @@
                 </div>
 
                 {{-- Interests — real, functional checkboxes (not just the trust badges above).
-                     Drives what shows up in this member's menu/dashboard after signup;
-                     changeable anytime from the profile page or the topbar. --}}
-                <div>
+                     Drives what shows up in this member's menu/dashboard after signup AND
+                     which page they land on right after registering (see
+                     RegisteredUserController::determinePostRegistrationRoute) — changeable
+                     anytime from the profile page or the topbar. --}}
+                <div x-data="{ nikah: true, quran: true, counseling: true }">
                     <label class="auth-label">
-                        {{ __('db.What are you interested in?') }}
-                        <span class="text-gray-400 font-normal">({{ __('db.optional — change this anytime') }})</span>
+                        {{ __('db.What brings you to Sallaamti?') }}
+                        <span class="text-gray-400 block text-xs mt-0.5 font-normal">{{ __('db.Pick one or more — we\'ll take you straight there after you sign up.') }}</span>
                     </label>
-                    <div class="flex flex-wrap gap-2 mt-1">
-                        <label class="flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-full border cursor-pointer transition hover:bg-gray-50"
-                            style="border-color: var(--gold); color: var(--teal)"
+                    <div class="grid grid-cols-3 gap-2 mt-2">
+                        <label class="relative flex flex-col items-center gap-1 py-3 px-1 rounded-xl border-2 cursor-pointer transition text-center"
+                            :class="nikah ? 'border-teal-500' : 'border-gray-200 hover:border-gray-300'"
+                            :style="nikah ? 'background: #f0fdfa' : ''"
                             title="{{ __('db.Turn this on and Nikah matchmaking shows in your menu. Turn it off and it stays hidden until you switch it back on — nothing is deleted either way.') }}">
-                            <input type="checkbox" name="nikah_module_enabled" value="1" checked class="auth-checkbox">
-                            💍 {{ __('db.Nikah Platform') }}
+                            <input type="checkbox" name="nikah_module_enabled" value="1" x-model="nikah" class="sr-only">
+                            <span class="text-2xl" :class="nikah ? 'opacity-100' : 'opacity-40'">💍</span>
+                            <span class="text-xs font-semibold" style="color: var(--teal)">{{ __('db.Nikah') }}</span>
+                            <span class="text-[10px] text-gray-500 leading-tight">{{ __('db.Find a match') }}</span>
+                            <span x-show="nikah" x-cloak class="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full text-white flex items-center justify-center text-[10px] shadow" style="background: var(--teal)">✓</span>
                         </label>
-                        <label class="flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-full border cursor-pointer transition hover:bg-gray-50"
-                            style="border-color: var(--gold); color: var(--teal)"
+                        <label class="relative flex flex-col items-center gap-1 py-3 px-1 rounded-xl border-2 cursor-pointer transition text-center"
+                            :class="quran ? 'border-teal-500' : 'border-gray-200 hover:border-gray-300'"
+                            :style="quran ? 'background: #f0fdfa' : ''"
                             title="{{ __('db.Turn this on and Quran courses & live classes show in your menu. Turn it off and it stays hidden until you switch it back on — nothing is deleted either way.') }}">
-                            <input type="checkbox" name="quran_module_enabled" value="1" checked class="auth-checkbox">
-                            📖 {{ __('db.Quran Courses & Live Classes') }}
+                            <input type="checkbox" name="quran_module_enabled" value="1" x-model="quran" class="sr-only">
+                            <span class="text-2xl" :class="quran ? 'opacity-100' : 'opacity-40'">📖</span>
+                            <span class="text-xs font-semibold" style="color: var(--teal)">{{ __('db.Quran') }}</span>
+                            <span class="text-[10px] text-gray-500 leading-tight">{{ __('db.Courses & classes') }}</span>
+                            <span x-show="quran" x-cloak class="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full text-white flex items-center justify-center text-[10px] shadow" style="background: var(--teal)">✓</span>
                         </label>
-                        <label class="flex items-center gap-1.5 text-xs font-medium px-3 py-1.5 rounded-full border cursor-pointer transition hover:bg-gray-50"
-                            style="border-color: var(--gold); color: var(--teal)"
+                        <label class="relative flex flex-col items-center gap-1 py-3 px-1 rounded-xl border-2 cursor-pointer transition text-center"
+                            :class="counseling ? 'border-teal-500' : 'border-gray-200 hover:border-gray-300'"
+                            :style="counseling ? 'background: #f0fdfa' : ''"
                             title="{{ __('db.Turn this on and Family Counseling booking shows in your menu. Turn it off and it stays hidden until you switch it back on — nothing is deleted either way.') }}">
-                            <input type="checkbox" name="counseling_module_enabled" value="1" checked class="auth-checkbox">
-                            🤝 {{ __('db.Family Support') }}
+                            <input type="checkbox" name="counseling_module_enabled" value="1" x-model="counseling" class="sr-only">
+                            <span class="text-2xl" :class="counseling ? 'opacity-100' : 'opacity-40'">🤝</span>
+                            <span class="text-xs font-semibold" style="color: var(--teal)">{{ __('db.Support') }}</span>
+                            <span class="text-[10px] text-gray-500 leading-tight">{{ __('db.Family counseling') }}</span>
+                            <span x-show="counseling" x-cloak class="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full text-white flex items-center justify-center text-[10px] shadow" style="background: var(--teal)">✓</span>
                         </label>
                     </div>
                 </div>

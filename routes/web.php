@@ -291,6 +291,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('/nikah-payments', [NikahPaymentAdminController::class, 'index'])->name('nikah.payments');
     Route::post('/nikah-payments/bulk-confirm', [NikahPaymentAdminController::class, 'bulkConfirm'])->name('nikah.payments.bulk-confirm');
     Route::post('/nikah-payments/{profile}/confirm', [NikahPaymentAdminController::class, 'confirm'])->name('nikah.payments.confirm');
+    Route::post('/nikah-payments/{profile}/record-offline', [NikahPaymentAdminController::class, 'recordOffline'])->name('nikah.payments.record-offline');
     Route::post('/nikah-payments/{profile}/reject', [NikahPaymentAdminController::class, 'reject'])->name('nikah.payments.reject');
     Route::get('nikah-reports', [NikahSafetyController::class, 'adminReports'])->name('nikah.reports');
     Route::post('nikah-reports/{report}/dismiss', [NikahSafetyController::class, 'dismissReport'])->name('nikah.reports.dismiss');

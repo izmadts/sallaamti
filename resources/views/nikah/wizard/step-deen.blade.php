@@ -28,7 +28,8 @@
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div x-data="{ sect: '{{ old('sect', $data['sect'] ?? '') }}' }">
                                 <x-input-label for="sect" :value="__('db.Sect')" />
-                                <select id="sect" name="sect" x-model="sect" class="border-gray-300 rounded-md shadow-sm w-full mt-1">
+                                <select id="sect" name="sect" x-model="sect" class="border-gray-300 rounded-md shadow-sm w-full mt-1"
+                                    title="{{ __('db.Your school of thought — helps us match you with someone compatible.') }}">
                                     <option value="">{{ __('db.Select Sect') }}</option>
                                     <option value="Sunni">{{ __('db.Sunni') }}</option>
                                     <option value="Shia">{{ __('db.Shia') }}</option>
@@ -43,7 +44,8 @@
                             <div>
                                 <x-input-label for="prayer_frequency" :value="__('db.Prayer (Salah) Regularity')" />
                                 @php $pf = old('prayer_frequency', $data['prayer_frequency'] ?? ''); @endphp
-                                <select id="prayer_frequency" name="prayer_frequency" class="border-gray-300 rounded-md shadow-sm w-full mt-1">
+                                <select id="prayer_frequency" name="prayer_frequency" class="border-gray-300 rounded-md shadow-sm w-full mt-1"
+                                    title="{{ __('db.How regularly you pray — helps match people at a similar stage of practice.') }}">
                                     <option value="">{{ __('db.Prefer not to say') }}</option>
                                     <option value="always" {{ $pf === 'always' ? 'selected' : '' }}>{{ __('db.Always — 5 times a day') }}</option>
                                     <option value="usually" {{ $pf === 'usually' ? 'selected' : '' }}>{{ __('db.Usually') }}</option>
@@ -54,7 +56,8 @@
                             <div>
                                 <x-input-label for="hijab_or_beard" :value="__('db.Hijab (for sisters) / Beard (for brothers)')" />
                                 @php $hb = old('hijab_or_beard', $data['hijab_or_beard'] ?? ''); @endphp
-                                <select id="hijab_or_beard" name="hijab_or_beard" class="border-gray-300 rounded-md shadow-sm w-full mt-1">
+                                <select id="hijab_or_beard" name="hijab_or_beard" class="border-gray-300 rounded-md shadow-sm w-full mt-1"
+                                    title="{{ __('db.Sisters: do you wear hijab? Brothers: do you keep a beard?') }}">
                                     <option value="">{{ __('db.Prefer not to say') }}</option>
                                     <option value="yes" {{ $hb === 'yes' ? 'selected' : '' }}>{{ __('db.Yes') }}</option>
                                     <option value="sometimes" {{ $hb === 'sometimes' ? 'selected' : '' }}>{{ __('db.Sometimes') }}</option>
@@ -64,7 +67,8 @@
                             <div>
                                 <x-input-label for="smokes" :value="__('db.Smoking')" />
                                 @php $sm = old('smokes', $data['smokes'] ?? ''); @endphp
-                                <select id="smokes" name="smokes" class="border-gray-300 rounded-md shadow-sm w-full mt-1">
+                                <select id="smokes" name="smokes" class="border-gray-300 rounded-md shadow-sm w-full mt-1"
+                                    title="{{ __('db.Be honest — many members filter matches by this.') }}">
                                     <option value="">{{ __('db.Prefer not to say') }}</option>
                                     <option value="no" {{ $sm === 'no' ? 'selected' : '' }}>{{ __('db.No') }}</option>
                                     <option value="occasionally" {{ $sm === 'occasionally' ? 'selected' : '' }}>{{ __('db.Occasionally') }}</option>
@@ -74,7 +78,8 @@
                             <div>
                                 <x-input-label for="diet" :value="__('db.Diet')" />
                                 @php $di = old('diet', $data['diet'] ?? ''); @endphp
-                                <select id="diet" name="diet" class="border-gray-300 rounded-md shadow-sm w-full mt-1">
+                                <select id="diet" name="diet" class="border-gray-300 rounded-md shadow-sm w-full mt-1"
+                                    title="{{ __('db.How strict you are about halal food.') }}">
                                     <option value="">{{ __('db.Prefer not to say') }}</option>
                                     <option value="halal_only" {{ $di === 'halal_only' ? 'selected' : '' }}>{{ __('db.Halal only') }}</option>
                                     <option value="halal_mostly" {{ $di === 'halal_mostly' ? 'selected' : '' }}>{{ __('db.Halal, mostly') }}</option>
@@ -83,14 +88,15 @@
                             </div>
                         </div>
                         <div class="mt-4 flex items-center gap-2">
-                            <input type="checkbox" id="open_to_polygamy" name="open_to_polygamy" value="1" {{ old('open_to_polygamy', $data['open_to_polygamy'] ?? false) ? 'checked' : '' }} class="rounded">
+                            <input type="checkbox" id="open_to_polygamy" name="open_to_polygamy" value="1" {{ old('open_to_polygamy', $data['open_to_polygamy'] ?? false) ? 'checked' : '' }} class="rounded"
+                                title="{{ __('db.Only check this if it genuinely applies to you — visible to everyone who views your profile.') }}">
                             <x-input-label for="open_to_polygamy" :value="__('db.I am open to a polygamous marriage (e.g. as/marrying a second wife)')" />
                         </div>
                     </x-nikah-section>
 
                     <div class="flex justify-between">
                         <a href="{{ route('nikah.create.step', 'family') }}" class="btn-base text-gray-600 border border-gray-300 px-4 py-2 rounded-md hover:bg-gray-50">← {{ __('db.Back') }}</a>
-                        <x-primary-button>{{ __('db.Next') }} →</x-primary-button>
+                        <x-primary-button>{{ __('db.Next: About You') }} →</x-primary-button>
                     </div>
                 </form>
 

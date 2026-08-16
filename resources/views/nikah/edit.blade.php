@@ -30,12 +30,14 @@
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                                 <x-input-label for="age" value="Age" />
-                                <x-text-input id="age" name="age" type="number" class="w-full mt-1" :value="old('age', $profile->age)" required />
+                                <x-text-input id="age" name="age" type="number" class="w-full mt-1" :value="old('age', $profile->age)" required
+                                    placeholder="{{ __('db.e.g. 27') }}" title="{{ __('db.Your current age in years — must be 18 or older.') }}" />
                             </div>
                             <div>
                                 <x-input-label for="gender" :value="__('db.Gender')" />
                                 @php $genderVal = old('gender', $profile->user->gender); @endphp
-                                <select id="gender" name="gender" required class="border-gray-300 rounded-md shadow-sm w-full mt-1">
+                                <select id="gender" name="gender" required class="border-gray-300 rounded-md shadow-sm w-full mt-1"
+                                    title="{{ __('db.Matching is opposite-gender, so this decides whose profiles you\'ll see.') }}">
                                     <option value="">{{ __('db.Select') }}</option>
                                     <option value="male" {{ $genderVal === 'male' ? 'selected' : '' }}>{{ __('db.Male') }}</option>
                                     <option value="female" {{ $genderVal === 'female' ? 'selected' : '' }}>{{ __('db.Female') }}</option>
@@ -44,11 +46,13 @@
                             </div>
                             <div>
                                 <x-input-label for="height" value="Height" />
-                                <x-text-input id="height" name="height" type="text" class="w-full mt-1" :value="old('height', $profile->height)" />
+                                <x-text-input id="height" name="height" type="text" class="w-full mt-1" :value="old('height', $profile->height)"
+                                    placeholder="{{ __('db.e.g. 5\'8"') }}" title="{{ __('db.Optional — helps set expectations, in feet and inches or cm.') }}" />
                             </div>
                             <div>
                                 <x-input-label for="marital_status" value="Marital Status" />
-                                <select id="marital_status" name="marital_status" required class="border-gray-300 rounded-md shadow-sm w-full mt-1">
+                                <select id="marital_status" name="marital_status" required class="border-gray-300 rounded-md shadow-sm w-full mt-1"
+                                    title="{{ __('db.Please be honest — this matters for compatibility and is checked against your CNIC where relevant.') }}">
                                     @foreach (['never_married' => 'Never Married', 'divorced' => 'Divorced', 'widowed' => 'Widowed', 'separated' => 'Separated', 'married' => 'Married (Second Wife)'] as $val => $label)
                                     <option value="{{ $val }}" {{ old('marital_status', $profile->marital_status) === $val ? 'selected' : '' }}>{{ $label }}</option>
                                     @endforeach
@@ -61,7 +65,8 @@
                             @endphp
                             <div x-data="{ sect: '{{ $isOtherSect ? 'Other' : $currentSect }}' }">
                                 <x-input-label for="sect" value="Sect" />
-                                <select id="sect" name="sect" x-model="sect" required class="border-gray-300 rounded-md shadow-sm w-full mt-1">
+                                <select id="sect" name="sect" x-model="sect" required class="border-gray-300 rounded-md shadow-sm w-full mt-1"
+                                    title="{{ __('db.Your school of thought — helps us match you with someone compatible.') }}">
                                     <option value="">Select Sect</option>
                                     <option value="Sunni">Sunni</option>
                                     <option value="Shia">Shia</option>
@@ -75,11 +80,13 @@
                             </div>
                             <div>
                                 <x-input-label for="caste" value="Caste (optional)" />
-                                <x-text-input id="caste" name="caste" type="text" class="w-full mt-1" :value="old('caste', $profile->caste)" />
+                                <x-text-input id="caste" name="caste" type="text" class="w-full mt-1" :value="old('caste', $profile->caste)"
+                                    placeholder="{{ __('db.e.g. Rajput, Sheikh, Syed') }}" title="{{ __('db.Only if caste/biradari matters to your family — leave blank if not.') }}" />
                             </div>
                         </div>
                         <div class="mt-4 flex items-center gap-2">
-                            <input type="checkbox" id="open_to_polygamy" name="open_to_polygamy" value="1" {{ old('open_to_polygamy', $profile->open_to_polygamy) ? 'checked' : '' }} class="rounded">
+                            <input type="checkbox" id="open_to_polygamy" name="open_to_polygamy" value="1" {{ old('open_to_polygamy', $profile->open_to_polygamy) ? 'checked' : '' }} class="rounded"
+                                title="{{ __('db.Only check this if it genuinely applies to you — visible to everyone who views your profile.') }}">
                             <x-input-label for="open_to_polygamy" value="I am open to a polygamous marriage (e.g. as/marrying a second wife)" />
                         </div>
                     </x-nikah-section>
@@ -88,7 +95,8 @@
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                                 <x-input-label for="prayer_frequency" value="Prayer (Salah) Regularity" />
-                                <select id="prayer_frequency" name="prayer_frequency" class="border-gray-300 rounded-md shadow-sm w-full mt-1">
+                                <select id="prayer_frequency" name="prayer_frequency" class="border-gray-300 rounded-md shadow-sm w-full mt-1"
+                                    title="{{ __('db.How regularly you pray — helps match people at a similar stage of practice.') }}">
                                     <option value="">Prefer not to say</option>
                                     @foreach (['always' => 'Always — 5 times a day', 'usually' => 'Usually', 'sometimes' => 'Sometimes', 'rarely' => 'Rarely'] as $val => $label)
                                     <option value="{{ $val }}" {{ old('prayer_frequency', $profile->prayer_frequency) === $val ? 'selected' : '' }}>{{ $label }}</option>
@@ -97,7 +105,8 @@
                             </div>
                             <div>
                                 <x-input-label for="hijab_or_beard" value="Hijab (for sisters) / Beard (for brothers)" />
-                                <select id="hijab_or_beard" name="hijab_or_beard" class="border-gray-300 rounded-md shadow-sm w-full mt-1">
+                                <select id="hijab_or_beard" name="hijab_or_beard" class="border-gray-300 rounded-md shadow-sm w-full mt-1"
+                                    title="{{ __('db.Sisters: do you wear hijab? Brothers: do you keep a beard?') }}">
                                     <option value="">Prefer not to say</option>
                                     @foreach (['yes' => 'Yes', 'sometimes' => 'Sometimes', 'no' => 'No'] as $val => $label)
                                     <option value="{{ $val }}" {{ old('hijab_or_beard', $profile->hijab_or_beard) === $val ? 'selected' : '' }}>{{ $label }}</option>
@@ -106,7 +115,8 @@
                             </div>
                             <div>
                                 <x-input-label for="smokes" value="Smoking" />
-                                <select id="smokes" name="smokes" class="border-gray-300 rounded-md shadow-sm w-full mt-1">
+                                <select id="smokes" name="smokes" class="border-gray-300 rounded-md shadow-sm w-full mt-1"
+                                    title="{{ __('db.Be honest — many members filter matches by this.') }}">
                                     <option value="">Prefer not to say</option>
                                     @foreach (['no' => 'No', 'occasionally' => 'Occasionally', 'yes' => 'Yes'] as $val => $label)
                                     <option value="{{ $val }}" {{ old('smokes', $profile->smokes) === $val ? 'selected' : '' }}>{{ $label }}</option>
@@ -115,7 +125,8 @@
                             </div>
                             <div>
                                 <x-input-label for="diet" value="Diet" />
-                                <select id="diet" name="diet" class="border-gray-300 rounded-md shadow-sm w-full mt-1">
+                                <select id="diet" name="diet" class="border-gray-300 rounded-md shadow-sm w-full mt-1"
+                                    title="{{ __('db.How strict you are about halal food.') }}">
                                     <option value="">Prefer not to say</option>
                                     @foreach (['halal_only' => 'Halal only', 'halal_mostly' => 'Halal, mostly', 'no_restriction' => 'No restriction'] as $val => $label)
                                     <option value="{{ $val }}" {{ old('diet', $profile->diet) === $val ? 'selected' : '' }}>{{ $label }}</option>
@@ -129,27 +140,33 @@
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                                 <x-input-label for="education" value="Education" />
-                                <x-text-input id="education" name="education" type="text" class="w-full mt-1" :value="old('education', $profile->education)" />
+                                <x-text-input id="education" name="education" type="text" class="w-full mt-1" :value="old('education', $profile->education)"
+                                    placeholder="{{ __('db.e.g. BSc Computer Science') }}" title="{{ __('db.Your highest completed education.') }}" />
                             </div>
                             <div>
                                 <x-input-label for="profession" value="Profession" />
-                                <x-text-input id="profession" name="profession" type="text" class="w-full mt-1" :value="old('profession', $profile->profession)" />
+                                <x-text-input id="profession" name="profession" type="text" class="w-full mt-1" :value="old('profession', $profile->profession)"
+                                    placeholder="{{ __('db.e.g. Software Engineer, Teacher, Doctor') }}" title="{{ __('db.What you currently do for work.') }}" />
                             </div>
                             <div>
                                 <x-input-label for="city" value="City" />
-                                <x-text-input id="city" name="city" type="text" class="w-full mt-1" :value="old('city', $profile->city ?: auth()->user()->city)" required />
+                                <x-text-input id="city" name="city" type="text" class="w-full mt-1" :value="old('city', $profile->city ?: auth()->user()->city)" required
+                                    placeholder="{{ __('db.e.g. Karachi, Lahore, Islamabad') }}" title="{{ __('db.The city you currently live in.') }}" />
                             </div>
                             <div>
                                 <x-input-label for="country" value="Country" />
-                                <x-text-input id="country" name="country" type="text" class="w-full mt-1" :value="old('country', $profile->country)" />
+                                <x-text-input id="country" name="country" type="text" class="w-full mt-1" :value="old('country', $profile->country)"
+                                    placeholder="{{ __('db.e.g. Pakistan') }}" title="{{ __('db.The country you currently live in.') }}" />
                             </div>
                             <div>
                                 <x-input-label for="ethnicity" value="Ethnicity (optional)" />
-                                <x-text-input id="ethnicity" name="ethnicity" type="text" class="w-full mt-1" :value="old('ethnicity', $profile->ethnicity)" placeholder="e.g. Punjabi, Pashtun, Sindhi" />
+                                <x-text-input id="ethnicity" name="ethnicity" type="text" class="w-full mt-1" :value="old('ethnicity', $profile->ethnicity)" placeholder="e.g. Punjabi, Pashtun, Sindhi, Muhajir"
+                                    title="{{ __('db.Your ethnic background, if you\'d like to share it.') }}" />
                             </div>
                             <div>
                                 <x-input-label for="language" value="Language(s) Spoken (optional)" />
-                                <x-text-input id="language" name="language" type="text" class="w-full mt-1" :value="old('language', $profile->language)" placeholder="e.g. Urdu, English" />
+                                <x-text-input id="language" name="language" type="text" class="w-full mt-1" :value="old('language', $profile->language)" placeholder="e.g. Urdu, English, Punjabi"
+                                    title="{{ __('db.Language(s) you\'re comfortable speaking.') }}" />
                             </div>
                         </div>
                     </x-nikah-section>
@@ -158,19 +175,23 @@
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                                 <x-input-label for="family_type" value="Family Type" />
-                                <x-text-input id="family_type" name="family_type" type="text" class="w-full mt-1" :value="old('family_type', $profile->family_type)" />
+                                <x-text-input id="family_type" name="family_type" type="text" class="w-full mt-1" :value="old('family_type', $profile->family_type)"
+                                    placeholder="{{ __('db.e.g. Joint family / Nuclear family') }}" title="{{ __('db.Do you live in a joint family or on your own as a separate household?') }}" />
                             </div>
                             <div>
                                 <x-input-label for="guardian_relation" value="Guardian Relation" />
-                                <x-text-input id="guardian_relation" name="guardian_relation" type="text" class="w-full mt-1" :value="old('guardian_relation', $profile->guardian_relation)" />
+                                <x-text-input id="guardian_relation" name="guardian_relation" type="text" class="w-full mt-1" :value="old('guardian_relation', $profile->guardian_relation)"
+                                    placeholder="{{ __('db.e.g. Father, Brother, Uncle') }}" title="{{ __('db.Your relationship to the guardian named below.') }}" />
                             </div>
                             <div>
                                 <x-input-label for="guardian_name" value="Guardian Name" />
-                                <x-text-input id="guardian_name" name="guardian_name" type="text" class="w-full mt-1" :value="old('guardian_name', $profile->guardian_name)" required />
+                                <x-text-input id="guardian_name" name="guardian_name" type="text" class="w-full mt-1" :value="old('guardian_name', $profile->guardian_name)" required
+                                    placeholder="{{ __('db.e.g. Muhammad Ahmed') }}" title="{{ __('db.Your Wali/guardian\'s full name — so we can involve your family in the process.') }}" />
                             </div>
                             <div>
                                 <x-input-label for="guardian_contact" value="Guardian Contact" />
-                                <x-text-input id="guardian_contact" name="guardian_contact" type="text" class="w-full mt-1" :value="old('guardian_contact', $profile->guardian_contact)" required />
+                                <x-text-input id="guardian_contact" name="guardian_contact" type="text" class="w-full mt-1" :value="old('guardian_contact', $profile->guardian_contact)" required
+                                    placeholder="{{ __('db.e.g. 03001234567') }}" title="{{ __('db.A number where we or an interested family can reach your guardian.') }}" />
                             </div>
                         </div>
                     </x-nikah-section>
@@ -179,11 +200,15 @@
                         <div class="space-y-4">
                             <div>
                                 <x-input-label for="about" value="About Yourself" />
-                                <textarea id="about" name="about" rows="3" class="border-gray-300 rounded-md shadow-sm w-full mt-1">{{ old('about', $profile->about) }}</textarea>
+                                <textarea id="about" name="about" rows="3" class="border-gray-300 rounded-md shadow-sm w-full mt-1"
+                                    placeholder="{{ __('db.Tell us about your personality, values, daily routine, and what makes you, you...') }}"
+                                    title="{{ __('db.This is what other members read first — a few honest sentences go a long way.') }}">{{ old('about', $profile->about) }}</textarea>
                             </div>
                             <div>
                                 <x-input-label for="expectations" value="Looking For" />
-                                <textarea id="expectations" name="expectations" rows="3" class="border-gray-300 rounded-md shadow-sm w-full mt-1">{{ old('expectations', $profile->expectations) }}</textarea>
+                                <textarea id="expectations" name="expectations" rows="3" class="border-gray-300 rounded-md shadow-sm w-full mt-1"
+                                    placeholder="{{ __('db.e.g. Someone practicing, family-oriented, kind-hearted...') }}"
+                                    title="{{ __('db.What qualities matter most to you in a spouse.') }}">{{ old('expectations', $profile->expectations) }}</textarea>
                             </div>
                         </div>
                     </x-nikah-section>
@@ -202,20 +227,25 @@
                                 @if (!$profile->cnic_number)
                                 <div>
                                     <x-input-label for="cnic_number" value="CNIC Number" />
-                                    <x-text-input id="cnic_number" name="cnic_number" type="text" class="w-full mt-1" :value="old('cnic_number')" required />
+                                    <x-text-input id="cnic_number" name="cnic_number" type="text" class="w-full mt-1" :value="old('cnic_number')" required
+                                        placeholder="{{ __('db.e.g. 12345-1234567-1') }}" title="{{ __('db.Your 13-digit CNIC number, exactly as printed on your card.') }}" />
                                     <p class="text-xs text-gray-400 mt-1">{{ __('db.Must be unique — one CNIC can only be used for one profile.') }}</p>
                                 </div>
                                 @endif
                                 @if (!$profile->cnic_front_image)
                                 <div>
                                     <x-input-label for="cnic_front_image" value="CNIC Photo (Front)" />
-                                    <input id="cnic_front_image" name="cnic_front_image" type="file" accept="image/*" class="w-full mt-1" required>
+                                    <input id="cnic_front_image" name="cnic_front_image" type="file" accept="image/*" capture="environment" class="w-full mt-1" required
+                                        title="{{ __('db.On a phone this opens your camera directly — or choose an existing photo from your gallery.') }}">
+                                    <p class="text-[11px] text-gray-400 mt-1">📷 {{ __('db.On mobile, tap to take the photo directly with your camera.') }}</p>
                                 </div>
                                 @endif
                                 @if (!$profile->cnic_back_image)
                                 <div>
                                     <x-input-label for="cnic_back_image" value="CNIC Photo (Back)" />
-                                    <input id="cnic_back_image" name="cnic_back_image" type="file" accept="image/*" class="w-full mt-1" required>
+                                    <input id="cnic_back_image" name="cnic_back_image" type="file" accept="image/*" capture="environment" class="w-full mt-1" required
+                                        title="{{ __('db.On a phone this opens your camera directly — or choose an existing photo from your gallery.') }}">
+                                    <p class="text-[11px] text-gray-400 mt-1">📷 {{ __('db.On mobile, tap to take the photo directly with your camera.') }}</p>
                                 </div>
                                 @endif
                             </div>
@@ -223,17 +253,20 @@
                         </div>
                         <hr class="mt-4 border-rose-200">
                         <div class="mt-4 flex items-center gap-2">
-                            <input type="checkbox" id="allow_photo_sharing" name="allow_photo_sharing" value="1" {{ old('allow_photo_sharing', $profile->allow_photo_sharing) ? 'checked' : '' }} class="rounded">
+                            <input type="checkbox" id="allow_photo_sharing" name="allow_photo_sharing" value="1" {{ old('allow_photo_sharing', $profile->allow_photo_sharing) ? 'checked' : '' }} class="rounded"
+                                title="{{ __('db.Your photo stays private until both sides accept interest in each other — this just decides what happens after that.') }}">
                             <x-input-label for="allow_photo_sharing" value="Allow my photo to be shared with a match after mutual interest is accepted" />
                         </div>
                         <div class="mt-4">
                             <x-input-label for="photo" value="Your Photo (replace)" />
-                            <input id="photo" name="photo" type="file" accept="image/*" class="w-full mt-1" />
+                            <input id="photo" name="photo" type="file" accept="image/*" class="w-full mt-1"
+                                title="{{ __('db.A clear, recent photo of yourself — kept private and only shown after mutual interest is accepted.') }}" />
                         </div>
                     </x-nikah-section>
 
                     <x-nikah-section :title="__('db.Profile Visibility')" icon="👁️" color="teal">
-                        <select id="visibility" name="visibility" required class="border-gray-300 rounded-md shadow-sm w-full">
+                        <select id="visibility" name="visibility" required class="border-gray-300 rounded-md shadow-sm w-full"
+                            title="{{ __('db.You can change this anytime.') }}">
                             <option value="public" {{ old('visibility', $profile->visibility) === 'public' ? 'selected' : '' }}>Public (visible in Browse Matches search)</option>
                             <option value="private" {{ old('visibility', $profile->visibility) === 'private' ? 'selected' : '' }}>Private (hidden from search — only visible via your share link)</option>
                         </select>
@@ -243,27 +276,33 @@
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                                 <x-input-label value="Preferred Min Age" />
-                                <x-text-input name="pref_min_age" type="number" class="w-full mt-1" :value="old('pref_min_age', $profile->pref_min_age)" />
+                                <x-text-input name="pref_min_age" type="number" class="w-full mt-1" :value="old('pref_min_age', $profile->pref_min_age)"
+                                    placeholder="{{ __('db.e.g. 22') }}" title="{{ __('db.Leave blank for no minimum.') }}" />
                             </div>
                             <div>
                                 <x-input-label value="Preferred Max Age" />
-                                <x-text-input name="pref_max_age" type="number" class="w-full mt-1" :value="old('pref_max_age', $profile->pref_max_age)" />
+                                <x-text-input name="pref_max_age" type="number" class="w-full mt-1" :value="old('pref_max_age', $profile->pref_max_age)"
+                                    placeholder="{{ __('db.e.g. 30') }}" title="{{ __('db.Leave blank for no maximum.') }}" />
                             </div>
                             <div>
                                 <x-input-label value="Preferred City" />
-                                <x-text-input name="pref_city" class="w-full mt-1" :value="old('pref_city', $profile->pref_city)" />
+                                <x-text-input name="pref_city" class="w-full mt-1" :value="old('pref_city', $profile->pref_city)"
+                                    placeholder="{{ __('db.e.g. Karachi (leave blank for any city)') }}" title="{{ __('db.Leave blank if the city doesn\'t matter to you.') }}" />
                             </div>
                             <div>
                                 <x-input-label value="Preferred Sect" />
-                                <x-text-input name="pref_sect" class="w-full mt-1" :value="old('pref_sect', $profile->pref_sect)" />
+                                <x-text-input name="pref_sect" class="w-full mt-1" :value="old('pref_sect', $profile->pref_sect)"
+                                    placeholder="{{ __('db.e.g. Sunni (leave blank for any)') }}" title="{{ __('db.Leave blank if sect doesn\'t matter to you.') }}" />
                             </div>
                             <div>
                                 <x-input-label value="Preferred Education Level" />
-                                <x-text-input name="pref_education" class="w-full mt-1" :value="old('pref_education', $profile->pref_education)" />
+                                <x-text-input name="pref_education" class="w-full mt-1" :value="old('pref_education', $profile->pref_education)"
+                                    placeholder="{{ __('db.e.g. Graduate or above (leave blank for any)') }}" title="{{ __('db.Leave blank if education level doesn\'t matter to you.') }}" />
                             </div>
                             <div>
                                 <x-input-label value="Preferred Marital Status" />
-                                <select name="pref_marital_status" class="border-gray-300 rounded-md w-full mt-1">
+                                <select name="pref_marital_status" class="border-gray-300 rounded-md w-full mt-1"
+                                    title="{{ __('db.Leave as No preference if this doesn\'t matter to you.') }}">
                                     <option value="">No preference</option>
                                     <option value="never_married" {{ old('pref_marital_status', $profile->pref_marital_status) === 'never_married' ? 'selected' : '' }}>Never Married</option>
                                     <option value="divorced" {{ old('pref_marital_status', $profile->pref_marital_status) === 'divorced' ? 'selected' : '' }}>Divorced</option>
@@ -275,7 +314,7 @@
 
                     <div class="flex justify-end gap-3 pt-2">
                         <a href="{{ route('nikah.show') }}" class="px-4 py-2 text-sm text-gray-600">Cancel</a>
-                        <x-primary-button>Update Profile</x-primary-button>
+                        <x-primary-button>{{ __('db.Save My Profile') }}</x-primary-button>
                     </div>
                 </form>
 

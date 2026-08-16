@@ -28,38 +28,45 @@
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                                 <x-input-label for="caste" :value="__('db.Caste (optional)')" />
-                                <x-text-input id="caste" name="caste" type="text" class="w-full mt-1" :value="old('caste', $data['caste'] ?? '')" />
+                                <x-text-input id="caste" name="caste" type="text" class="w-full mt-1" :value="old('caste', $data['caste'] ?? '')"
+                                    placeholder="{{ __('db.e.g. Rajput, Sheikh, Syed') }}" title="{{ __('db.Only if caste/biradari matters to your family — leave blank if not.') }}" />
                             </div>
                             <div>
                                 <x-input-label for="family_type" :value="__('db.Family Type')" />
-                                <x-text-input id="family_type" name="family_type" type="text" class="w-full mt-1" :value="old('family_type', $data['family_type'] ?? '')" placeholder="Joint / Nuclear" />
+                                <x-text-input id="family_type" name="family_type" type="text" class="w-full mt-1" :value="old('family_type', $data['family_type'] ?? '')"
+                                    placeholder="{{ __('db.e.g. Joint family / Nuclear family') }}" title="{{ __('db.Do you live in a joint family or on your own as a separate household?') }}" />
                             </div>
                             <div>
                                 <x-input-label for="ethnicity" :value="__('db.Ethnicity (optional)')" />
-                                <x-text-input id="ethnicity" name="ethnicity" type="text" class="w-full mt-1" :value="old('ethnicity', $data['ethnicity'] ?? '')" placeholder="e.g. Punjabi, Pashtun, Sindhi" />
+                                <x-text-input id="ethnicity" name="ethnicity" type="text" class="w-full mt-1" :value="old('ethnicity', $data['ethnicity'] ?? '')"
+                                    placeholder="{{ __('db.e.g. Punjabi, Pashtun, Sindhi, Muhajir') }}" title="{{ __('db.Your ethnic background, if you\'d like to share it.') }}" />
                             </div>
                             <div>
                                 <x-input-label for="language" :value="__('db.Language(s) Spoken (optional)')" />
-                                <x-text-input id="language" name="language" type="text" class="w-full mt-1" :value="old('language', $data['language'] ?? '')" placeholder="e.g. Urdu, English" />
+                                <x-text-input id="language" name="language" type="text" class="w-full mt-1" :value="old('language', $data['language'] ?? '')"
+                                    placeholder="{{ __('db.e.g. Urdu, English, Punjabi') }}" title="{{ __('db.Language(s) you\'re comfortable speaking.') }}" />
                             </div>
                             <div>
                                 <x-input-label for="guardian_relation" :value="__('db.Guardian Relation')" />
-                                <x-text-input id="guardian_relation" name="guardian_relation" type="text" class="w-full mt-1" :value="old('guardian_relation', $data['guardian_relation'] ?? '')" placeholder="Father / Brother" />
+                                <x-text-input id="guardian_relation" name="guardian_relation" type="text" class="w-full mt-1" :value="old('guardian_relation', $data['guardian_relation'] ?? '')"
+                                    placeholder="{{ __('db.e.g. Father, Brother, Uncle') }}" title="{{ __('db.Your relationship to the guardian named below.') }}" />
                             </div>
                             <div>
                                 <x-input-label for="guardian_name" :value="__('db.Guardian Name')" />
-                                <x-text-input id="guardian_name" name="guardian_name" type="text" class="w-full mt-1" :value="old('guardian_name', $data['guardian_name'] ?? '')" required />
+                                <x-text-input id="guardian_name" name="guardian_name" type="text" class="w-full mt-1" :value="old('guardian_name', $data['guardian_name'] ?? '')" required
+                                    placeholder="{{ __('db.e.g. Muhammad Ahmed') }}" title="{{ __('db.Your Wali/guardian\'s full name — so we can involve your family in the process.') }}" />
                             </div>
                             <div>
                                 <x-input-label for="guardian_contact" :value="__('db.Guardian Contact Number')" />
-                                <x-text-input id="guardian_contact" name="guardian_contact" type="text" class="w-full mt-1" :value="old('guardian_contact', $data['guardian_contact'] ?? '')" required />
+                                <x-text-input id="guardian_contact" name="guardian_contact" type="text" class="w-full mt-1" :value="old('guardian_contact', $data['guardian_contact'] ?? '')" required
+                                    placeholder="{{ __('db.e.g. 03001234567') }}" title="{{ __('db.A number where we or an interested family can reach your guardian.') }}" />
                             </div>
                         </div>
                     </x-nikah-section>
 
                     <div class="flex justify-between">
                         <a href="{{ route('nikah.create.step', 'basic') }}" class="btn-base text-gray-600 border border-gray-300 px-4 py-2 rounded-md hover:bg-gray-50">← {{ __('db.Back') }}</a>
-                        <x-primary-button>{{ __('db.Next') }} →</x-primary-button>
+                        <x-primary-button>{{ __('db.Next: Deen & Lifestyle') }} →</x-primary-button>
                     </div>
                 </form>
 

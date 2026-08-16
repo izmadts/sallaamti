@@ -72,7 +72,7 @@
                 <form method="POST" action="{{ route('nikah.create.finalize') }}" class="mt-6 flex justify-between">
                     @csrf
                     <a href="{{ route('nikah.create.step', 'verification') }}" class="btn-base text-gray-600 border border-gray-300 px-4 py-2 rounded-md hover:bg-gray-50">← {{ __('db.Back') }}</a>
-                    <x-primary-button>{{ __('db.Submit Profile') }}</x-primary-button>
+                    <x-primary-button>{{ __('db.Continue to Verification Payment') }} →</x-primary-button>
                 </form>
 
             </div>

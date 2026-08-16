@@ -246,6 +246,31 @@
                             💳 Review Payment
                         </a>
                         @endif
+
+                        @if (in_array($profile->payment_status, ['unpaid', 'rejected']))
+                        <div class="mt-4 pt-4 border-t border-gray-100">
+                            <p class="text-xs font-semibold text-gray-500 mb-1">📲 Received Payment Another Way?</p>
+                            <p class="text-[11px] text-gray-400 mb-2">
+                                If the member sent their receipt on WhatsApp, in person, or any other channel, record it here to confirm their payment directly — no need to make them use the online form.
+                            </p>
+                            <form method="POST" action="{{ route('admin.nikah.payments.record-offline', $profile) }}" enctype="multipart/form-data" class="space-y-2">
+                                @csrf
+                                <select name="payment_method" required class="w-full border-gray-300 rounded text-xs px-2 py-1.5">
+                                    <option value="whatsapp">Received via WhatsApp</option>
+                                    <option value="cash">Cash</option>
+                                    <option value="jazzcash">JazzCash</option>
+                                    <option value="bank_transfer">Bank Transfer</option>
+                                    <option value="other">Other</option>
+                                </select>
+                                <input type="text" name="payment_reference" placeholder="Reference / note (optional)" class="w-full border-gray-300 rounded text-xs px-2 py-1.5">
+                                <input type="file" name="payment_screenshot" accept="image/*" class="w-full text-xs" title="Optional — attach the screenshot they sent you, if you have one.">
+                                <button class="w-full bg-teal-600 text-white text-xs px-3 py-1.5 rounded hover:bg-teal-700"
+                                    onclick="return confirm('Confirm this payment was received and mark verification fee as paid for {{ $profile->user->name }}?')">
+                                    ✅ Confirm Payment Received
+                                </button>
+                            </form>
+                        </div>
+                        @endif
                     </div>
 
                     {{-- Moderation Notes --}}

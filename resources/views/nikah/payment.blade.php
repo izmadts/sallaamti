@@ -1,11 +1,15 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">Verification Fee Payment</h2>
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight">{{ __('db.Verification Fee Payment') }}</h2>
     </x-slot>
+
+    @php
+        $feeAmount = $profile->payment_status === 'confirmed' ? $profile->payment_amount : setting('nikah_verification_fee', config('services.nikah.verification_fee'));
+        $whatsappMessage = "Assalam-o-Alaikum, I'm " . auth()->user()->name . " (Sallaamti Profile #" . $profile->id . "). I've paid the Rs. " . number_format($feeAmount) . " Nikah verification fee. Sending my payment receipt here for confirmation.";
+    @endphp
 
     <div class="py-12">
         <div class="max-w-2xl mx-auto sm:px-6 lg:px-8 space-y-6">
-
 
             <div class="rounded-xl border-2 p-5" style="border-color: var(--gold); background: linear-gradient(135deg, #fffbeb 0%, #f0fdfa 100%)">
                 <div class="flex items-start gap-3">
@@ -31,13 +35,13 @@
             </div>
 
             <div class="bg-white rounded-lg shadow-sm p-6">
-                <h3 class="font-semibold text-gray-700 mb-2">Fee Amount: Rs. {{ number_format($profile->payment_status === 'confirmed' ? $profile->payment_amount : setting('nikah_verification_fee', config('services.nikah.verification_fee'))) }}</h3>
-                <p class="text-sm text-gray-500 mb-4">A verification fee confirms your serious intent and helps us maintain a trustworthy matchmaking community. Please send the amount via JazzCash or EasyPaisa to the number below, then submit your payment details for confirmation.</p>
+                <h3 class="font-semibold text-gray-700 mb-2">{{ __('db.Fee Amount:') }} Rs. {{ number_format($feeAmount) }}</h3>
+                <p class="text-sm text-gray-500 mb-4">{{ __('db.Send this amount via JazzCash or Bank Transfer to the details below, then either submit your receipt on this page or send it to us directly on WhatsApp — whichever is easier for you.') }}</p>
 
                 <div class="bg-gray-50 border border-gray-200 rounded p-4 text-sm mb-6 space-y-4">
                     @if (setting('jazzcash_number'))
                     <div>
-                        <p class="font-bold mb-1" style="color: var(--gold)">📱 JazzCash</p>
+                        <p class="font-bold mb-1" style="color: var(--gold)">📱 {{ __('db.JazzCash') }}</p>
                         <img src="{{ asset('images/jazzcash.png') }}" alt="JazzCash" class="h-8 w-auto mb-1">
                         <p class="text-gray-600 mb-0">{{ setting('jazzcash_number') }}</p>
                         <p class="font-semibold text-gray-700 mb-0">{{ setting('jazzcash_account_title') }}</p>
@@ -45,52 +49,69 @@
                     @endif
                     @if (setting('bank_name'))
                     <div>
-                        <p class="font-bold mb-1" style="color: var(--gold)">🏦 Bank Transfer</p>
+                        <p class="font-bold mb-1" style="color: var(--gold)">🏦 {{ __('db.Bank Transfer') }}</p>
                         <img src="{{ asset('images/meezan.png') }}" alt="Bank" class="h-16 w-auto mb-1">
-                        <p class="text-gray-600 text-sm mb-0">Bank: {{ setting('bank_name') }}</p>
-                        <p class="text-gray-600 text-sm mb-0">Account Title: {{ setting('bank_account_title') }}</p>
-                        <p class="text-gray-600 text-sm mb-0">Account No: {{ setting('bank_account_number') }}</p>
-                        <p class="text-gray-600 text-sm mb-0">IBAN: {{ setting('bank_account_iban') }}</p>
+                        <p class="text-gray-600 text-sm mb-0">{{ __('db.Bank:') }} {{ setting('bank_name') }}</p>
+                        <p class="text-gray-600 text-sm mb-0">{{ __('db.Account Title:') }} {{ setting('bank_account_title') }}</p>
+                        <p class="text-gray-600 text-sm mb-0">{{ __('db.Account No:') }} {{ setting('bank_account_number') }}</p>
+                        <p class="text-gray-600 text-sm mb-0">{{ __('db.IBAN:') }} {{ setting('bank_account_iban') }}</p>
                     </div>
                     @endif
                     @if (!setting('jazzcash_number') && !setting('bank_name'))
-                    <p class="text-red-600">Payment details have not been configured yet. Please contact support before sending any payment.</p>
+                    <p class="text-red-600">{{ __('db.Payment details have not been configured yet. Please contact support before sending any payment.') }}</p>
                     @endif
                 </div>
+
+                @if (setting('social_whatsapp'))
+                <a href="https://wa.me/{{ setting('social_whatsapp') }}?text={{ urlencode($whatsappMessage) }}" target="_blank"
+                    class="flex items-center gap-3 rounded-xl p-4 mb-6 transition hover:shadow-md" style="background: #f0fdf4; border: 1px solid #bbf7d0">
+                    <div class="w-12 h-12 rounded-xl flex items-center justify-center text-2xl shrink-0 bg-white">💬</div>
+                    <div>
+                        <p class="font-bold text-gray-800 text-sm">{{ __('db.Prefer not to fill this form? Send your receipt on WhatsApp instead') }}</p>
+                        <p class="text-xs text-gray-500 mt-0.5">{{ __('db.Tap here, send us the payment screenshot, and our team will confirm it manually — just as valid as submitting online.') }}</p>
+                    </div>
+                </a>
+                @endif
+
                 @if ($profile->payment_status === 'submitted')
                 <div class="p-4 bg-yellow-50 text-yellow-700 rounded text-sm">
-                    ⏳ Your payment proof has been submitted and is awaiting confirmation by our team.
+                    ⏳ {{ __('db.Your payment proof has been submitted and is awaiting confirmation by our team.') }}
                 </div>
                 @elseif ($profile->payment_status === 'confirmed')
                 <div class="p-4 bg-green-50 text-green-700 rounded text-sm">
-                    ✅ Payment confirmed. Your profile will now proceed to CNIC verification.
+                    ✅ {{ __('db.Payment confirmed. Your profile will now proceed to CNIC verification.') }}
                 </div>
                 @else
                 @if ($profile->payment_status === 'rejected')
                 <div class="p-4 bg-red-50 text-red-700 rounded text-sm mb-4">
-                    ❌ Your previous payment proof was rejected. Reason: {{ $profile->payment_rejection_reason }}
-                    <br>Please resubmit below.
+                    ❌ {{ __('db.Your previous payment proof was rejected. Reason:') }} {{ $profile->payment_rejection_reason }}
+                    <br>{{ __('db.Please resubmit below.') }}
                 </div>
                 @endif
 
                 <form method="POST" action="{{ route('nikah.payment.store') }}" enctype="multipart/form-data" class="space-y-4">
                     @csrf
                     <div>
-                        <x-input-label value="Payment Method" />
-                        <select name="payment_method" required class="border-gray-300 rounded-md w-full mt-1">
-                            <option value="jazzcash">JazzCash</option>
-                            <option value="bank_transfer">Bank Transfer</option>
+                        <x-input-label :value="__('db.Payment Method')" />
+                        <select name="payment_method" required class="border-gray-300 rounded-md w-full mt-1"
+                            title="{{ __('db.Choose whichever method you used to send the fee.') }}">
+                            <option value="jazzcash">{{ __('db.JazzCash') }}</option>
+                            <option value="bank_transfer">{{ __('db.Bank Transfer') }}</option>
                         </select>
                     </div>
                     <div>
-                        <x-input-label value="Transaction ID / Reference Number" />
-                        <x-text-input name="payment_reference" class="w-full mt-1" required />
+                        <x-input-label :value="__('db.Transaction ID / Reference Number')" />
+                        <x-text-input name="payment_reference" class="w-full mt-1" required
+                            placeholder="{{ __('db.e.g. TID123456789 or your bank transfer reference') }}"
+                            title="{{ __('db.The confirmation/reference number your bank or JazzCash gave you after sending the payment.') }}" />
                     </div>
                     <div>
-                        <x-input-label value="Payment Screenshot" />
-                        <input type="file" name="payment_screenshot" accept="image/*" class="w-full mt-1" required>
+                        <x-input-label :value="__('db.Payment Screenshot')" />
+                        <input type="file" name="payment_screenshot" accept="image/*" capture="environment" class="w-full mt-1" required
+                            title="{{ __('db.A screenshot of your JazzCash/bank confirmation, or a photo of a printed receipt.') }}">
+                        <p class="text-[11px] text-gray-400 mt-1">📷 {{ __('db.You can take a photo directly on mobile, or upload a saved screenshot.') }}</p>
                     </div>
-                    <x-primary-button>Submit Payment Proof</x-primary-button>
+                    <x-primary-button>✅ {{ __('db.Complete My Verification — Submit Payment') }}</x-primary-button>
                 </form>
                 @endif
             </div>

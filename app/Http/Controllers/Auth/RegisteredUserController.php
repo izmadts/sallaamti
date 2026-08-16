@@ -69,6 +69,35 @@ class RegisteredUserController extends Controller
 
         session()->flash('conversion_event', 'user_registered');
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        // `intended()` still wins first — e.g. someone who registered from a
+        // shared Nikah profile link must land back on that exact page, not
+        // get diverted here. This default only kicks in when there's no
+        // intended URL waiting.
+        return redirect()->intended($this->postRegistrationRoute($user));
+    }
+
+    // A single interest picked at signup is a strong enough signal to skip
+    // the dashboard entirely and drop the member straight into that
+    // module's next step; picking none, two, or all three is ambiguous, so
+    // the dashboard (with only the chosen modules visible) is the safer
+    // landing spot.
+    protected function postRegistrationRoute(User $user): string
+    {
+        $selected = collect([
+            'nikah' => $user->nikah_module_enabled,
+            'quran' => $user->quran_module_enabled,
+            'counseling' => $user->counseling_module_enabled,
+        ])->filter()->keys();
+
+        if ($selected->count() !== 1) {
+            return route('dashboard');
+        }
+
+        return match ($selected->first()) {
+            'nikah' => route('nikah.create'),
+            'quran' => route('courses.index'),
+            'counseling' => route('counseling.book.start'),
+            default => route('dashboard'),
+        };
     }
 }

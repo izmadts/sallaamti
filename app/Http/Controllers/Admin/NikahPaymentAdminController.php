@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\NikahProfile;
+use App\Services\ImageOptimizer;
 use Illuminate\Http\Request;
 
 class NikahPaymentAdminController extends Controller
@@ -71,6 +72,55 @@ class NikahPaymentAdminController extends Controller
         }
 
         return back()->with('status', 'Payment confirmed.');
+    }
+
+    // Many members find it easier to just send their JazzCash/bank receipt
+    // straight to us on WhatsApp or in person than to fill out the online
+    // upload form. This records exactly that — admin enters what they were
+    // told/shown and confirms the payment on the member's behalf, with the
+    // same downstream effects (notify member, notify admins for review) as
+    // a normal online submission.
+    public function recordOffline(Request $request, NikahProfile $profile)
+    {
+        $validated = $request->validate([
+            'payment_method' => ['required', 'in:whatsapp,cash,jazzcash,bank_transfer,other'],
+            'payment_reference' => ['nullable', 'string', 'max:100'],
+            'payment_screenshot' => ['nullable', 'image', 'max:4096'],
+        ]);
+
+        if ($request->hasFile('payment_screenshot')) {
+            $validated['payment_screenshot'] = ImageOptimizer::store($request->file('payment_screenshot'), 'nikah/payments', 'private');
+        }
+
+        $validated['payment_status'] = 'confirmed';
+        $validated['payment_confirmed_at'] = now();
+        $validated['payment_amount'] = $profile->payment_amount ?: setting('nikah_verification_fee', config('services.nikah.verification_fee'));
+        $validated['payment_rejection_reason'] = null;
+
+        $profile->update($validated);
+
+        $profile->moderationNotes()->create([
+            'admin_id' => auth()->id(),
+            'note' => 'Payment recorded manually by admin — received via ' . $validated['payment_method'] . '.',
+        ]);
+
+        try {
+            $profile->user->notify(new \App\Notifications\NikahPaymentConfirmed());
+        } catch (\Throwable $e) {
+            \Log::error('NikahPaymentConfirmed notification failed: ' . $e->getMessage());
+        }
+
+        if ($profile->verification_status === 'pending') {
+            \App\Models\User::role('admin')->each(function ($admin) use ($profile) {
+                try {
+                    $admin->notify(new \App\Notifications\NewNikahProfilePendingVerification($profile));
+                } catch (\Throwable $e) {
+                    \Log::error('NewNikahProfilePendingVerification notification failed: ' . $e->getMessage());
+                }
+            });
+        }
+
+        return back()->with('status', 'Payment recorded and confirmed for ' . $profile->user->name . '.');
     }
 
     public function reject(Request $request, NikahProfile $profile)
