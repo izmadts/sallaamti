@@ -81,7 +81,7 @@
                      which page they land on right after registering (see
                      RegisteredUserController::determinePostRegistrationRoute) — changeable
                      anytime from the profile page or the topbar. --}}
-                <div x-data="{ nikah: true, quran: true, counseling: true }">
+                <div x-data="{ nikah: true, quran: false, counseling: false }">
                     <label class="auth-label">
                         {{ __('db.What brings you to Sallaamti?') }}
                         <span class="text-gray-400 block text-xs mt-0.5 font-normal">{{ __('db.Pick one or more — we\'ll take you straight there after you sign up.') }}</span>
