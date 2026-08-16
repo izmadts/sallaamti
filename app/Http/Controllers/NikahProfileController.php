@@ -262,6 +262,17 @@ class NikahProfileController extends Controller
         $sentInterestIds = $myProfile->sentInterests()->pluck('receiver_profile_id')->toArray();
         $savedProfileIds = $myProfile->savedProfiles()->pluck('saved_profile_id')->toArray();
 
+        // Infinite scroll: the page's JS re-requests this same URL with
+        // page=2, 3, ... and an AJAX header once the viewer nears the
+        // bottom, and just wants the next batch of cards back, not a full
+        // page reload.
+        if ($request->ajax()) {
+            return response()->json([
+                'html' => view('nikah.partials.profile-cards', compact('paginated', 'sentInterestIds', 'savedProfileIds'))->render(),
+                'has_more' => $paginated->hasMorePages(),
+            ]);
+        }
+
         return view('nikah.browse', compact('paginated', 'sentInterestIds', 'savedProfileIds', 'myProfile'));
     }
 
