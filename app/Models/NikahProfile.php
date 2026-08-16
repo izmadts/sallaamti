@@ -311,6 +311,13 @@ class NikahProfile extends Model
     protected function trackedCompletenessFields(): array
     {
         return [
+            // `photo` is the single required profile photo captured during
+            // signup — deliberately not `photos()->exists()`, which is the
+            // *separate*, optional gallery relationship. Checking the
+            // gallery here meant a member who fully completed the wizard
+            // (photo included) but never added extra gallery photos would
+            // be told their profile photo was missing when it wasn't.
+            'Profile Photo' => ['value' => $this->photo, 'anchor' => 'photo'],
             'Height' => ['value' => $this->height, 'anchor' => 'height'],
             'Sect' => ['value' => $this->sect, 'anchor' => 'sect'],
             'Caste' => ['value' => $this->caste, 'anchor' => 'caste'],
@@ -331,11 +338,7 @@ class NikahProfile extends Model
         $fields = array_column($this->trackedCompletenessFields(), 'value');
 
         $filled = count(array_filter($fields, fn($v) => !empty($v)));
-        $total = count($fields) + 1; // +1 for the photo check below
-
-        if ($this->photos()->exists()) {
-            $filled++;
-        }
+        $total = count($fields);
 
         return (int) round(($filled / $total) * 100);
     }
@@ -345,16 +348,10 @@ class NikahProfile extends Model
     // straight to the first one instead of a generic "go complete it" link.
     public function missingFields(): array
     {
-        $missing = collect($this->trackedCompletenessFields())
+        return collect($this->trackedCompletenessFields())
             ->filter(fn($field) => empty($field['value']))
             ->map(fn($field, $label) => ['label' => $label, 'anchor' => $field['anchor']])
             ->values()
             ->all();
-
-        if (!$this->photos()->exists()) {
-            $missing[] = ['label' => 'Profile Photo', 'anchor' => 'photo'];
-        }
-
-        return $missing;
     }
 }
