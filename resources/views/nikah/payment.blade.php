@@ -100,12 +100,6 @@
                         </select>
                     </div>
                     <div>
-                        <x-input-label :value="__('db.Transaction ID / Reference Number')" />
-                        <x-text-input name="payment_reference" class="w-full mt-1" required
-                            placeholder="{{ __('db.e.g. TID123456789 or your bank transfer reference') }}"
-                            title="{{ __('db.The confirmation/reference number your bank or JazzCash gave you after sending the payment.') }}" />
-                    </div>
-                    <div>
                         <x-input-label :value="__('db.Payment Screenshot')" />
                         <input type="file" name="payment_screenshot" accept="image/*" capture="environment" class="w-full mt-1" required
                             title="{{ __('db.A screenshot of your JazzCash/bank confirmation, or a photo of a printed receipt.') }}">

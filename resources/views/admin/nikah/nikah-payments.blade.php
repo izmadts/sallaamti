@@ -23,7 +23,9 @@
                         <div>
                             <h3 class="font-semibold">{{ $profile->user->name }} ({{ $profile->user->email }})</h3>
                             <p class="text-sm text-gray-500">Amount: Rs. {{ number_format($profile->payment_amount) }} via {{ ucfirst(str_replace('_', ' ', $profile->payment_method)) }}</p>
+                            @if ($profile->payment_reference)
                             <p class="text-sm text-gray-500">Reference: {{ $profile->payment_reference }}</p>
+                            @endif
                         </div>
                     </div>
                     <span class="text-xs bg-yellow-100 text-yellow-800 px-2 py-1 rounded-full">Submitted</span>
