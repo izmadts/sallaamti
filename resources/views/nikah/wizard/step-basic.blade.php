@@ -42,25 +42,36 @@
                                 </select>
                                 <p class="text-xs text-gray-400 mt-1">{{ __('db.This also updates your account profile — used for opposite-gender matching.') }}</p>
                             </div>
-                            <div>
-                                <x-input-label for="height" :value="__('db.Height')" />
-                                @php
-                                    $heightVal = old('height', $data['height'] ?? '');
-                                    $heightOptions = [];
-                                    for ($ft = 4; $ft <= 7; $ft++) {
-                                        for ($in = 0; $in <= 11; $in++) {
-                                            if ($ft === 7 && $in > 0) break;
-                                            $heightOptions[] = $ft . "'" . $in . '"';
-                                        }
+                            @php
+                                $heightOptions = [];
+                                for ($ft = 4; $ft <= 7; $ft++) {
+                                    for ($in = 0; $in <= 11; $in++) {
+                                        if ($ft === 7 && $in > 0) break;
+                                        $heightOptions[] = $ft . "'" . $in . '"';
                                     }
-                                @endphp
-                                <select id="height" name="height" class="border-gray-300 rounded-md shadow-sm w-full mt-1"
+                                }
+                                // $data['height'] holds the already-resolved value from a prior
+                                // save (which is the custom text itself when "Other" was chosen,
+                                // not the literal sentinel) — so infer "Other" from a value that
+                                // doesn't match any fixed option, same as the edit form does.
+                                $heightVal = old('height', $data['height'] ?? '');
+                                $heightOtherRaw = old('height_other', $data['height_other'] ?? '');
+                                $heightIsOther = $heightVal === 'Other' || ($heightVal !== '' && !in_array($heightVal, $heightOptions));
+                                $heightOtherPrefill = $heightOtherRaw !== '' ? $heightOtherRaw : ($heightIsOther ? $heightVal : '');
+                            @endphp
+                            <div x-data="{ ht: '{{ $heightIsOther ? 'Other' : $heightVal }}' }">
+                                <x-input-label for="height" :value="__('db.Height')" />
+                                <select id="height" name="height" x-model="ht" class="border-gray-300 rounded-md shadow-sm w-full mt-1"
                                     title="{{ __('db.Optional — a fixed list keeps this consistent for matching.') }}">
                                     <option value="">{{ __('db.Prefer not to say') }}</option>
                                     @foreach ($heightOptions as $h)
-                                    <option value="{{ $h }}" {{ $heightVal === $h ? 'selected' : '' }}>{{ $h }}</option>
+                                    <option value="{{ $h }}">{{ $h }}</option>
                                     @endforeach
+                                    <option value="Other">{{ __('db.Other') }}</option>
                                 </select>
+                                <div x-show="ht === 'Other'" x-cloak class="mt-2">
+                                    <x-text-input name="height_other" type="text" class="w-full" placeholder="{{ __('db.e.g. 173cm') }}" value="{{ $heightOtherPrefill }}" />
+                                </div>
                             </div>
                             <div>
                                 <x-input-label for="marital_status" :value="__('db.Marital Status')" />
@@ -74,10 +85,26 @@
                                     <option value="married" {{ $ms === 'married' ? 'selected' : '' }}>{{ __('db.Married') }}</option>
                                 </select>
                             </div>
-                            <div>
+                            @php
+                                $educationLevels = ['Matric / O-Levels', 'Intermediate / A-Levels', "Bachelor's", "Master's", 'MPhil / MS', 'PhD', 'Madrassah / Islamic Education'];
+                                $eduVal = old('education', $data['education'] ?? '');
+                                $eduOtherRaw = old('education_other', $data['education_other'] ?? '');
+                                $eduIsOther = $eduVal === 'Other' || ($eduVal !== '' && !in_array($eduVal, $educationLevels));
+                                $eduOtherPrefill = $eduOtherRaw !== '' ? $eduOtherRaw : ($eduIsOther ? $eduVal : '');
+                            @endphp
+                            <div x-data="{ edu: '{{ $eduIsOther ? 'Other' : $eduVal }}' }">
                                 <x-input-label for="education" :value="__('db.Education')" />
-                                <x-text-input id="education" name="education" type="text" class="w-full mt-1" :value="old('education', $data['education'] ?? '')"
-                                    placeholder="{{ __('db.e.g. BSc Computer Science') }}" title="{{ __('db.Your highest completed education.') }}" />
+                                <select id="education" name="education" x-model="edu" class="border-gray-300 rounded-md shadow-sm w-full mt-1"
+                                    title="{{ __('db.Your highest completed education level.') }}">
+                                    <option value="">{{ __('db.Prefer not to say') }}</option>
+                                    @foreach ($educationLevels as $lvl)
+                                    <option value="{{ $lvl }}">{{ __('db.' . $lvl) }}</option>
+                                    @endforeach
+                                    <option value="Other">{{ __('db.Other') }}</option>
+                                </select>
+                                <div x-show="edu === 'Other'" x-cloak class="mt-2">
+                                    <x-text-input name="education_other" type="text" class="w-full" placeholder="{{ __('db.e.g. Diploma in Nursing') }}" value="{{ $eduOtherPrefill }}" />
+                                </div>
                             </div>
                             <div>
                                 <x-input-label for="profession" :value="__('db.Profession')" />

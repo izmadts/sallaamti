@@ -19,6 +19,11 @@ class NikahProfileController extends Controller
     {
         $validated = $this->validateProfile($request);
         $validated['sect'] = $this->resolveSect($request);
+        $validated['education'] = $this->resolveEducation($request);
+        $validated['language'] = $this->resolveLanguage($request);
+        $validated['height'] = $this->resolveHeight($request);
+        $validated['family_type'] = $this->resolveFamilyType($request);
+        $validated['guardian_relation'] = $this->resolveGuardianRelation($request);
         $validated['user_id'] = Auth::id();
 
         if ($request->hasFile('cnic_front_image')) {
@@ -74,6 +79,11 @@ class NikahProfileController extends Controller
         $profile = Auth::user()->nikahProfile;
         $validated = $this->validateProfile($request, $profile);
         $validated['sect'] = $this->resolveSect($request);
+        $validated['education'] = $this->resolveEducation($request);
+        $validated['language'] = $this->resolveLanguage($request);
+        $validated['height'] = $this->resolveHeight($request);
+        $validated['family_type'] = $this->resolveFamilyType($request);
+        $validated['guardian_relation'] = $this->resolveGuardianRelation($request);
         $validated['allow_photo_sharing'] = $request->has('allow_photo_sharing');
         $validated['open_to_polygamy'] = $request->has('open_to_polygamy');
 
@@ -165,6 +175,12 @@ class NikahProfileController extends Controller
         }
         if ($request->filled('language')) {
             $query->where('language', 'like', '%' . $request->language . '%');
+        }
+        if ($request->filled('family_type')) {
+            $query->where('family_type', 'like', '%' . $request->family_type . '%');
+        }
+        if ($request->filled('height')) {
+            $query->where('height', $request->height);
         }
         if ($request->filled('prayer_frequency')) {
             $query->where('prayer_frequency', $request->prayer_frequency);

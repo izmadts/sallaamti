@@ -31,37 +31,72 @@
                                 <x-text-input id="caste" name="caste" type="text" class="w-full mt-1" :value="old('caste', $data['caste'] ?? '')"
                                     placeholder="{{ __('db.e.g. Rajput, Sheikh, Syed') }}" title="{{ __('db.Only if caste/biradari matters to your family — leave blank if not.') }}" />
                             </div>
-                            <div>
+                            @php
+                                $familyTypeOptions = ['Joint Family', 'Nuclear Family', 'Living with In-Laws'];
+                                $familyTypeVal = old('family_type', $data['family_type'] ?? '');
+                                $familyTypeOtherRaw = old('family_type_other', $data['family_type_other'] ?? '');
+                                $familyTypeIsOther = $familyTypeVal === 'Other' || ($familyTypeVal !== '' && !in_array($familyTypeVal, $familyTypeOptions));
+                                $familyTypeOtherPrefill = $familyTypeOtherRaw !== '' ? $familyTypeOtherRaw : ($familyTypeIsOther ? $familyTypeVal : '');
+                            @endphp
+                            <div x-data="{ ft: '{{ $familyTypeIsOther ? 'Other' : $familyTypeVal }}' }">
                                 <x-input-label for="family_type" :value="__('db.Family Type')" />
-                                @php $familyTypeVal = old('family_type', $data['family_type'] ?? ''); @endphp
-                                <select id="family_type" name="family_type" class="border-gray-300 rounded-md shadow-sm w-full mt-1"
+                                <select id="family_type" name="family_type" x-model="ft" class="border-gray-300 rounded-md shadow-sm w-full mt-1"
                                     title="{{ __('db.Do you live in a joint family or on your own as a separate household?') }}">
                                     <option value="">{{ __('db.Prefer not to say') }}</option>
-                                    @foreach (['Joint Family', 'Nuclear Family', 'Living with In-Laws', 'Other'] as $ft)
-                                    <option value="{{ $ft }}" {{ $familyTypeVal === $ft ? 'selected' : '' }}>{{ __('db.' . $ft) }}</option>
+                                    @foreach ($familyTypeOptions as $ftOpt)
+                                    <option value="{{ $ftOpt }}">{{ __('db.' . $ftOpt) }}</option>
                                     @endforeach
+                                    <option value="Other">{{ __('db.Other') }}</option>
                                 </select>
+                                <div x-show="ft === 'Other'" x-cloak class="mt-2">
+                                    <x-text-input name="family_type_other" type="text" class="w-full" placeholder="{{ __('db.Please describe your family setup') }}" value="{{ $familyTypeOtherPrefill }}" />
+                                </div>
                             </div>
                             <div>
                                 <x-input-label for="ethnicity" :value="__('db.Ethnicity (optional)')" />
                                 <x-text-input id="ethnicity" name="ethnicity" type="text" class="w-full mt-1" :value="old('ethnicity', $data['ethnicity'] ?? '')"
                                     placeholder="{{ __('db.e.g. Punjabi, Pashtun, Sindhi, Muhajir') }}" title="{{ __('db.Your ethnic background, if you\'d like to share it.') }}" />
                             </div>
-                            <div>
-                                <x-input-label for="language" :value="__('db.Language(s) Spoken (optional)')" />
-                                <x-text-input id="language" name="language" type="text" class="w-full mt-1" :value="old('language', $data['language'] ?? '')"
-                                    placeholder="{{ __('db.e.g. Urdu, English, Punjabi') }}" title="{{ __('db.Language(s) you\'re comfortable speaking.') }}" />
+                            <div class="sm:col-span-2" x-data="{ other: {{ old('language_other', $data['language_other'] ?? '') ? 'true' : 'false' }} }">
+                                <x-input-label :value="__('db.Language(s) Spoken (optional)')" />
+                                @php $existingLanguages = old('languages', $data['languages'] ?? []); @endphp
+                                <div class="flex flex-wrap gap-2 mt-1">
+                                    @foreach (['Urdu', 'English', 'Punjabi', 'Pashto', 'Sindhi', 'Saraiki', 'Balochi'] as $lang)
+                                    <label class="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1.5 rounded-full border cursor-pointer transition hover:bg-gray-50"
+                                        style="border-color: #d1d5db">
+                                        <input type="checkbox" name="languages[]" value="{{ $lang }}" {{ in_array($lang, $existingLanguages) ? 'checked' : '' }} class="rounded">
+                                        {{ __('db.' . $lang) }}
+                                    </label>
+                                    @endforeach
+                                    <label class="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1.5 rounded-full border cursor-pointer transition hover:bg-gray-50" style="border-color: #d1d5db">
+                                        <input type="checkbox" x-model="other" class="rounded">
+                                        {{ __('db.Other') }}
+                                    </label>
+                                </div>
+                                <div x-show="other" x-cloak class="mt-2">
+                                    <x-text-input name="language_other" type="text" class="w-full" placeholder="{{ __('db.e.g. Balti, Hindko, Arabic') }}" :value="old('language_other', $data['language_other'] ?? '')" />
+                                </div>
                             </div>
-                            <div>
+                            @php
+                                $guardianRelOptions = ['Father', 'Mother', 'Brother', 'Sister', 'Uncle', 'Aunt', 'Grandfather', 'Grandmother'];
+                                $guardianRelVal = old('guardian_relation', $data['guardian_relation'] ?? '');
+                                $guardianRelOtherRaw = old('guardian_relation_other', $data['guardian_relation_other'] ?? '');
+                                $guardianRelIsOther = $guardianRelVal === 'Other' || ($guardianRelVal !== '' && !in_array($guardianRelVal, $guardianRelOptions));
+                                $guardianRelOtherPrefill = $guardianRelOtherRaw !== '' ? $guardianRelOtherRaw : ($guardianRelIsOther ? $guardianRelVal : '');
+                            @endphp
+                            <div x-data="{ rel: '{{ $guardianRelIsOther ? 'Other' : $guardianRelVal }}' }">
                                 <x-input-label for="guardian_relation" :value="__('db.Guardian Relation')" />
-                                @php $guardianRelVal = old('guardian_relation', $data['guardian_relation'] ?? ''); @endphp
-                                <select id="guardian_relation" name="guardian_relation" class="border-gray-300 rounded-md shadow-sm w-full mt-1"
+                                <select id="guardian_relation" name="guardian_relation" x-model="rel" class="border-gray-300 rounded-md shadow-sm w-full mt-1"
                                     title="{{ __('db.Your relationship to the guardian named below.') }}">
                                     <option value="">{{ __('db.Select') }}</option>
-                                    @foreach (['Father', 'Mother', 'Brother', 'Sister', 'Uncle', 'Aunt', 'Grandfather', 'Grandmother', 'Other'] as $rel)
-                                    <option value="{{ $rel }}" {{ $guardianRelVal === $rel ? 'selected' : '' }}>{{ __('db.' . $rel) }}</option>
+                                    @foreach ($guardianRelOptions as $relOpt)
+                                    <option value="{{ $relOpt }}">{{ __('db.' . $relOpt) }}</option>
                                     @endforeach
+                                    <option value="Other">{{ __('db.Other') }}</option>
                                 </select>
+                                <div x-show="rel === 'Other'" x-cloak class="mt-2">
+                                    <x-text-input name="guardian_relation_other" type="text" class="w-full" placeholder="{{ __('db.e.g. Cousin, Family Friend') }}" value="{{ $guardianRelOtherPrefill }}" />
+                                </div>
                             </div>
                             <div>
                                 <x-input-label for="guardian_name" :value="__('db.Guardian Name')" />

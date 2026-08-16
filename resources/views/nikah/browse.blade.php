@@ -57,7 +57,12 @@
                 </div>
                 <div>
                     <label class="text-xs text-gray-500">Education</label>
-                    <input type="text" name="education" value="{{ request('education') }}" class="border-gray-300 rounded text-sm block w-24">
+                    <select name="education" class="border-gray-300 rounded text-sm block">
+                        <option value="">Any</option>
+                        @foreach (['Matric / O-Levels', 'Intermediate / A-Levels', "Bachelor's", "Master's", 'MPhil / MS', 'PhD', 'Madrassah / Islamic Education'] as $lvl)
+                        <option value="{{ $lvl }}" {{ request('education') === $lvl ? 'selected' : '' }}>{{ __('db.' . $lvl) }}</option>
+                        @endforeach
+                    </select>
                 </div>
                 <div>
                     <label class="text-xs text-gray-500">Ethnicity</label>
@@ -65,7 +70,39 @@
                 </div>
                 <div>
                     <label class="text-xs text-gray-500">Language</label>
-                    <input type="text" name="language" value="{{ request('language') }}" class="border-gray-300 rounded text-sm block w-24">
+                    <select name="language" class="border-gray-300 rounded text-sm block">
+                        <option value="">Any</option>
+                        @foreach (['Urdu', 'English', 'Punjabi', 'Pashto', 'Sindhi', 'Saraiki', 'Balochi'] as $lang)
+                        <option value="{{ $lang }}" {{ request('language') === $lang ? 'selected' : '' }}>{{ __('db.' . $lang) }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div>
+                    <label class="text-xs text-gray-500">Family Type</label>
+                    <select name="family_type" class="border-gray-300 rounded text-sm block">
+                        <option value="">Any</option>
+                        @foreach (['Joint Family', 'Nuclear Family', 'Living with In-Laws'] as $ft)
+                        <option value="{{ $ft }}" {{ request('family_type') === $ft ? 'selected' : '' }}>{{ __('db.' . $ft) }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div>
+                    <label class="text-xs text-gray-500">Height</label>
+                    @php
+                        $heightFilterOptions = [];
+                        for ($ft = 4; $ft <= 7; $ft++) {
+                            for ($in = 0; $in <= 11; $in++) {
+                                if ($ft === 7 && $in > 0) break;
+                                $heightFilterOptions[] = $ft . "'" . $in . '"';
+                            }
+                        }
+                    @endphp
+                    <select name="height" class="border-gray-300 rounded text-sm block">
+                        <option value="">Any</option>
+                        @foreach ($heightFilterOptions as $h)
+                        <option value="{{ $h }}" {{ request('height') === $h ? 'selected' : '' }}>{{ $h }}</option>
+                        @endforeach
+                    </select>
                 </div>
                 <div>
                     <label class="text-xs text-gray-500">Prayer Regularity</label>

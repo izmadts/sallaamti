@@ -44,25 +44,30 @@
                                 </select>
                                 <p class="text-xs text-gray-400 mt-1">{{ __('db.This also updates your account profile — used for opposite-gender matching.') }}</p>
                             </div>
-                            <div>
-                                <x-input-label for="height" value="Height" />
-                                @php
-                                    $heightVal = old('height', $profile->height);
-                                    $heightOptions = [];
-                                    for ($ft = 4; $ft <= 7; $ft++) {
-                                        for ($in = 0; $in <= 11; $in++) {
-                                            if ($ft === 7 && $in > 0) break;
-                                            $heightOptions[] = $ft . "'" . $in . '"';
-                                        }
+                            @php
+                                $heightOptions = [];
+                                for ($ft = 4; $ft <= 7; $ft++) {
+                                    for ($in = 0; $in <= 11; $in++) {
+                                        if ($ft === 7 && $in > 0) break;
+                                        $heightOptions[] = $ft . "'" . $in . '"';
                                     }
-                                @endphp
-                                <select id="height" name="height" class="border-gray-300 rounded-md shadow-sm w-full mt-1"
+                                }
+                                $heightVal = old('height', $profile->height);
+                                $heightIsOther = $heightVal && !in_array($heightVal, $heightOptions);
+                            @endphp
+                            <div x-data="{ ht: '{{ $heightIsOther ? 'Other' : $heightVal }}' }">
+                                <x-input-label for="height" value="Height" />
+                                <select id="height" name="height" x-model="ht" class="border-gray-300 rounded-md shadow-sm w-full mt-1"
                                     title="{{ __('db.Optional — a fixed list keeps this consistent for matching.') }}">
                                     <option value="">{{ __('db.Prefer not to say') }}</option>
                                     @foreach ($heightOptions as $h)
-                                    <option value="{{ $h }}" {{ $heightVal === $h ? 'selected' : '' }}>{{ $h }}</option>
+                                    <option value="{{ $h }}">{{ $h }}</option>
                                     @endforeach
+                                    <option value="Other">{{ __('db.Other') }}</option>
                                 </select>
+                                <div x-show="ht === 'Other'" x-cloak class="mt-2">
+                                    <x-text-input name="height_other" type="text" class="w-full" placeholder="{{ __('db.e.g. 173cm') }}" :value="old('height_other', $heightIsOther ? $heightVal : '')" />
+                                </div>
                             </div>
                             <div>
                                 <x-input-label for="marital_status" value="Marital Status" />
@@ -153,10 +158,24 @@
 
                     <x-nikah-section :title="__('db.Education & Profession')" icon="🎓" color="indigo">
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div>
+                            @php
+                                $educationLevels = ['Matric / O-Levels', 'Intermediate / A-Levels', "Bachelor's", "Master's", 'MPhil / MS', 'PhD', 'Madrassah / Islamic Education'];
+                                $educationVal = old('education', $profile->education);
+                                $educationIsOther = $educationVal && !in_array($educationVal, $educationLevels);
+                            @endphp
+                            <div x-data="{ edu: '{{ $educationIsOther ? 'Other' : $educationVal }}' }">
                                 <x-input-label for="education" value="Education" />
-                                <x-text-input id="education" name="education" type="text" class="w-full mt-1" :value="old('education', $profile->education)"
-                                    placeholder="{{ __('db.e.g. BSc Computer Science') }}" title="{{ __('db.Your highest completed education.') }}" />
+                                <select id="education" name="education" x-model="edu" class="border-gray-300 rounded-md shadow-sm w-full mt-1"
+                                    title="{{ __('db.Your highest completed education level.') }}">
+                                    <option value="">{{ __('db.Prefer not to say') }}</option>
+                                    @foreach ($educationLevels as $lvl)
+                                    <option value="{{ $lvl }}">{{ __('db.' . $lvl) }}</option>
+                                    @endforeach
+                                    <option value="Other">{{ __('db.Other') }}</option>
+                                </select>
+                                <div x-show="edu === 'Other'" x-cloak class="mt-2">
+                                    <x-text-input name="education_other" type="text" class="w-full" placeholder="{{ __('db.e.g. Diploma in Nursing') }}" :value="old('education_other', $educationIsOther ? $educationVal : '')" />
+                                </div>
                             </div>
                             <div>
                                 <x-input-label for="profession" value="Profession" />
@@ -178,37 +197,77 @@
                                 <x-text-input id="ethnicity" name="ethnicity" type="text" class="w-full mt-1" :value="old('ethnicity', $profile->ethnicity)" placeholder="e.g. Punjabi, Pashtun, Sindhi, Muhajir"
                                     title="{{ __('db.Your ethnic background, if you\'d like to share it.') }}" />
                             </div>
-                            <div>
-                                <x-input-label for="language" value="Language(s) Spoken (optional)" />
-                                <x-text-input id="language" name="language" type="text" class="w-full mt-1" :value="old('language', $profile->language)" placeholder="e.g. Urdu, English, Punjabi"
-                                    title="{{ __('db.Language(s) you\'re comfortable speaking.') }}" />
+                            @php
+                                $commonLanguages = ['Urdu', 'English', 'Punjabi', 'Pashto', 'Sindhi', 'Saraiki', 'Balochi'];
+                                if (old('languages') !== null || old('language_other') !== null) {
+                                    $checkedLanguages = old('languages', []);
+                                    $otherLanguageText = old('language_other', '');
+                                } else {
+                                    $profileLangParts = array_filter(array_map('trim', explode(',', $profile->language ?? '')));
+                                    $checkedLanguages = array_intersect($profileLangParts, $commonLanguages);
+                                    $otherLanguageText = implode(', ', array_diff($profileLangParts, $commonLanguages));
+                                }
+                            @endphp
+                            <div class="sm:col-span-2" x-data="{ other: {{ $otherLanguageText ? 'true' : 'false' }} }">
+                                <x-input-label value="Language(s) Spoken (optional)" />
+                                <div class="flex flex-wrap gap-2 mt-1">
+                                    @foreach ($commonLanguages as $lang)
+                                    <label class="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1.5 rounded-full border cursor-pointer transition hover:bg-gray-50" style="border-color: #d1d5db">
+                                        <input type="checkbox" name="languages[]" value="{{ $lang }}" {{ in_array($lang, $checkedLanguages) ? 'checked' : '' }} class="rounded">
+                                        {{ __('db.' . $lang) }}
+                                    </label>
+                                    @endforeach
+                                    <label class="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1.5 rounded-full border cursor-pointer transition hover:bg-gray-50" style="border-color: #d1d5db">
+                                        <input type="checkbox" x-model="other" class="rounded">
+                                        {{ __('db.Other') }}
+                                    </label>
+                                </div>
+                                <div x-show="other" x-cloak class="mt-2">
+                                    <x-text-input name="language_other" type="text" class="w-full" placeholder="{{ __('db.e.g. Balti, Hindko, Arabic') }}" value="{{ $otherLanguageText }}" />
+                                </div>
                             </div>
                         </div>
                     </x-nikah-section>
 
                     <x-nikah-section :title="__('db.Family & Guardian Information')" icon="👨‍👩‍👧" color="amber">
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div>
+                            @php
+                                $familyTypeOptions = ['Joint Family', 'Nuclear Family', 'Living with In-Laws'];
+                                $familyTypeVal = old('family_type', $profile->family_type);
+                                $familyTypeIsOther = $familyTypeVal && !in_array($familyTypeVal, $familyTypeOptions);
+                            @endphp
+                            <div x-data="{ ft: '{{ $familyTypeIsOther ? 'Other' : $familyTypeVal }}' }">
                                 <x-input-label for="family_type" value="Family Type" />
-                                @php $familyTypeVal = old('family_type', $profile->family_type); @endphp
-                                <select id="family_type" name="family_type" class="border-gray-300 rounded-md shadow-sm w-full mt-1"
+                                <select id="family_type" name="family_type" x-model="ft" class="border-gray-300 rounded-md shadow-sm w-full mt-1"
                                     title="{{ __('db.Do you live in a joint family or on your own as a separate household?') }}">
                                     <option value="">{{ __('db.Prefer not to say') }}</option>
-                                    @foreach (['Joint Family', 'Nuclear Family', 'Living with In-Laws', 'Other'] as $ft)
-                                    <option value="{{ $ft }}" {{ $familyTypeVal === $ft ? 'selected' : '' }}>{{ __('db.' . $ft) }}</option>
+                                    @foreach ($familyTypeOptions as $ft)
+                                    <option value="{{ $ft }}">{{ __('db.' . $ft) }}</option>
                                     @endforeach
+                                    <option value="Other">{{ __('db.Other') }}</option>
                                 </select>
+                                <div x-show="ft === 'Other'" x-cloak class="mt-2">
+                                    <x-text-input name="family_type_other" type="text" class="w-full" placeholder="{{ __('db.Please describe your family setup') }}" :value="old('family_type_other', $familyTypeIsOther ? $familyTypeVal : '')" />
+                                </div>
                             </div>
-                            <div>
+                            @php
+                                $guardianRelOptions = ['Father', 'Mother', 'Brother', 'Sister', 'Uncle', 'Aunt', 'Grandfather', 'Grandmother'];
+                                $guardianRelVal = old('guardian_relation', $profile->guardian_relation);
+                                $guardianRelIsOther = $guardianRelVal && !in_array($guardianRelVal, $guardianRelOptions);
+                            @endphp
+                            <div x-data="{ rel: '{{ $guardianRelIsOther ? 'Other' : $guardianRelVal }}' }">
                                 <x-input-label for="guardian_relation" value="Guardian Relation" />
-                                @php $guardianRelVal = old('guardian_relation', $profile->guardian_relation); @endphp
-                                <select id="guardian_relation" name="guardian_relation" class="border-gray-300 rounded-md shadow-sm w-full mt-1"
+                                <select id="guardian_relation" name="guardian_relation" x-model="rel" class="border-gray-300 rounded-md shadow-sm w-full mt-1"
                                     title="{{ __('db.Your relationship to the guardian named below.') }}">
                                     <option value="">{{ __('db.Select') }}</option>
-                                    @foreach (['Father', 'Mother', 'Brother', 'Sister', 'Uncle', 'Aunt', 'Grandfather', 'Grandmother', 'Other'] as $rel)
-                                    <option value="{{ $rel }}" {{ $guardianRelVal === $rel ? 'selected' : '' }}>{{ __('db.' . $rel) }}</option>
+                                    @foreach ($guardianRelOptions as $rel)
+                                    <option value="{{ $rel }}">{{ __('db.' . $rel) }}</option>
                                     @endforeach
+                                    <option value="Other">{{ __('db.Other') }}</option>
                                 </select>
+                                <div x-show="rel === 'Other'" x-cloak class="mt-2">
+                                    <x-text-input name="guardian_relation_other" type="text" class="w-full" placeholder="{{ __('db.e.g. Cousin, Family Friend') }}" :value="old('guardian_relation_other', $guardianRelIsOther ? $guardianRelVal : '')" />
+                                </div>
                             </div>
                             <div>
                                 <x-input-label for="guardian_name" value="Guardian Name" />

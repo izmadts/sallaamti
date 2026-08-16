@@ -483,4 +483,22 @@ return [
     'Aunt' => 'خالہ/پھوپھی',
     'Grandfather' => 'دادا/نانا',
     'Grandmother' => 'دادی/نانی',
+
+    // ---- Education levels ----
+    'Matric / O-Levels' => 'میٹرک / او لیول',
+    'Intermediate / A-Levels' => 'انٹرمیڈیٹ / اے لیول',
+    "Bachelor's" => 'بیچلرز',
+    "Master's" => 'ماسٹرز',
+    'MPhil / MS' => 'ایم فل / ایم ایس',
+    'PhD' => 'پی ایچ ڈی',
+    'Madrassah / Islamic Education' => 'مدرسہ / دینی تعلیم',
+
+    // ---- Languages ----
+    'Urdu' => 'اردو',
+    'English' => 'انگریزی',
+    'Punjabi' => 'پنجابی',
+    'Pashto' => 'پشتو',
+    'Sindhi' => 'سندھی',
+    'Saraiki' => 'سرائیکی',
+    'Balochi' => 'بلوچی',
 ];

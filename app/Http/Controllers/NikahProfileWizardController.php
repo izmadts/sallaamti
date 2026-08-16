@@ -17,8 +17,8 @@ class NikahProfileWizardController extends Controller
     protected string $wizardKey = 'nikah_profile';
 
     protected array $wizardStepFields = [
-        'basic' => ['age', 'height', 'marital_status', 'education', 'profession', 'city', 'country'],
-        'family' => ['caste', 'family_type', 'guardian_name', 'guardian_contact', 'guardian_relation', 'ethnicity', 'language'],
+        'basic' => ['age', 'height', 'height_other', 'marital_status', 'education', 'education_other', 'profession', 'city', 'country'],
+        'family' => ['caste', 'family_type', 'family_type_other', 'guardian_name', 'guardian_contact', 'guardian_relation', 'guardian_relation_other', 'ethnicity', 'languages', 'languages.*', 'language_other'],
         'deen' => ['sect', 'sect_other', 'prayer_frequency', 'hijab_or_beard', 'smokes', 'diet', 'open_to_polygamy'],
         'about' => ['about', 'expectations', 'pref_min_age', 'pref_max_age', 'pref_city', 'pref_sect', 'pref_education', 'pref_marital_status'],
         'verification' => ['cnic_number', 'cnic_front_image', 'cnic_back_image', 'photo', 'allow_photo_sharing', 'visibility'],
@@ -106,6 +106,14 @@ class NikahProfileWizardController extends Controller
                 Auth::user()->update(['gender' => $validated['gender']]);
             }
             unset($validated['gender']);
+            $validated['education'] = $this->resolveEducation($request);
+            $validated['height'] = $this->resolveHeight($request);
+        }
+
+        if ($step === 'family') {
+            $validated['language'] = $this->resolveLanguage($request);
+            $validated['family_type'] = $this->resolveFamilyType($request);
+            $validated['guardian_relation'] = $this->resolveGuardianRelation($request);
         }
 
         if ($step === 'deen') {
