@@ -165,8 +165,13 @@ class NikahProfileController extends Controller
         // Get blocked IDs BEFORE running the query
         $blockedIds = $myProfile->blockedProfiles()->pluck('blocked_profile_id')->toArray();
 
-        $query = NikahProfile::where('verification_status', 'verified')
-            ->where('is_active', true)
+        // Deliberately not filtering on verification_status here — profiles
+        // still awaiting admin review show up too (with a "Verification
+        // Pending" badge on the card instead of the earned trust badges),
+        // otherwise the vast majority of real profiles are invisible until
+        // an admin gets to them. is_active/suspended/public are different,
+        // genuine safety/privacy concerns and stay enforced.
+        $query = NikahProfile::where('is_active', true)
             ->whereNull('suspended_at')
             ->where('visibility', 'public')
             ->where('user_id', '!=', Auth::id())

@@ -92,11 +92,13 @@ class NikahProfile extends Model
         return $this->hasMany(NikahInterest::class, 'receiver_profile_id');
     }
 
-    // Helper: is this profile fully verified and visible in search?
+    // Helper: is this profile visible in search/browse? Verification status
+    // is deliberately not part of this — Browse shows pending profiles too
+    // (see NikahProfileController::browse()), so a profile that appears in
+    // the list must also be reachable when clicked, or it's a 404 trap.
     public function isSearchable(): bool
     {
-        return $this->verification_status === 'verified'
-            && $this->is_active
+        return $this->is_active
             && !$this->isSuspended()
             && $this->visibility === 'public';
     }
