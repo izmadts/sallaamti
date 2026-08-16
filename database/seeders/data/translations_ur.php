@@ -501,4 +501,8 @@ return [
     'Sindhi' => 'سندھی',
     'Saraiki' => 'سرائیکی',
     'Balochi' => 'بلوچی',
+
+    // ---- Payment page: final-step emphasis ----
+    'Final Step' => 'آخری مرحلہ',
+    'This is the only thing standing between you and a live, searchable profile.' => 'بس یہی ایک چیز آپ کی پروفائل کو فعال اور نظر آنے کے قابل بننے سے روک رہی ہے۔',
 ];

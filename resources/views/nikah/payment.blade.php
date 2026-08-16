@@ -11,6 +11,15 @@
     <div class="py-12">
         <div class="max-w-2xl mx-auto sm:px-6 lg:px-8 space-y-6">
 
+            @if (in_array($profile->payment_status, ['unpaid', 'rejected']))
+            <div class="flex items-center gap-2">
+                <span class="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wide px-3 py-1 rounded-full text-white" style="background: var(--teal)">
+                    🎯 {{ __('db.Final Step') }}
+                </span>
+                <span class="text-sm text-gray-500">{{ __('db.This is the only thing standing between you and a live, searchable profile.') }}</span>
+            </div>
+            @endif
+
             <div class="rounded-xl border-2 p-5" style="border-color: var(--gold); background: linear-gradient(135deg, #fffbeb 0%, #f0fdfa 100%)">
                 <div class="flex items-start gap-3">
                     <span class="text-2xl shrink-0">🛡️</span>

@@ -53,6 +53,14 @@ class NikahProfileController extends Controller
             return redirect()->route('nikah.create');
         }
 
+        // Nothing on this page needs action until the fee is paid — land the
+        // member straight on the payment screen (the actual final step) each
+        // time they come back to their profile, instead of a "Pay Now" link
+        // they have to notice and click themselves.
+        if ($profile->payment_status !== 'confirmed') {
+            return redirect()->route('nikah.payment');
+        }
+
         if (!$profile->public_token) {
             $profile->update(['public_token' => Str::random(32)]);
         }
