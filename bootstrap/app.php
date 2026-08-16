@@ -3,6 +3,8 @@
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Session\TokenMismatchException;
+use Illuminate\Support\Facades\Auth;
 
 return Application::configure(basePath: dirname(__DIR__))
     ->withRouting(
@@ -27,5 +29,18 @@ return Application::configure(basePath: dirname(__DIR__))
         \App\Http\Middleware\EnsureUserIsActive::class,
     ]);
 })->withExceptions(function (Exceptions $exceptions): void {
-        //
-    })->create();
+    // A logout click on a page left open past the session lifetime is a
+    // stale CSRF token, not a real security event — the safe thing to do
+    // is just complete the logout instead of showing the "Session
+    // Expired" page for what the member experiences as a broken Logout
+    // button. Every other form still gets the normal 419 page.
+    $exceptions->render(function (TokenMismatchException $e, $request) {
+        if ($request->routeIs('logout')) {
+            Auth::guard('web')->logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
+
+            return redirect('/');
+        }
+    });
+})->create();

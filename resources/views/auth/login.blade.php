@@ -79,13 +79,8 @@
                 </div>
                 @endif
 
-                <div class="auth-divider"><span>{{ __('db.or') }}</span></div>
-
-                <p class="text-center text-sm text-gray-600">
-                    <a href="{{ route('otp.request') }}" class="font-semibold" style="color: var(--teal)">
-                        <i class="fa fa-mobile-alt mr-1"></i> {{ __('db.Log in with WhatsApp number') }}
-                    </a>
-                </p>
+                {{-- WhatsApp/OTP login hidden until that flow is working — route and
+                     controller left intact, just not linked to from here. --}}
 
                 <p class="text-center text-sm text-gray-600">
                     {{ __("db.Don't have an account?") }}
