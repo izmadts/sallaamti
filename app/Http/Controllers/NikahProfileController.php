@@ -108,6 +108,29 @@ class NikahProfileController extends Controller
         return redirect()->route('nikah.show')->with('status', 'Profile updated successfully.');
     }
 
+    // A profile that hasn't paid its verification fee or hasn't been approved
+    // yet can still see and reach out to fully verified members — one-sided
+    // and exactly the kind of unvetted access the verification fee and admin
+    // review exist to prevent. Gate every browse/view entry point behind
+    // "your own profile is paid and verified" instead, with a redirect that
+    // sends the member straight to whichever step is actually blocking them.
+    protected function browsingBlockedRedirect(?NikahProfile $myProfile)
+    {
+        if (!$myProfile) {
+            return redirect()->route('nikah.create')->with('status', 'Create your Nikah profile first to explore matches.');
+        }
+
+        if ($myProfile->payment_status !== 'confirmed') {
+            return redirect()->route('nikah.payment')->with('status', 'Please complete your verification fee payment before you can explore other profiles.');
+        }
+
+        if ($myProfile->verification_status !== 'verified') {
+            return redirect()->route('nikah.show')->with('status', "Your profile is still awaiting verification by our team. You'll be able to explore matches once it's approved.");
+        }
+
+        return null;
+    }
+
     public function browse(Request $request)
     {
         // Redirect guest to register with friendly message
@@ -127,8 +150,8 @@ class NikahProfileController extends Controller
 
         $myProfile = Auth::user()->nikahProfile;
 
-        if (!$myProfile) {
-            return redirect()->route('nikah.create')->with('status', 'Create your profile first to browse matches.');
+        if ($blocked = $this->browsingBlockedRedirect($myProfile)) {
+            return $blocked;
         }
 
         // Get blocked IDs BEFORE running the query
@@ -265,14 +288,16 @@ class NikahProfileController extends Controller
 
     public function view(NikahProfile $profile)
     {
+        $myProfile = Auth::user()->nikahProfile;
+
+        if ($blocked = $this->browsingBlockedRedirect($myProfile)) {
+            return $blocked;
+        }
+
         // Only show verified, active, non-suspended, public profiles
         abort_unless($profile->isSearchable(), 404);
 
-        $myProfile = Auth::user()->nikahProfile;
-
-        if ($myProfile) {
-            abort_if(\App\Models\NikahBlock::existsBetween($myProfile->id, $profile->id), 404);
-        }
+        abort_if(\App\Models\NikahBlock::existsBetween($myProfile->id, $profile->id), 404);
 
         // Check if there's a mutual accepted interest
         $hasAcceptedInterest = false;
