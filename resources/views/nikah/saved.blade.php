@@ -27,7 +27,7 @@
                 </div>
             </div>
             @empty
-            <p class="text-gray-500">No saved profiles yet. Browse matches and click ☆ to save profiles.</p>
+            <p class="text-gray-500">{{ __('db.No saved profiles yet. Check profiles and click ☆ to save them.') }}</p>
             @endforelse
         </div>
     </div>

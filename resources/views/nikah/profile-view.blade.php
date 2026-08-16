@@ -2,7 +2,7 @@
     <x-slot name="header">
         <div class="flex justify-between items-center">
             <h2 class="font-semibold text-xl text-gray-800">Profile Details</h2>
-            <a href="{{ route('nikah.browse') }}" class="text-sm text-gray-500 hover:underline">← Back to Browse</a>
+            <a href="{{ route('nikah.browse') }}" class="text-sm text-gray-500 hover:underline">← {{ __('db.Back to Profiles') }}</a>
         </div>
     </x-slot>
 

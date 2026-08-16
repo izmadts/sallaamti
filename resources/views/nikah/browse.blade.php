@@ -1,10 +1,10 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800">Browse Matches</h2>
+        <h2 class="font-semibold text-xl text-gray-800">{{ __('db.Check Profiles') }}</h2>
     </x-slot>
     <x-slot name="header">
         <div class="flex justify-between items-center">
-            <h2 class="font-semibold text-xl text-gray-800">Browse Matches</h2>
+            <h2 class="font-semibold text-xl text-gray-800">{{ __('db.Check Profiles') }}</h2>
             <div class="flex gap-2">
                 <a href="{{ route('nikah.saved') }}" class="text-sm bg-white border border-gray-200 px-3 py-1.5 rounded-lg hover:bg-gray-50">
                     ★ Saved Profiles

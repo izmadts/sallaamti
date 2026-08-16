@@ -71,7 +71,7 @@
                         @php $vis = old('visibility', $data['visibility'] ?? 'public'); @endphp
                         <select id="visibility" name="visibility" required class="border-gray-300 rounded-md shadow-sm w-full"
                             title="{{ __('db.You can change this anytime after your profile goes live.') }}">
-                            <option value="public" {{ $vis === 'public' ? 'selected' : '' }}>{{ __('db.Public (visible in Browse Matches search after verification)') }}</option>
+                            <option value="public" {{ $vis === 'public' ? 'selected' : '' }}>{{ __('db.Public (others can check your profile, once verified)') }}</option>
                             <option value="private" {{ $vis === 'private' ? 'selected' : '' }}>{{ __('db.Private (hidden from search — only visible to people you personally send your share link to)') }}</option>
                         </select>
                     </x-nikah-section>

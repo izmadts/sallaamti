@@ -303,7 +303,7 @@
                     <x-nikah-section :title="__('db.Profile Visibility')" icon="👁️" color="teal">
                         <select id="visibility" name="visibility" required class="border-gray-300 rounded-md shadow-sm w-full"
                             title="{{ __('db.You can change this anytime.') }}">
-                            <option value="public" {{ old('visibility', $profile->visibility) === 'public' ? 'selected' : '' }}>Public (visible in Browse Matches search)</option>
+                            <option value="public" {{ old('visibility', $profile->visibility) === 'public' ? 'selected' : '' }}>{{ __('db.Public (others can check your profile)') }}</option>
                             <option value="private" {{ old('visibility', $profile->visibility) === 'private' ? 'selected' : '' }}>Private (hidden from search — only visible via your share link)</option>
                         </select>
                     </x-nikah-section>

@@ -184,7 +184,7 @@
                         <a href="{{ route('quran-live.my-class') }}" class="flex items-center gap-2 text-sm text-gray-600 hover:text-teal-600 py-1">📡 My Quran Class</a>
                         @endif
                         @if (Auth::user()->nikah_module_enabled)
-                        <a href="{{ route('nikah.browse') }}" class="flex items-center gap-2 text-sm text-gray-600 hover:text-teal-600 py-1">💍 Browse Matches</a>
+                        <a href="{{ route('nikah.browse') }}" class="flex items-center gap-2 text-sm text-gray-600 hover:text-teal-600 py-1">💍 {{ __('db.Check Profiles') }}</a>
                         <a href="{{ route('nikah.interests') }}" class="flex items-center gap-2 text-sm text-gray-600 hover:text-teal-600 py-1">💌 My Interests</a>
                         @endif
                         @if (Auth::user()->counseling_module_enabled)

@@ -505,4 +505,11 @@ return [
     // ---- Payment page: final-step emphasis ----
     'Final Step' => 'آخری مرحلہ',
     'This is the only thing standing between you and a live, searchable profile.' => 'بس یہی ایک چیز آپ کی پروفائل کو فعال اور نظر آنے کے قابل بننے سے روک رہی ہے۔',
+
+    // ---- "Browse Matches" renamed to plainer "Check Profiles" ----
+    'Check Profiles' => 'رشتے دیکھیں',
+    'Back to Profiles' => 'پروفائلز کی طرف واپس',
+    'No saved profiles yet. Check profiles and click ☆ to save them.' => 'ابھی تک کوئی محفوظ شدہ پروفائل نہیں۔ پروفائلز دیکھیں اور محفوظ کرنے کے لیے ☆ پر کلک کریں۔',
+    'Public (others can check your profile)' => 'عوامی (دوسرے آپ کی پروفائل دیکھ سکتے ہیں)',
+    'Public (others can check your profile, once verified)' => 'عوامی (تصدیق کے بعد دوسرے آپ کی پروفائل دیکھ سکتے ہیں)',
 ];

@@ -95,7 +95,7 @@
  <span class="ml-1 text-xs text-green-600">✓</span>
  @endif
  </x-dropdown-link>
- <x-dropdown-link :href="route('nikah.browse')">🔍 {{ __('db.Browse Matches') }}</x-dropdown-link>
+ <x-dropdown-link :href="route('nikah.browse')">🔍 {{ __('db.Check Profiles') }}</x-dropdown-link>
  <x-dropdown-link :href="route('nikah.interests')">💌 {{ __('db.My Interests') }}</x-dropdown-link>
  <x-dropdown-link :href="route('nikah.saved')">★ {{ __('db.Saved Profiles') }}</x-dropdown-link>
  <x-dropdown-link :href="route('nikah.blocked')">🚫 {{ __('db.Blocked Profiles') }}</x-dropdown-link>
@@ -354,7 +354,7 @@
  @endif
  </div>
  <x-responsive-nav-link :href="Auth::user()?->nikahProfile ? route('nikah.show') : route('nikah.create')" class="text-white">👤 {{ __('db.My Profile') }}</x-responsive-nav-link>
- <x-responsive-nav-link :href="route('nikah.browse')" class="text-white">🔍 {{ __('db.Browse Matches') }}</x-responsive-nav-link>
+ <x-responsive-nav-link :href="route('nikah.browse')" class="text-white">🔍 {{ __('db.Check Profiles') }}</x-responsive-nav-link>
  <x-responsive-nav-link :href="route('nikah.interests')" class="text-white">💌 {{ __('db.My Interests') }}</x-responsive-nav-link>
  <x-responsive-nav-link :href="route('nikah.saved')" class="text-white">★ {{ __('db.Saved Profiles') }}</x-responsive-nav-link>
  <x-responsive-nav-link :href="route('nikah.blocked')" class="text-white">🚫 {{ __('db.Blocked Profiles') }}</x-responsive-nav-link>
