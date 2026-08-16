@@ -49,6 +49,7 @@ return [
     'Turn this on and Nikah matchmaking shows in your menu. Turn it off and it stays hidden until you switch it back on — nothing is deleted either way.' => 'اسے آن کریں تو نکاح رشتہ سروس آپ کے مینو میں نظر آئے گی۔ اسے آف کریں تو یہ چھپی رہے گی جب تک آپ اسے دوبارہ آن نہ کریں — دونوں صورتوں میں کچھ بھی حذف نہیں ہوتا۔',
     'Turn this on and Quran courses & live classes show in your menu. Turn it off and it stays hidden until you switch it back on — nothing is deleted either way.' => 'اسے آن کریں تو قرآن کورسز اور لائیو کلاسز آپ کے مینو میں نظر آئیں گے۔ اسے آف کریں تو یہ چھپے رہیں گے جب تک آپ دوبارہ آن نہ کریں — دونوں صورتوں میں کچھ بھی حذف نہیں ہوتا۔',
     'Turn this on and Family Counseling booking shows in your menu. Turn it off and it stays hidden until you switch it back on — nothing is deleted either way.' => 'اسے آن کریں تو خاندانی مشاورت بکنگ آپ کے مینو میں نظر آئے گی۔ اسے آف کریں تو یہ چھپی رہے گی جب تک آپ دوبارہ آن نہ کریں — دونوں صورتوں میں کچھ بھی حذف نہیں ہوتا۔',
+    'Tap an icon anytime to turn that module on or off — nothing is ever deleted, and you can always change this again later from your profile or the topbar.' => 'کسی بھی وقت آئیکن پر ٹیپ کر کے وہ ماڈیول آن یا آف کریں — کچھ بھی حذف نہیں ہوتا، اور آپ بعد میں بھی اپنی پروفائل یا ٹاپ بار سے یہ تبدیل کر سکتے ہیں۔',
     'Book Counseling Session' => 'مشاورت سیشن بک کریں',
     'My Bookings' => 'میری بکنگز',
     'Support Queries' => 'معاونتی سوالات',

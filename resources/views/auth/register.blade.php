@@ -118,6 +118,12 @@
                             <span x-show="counseling" x-cloak class="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full text-white flex items-center justify-center text-[10px] shadow" style="background: var(--teal)">✓</span>
                         </label>
                     </div>
+                    {{-- Hover-only title tooltips don't work on touch phones, and this
+                         audience is mostly mobile — so the same explanation is always
+                         visible here instead of hidden behind a hover. --}}
+                    <p class="text-[11px] text-gray-400 mt-2 leading-relaxed">
+                        💡 {{ __('db.Tap an icon anytime to turn that module on or off — nothing is ever deleted, and you can always change this again later from your profile or the topbar.') }}
+                    </p>
                 </div>
 
                 {{-- Terms --}}
