@@ -46,7 +46,10 @@ class AppServiceProvider extends ServiceProvider
         View::composer('components.profile-completion-banner', function ($view) {
             $nikahProfile = auth()->check() ? auth()->user()->nikahProfile : null;
 
-            $view->with('profileCompletionPercent', $nikahProfile?->completenessPercentage());
+            $view->with([
+                'profileCompletionPercent' => $nikahProfile?->completenessPercentage(),
+                'profileMissingFields' => $nikahProfile?->missingFields() ?? [],
+            ]);
         });
     }
 

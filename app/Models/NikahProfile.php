@@ -304,22 +304,31 @@ class NikahProfile extends Model
         return implode("\n", $lines);
     }
 
+    // Same tracked fields as completenessPercentage() below, paired with a
+    // human label and the matching input `id` on nikah/edit.blade.php so the
+    // "Complete Your Profile" banner can link straight to what's missing
+    // instead of dropping the member on the top of a long form.
+    protected function trackedCompletenessFields(): array
+    {
+        return [
+            'Height' => ['value' => $this->height, 'anchor' => 'height'],
+            'Sect' => ['value' => $this->sect, 'anchor' => 'sect'],
+            'Caste' => ['value' => $this->caste, 'anchor' => 'caste'],
+            'Education' => ['value' => $this->education, 'anchor' => 'education'],
+            'Profession' => ['value' => $this->profession, 'anchor' => 'profession'],
+            'Family Type' => ['value' => $this->family_type, 'anchor' => 'family_type'],
+            'Guardian Relation' => ['value' => $this->guardian_relation, 'anchor' => 'guardian_relation'],
+            'About Yourself' => ['value' => $this->about, 'anchor' => 'about'],
+            'Looking For' => ['value' => $this->expectations, 'anchor' => 'expectations'],
+            'Partner Age Preference' => ['value' => $this->pref_min_age && $this->pref_max_age, 'anchor' => 'pref_min_age'],
+        ];
+    }
+
     // Percentage of the optional-but-valuable fields a seeker has filled in —
     // shown as a nudge on their profile page, not used for matching or search.
     public function completenessPercentage(): int
     {
-        $fields = [
-            $this->height,
-            $this->sect,
-            $this->caste,
-            $this->education,
-            $this->profession,
-            $this->family_type,
-            $this->guardian_relation,
-            $this->about,
-            $this->expectations,
-            $this->pref_min_age && $this->pref_max_age,
-        ];
+        $fields = array_column($this->trackedCompletenessFields(), 'value');
 
         $filled = count(array_filter($fields, fn($v) => !empty($v)));
         $total = count($fields) + 1; // +1 for the photo check below
@@ -329,5 +338,23 @@ class NikahProfile extends Model
         }
 
         return (int) round(($filled / $total) * 100);
+    }
+
+    // Which of the tracked fields are still empty, in the order they appear
+    // on the edit form — used to name what's missing and to jump the member
+    // straight to the first one instead of a generic "go complete it" link.
+    public function missingFields(): array
+    {
+        $missing = collect($this->trackedCompletenessFields())
+            ->filter(fn($field) => empty($field['value']))
+            ->map(fn($field, $label) => ['label' => $label, 'anchor' => $field['anchor']])
+            ->values()
+            ->all();
+
+        if (!$this->photos()->exists()) {
+            $missing[] = ['label' => 'Profile Photo', 'anchor' => 'photo'];
+        }
+
+        return $missing;
     }
 }

@@ -44,8 +44,23 @@
                             </div>
                             <div>
                                 <x-input-label for="height" :value="__('db.Height')" />
-                                <x-text-input id="height" name="height" type="text" class="w-full mt-1" :value="old('height', $data['height'] ?? '')"
-                                    placeholder="{{ __('db.e.g. 5\'8"') }}" title="{{ __('db.Optional — helps set expectations, in feet and inches or cm.') }}" />
+                                @php
+                                    $heightVal = old('height', $data['height'] ?? '');
+                                    $heightOptions = [];
+                                    for ($ft = 4; $ft <= 7; $ft++) {
+                                        for ($in = 0; $in <= 11; $in++) {
+                                            if ($ft === 7 && $in > 0) break;
+                                            $heightOptions[] = $ft . "'" . $in . '"';
+                                        }
+                                    }
+                                @endphp
+                                <select id="height" name="height" class="border-gray-300 rounded-md shadow-sm w-full mt-1"
+                                    title="{{ __('db.Optional — a fixed list keeps this consistent for matching.') }}">
+                                    <option value="">{{ __('db.Prefer not to say') }}</option>
+                                    @foreach ($heightOptions as $h)
+                                    <option value="{{ $h }}" {{ $heightVal === $h ? 'selected' : '' }}>{{ $h }}</option>
+                                    @endforeach
+                                </select>
                             </div>
                             <div>
                                 <x-input-label for="marital_status" :value="__('db.Marital Status')" />

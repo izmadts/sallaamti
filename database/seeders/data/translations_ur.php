@@ -434,7 +434,6 @@ return [
     "Pick one or more — we'll take you straight there after you sign up." => 'ایک یا زیادہ چُنیں — رجسٹریشن کے بعد ہم آپ کو سیدھا وہاں لے جائیں گے۔',
     'Find a match' => 'رشتہ تلاش کریں',
     'Courses & classes' => 'کورسز اور کلاسز',
-    'Support' => 'معاونت',
     'Family counseling' => 'خاندانی مشاورت',
 
     // ---- Nikah payment page ----
@@ -464,4 +463,11 @@ return [
     'A screenshot of your JazzCash/bank confirmation, or a photo of a printed receipt.' => 'آپ کی جاز کیش/بینک تصدیق کا اسکرین شاٹ، یا پرنٹ شدہ رسید کی تصویر۔',
     'You can take a photo directly on mobile, or upload a saved screenshot.' => 'آپ موبائل پر براہ راست تصویر لے سکتے ہیں، یا محفوظ شدہ اسکرین شاٹ اپلوڈ کر سکتے ہیں۔',
     'Complete My Verification — Submit Payment' => 'میری تصدیق مکمل کریں — ادائیگی جمع کروائیں',
+
+    // ---- Profile completion banner ----
+    'Still missing:' => 'ابھی باقی ہے:',
+    'Height' => 'قد',
+    'Caste' => 'ذات',
+    'Looking For' => 'کیا تلاش ہے',
+    'Partner Age Preference' => 'ساتھی کی عمر کی ترجیح',
 ];

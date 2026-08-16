@@ -46,8 +46,23 @@
                             </div>
                             <div>
                                 <x-input-label for="height" value="Height" />
-                                <x-text-input id="height" name="height" type="text" class="w-full mt-1" :value="old('height', $profile->height)"
-                                    placeholder="{{ __('db.e.g. 5\'8"') }}" title="{{ __('db.Optional — helps set expectations, in feet and inches or cm.') }}" />
+                                @php
+                                    $heightVal = old('height', $profile->height);
+                                    $heightOptions = [];
+                                    for ($ft = 4; $ft <= 7; $ft++) {
+                                        for ($in = 0; $in <= 11; $in++) {
+                                            if ($ft === 7 && $in > 0) break;
+                                            $heightOptions[] = $ft . "'" . $in . '"';
+                                        }
+                                    }
+                                @endphp
+                                <select id="height" name="height" class="border-gray-300 rounded-md shadow-sm w-full mt-1"
+                                    title="{{ __('db.Optional — a fixed list keeps this consistent for matching.') }}">
+                                    <option value="">{{ __('db.Prefer not to say') }}</option>
+                                    @foreach ($heightOptions as $h)
+                                    <option value="{{ $h }}" {{ $heightVal === $h ? 'selected' : '' }}>{{ $h }}</option>
+                                    @endforeach
+                                </select>
                             </div>
                             <div>
                                 <x-input-label for="marital_status" value="Marital Status" />
@@ -275,8 +290,8 @@
                     <x-nikah-section :title="__('db.Match Preferences')" icon="🎯" color="sky" :description="__('db.Sharing these improves your match %.')">
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
-                                <x-input-label value="Preferred Min Age" />
-                                <x-text-input name="pref_min_age" type="number" class="w-full mt-1" :value="old('pref_min_age', $profile->pref_min_age)"
+                                <x-input-label for="pref_min_age" value="Preferred Min Age" />
+                                <x-text-input id="pref_min_age" name="pref_min_age" type="number" class="w-full mt-1" :value="old('pref_min_age', $profile->pref_min_age)"
                                     placeholder="{{ __('db.e.g. 22') }}" title="{{ __('db.Leave blank for no minimum.') }}" />
                             </div>
                             <div>
@@ -321,4 +336,20 @@
             </div>
         </div>
     </div>
+
+    {{-- Jumps straight to whichever field the "Complete Your Nikah Profile"
+         banner linked to (via #anchor) instead of just landing at the top
+         of a long form, and briefly highlights it so it's unmistakable. --}}
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            if (!window.location.hash) return;
+            const target = document.querySelector(window.location.hash);
+            if (!target) return;
+
+            target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            target.classList.add('ring-2', 'ring-amber-400', 'ring-offset-2');
+            if (typeof target.focus === 'function') target.focus({ preventScroll: true });
+            setTimeout(() => target.classList.remove('ring-2', 'ring-amber-400', 'ring-offset-2'), 2500);
+        });
+    </script>
 </x-app-layout>
