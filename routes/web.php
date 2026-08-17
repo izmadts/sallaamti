@@ -72,7 +72,10 @@ Route::get('/', function () {
         return redirect()->route('dashboard');
     }
 
-    return view('index');
+    $banners = \App\Models\Banner::active()->get();
+    $latestDuas = \App\Models\DuaRequest::where('status', 'approved')->latest()->take(3)->get();
+
+    return view('index', compact('banners', 'latestDuas'));
 })->name('index');
 // Static pages
 Route::get('/about', function () {

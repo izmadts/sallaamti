@@ -114,89 +114,78 @@
  x-init="setTimeout(() => $el.remove(), 800)">
  <div class="w-10 h-10 border-4 border-[--teal] border-t-transparent rounded-full animate-spin"></div>
  </div>
- <!-- Header / Topbar -->
+ <!-- Header / Topbar — a single clean row: logo + nav links on the left,
+      language + auth on the right. Phone/email/social moved to the footer
+      so this bar stays minimal and the focus stays on Log In / Register. -->
  <div id="header" class="w-full border-b sticky top-0 z-40 bg-white" x-data="{ mobileOpen: false }">
- <!-- Top info bar (desktop only) -->
- <div class="hidden md:block bg-[--teal-dark]">
  <div class="max-w-7xl mx-auto px-4">
- <div class="flex items-center justify-between py-2 text-sm">
- <div class="flex items-center gap-6">
- <a href="https://wa.me/{{ setting('social_whatsapp') }}" class="flex items-center text-gray-200 hover:text-white">
- <span class="fa fa-phone-alt mr-2"></span>
- <span>{{ setting('site_phone') }}</span>
+ <nav class="flex items-center justify-between py-3 gap-3">
+
+ {{-- Logo --}}
+ <a href="{{ url('/') }}" class="shrink-0 flex items-center">
+ <x-application-logo class="h-9 w-auto" />
  </a>
- <a href="mailto:{{ setting('site_email') }}" class="flex items-center text-gray-200 hover:text-white">
- <span class="far fa-envelope mr-2"></span>
- <span>{{ setting('site_email') }}</span>
+
+ {{-- Desktop nav links — left side, right after the logo --}}
+ <div class="hidden lg:flex items-center gap-1">
+ <a href="{{ url('/') }}" class="px-3 py-2 text-sm font-medium {{ request()->is('/') ? 'text-[--teal]' : 'text-[--text-dark] hover:text-[--teal]' }}">{{ __('db.Home') }}</a>
+ <a href="{{ url('/about') }}" class="px-3 py-2 text-sm font-medium {{ request()->is('about') ? 'text-[--teal]' : 'text-[--text-dark] hover:text-[--teal]' }}">{{ __('db.About') }}</a>
+ <a href="{{ url('/activities') }}" class="px-3 py-2 text-sm font-medium {{ request()->is('activities') ? 'text-[--teal]' : 'text-[--text-dark] hover:text-[--teal]' }}">{{ __('db.Activities') }}</a>
+ <a href="{{ route('blog.index') }}" class="px-3 py-2 text-sm font-medium {{ request()->routeIs('blog.*') ? 'text-[--teal]' : 'text-[--text-dark] hover:text-[--teal]' }}">{{ __('db.Blog') }}</a>
+ <a href="{{ url('/events') }}" class="px-3 py-2 text-sm font-medium {{ request()->is('events') ? 'text-[--teal]' : 'text-[--text-dark] hover:text-[--teal]' }}">{{ __('db.Events') }}</a>
+ <a href="{{ url('/contact') }}" class="px-3 py-2 text-sm font-medium {{ request()->is('contact') ? 'text-[--teal]' : 'text-[--text-dark] hover:text-[--teal]' }}">{{ __('db.Contact') }}</a>
+ <x-wall-nav-badge :dua="$latestApprovedDua ?? null">
+ <a href="{{ route('wall.index') }}" class="px-3 py-2 text-sm font-medium inline-flex items-center gap-1 {{ request()->routeIs('wall.*') ? 'text-[--teal]' : 'text-[--text-dark] hover:text-[--teal]' }}">
+ 🤲 {{ __('db.Wall') }}
+ <span class="w-1.5 h-1.5 rounded-full animate-pulse" style="background: var(--gold)"></span>
  </a>
+ </x-wall-nav-badge>
  </div>
- <div class="flex items-center gap-3">
- <span class="text-gray-300 hidden lg:inline mr-1">{{ __('db.Follow Us:') }}</span>
- <a class="text-gray-200 hover:text-white px-1" href="{{ setting('social_facebook') }}" target="_blank"><i class="fab fa-facebook-f"></i></a>
- <a class="text-gray-200 hover:text-white px-1" href="{{ setting('social_tiktok') }}" target="_blank"><i class="fab fa-tiktok"></i></a>
- <a class="text-gray-200 hover:text-white px-1" href="{{ setting('social_youtube') }}" target="_blank"><i class="fab fa-youtube"></i></a>
- <a class="text-gray-200 hover:text-white px-1 mr-2" href="{{ setting('social_instagram') }}" target="_blank"><i class="fab fa-instagram"></i></a>
- <x-language-switcher dark />
+
+ {{-- Spacer pushes the right-side block to the edge --}}
+ <div class="flex-1 hidden lg:block"></div>
+
+ {{-- Desktop right: language + auth --}}
+ <div class="hidden lg:flex items-center gap-3 shrink-0">
+ <x-language-switcher />
  @auth
  <a href="{{ route('dashboard') }}"
- class="inline-flex items-center rounded-md bg-[--teal] px-4 py-2 text-white text-sm font-medium hover:bg-[--teal-dark] transition">
- <i class="fa fa-tachometer-alt mr-1"></i> {{ __('db.Dashboard') }}
+ class="inline-flex items-center rounded-lg bg-[--teal] px-4 py-2 text-white text-sm font-semibold hover:bg-[--teal-dark] transition">
+ {{ __('db.Dashboard') }}
  </a>
- <form method="POST" action="{{ route('logout') }}" class="inline-flex">
- @csrf
- <button type="submit"
- class="inline-flex items-center rounded-md border border-gray-500 px-4 py-2 text-gray-200 text-sm font-medium hover:bg-white hover:text-[--teal-dark] transition">
- <i class="fa fa-sign-out-alt mr-1"></i> {{ __('db.Log Out') }}
- </button>
- </form>
  @else
  <a href="{{ route('login') }}"
- class="inline-flex items-center rounded-md border border-[--teal] px-4 py-2 text-[--teal] text-sm font-medium hover:bg-[--teal] hover:text-white transition">
- <i class="fa fa-lock mr-1"></i> {{ __('db.Log in') }}
+ class="text-[--text-dark] text-sm font-medium px-3 py-2 hover:text-[--teal] transition">
+ {{ __('db.Log In') }}
  </a>
  @if (Route::has('register'))
  <a href="{{ route('register') }}"
- class="inline-flex items-center rounded-md border border-[--teal] px-4 py-2 text-[--teal] text-sm font-medium hover:bg-[--teal] hover:text-white transition ml-2">
- <i class="fa fa-user-plus mr-1"></i> {{ __('db.Register') }}
+ class="inline-flex items-center rounded-lg text-white text-sm font-semibold px-4 py-2 hover:brightness-110 transition"
+ style="background: #b8962e">
+ {{ __('db.Register Free') }}
  </a>
  @endif
  @endauth
  </div>
- </div>
- </div>
- </div>
- <!-- Main nav -->
- <div class="max-w-7xl mx-auto px-4">
- <nav class="flex items-center justify-between py-2">
- <a href="{{ url('/') }}" class="shrink-0">
- <x-application-logo />
- </a>
- <!-- Mobile: language switcher + auth button before hamburger -->
- <div class="flex lg:hidden items-center gap-2 ml-auto mr-2">
+
+ {{-- Mobile: compact language + register + hamburger --}}
+ <div class="flex lg:hidden items-center gap-2 ml-auto">
  <x-language-switcher compact />
- @auth
- <a href="{{ route('dashboard') }}"
- class="inline-flex items-center rounded-md bg-[--teal] text-white text-sm font-medium px-3 py-1.5">
- <i class="fa fa-th-large mr-1"></i>{{ __('db.Dashboard') }}
+ @guest
+ <a href="{{ route('register') }}"
+ class="inline-flex items-center rounded-lg text-white text-xs font-semibold px-3 py-1.5"
+ style="background: #b8962e">
+ {{ __('db.Register') }}
  </a>
- <form method="POST" action="{{ route('logout') }}" class="inline-flex">
- @csrf
- <button type="submit"
- class="inline-flex items-center rounded-md border border-[--teal] text-[--teal] text-sm font-medium px-3 py-1.5">
- <i class="fa fa-sign-out-alt"></i>
- </button>
- </form>
  @else
- <a href="{{ route('login') }}"
- class="inline-flex items-center rounded-md border border-[--teal] text-[--teal] text-sm font-medium px-3 py-1.5">
- {{ __('db.Login') }}
+ <a href="{{ route('dashboard') }}"
+ class="inline-flex items-center rounded-lg bg-[--teal] text-white text-xs font-semibold px-3 py-1.5">
+ {{ __('db.Dashboard') }}
  </a>
- @endauth
- </div>
- <!-- Hamburger -->
+ @endguest
  <button type="button"
  @click="mobileOpen = !mobileOpen"
- class="lg:hidden border-0 shadow-none p-2 focus:outline-none"
+ class="border-0 shadow-none p-2 focus:outline-none"
  aria-label="Toggle navigation menu"
  :aria-expanded="mobileOpen.toString()"
  aria-controls="mobile-menu">
@@ -210,33 +199,10 @@
  </svg>
  <span class="sr-only">Toggle menu</span>
  </button>
- <!-- Nav links -->
- <div class="hidden lg:flex lg:items-center lg:ml-auto lg:mx-auto">
- <div class="flex items-center gap-1">
- <a href="{{ url('/') }}" class="px-3 py-2 text-sm font-medium {{ request()->is('/') ? 'text-[--teal]' : 'text-[--text-dark] hover:text-[--teal]' }}">{{ __('db.Home') }}</a>
- <a href="{{ url('/about') }}" class="px-3 py-2 text-sm font-medium {{ request()->is('about') ? 'text-[--teal]' : 'text-[--text-dark] hover:text-[--teal]' }}">{{ __('db.About') }}</a>
- <a href="{{ url('/activities') }}" class="px-3 py-2 text-sm font-medium {{ request()->is('activities') ? 'text-[--teal]' : 'text-[--text-dark] hover:text-[--teal]' }}">{{ __('db.Activities') }}</a>
- <a href="{{ route('blog.index') }}" class="px-3 py-2 text-sm font-medium {{ request()->routeIs('blog.*') ? 'text-[--teal]' : 'text-[--text-dark] hover:text-[--teal]' }}">{{ __('db.Blog') }}</a>
- <a href="{{ url('/events') }}" class="px-3 py-2 text-sm font-medium {{ request()->is('events') ? 'text-[--teal]' : 'text-[--text-dark] hover:text-[--teal]' }}">{{ __('db.Events') }}</a>
- <a href="{{ url('/team') }}" class="px-3 py-2 text-sm font-medium {{ request()->is('team') ? 'text-[--teal]' : 'text-[--text-dark] hover:text-[--teal]' }}">{{ __('db.Team') }}</a>
- <a href="{{ url('/contact') }}" class="px-3 py-2 text-sm font-medium {{ request()->is('contact') ? 'text-[--teal]' : 'text-[--text-dark] hover:text-[--teal]' }}">{{ __('db.Contact') }}</a>
- </div>
- </div>
- <!-- Desktop CTA buttons -->
- <div class="hidden lg:flex items-center gap-2 ml-2">
- <x-wall-nav-badge :dua="$latestApprovedDua ?? null">
- <a href="{{ route('wall.index') }}" class="inline-flex items-center gap-1 rounded-full text-white font-semibold text-sm py-2 px-4 hover:brightness-110 transition" style="background: var(--teal)">
- 🤲 {{ __('db.Sallaamti Wall') }}
- <span class="w-1.5 h-1.5 rounded-full animate-pulse" style="background: var(--gold)"></span>
- </a>
- </x-wall-nav-badge>
- <a href="{{ route('nikah.create') }}" class="inline-flex items-center rounded-full text-white font-semibold text-sm py-2 px-4 hover:brightness-110 transition" style="background: #b8962e">💍 {{ __('db.Find a Match') }}</a>
- <a href="{{ route('counseling.book.start') }}" class="inline-flex items-center rounded-full border border-[--teal] text-[--teal] font-semibold text-sm py-2 px-4 hover:bg-[--teal] hover:text-white transition">🤝 {{ __('db.Get Counseling') }}</a>
- <a href="{{ url('/donate') }}" class="inline-flex items-center rounded-md bg-[--teal] text-white font-medium py-2 px-4 hover:bg-[--teal-dark] transition">💝 {{ __('db.Donate') }}</a>
- <a href="{{ url('/volunteer') }}" class="inline-flex items-center rounded-md border border-[--teal] text-[--teal] font-medium py-2 px-4 hover:bg-[--teal] hover:text-white transition">🤝 {{ __('db.Volunteer') }}</a>
  </div>
  </nav>
- <!-- Mobile collapse panel -->
+
+ {{-- Mobile collapse panel --}}
  <div x-show="mobileOpen"
  x-cloak
  x-transition
@@ -258,11 +224,13 @@
  </a>
  <a href="{{ route('nikah.create') }}" class="py-2 text-sm font-semibold" style="color: #b8962e">💍 {{ __('db.Find a Match') }}</a>
  <a href="{{ route('counseling.book.start') }}" class="py-2 text-sm font-semibold text-[--teal]">🤝 {{ __('db.Get Counseling') }}</a>
- <a href="{{ url('/donate') }}" class="py-2 text-sm font-semibold text-[--teal]">💝 {{ __('db.Donate') }}</a>
- <a href="{{ url('/volunteer') }}" class="py-2 text-sm font-semibold text-[--teal]">🤝 {{ __('db.Volunteer') }}</a>
  <a href="{{ route('courses.index') }}" class="py-2 text-sm">📖 {{ __('db.Quran Courses') }}</a>
  <a href="{{ route('quran-live.index') }}" class="py-2 text-sm">🎥 {{ __('db.Live Classes') }}</a>
+ <a href="{{ url('/donate') }}" class="py-2 text-sm font-semibold text-[--teal]">💝 {{ __('db.Donate') }}</a>
+ <a href="{{ url('/volunteer') }}" class="py-2 text-sm font-semibold text-[--teal]">🤝 {{ __('db.Volunteer') }}</a>
+ <div class="border-t my-2"></div>
  @guest
+ <a href="{{ route('login') }}" class="py-2 text-sm font-semibold text-[--teal]">{{ __('db.Log In') }}</a>
  <a href="{{ route('register') }}" class="py-2 text-sm font-semibold">📝 {{ __('db.Register Free') }}</a>
  @endguest
  </div>

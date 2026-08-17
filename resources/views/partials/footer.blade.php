@@ -53,11 +53,25 @@
                         <a href="{{ url('/contact') }}" class="text-gray-300 hover:text-white">{{ setting('site_address') }}</a>
                     </div>
                     <h6 class="text-gray-400 mt-4 mb-0 text-sm">{{ __('db.Our Mobile') }}</h6>
-                    <div class="flex items-center py-4">
+                    <div class="flex items-center border-b border-gray-700 py-4">
                         <span class="shrink-0 flex items-center justify-center w-12 h-12 bg-[--teal] mr-3">
                             <i class="fa fa-phone-alt text-white"></i>
                         </span>
                         <a href="https://wa.me/{{ setting('social_whatsapp') }}" class="text-gray-300 hover:text-white" target="_blank">{{ setting('site_phone') }}</a>
+                    </div>
+                    <h6 class="text-gray-400 mt-4 mb-0 text-sm">{{ __('db.Our Email') }}</h6>
+                    <div class="flex items-center py-4">
+                        <span class="shrink-0 flex items-center justify-center w-12 h-12 bg-[--teal] mr-3">
+                            <i class="far fa-envelope text-white"></i>
+                        </span>
+                        <a href="mailto:{{ setting('site_email') }}" class="text-gray-300 hover:text-white">{{ setting('site_email') }}</a>
+                    </div>
+                    <div class="flex items-center gap-3 pt-1">
+                        <span class="text-gray-400 text-sm">{{ __('db.Follow Us:') }}</span>
+                        <a class="text-gray-300 hover:text-white" href="{{ setting('social_facebook') }}" target="_blank"><i class="fab fa-facebook-f"></i></a>
+                        <a class="text-gray-300 hover:text-white" href="{{ setting('social_tiktok') }}" target="_blank"><i class="fab fa-tiktok"></i></a>
+                        <a class="text-gray-300 hover:text-white" href="{{ setting('social_youtube') }}" target="_blank"><i class="fab fa-youtube"></i></a>
+                        <a class="text-gray-300 hover:text-white" href="{{ setting('social_instagram') }}" target="_blank"><i class="fab fa-instagram"></i></a>
                     </div>
                 </div>
             </div>
@@ -70,12 +84,9 @@
                     <a class="text-gray-300 hover:text-white mb-2" href="{{ route('blog.index') }}"><i class="fa fa-check text-[--teal] mr-2"></i>{{ __('db.Blog') }}</a>
                     <a class="text-gray-300 hover:text-white mb-2" href="{{ url('/events') }}"><i class="fa fa-check text-[--teal] mr-2"></i>{{ __('db.Events') }}</a>
                     <a class="text-gray-300 hover:text-white mb-2" href="{{ url('/sermons') }}"><i class="fa fa-check text-[--teal] mr-2"></i>{{ __('db.Sermons') }}</a>
-                    <a class="text-gray-300 hover:text-white mb-2" href="{{ url('/testimonial') }}"><i class="fa fa-check text-[--teal] mr-2"></i>{{ __('db.Testimonials') }}</a>
-                    <a class="text-gray-300 hover:text-white mb-2" href="{{ url('/team') }}"><i class="fa fa-check text-[--teal] mr-2"></i>{{ __('db.Our Team') }}</a>
                     <a class="text-gray-300 hover:text-white mb-2" href="{{ url('/contact') }}"><i class="fa fa-check text-[--teal] mr-2"></i>{{ __('db.Contact us') }}</a>
                     <a class="text-gray-300 hover:text-white mb-2" href="{{ url('/donate') }}"><i class="fa fa-check text-[--teal] mr-2"></i>{{ __('db.Donations') }}</a>
                     <a class="text-gray-300 hover:text-white mb-2" href="{{ url('/volunteer') }}"><i class="fa fa-check text-[--teal] mr-2"></i>{{ __('db.Become Volunteer') }}</a>
-                    <a class="text-gray-300 hover:text-white mb-2" href="{{ route('certificate.verify') }}"><i class="fa fa-check text-[--teal] mr-2"></i>{{ __('db.Verify Certificate / ID') }}</a>
                 </div>
             </div>
             <div>
