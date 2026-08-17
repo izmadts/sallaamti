@@ -11,6 +11,7 @@ use App\Http\Controllers\NikahInterestController;
 use App\Http\Controllers\NikahFileController;
 use App\Http\Controllers\NikahPhotoController;
 use App\Http\Controllers\UserAvatarController;
+use App\Http\Controllers\PushSubscriptionController;
 use App\Http\Controllers\NikahPaymentController;
 use App\Http\Controllers\NikahSafetyController;
 use App\Http\Controllers\NikahGuardianMessageController;
@@ -148,6 +149,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Auth::user()->unreadNotifications->markAsRead();
         return back();
     })->name('notifications.markAllRead');
+
+    // Web Push subscriptions
+    Route::post('/push/subscribe', [PushSubscriptionController::class, 'store'])->name('push.subscribe');
+    Route::post('/push/unsubscribe', [PushSubscriptionController::class, 'destroy'])->name('push.unsubscribe');
 
     // --- NIKAH MODULE ---
     Route::middleware('nikah.activity')->group(function () {

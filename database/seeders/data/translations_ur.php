@@ -517,4 +517,12 @@ return [
     // ---- CNIC upload: explicit gallery-or-camera choice ----
     'Upload from Gallery' => 'گیلری سے اپلوڈ کریں',
     'Take a Photo' => 'تصویر لیں',
+
+    // ---- PWA install banner ----
+    'Install Sallaamti' => 'سلامتی انسٹال کریں',
+    'Add it to your home screen — never miss a match or a class reminder.' => 'اسے اپنی ہوم اسکرین پر شامل کریں — کوئی رشتہ یا کلاس یاد دہانی مس نہ کریں۔',
+    'Tap the Share button, then "Add to Home Screen".' => 'شیئر بٹن دبائیں، پھر "ہوم اسکرین پر شامل کریں" منتخب کریں۔',
+    'Install' => 'انسٹال کریں',
+    'Not now' => 'ابھی نہیں',
+    'Dismiss' => 'بند کریں',
 ];

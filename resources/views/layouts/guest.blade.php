@@ -10,6 +10,7 @@
  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
  <link rel="manifest" href="{{ asset('site.webmanifest') }}">
  <meta name="csrf-token" content="{{ csrf_token() }}">
+ <meta name="vapid-public-key" content="{{ config('services.webpush.public_key') }}">
  {{-- ===== PRIMARY META ===== --}}
  <title>@yield('title', setting('seo_home_title', setting('site_name') . ' | ' . setting('site_tagline')))</title>
  <meta name="description" content="@yield('description', setting('seo_home_description', 'Learn Quran online with Sallaamti.'))">
@@ -278,6 +279,7 @@
  {{ $slot }}
  </main>
  @include('partials.footer')
+ @include('components.pwa-install-banner')
 
  {{-- ===== MOBILE APP-STYLE BOTTOM TAB BAR (guests) ===== --}}
  <div class="sm:hidden fixed bottom-0 inset-x-0 z-40 bg-white border-t border-gray-200 safe-bottom-nav shadow-[0_-2px_8px_rgba(0,0,0,0.06)]">

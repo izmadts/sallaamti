@@ -10,6 +10,7 @@
  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
  <link rel="manifest" href="{{ asset('site.webmanifest') }}">
  <meta name="csrf-token" content="{{ csrf_token() }}">
+ <meta name="vapid-public-key" content="{{ config('services.webpush.public_key') }}">
 
  <title>{{ $title ? $title . ' — ' . config('app.name') : config('app.name', 'Laravel') }}</title>
  <meta name="description" content="{{ $description ?? setting('site_tagline') }}">
@@ -78,6 +79,7 @@
  </main>
  </div>
  @include('partials.footer')
+ @include('components.pwa-install-banner')
 </body>
 
 </html>

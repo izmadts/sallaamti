@@ -4,9 +4,11 @@ namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Support\Facades\Lang;
+use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\View;
 use App\Models\BlogPost;
+use App\Notifications\Channels\WebPushChannel;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -14,6 +16,10 @@ class AppServiceProvider extends ServiceProvider
     {
         // Fix for shared hosting MySQL key length limit
         Schema::defaultStringLength(191);
+
+        // Lets Notification classes return 'webpush' from via() the same way
+        // they already return 'mail'/'database'.
+        Notification::extend('webpush', fn ($app) => $app->make(WebPushChannel::class));
 
         // db.* translation keys are the verbatim English string (see
         // App\Models\Translation) — so an untranslated string (including all

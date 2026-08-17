@@ -66,6 +66,11 @@ class User extends Authenticatable
     {
         return $this->hasOne(NikahProfile::class);
     }
+
+    public function pushSubscriptions()
+    {
+        return $this->hasMany(PushSubscription::class);
+    }
     public function avatarUrl(): string
     {
         return $this->avatar
