@@ -21,7 +21,12 @@
     </x-slot>
 
     <div class="py-8">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
+        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+        <div class="flex gap-6 items-start">
+
+        <x-dashboard-sidebar :nikahProfile="$nikahProfile" />
+
+        <div class="flex-1 min-w-0 space-y-6">
 
         {{-- Stats Row --}}
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
@@ -122,6 +127,34 @@
                     </div>
                 </div>
 
+                {{-- Sallaamti Wall — a real feed on the dashboard, not just a link out,
+                     per the request to merge the Wall into the dashboard timeline. --}}
+                <div class="bg-white rounded-lg shadow-sm p-6">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="font-semibold text-gray-700">🤲 {{ __('db.Sallaamti Wall') }}</h3>
+                        <a href="{{ route('wall.index') }}" class="text-sm text-teal-600 hover:underline">{{ __('db.View Wall') }} →</a>
+                    </div>
+
+                    <form method="POST" action="{{ route('wall.store') }}" class="mb-4">
+                        @csrf
+                        <textarea name="body" rows="2" maxlength="1000" required
+                            placeholder="{{ __('db.What would you like the community to make dua for?') }}"
+                            class="w-full border-gray-300 rounded-lg text-sm focus:border-[--teal] focus:ring-[--teal]"></textarea>
+                        <div class="mt-2 flex justify-end">
+                            <button class="text-white text-sm font-semibold px-4 py-1.5 rounded-lg" style="background: var(--teal)">{{ __('db.Share') }}</button>
+                        </div>
+                    </form>
+
+                    @php $dashboardWallDuas = \App\Models\DuaRequest::where('status', 'approved')->with(['user', 'reactions'])->latest()->take(3)->get(); @endphp
+                    @forelse ($dashboardWallDuas as $dua)
+                    <div class="{{ !$loop->first ? 'mt-3 pt-3 border-t border-gray-100' : '' }}">
+                        @include('dua-wall.partials.dua-card', ['dua' => $dua])
+                    </div>
+                    @empty
+                    <p class="text-sm text-gray-400 text-center py-4">{{ __('db.No duas on the wall yet — be the first to share one.') }}</p>
+                    @endforelse
+                </div>
+
                 {{-- Course Progress --}}
                 @if (Auth::user()->quran_module_enabled && $enrollments->count() > 0)
                 <div class="bg-white rounded-lg shadow-sm p-6">
@@ -210,6 +243,8 @@
             </div>
         </div>
 
-    </div>
+        </div>
+        </div>
+        </div>
     </div>
 </x-app-layout>

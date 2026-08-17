@@ -557,4 +557,11 @@ return [
     'Create Your Free Account' => 'اپنا مفت اکاؤنٹ بنائیں',
     'Want to know more about our mission first?' => 'پہلے ہمارے مشن کے بارے میں مزید جاننا چاہتے ہیں؟',
     'Read our story' => 'ہماری کہانی پڑھیں',
+
+    // ---- Dashboard sidebar ----
+    'View your profile' => 'اپنی پروفائل دیکھیں',
+    'Your Modules' => 'آپ کے ماڈیولز',
+    'Discover' => 'دریافت کریں',
+    'Community' => 'کمیونٹی',
+    'View Wall' => 'وال دیکھیں',
 ];
