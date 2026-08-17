@@ -24,6 +24,9 @@ class User extends Authenticatable
         'nikah_module_enabled',
         'quran_module_enabled',
         'counseling_module_enabled',
+        'current_streak',
+        'longest_streak',
+        'last_active_date',
     ];
 
     protected $hidden = [
@@ -36,6 +39,7 @@ class User extends Authenticatable
         return [
             'email_verified_at' => 'datetime',
             'deactivated_at' => 'datetime',
+            'last_active_date' => 'date',
             'password' => 'hashed',
             'nikah_module_enabled' => 'boolean',
             'quran_module_enabled' => 'boolean',

@@ -72,6 +72,19 @@ class AppServiceProvider extends ServiceProvider
 
             $view->with('latestApprovedDua', $latestApprovedDua);
         });
+
+        // Daily ayah/hadith widget — same content for every visitor on a
+        // given day (see DailyContent::forToday()), shown to guests and
+        // members alike, so it's composed onto both places it appears.
+        View::composer('components.daily-content-widget', function ($view) {
+            try {
+                $dailyContent = \App\Models\DailyContent::forToday();
+            } catch (\Exception $e) {
+                $dailyContent = null;
+            }
+
+            $view->with('dailyContent', $dailyContent);
+        });
     }
 
     public function register(): void

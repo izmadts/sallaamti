@@ -544,4 +544,8 @@ return [
     'Ameen' => 'آمین',
     'Say Ameen' => 'آمین کہیں',
     'Latest on the wall' => 'وال پر تازہ ترین',
+
+    // ---- Daily Ayah / Hadith widget ----
+    'Ayah of the Day' => 'آج کی آیت',
+    'Hadith of the Day' => 'آج کی حدیث',
 ];

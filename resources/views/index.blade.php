@@ -140,6 +140,18 @@
     </section>
 
     {{-- ============================================================ --}}
+    {{-- DAILY AYAH / HADITH — same content shown to logged-in members too.
+         Data comes from the components.daily-content-widget composer in
+         AppServiceProvider, not passed explicitly here — the widget itself
+         hides completely when there's no active content. --}}
+    {{-- ============================================================ --}}
+    <section class="py-10 bg-cream">
+        <div class="max-w-2xl mx-auto px-4">
+            @include('components.daily-content-widget')
+        </div>
+    </section>
+
+    {{-- ============================================================ --}}
     {{-- LIVE STATS TICKER --}}
     {{-- ============================================================ --}}
     <section class="stats-ticker bg-teal py-6">

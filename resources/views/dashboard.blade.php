@@ -5,7 +5,14 @@
                 <h2 class="font-semibold text-xl text-gray-800 leading-tight">
                     Welcome back, {{ Auth::user()->name }} 👋
                 </h2>
-                <p class="text-sm text-gray-500 mt-0.5">{{ now()->format('l, d F Y') }}</p>
+                <div class="flex items-center gap-2 mt-0.5">
+                    <p class="text-sm text-gray-500">{{ now()->format('l, d F Y') }}</p>
+                    @if (Auth::user()->current_streak > 0)
+                    <span class="text-xs font-bold px-2 py-0.5 rounded-full text-white" style="background: var(--gold)">
+                        🔥 {{ Auth::user()->current_streak }} {{ Str::plural('day', Auth::user()->current_streak) }} streak
+                    </span>
+                    @endif
+                </div>
             </div>
             <a href="{{ route('profile.edit') }}" class="flex items-center gap-2">
                 <img src="{{ Auth::user()->avatarUrl() }}" loading="lazy" class="w-10 h-10 rounded-full object-cover border-2 border-teal-600">
@@ -147,6 +154,8 @@
 
             {{-- Right: Notifications + Quick Links --}}
             <div class="space-y-6">
+
+                @include('components.daily-content-widget')
 
                 {{-- Notifications --}}
                 <div class="bg-white rounded-lg shadow-sm p-6">

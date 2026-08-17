@@ -46,6 +46,7 @@ use App\Http\Controllers\BlogController;
 use App\Http\Controllers\Admin\BlogPostController;
 use App\Http\Controllers\Admin\EditorImageController;
 use App\Http\Controllers\Admin\TeamMemberController;
+use App\Http\Controllers\Admin\DailyContentController;
 use App\Http\Controllers\Admin\ActivityPostController;
 use App\Http\Controllers\Admin\CertificateAdminController;
 use App\Http\Controllers\SupportQueryController;
@@ -281,6 +282,9 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::post('testimonials/{testimonial}/toggle', [TestimonialController::class, 'toggle'])->name('testimonials.toggle');
     Route::resource('team-members', TeamMemberController::class)->except(['show']);
     Route::post('team-members/{team_member}/toggle', [TeamMemberController::class, 'toggle'])->name('team-members.toggle');
+
+    Route::resource('daily-content', DailyContentController::class)->except(['show']);
+    Route::post('daily-content/{daily_content}/toggle', [DailyContentController::class, 'toggle'])->name('daily-content.toggle');
     Route::resource('activity-posts', ActivityPostController::class)->except(['show']);
     Route::post('activity-posts/{activity_post}/toggle', [ActivityPostController::class, 'toggle'])->name('activity-posts.toggle');
 

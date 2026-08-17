@@ -73,6 +73,8 @@ class DashboardController extends Controller
             'certificates.course',
         ]);
 
+        $this->updateVisitStreak($user);
+
         // Quran courses progress
         $enrollments = $user->enrollments->map(function ($enrollment) use ($user) {
             return [
@@ -107,5 +109,29 @@ class DashboardController extends Controller
             'unreadCount',
             'certificates'
         ));
+    }
+
+    // Called once per dashboard visit (not on every request) — a simple
+    // "did you open the dashboard today" streak, not tied to any specific
+    // module. $user is the same instance Auth::user() returns for this
+    // request, so updating it here is enough for the Blade view's
+    // Auth::user()->current_streak to reflect the new value immediately.
+    private function updateVisitStreak($user): void
+    {
+        $today = now()->toDateString();
+
+        if ($user->last_active_date?->toDateString() === $today) {
+            return;
+        }
+
+        $streak = $user->last_active_date?->toDateString() === now()->subDay()->toDateString()
+            ? $user->current_streak + 1
+            : 1;
+
+        $user->update([
+            'current_streak' => $streak,
+            'longest_streak' => max($streak, $user->longest_streak),
+            'last_active_date' => $today,
+        ]);
     }
 }
