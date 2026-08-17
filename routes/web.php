@@ -77,7 +77,9 @@ Route::get('/', function () {
 // Static pages
 Route::get('/about', function () {
     $teamMembers = \App\Models\TeamMember::active()->orderBy('order')->get();
-    return view('about', compact('teamMembers'));
+    $testimonials = \App\Models\Testimonial::where('is_active', true)->orderBy('order')->get();
+    $previewCourses = \App\Models\Course::where('is_published', true)->take(4)->get();
+    return view('about', compact('teamMembers', 'testimonials', 'previewCourses'));
 });
 Route::get('/activities', function () {
     $activityPosts = \App\Models\ActivityPost::active()->orderBy('activity_date', 'desc')->orderBy('order')->get();

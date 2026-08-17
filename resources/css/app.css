@@ -2,6 +2,14 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Alpine's x-cloak needs this rule to actually do anything — Alpine (loaded
+   via npm/Vite here, not the CDN build) doesn't inject it automatically.
+   Used across many components this session (dropdowns, tab switchers,
+   popovers) to hide content until Alpine finishes initializing. */
+[x-cloak] {
+    display: none !important;
+}
+
 /*
  * Mobile-app feel: snappier taps, no browser bounce/rubber-banding,
  * no blue tap-flash on links/buttons, and safe-area padding so fixed
