@@ -47,8 +47,10 @@
  <x-dropdown-link :href="url('/sermons')">🎙️ {{ __('db.Sermons') }}</x-dropdown-link>
  <x-dropdown-link :href="route('blog.index')">📰 {{ __('db.Blog') }}</x-dropdown-link>
  <x-dropdown-link :href="url('/team')">👥 {{ __('db.Our Team') }}</x-dropdown-link>
- <x-dropdown-link :href="url('/testimonial')">💬 {{ __('db.Testimonials') }}</x-dropdown-link>
  <x-dropdown-link :href="url('/contact')">✉️ {{ __('db.Contact') }}</x-dropdown-link>
+ <div class="border-t border-gray-100 my-1"></div>
+ <x-dropdown-link :href="route('volunteer.create')">🤝 {{ __('db.Volunteer') }}</x-dropdown-link>
+ <x-dropdown-link :href="route('donate.create')">💝 {{ __('db.Donate') }}</x-dropdown-link>
  </x-slot>
  </x-dropdown>
 
@@ -78,12 +80,14 @@
  </x-dropdown>
  @endif
 
- {{-- Nikah Dropdown — prominent gold pill, single entry point for every Nikah action --}}
+ {{-- Nikah Dropdown — single entry point for every Nikah action. Gold text
+ (not a solid pill) keeps it recognizable without adding another
+ disconnected block of color to an already busy bar. --}}
  @if (Auth::user()->nikah_module_enabled)
  <x-dropdown align="left" width="52">
  <x-slot name="trigger">
- <button class="inline-flex items-center gap-1 px-4 py-2 rounded-full text-sm font-semibold text-white focus:outline-none hover:brightness-110 transition"
- style="background: #b8962e">
+ <button class="inline-flex items-center gap-1 px-3 py-2 rounded-md text-sm font-semibold focus:outline-none hover:bg-teal-600 transition"
+ style="color: #e8c874">
  💍 {{ __('db.Nikah') }}
  @if (Auth::user()?->nikahProfile?->verification_status === 'pending')
  <span class="w-2 h-2 rounded-full bg-yellow-200 inline-block"></span>
@@ -112,11 +116,11 @@
  </x-dropdown>
  @endif
 
- {{-- Family Support Dropdown — prominent white pill, single entry point for every counseling action --}}
+ {{-- Family Support Dropdown — single entry point for every counseling action --}}
  @if (Auth::user()->counseling_module_enabled)
  <x-dropdown align="left" width="56">
  <x-slot name="trigger">
- <button class="inline-flex items-center gap-1 px-4 py-2 rounded-full text-sm font-semibold text-teal-800 bg-white focus:outline-none hover:bg-gray-100 transition">
+ <button class="inline-flex items-center gap-1 px-3 py-2 rounded-md text-sm font-medium text-white hover:bg-teal-600 focus:outline-none transition">
  🤝 {{ __('db.Family Support') }}
  <svg class="ms-0.5 h-4 w-4 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
  <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
@@ -130,16 +134,6 @@
  </x-slot>
  </x-dropdown>
  @endif
-
- <x-nav-link :href="route('volunteer.create')" :active="request()->routeIs('volunteer.*')"
- class="text-white hover:bg-teal-600 px-3 py-2 rounded-md text-sm">
- 🤝 {{ __('db.Volunteer') }}
- </x-nav-link>
-
- <x-nav-link :href="route('donate.create')" :active="request()->routeIs('donate.*') || request()->routeIs('donations.*')"
- class="text-white hover:bg-teal-600 px-3 py-2 rounded-md text-sm">
- 💝 {{ __('db.Donate') }}
- </x-nav-link>
 
  @role('admin')
  <x-nav-link :href="route('admin.dashboard')" :active="request()->routeIs('admin.*')"
@@ -397,7 +391,6 @@
  <x-responsive-nav-link :href="url('/sermons')" class="text-white">🎙️ Sermons</x-responsive-nav-link>
  <x-responsive-nav-link :href="route('blog.index')" class="text-white">📰 Blog</x-responsive-nav-link>
  <x-responsive-nav-link :href="url('/team')" class="text-white">👥 Our Team</x-responsive-nav-link>
- <x-responsive-nav-link :href="url('/testimonial')" class="text-white">💬 Testimonials</x-responsive-nav-link>
  <x-responsive-nav-link :href="url('/contact')" class="text-white">✉️ Contact</x-responsive-nav-link>
 
  @if (Auth::user()->quran_module_enabled)
