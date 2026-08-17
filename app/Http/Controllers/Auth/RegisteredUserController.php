@@ -5,9 +5,11 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Auth\Concerns\RegistersMinimalUsers;
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Rules\ValidPhoneNumber;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rule;
 use Illuminate\Validation\Rules;
 use Illuminate\Validation\ValidationException;
@@ -41,12 +43,20 @@ class RegisteredUserController extends Controller
         $identifier = trim($request->identifier);
         $isEmail = (bool) filter_var($identifier, FILTER_VALIDATE_EMAIL);
 
-        $request->validate([
+        // A value that's neither a clean email nor a clean phone number (e.g.
+        // an email and a phone number typed into the one field together)
+        // used to fall through to a bare 'string' rule and get saved as-is
+        // into whichever column it wasn't recognized as an email for.
+        if (! $isEmail) {
+            $identifier = preg_replace('/[\s\-]/', '', $identifier);
+        }
+
+        Validator::make(['identifier' => $identifier], [
             'identifier' => [
-                $isEmail ? 'email' : 'string',
+                $isEmail ? 'email' : new ValidPhoneNumber(),
                 Rule::unique(User::class, $isEmail ? 'email' : 'phone'),
             ],
-        ]);
+        ])->validate();
 
         $user = $this->createMinimalUser(
             $request->name,

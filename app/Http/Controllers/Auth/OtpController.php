@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\OtpCode;
 use App\Models\User;
 use App\Notifications\OtpCodeMail;
+use App\Rules\ValidPhoneNumber;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -28,7 +29,7 @@ class OtpController extends Controller
         $purpose = $user ? 'login' : 'registration';
 
         $request->validate([
-            'phone' => ['required', 'string', 'max:20'],
+            'phone' => ['required', 'string', 'max:20', new ValidPhoneNumber()],
             'email' => ['required', 'email', 'max:255'],
             'name' => [$purpose === 'registration' ? 'required' : 'nullable', 'string', 'max:255'],
         ]);
