@@ -12,6 +12,8 @@ use App\Http\Controllers\NikahFileController;
 use App\Http\Controllers\NikahPhotoController;
 use App\Http\Controllers\UserAvatarController;
 use App\Http\Controllers\PushSubscriptionController;
+use App\Http\Controllers\DuaWallController;
+use App\Http\Controllers\Admin\DuaWallAdminController;
 use App\Http\Controllers\NikahPaymentController;
 use App\Http\Controllers\NikahSafetyController;
 use App\Http\Controllers\NikahGuardianMessageController;
@@ -117,6 +119,10 @@ Route::middleware('throttle:10,1')->group(function () {
 Route::get('/subscriber/verify/{token}', [SubscriberController::class, 'verify'])->name('subscriber.verify');
 Route::get('/subscriber/unsubscribe/{token}', [SubscriberController::class, 'unsubscribe'])->name('subscriber.unsubscribe');
 
+// Sallaamti Wall — guest-readable (good top-of-funnel content), posting/
+// reacting requires login (see the auth-gated routes further down).
+Route::get('/wall', [DuaWallController::class, 'index'])->name('wall.index');
+
 // Certificate verification (public — no login needed)
 Route::get('/verify-certificate/{certificateNumber?}', [CertificateController::class, 'verify'])->name('certificate.verify');
 
@@ -153,6 +159,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Web Push subscriptions
     Route::post('/push/subscribe', [PushSubscriptionController::class, 'store'])->name('push.subscribe');
     Route::post('/push/unsubscribe', [PushSubscriptionController::class, 'destroy'])->name('push.unsubscribe');
+
+    // Sallaamti Wall — posting and reacting (viewing the wall itself is public, see above)
+    Route::post('/wall', [DuaWallController::class, 'store'])->name('wall.store');
+    Route::post('/wall/{duaRequest}/react', [DuaWallController::class, 'react'])->name('wall.react');
 
     // --- NIKAH MODULE ---
     Route::middleware('nikah.activity')->group(function () {
@@ -335,6 +345,11 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('volunteers', [VolunteerAdminController::class, 'index'])->name('volunteers.index');
     Route::post('volunteers/{volunteer}/approve', [VolunteerAdminController::class, 'approve'])->name('volunteers.approve');
     Route::post('volunteers/{volunteer}/reject', [VolunteerAdminController::class, 'reject'])->name('volunteers.reject');
+
+    // Sallaamti Wall moderation
+    Route::get('wall', [DuaWallAdminController::class, 'index'])->name('wall.index');
+    Route::post('wall/{duaRequest}/approve', [DuaWallAdminController::class, 'approve'])->name('wall.approve');
+    Route::post('wall/{duaRequest}/reject', [DuaWallAdminController::class, 'reject'])->name('wall.reject');
 
     // Donation Management
     Route::get('donations', [DonationAdminController::class, 'index'])->name('donations.index');

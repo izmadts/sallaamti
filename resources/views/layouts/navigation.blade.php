@@ -20,6 +20,15 @@
  🏠 {{ __('db.Dashboard') }}
  </x-nav-link>
 
+ {{-- Sallaamti Wall — deliberately a standalone standout link, not buried in a dropdown --}}
+ <x-wall-nav-badge :dua="$latestApprovedDua ?? null">
+ <a href="{{ route('wall.index') }}" class="inline-flex items-center gap-1 px-3 py-2 rounded-md text-sm font-medium transition
+ {{ request()->routeIs('wall.*') ? 'bg-teal-800 text-white' : 'text-white hover:bg-teal-600' }}">
+ 🤲 {{ __('db.Sallaamti Wall') }}
+ <span class="w-1.5 h-1.5 rounded-full animate-pulse" style="background: var(--gold)"></span>
+ </a>
+ </x-wall-nav-badge>
+
  {{-- Site Dropdown — public pages stay reachable after login --}}
  <x-dropdown align="left" width="48">
  <x-slot name="trigger">
@@ -340,6 +349,13 @@
 
  <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" class="text-white">
  🏠 Dashboard
+ </x-responsive-nav-link>
+
+ <x-responsive-nav-link :href="route('wall.index')" :active="request()->routeIs('wall.*')" class="text-white">
+ 🤲 {{ __('db.Sallaamti Wall') }}
+ @if ($latestApprovedDua ?? null)
+ <span class="w-1.5 h-1.5 rounded-full animate-pulse inline-block ms-1" style="background: var(--gold)"></span>
+ @endif
  </x-responsive-nav-link>
 
  {{-- Nikah — prominent gold block, one place for every Nikah action --}}

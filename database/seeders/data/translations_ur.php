@@ -525,4 +525,23 @@ return [
     'Install' => 'انسٹال کریں',
     'Not now' => 'ابھی نہیں',
     'Dismiss' => 'بند کریں',
+
+    // ---- Sallaamti Wall ----
+    'Sallaamti Wall' => 'سلامتی وال',
+    'A place for the community to share duas and say Ameen for one another.' => 'ایک ایسی جگہ جہاں کمیونٹی دعائیں شیئر کرتی ہے اور ایک دوسرے کے لیے آمین کہتی ہے۔',
+    'Share a dua request' => 'دعا کی درخواست شیئر کریں',
+    'What would you like the community to make dua for?' => 'آپ چاہتے ہیں کہ کمیونٹی آپ کے لیے کس چیز کی دعا کرے؟',
+    'Post anonymously' => 'گمنام طور پر پوسٹ کریں',
+    'Share' => 'شیئر کریں',
+    'Your dua is reviewed by our team before it appears on the wall.' => 'آپ کی دعا وال پر ظاہر ہونے سے پہلے ہماری ٹیم کے جائزے سے گزرتی ہے۔',
+    'Join Sallaamti to share your own dua and say Ameen for others.' => 'اپنی دعا شیئر کرنے اور دوسروں کے لیے آمین کہنے کے لیے سلامتی جوائن کریں۔',
+    'Join Free' => 'مفت جوائن کریں',
+    'No duas on the wall yet — be the first to share one.' => 'ابھی تک وال پر کوئی دعا نہیں — سب سے پہلے شیئر کرنے والے بنیں۔',
+    'Loading more…' => 'مزید لوڈ ہو رہا ہے…',
+    'Load More' => 'مزید دیکھیں',
+    "You've reached the end of the wall." => 'آپ وال کے آخر تک پہنچ گئے ہیں۔',
+    'A Sallaamti member' => 'ایک سلامتی رکن',
+    'Ameen' => 'آمین',
+    'Say Ameen' => 'آمین کہیں',
+    'Latest on the wall' => 'وال پر تازہ ترین',
 ];

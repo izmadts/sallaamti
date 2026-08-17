@@ -57,6 +57,21 @@ class AppServiceProvider extends ServiceProvider
                 'profileMissingFields' => $nikahProfile?->missingFields() ?? [],
             ]);
         });
+
+        // Powers the Sallaamti Wall nav popover (a live-preview teaser) on
+        // both the authenticated nav and the guest topbar — same
+        // try/catch-and-fall-back-empty pattern as the footer composer above.
+        View::composer(['layouts.navigation', 'layouts.guest'], function ($view) {
+            try {
+                $latestApprovedDua = \App\Models\DuaRequest::where('status', 'approved')
+                    ->orderByDesc('created_at')
+                    ->first();
+            } catch (\Exception $e) {
+                $latestApprovedDua = null;
+            }
+
+            $view->with('latestApprovedDua', $latestApprovedDua);
+        });
     }
 
     public function register(): void

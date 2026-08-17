@@ -151,6 +151,16 @@
                 {{-- Community --}}
                 <p class="text-teal-500 text-xs uppercase tracking-widest px-3 pt-4 pb-1">Community</p>
 
+                <a href="{{ route('admin.wall.index') }}"
+                    class="flex items-center justify-between gap-3 px-3 py-2 rounded-lg transition
+                          {{ request()->routeIs('admin.wall*') ? 'bg-teal-700 text-white' : 'text-teal-100 hover:bg-teal-800' }}">
+                    <span class="flex items-center gap-3"><span class="text-base">🤲</span> Sallaamti Wall</span>
+                    @php $pendingDuas = \App\Models\DuaRequest::where('status','pending')->count(); @endphp
+                    @if ($pendingDuas > 0)
+                    <span class="bg-yellow-400 text-yellow-900 text-xs font-bold px-1.5 py-0.5 rounded-full">{{ $pendingDuas }}</span>
+                    @endif
+                </a>
+
                 <a href="{{ route('admin.volunteers.index') }}"
                     class="flex items-center justify-between gap-3 px-3 py-2 rounded-lg transition
                           {{ request()->routeIs('admin.volunteers*') ? 'bg-teal-700 text-white' : 'text-teal-100 hover:bg-teal-800' }}">

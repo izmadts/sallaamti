@@ -71,6 +71,11 @@ class User extends Authenticatable
     {
         return $this->hasMany(PushSubscription::class);
     }
+
+    public function duaRequests()
+    {
+        return $this->hasMany(DuaRequest::class);
+    }
     public function avatarUrl(): string
     {
         return $this->avatar

@@ -224,6 +224,12 @@
  </div>
  <!-- Desktop CTA buttons -->
  <div class="hidden lg:flex items-center gap-2 ml-2">
+ <x-wall-nav-badge :dua="$latestApprovedDua ?? null">
+ <a href="{{ route('wall.index') }}" class="inline-flex items-center gap-1 rounded-full text-white font-semibold text-sm py-2 px-4 hover:brightness-110 transition" style="background: var(--teal)">
+ 🤲 {{ __('db.Sallaamti Wall') }}
+ <span class="w-1.5 h-1.5 rounded-full animate-pulse" style="background: var(--gold)"></span>
+ </a>
+ </x-wall-nav-badge>
  <a href="{{ route('nikah.create') }}" class="inline-flex items-center rounded-full text-white font-semibold text-sm py-2 px-4 hover:brightness-110 transition" style="background: #b8962e">💍 {{ __('db.Find a Match') }}</a>
  <a href="{{ route('counseling.book.start') }}" class="inline-flex items-center rounded-full border border-[--teal] text-[--teal] font-semibold text-sm py-2 px-4 hover:bg-[--teal] hover:text-white transition">🤝 {{ __('db.Get Counseling') }}</a>
  <a href="{{ url('/donate') }}" class="inline-flex items-center rounded-md bg-[--teal] text-white font-medium py-2 px-4 hover:bg-[--teal-dark] transition">💝 {{ __('db.Donate') }}</a>
@@ -244,6 +250,12 @@
  <a href="{{ url('/team') }}" class="py-2 text-sm font-medium {{ request()->is('team') ? 'text-[--teal]' : 'text-[--text-dark]' }}">{{ __('db.Team') }}</a>
  <a href="{{ url('/contact') }}" class="py-2 text-sm font-medium {{ request()->is('contact') ? 'text-[--teal]' : 'text-[--text-dark]' }}">{{ __('db.Contact') }}</a>
  <div class="border-t my-2"></div>
+ <a href="{{ route('wall.index') }}" class="py-2 text-sm font-semibold flex items-center gap-1.5" style="color: var(--teal)">
+ 🤲 {{ __('db.Sallaamti Wall') }}
+ @if ($latestApprovedDua ?? null)
+ <span class="w-1.5 h-1.5 rounded-full animate-pulse inline-block" style="background: var(--gold)"></span>
+ @endif
+ </a>
  <a href="{{ route('nikah.create') }}" class="py-2 text-sm font-semibold" style="color: #b8962e">💍 {{ __('db.Find a Match') }}</a>
  <a href="{{ route('counseling.book.start') }}" class="py-2 text-sm font-semibold text-[--teal]">🤝 {{ __('db.Get Counseling') }}</a>
  <a href="{{ url('/donate') }}" class="py-2 text-sm font-semibold text-[--teal]">💝 {{ __('db.Donate') }}</a>
