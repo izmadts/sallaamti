@@ -66,9 +66,13 @@ use App\Http\Controllers\Admin\CounselingBookingAdminController;
 Route::get('/language/switch/{code}', [LanguageSwitchController::class, 'switch'])->name('language.switch');
 
 Route::get('/', function () {
-    $banners = \App\Models\Banner::where('is_active', true)->orderBy('order')->get();
-    $testimonials = \App\Models\Testimonial::where('is_active', true)->orderBy('order')->get();
-    return view('index', compact('banners', 'testimonials'));
+    // Facebook-style: a logged-in visitor never sees the marketing/login
+    // page at all, they land on their dashboard immediately.
+    if (\Illuminate\Support\Facades\Auth::check()) {
+        return redirect()->route('dashboard');
+    }
+
+    return view('index');
 })->name('index');
 // Static pages
 Route::get('/about', function () {

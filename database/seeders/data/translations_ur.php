@@ -548,4 +548,13 @@ return [
     // ---- Daily Ayah / Hadith widget ----
     'Ayah of the Day' => 'آج کی آیت',
     'Hadith of the Day' => 'آج کی حدیث',
+
+    // ---- Facebook-style landing page ----
+    'Welcome to Sallaamti' => 'سلامتی میں خوش آمدید',
+    'Sign in to continue' => 'جاری رکھنے کے لیے سائن ان کریں',
+    'Learn Quran Online. Find Your Match. Build Community.' => 'آن لائن قرآن سیکھیں۔ اپنا رشتہ تلاش کریں۔ کمیونٹی بنائیں۔',
+    'Sallaamti brings self-paced Quran courses, live classes with qualified teachers, a halal Islamic matrimonial platform, and family counseling together in one place — built for Muslims everywhere, free to join.' => 'سلامتی خود رفتار قرآن کورسز، مستند اساتذہ کے ساتھ لائیو کلاسز، حلال اسلامی رشتہ پلیٹ فارم، اور خاندانی مشاورت سب کچھ ایک ہی جگہ لاتا ہے — ہر جگہ کے مسلمانوں کے لیے، شمولیت بالکل مفت۔',
+    'Create Your Free Account' => 'اپنا مفت اکاؤنٹ بنائیں',
+    'Want to know more about our mission first?' => 'پہلے ہمارے مشن کے بارے میں مزید جاننا چاہتے ہیں؟',
+    'Read our story' => 'ہماری کہانی پڑھیں',
 ];
