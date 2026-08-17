@@ -6,7 +6,10 @@
         </div>
     </x-slot>
     <div class="py-12">
-        <div class="max-w-4xl mx-auto sm:px-6 lg:px-8 space-y-4">
+        <div class="max-w-5xl mx-auto sm:px-6 lg:px-8">
+        <div class="flex flex-col lg:flex-row gap-6">
+        <x-module-nav module="counseling" />
+        <div class="flex-1 min-w-0 max-w-3xl space-y-4">
             @forelse ($queries as $query)
             <a href="{{ route('support.show', $query) }}"
                 class="block bg-white rounded-xl shadow-sm p-5 hover:shadow-md transition-shadow">
@@ -37,6 +40,8 @@
             </div>
             @endforelse
             {{ $queries->links() }}
+        </div>
+        </div>
         </div>
     </div>
 </x-app-layout>

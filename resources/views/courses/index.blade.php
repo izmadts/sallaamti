@@ -37,6 +37,15 @@
     </section>
 
     {{-- ============================================================ --}}
+    {{-- MODULE QUICK NAV --}}
+    {{-- ============================================================ --}}
+    <section class="bg-cream pt-6">
+        <div class="max-w-7xl mx-auto px-4">
+            <x-module-nav module="quran" layout="bar" />
+        </div>
+    </section>
+
+    {{-- ============================================================ --}}
     {{-- CATEGORY FILTERS --}}
     {{-- ============================================================ --}}
     <section class="bg-white border-b border-gray-100 sticky top-0 z-40 shadow-sm">

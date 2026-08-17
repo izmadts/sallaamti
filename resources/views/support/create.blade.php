@@ -3,7 +3,10 @@
         <h2 class="font-semibold text-xl text-gray-800">Submit a Support Query</h2>
     </x-slot>
     <div class="py-12">
-        <div class="max-w-3xl mx-auto sm:px-6 lg:px-8">
+        <div class="max-w-5xl mx-auto sm:px-6 lg:px-8">
+        <div class="flex flex-col lg:flex-row gap-6">
+        <x-module-nav module="counseling" />
+        <div class="flex-1 min-w-0 max-w-3xl">
 
             {{-- Info banner --}}
             <div class="rounded-xl p-5 mb-6 flex gap-4" style="background: var(--teal-light); border: 1px solid #0d6b6b33">
@@ -98,6 +101,9 @@
                     </button>
                 </form>
             </div>
+
+        </div>
+        </div>
         </div>
     </div>
 </x-app-layout>

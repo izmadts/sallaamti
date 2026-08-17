@@ -17,6 +17,8 @@
     <div class="py-6" style="background: #fbfaf7; min-height: 60vh">
         <div class="max-w-2xl mx-auto px-4 sm:px-6 space-y-5">
 
+            <x-module-nav module="wall" layout="bar" />
+
             @auth
             {{-- Post a dua --}}
             <form method="POST" action="{{ route('wall.store') }}" class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4">

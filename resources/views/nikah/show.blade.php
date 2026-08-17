@@ -6,8 +6,10 @@
     </x-slot>
 
     <div class="py-12">
-        <div class="max-w-3xl mx-auto sm:px-6 lg:px-8">
-
+        <div class="max-w-6xl mx-auto sm:px-6 lg:px-8">
+            <div class="flex flex-col lg:flex-row gap-6">
+            <x-module-nav module="nikah" />
+            <div class="flex-1 min-w-0">
 
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
                 @if ($profile->isSuspended())
@@ -287,6 +289,9 @@
                 </div>
                 @endif
 
+            </div>
+
+            </div>
             </div>
         </div>
     </div>
