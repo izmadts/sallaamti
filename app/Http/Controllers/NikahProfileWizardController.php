@@ -119,15 +119,20 @@ class NikahProfileWizardController extends Controller
         }
 
         if ($step === 'verification') {
-            foreach (['cnic_front_image', 'cnic_back_image', 'photo'] as $file) {
-                if ($request->hasFile($file)) {
-                    $disk = $file === 'photo' ? 'nikah/photos' : 'nikah/cnic';
-                    $maxDimension = $file === 'photo' ? 1200 : 1600;
-                    $quality = $file === 'photo' ? 82 : 85;
-                    $validated[$file] = ImageOptimizer::store($request->file($file), $disk, 'private', maxDimension: $maxDimension, quality: $quality);
-                } elseif (!empty($existing[$file])) {
-                    $validated[$file] = $existing[$file];
+            try {
+                foreach (['cnic_front_image', 'cnic_back_image', 'photo'] as $file) {
+                    if ($request->hasFile($file)) {
+                        $disk = $file === 'photo' ? 'nikah/photos' : 'nikah/cnic';
+                        $maxDimension = $file === 'photo' ? 1200 : 1600;
+                        $quality = $file === 'photo' ? 82 : 85;
+                        $validated[$file] = ImageOptimizer::store($request->file($file), $disk, 'private', maxDimension: $maxDimension, quality: $quality);
+                    } elseif (!empty($existing[$file])) {
+                        $validated[$file] = $existing[$file];
+                    }
                 }
+            } catch (\Throwable $e) {
+                report($e);
+                return back()->withInput()->withErrors(['photo' => 'Sorry, we could not save your uploaded photo(s) — please try again in a moment. If this keeps happening, contact support.']);
             }
 
             $validated['allow_photo_sharing'] = $request->boolean('allow_photo_sharing');

@@ -27,14 +27,19 @@ class NikahPhotoController extends Controller
         $files = array_slice($request->file('photos', []), 0, 5 - $existingCount);
         $nextOrder = ($profile->photos()->max('order') ?? -1) + 1;
 
-        foreach ($files as $index => $file) {
-            $path = ImageOptimizer::store($file, 'nikah/photos', 'private', maxDimension: 1200);
+        try {
+            foreach ($files as $index => $file) {
+                $path = ImageOptimizer::store($file, 'nikah/photos', 'private', maxDimension: 1200);
 
-            $profile->photos()->create([
-                'path' => $path,
-                'is_primary' => $existingCount === 0 && $index === 0,
-                'order' => $nextOrder + $index,
-            ]);
+                $profile->photos()->create([
+                    'path' => $path,
+                    'is_primary' => $existingCount === 0 && $index === 0,
+                    'order' => $nextOrder + $index,
+                ]);
+            }
+        } catch (\Throwable $e) {
+            report($e);
+            return back()->withErrors(['photos' => 'Sorry, we could not save your photo(s) — please try again in a moment. If this keeps happening, contact support.']);
         }
 
         $skipped = count($request->file('photos', [])) - count($files);

@@ -26,13 +26,26 @@ class ImageOptimizer
 
             $filename = $directory . '/' . Str::random(40) . '.jpg';
 
-            Storage::disk($disk)->put($filename, (string) $image->toJpeg(quality: $quality));
+            // Storage disks in this app are configured with 'throw' => false,
+            // so a failed write (permissions, disk full) returns false here
+            // instead of throwing — without this check that failure was
+            // silently ignored and a path to a file that was never written
+            // got saved to the database, leaving a broken image forever.
+            if (!Storage::disk($disk)->put($filename, (string) $image->toJpeg(quality: $quality))) {
+                throw new \RuntimeException("Failed to write optimized image to disk [{$disk}] at [{$filename}].");
+            }
 
             return $filename;
         } catch (\Throwable $e) {
             report($e);
 
-            return $file->store($directory, $disk);
+            $path = $file->store($directory, $disk);
+
+            if ($path === false) {
+                throw new \RuntimeException("Failed to store uploaded file to disk [{$disk}] in [{$directory}] — check disk permissions and free space.");
+            }
+
+            return $path;
         }
     }
 
