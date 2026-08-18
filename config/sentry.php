@@ -5,44 +5,6 @@
  *
  * @see https://docs.sentry.io/platforms/php/guides/laravel/configuration/options/
  */
-// Query strings on outbound HTTP client calls routinely carry live secrets in
-// this app — OAuth token exchanges and Graph/TikTok API calls pass
-// access_token/client_secret/refresh_token/code as GET params (see
-// SocialIntegrationController and the SocialPublishing/* classes). Sentry's
-// HTTP client integration captures the full query string as 'http.query' on
-// every breadcrumb and span regardless of send_default_pii, so without this
-// redaction any error or sampled trace during a social OAuth flow or publish
-// would ship live tokens to Sentry in plaintext.
-$sentrySensitiveQueryKeys = ['access_token', 'client_secret', 'refresh_token', 'code_verifier', 'code', 'fb_exchange_token', 'token'];
-
-$sentryRedactQueryString = static function (?string $query) use ($sentrySensitiveQueryKeys): ?string {
-    if (!$query) {
-        return $query;
-    }
-
-    parse_str($query, $params);
-    $redacted = false;
-
-    foreach ($sentrySensitiveQueryKeys as $key) {
-        if (array_key_exists($key, $params)) {
-            $params[$key] = '[Filtered]';
-            $redacted = true;
-        }
-    }
-
-    return $redacted ? http_build_query($params) : $query;
-};
-
-$sentryRedactUrl = static function (?string $url) use ($sentrySensitiveQueryKeys): ?string {
-    if (!$url) {
-        return $url;
-    }
-
-    $pattern = '/([?&])(' . implode('|', $sentrySensitiveQueryKeys) . ')=[^&]*/i';
-
-    return preg_replace($pattern, '$1$2=[Filtered]', $url);
-};
-
 return [
 
     // @see https://docs.sentry.io/concepts/key-terms/dsn-explainer/
@@ -100,39 +62,14 @@ return [
         '/up',
     ],
 
-    // Strip OAuth/API secrets out of HTTP-client breadcrumbs before an error
-    // event ships — see the comment above for why this is necessary.
-    'before_breadcrumb' => static function (\Sentry\Breadcrumb $breadcrumb) use ($sentryRedactQueryString, $sentryRedactUrl): \Sentry\Breadcrumb {
-        $metadata = $breadcrumb->getMetadata();
-
-        if (isset($metadata['http.query']) && is_string($metadata['http.query'])) {
-            $breadcrumb = $breadcrumb->withMetadata('http.query', $sentryRedactQueryString($metadata['http.query']));
-        }
-
-        if (isset($metadata['url']) && is_string($metadata['url'])) {
-            $breadcrumb = $breadcrumb->withMetadata('url', $sentryRedactUrl($metadata['url']));
-        }
-
-        return $breadcrumb;
-    },
-
-    // Same redaction for performance-trace spans (breadcrumbs only cover
-    // error events — spans ship separately on sampled transactions).
-    'before_send_transaction' => static function (\Sentry\Event $transaction) use ($sentryRedactQueryString, $sentryRedactUrl): \Sentry\Event {
-        foreach ($transaction->getSpans() as $span) {
-            $query = $span->getData('http.query');
-            if (is_string($query)) {
-                $span->setData(['http.query' => $sentryRedactQueryString($query)]);
-            }
-
-            $url = $span->getData('url');
-            if (is_string($url)) {
-                $span->setData(['url' => $sentryRedactUrl($url)]);
-            }
-        }
-
-        return $transaction;
-    },
+    // Strip OAuth/API secrets (access_token, client_secret, refresh_token,
+    // code, etc.) out of HTTP-client breadcrumbs/spans before anything ships
+    // to Sentry — see App\Support\SentryScrubber for what and why. Referenced
+    // as an array callable rather than an inline closure specifically so
+    // `php artisan config:cache` can still serialize this file — a closure
+    // here makes config:cache fail outright.
+    'before_breadcrumb' => [\App\Support\SentryScrubber::class, 'scrubBreadcrumb'],
+    'before_send_transaction' => [\App\Support\SentryScrubber::class, 'scrubTransaction'],
 
     // Breadcrumb specific configuration
     'breadcrumbs' => [
