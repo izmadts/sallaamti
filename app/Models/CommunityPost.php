@@ -20,6 +20,7 @@ class CommunityPost extends Model
         'published_at',
         'is_pinned',
         'pinned_at',
+        'queue_position',
     ];
 
     protected function casts(): array
@@ -37,6 +38,11 @@ class CommunityPost extends Model
     public function scopePublished($query)
     {
         return $query->where('status', 'published');
+    }
+
+    public function scopeScheduled($query)
+    {
+        return $query->where('status', 'scheduled')->orderBy('queue_position');
     }
 
     public function scopeWithTag($query, string $tag)

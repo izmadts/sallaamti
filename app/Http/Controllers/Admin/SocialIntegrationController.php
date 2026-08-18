@@ -41,6 +41,8 @@ class SocialIntegrationController extends Controller
             'tiktok_client_id' => ['nullable', 'string'],
             'tiktok_client_secret' => ['nullable', 'string'],
             'tiktok_audited' => ['nullable', 'boolean'],
+            'scheduled_batch_size' => ['nullable', 'integer', 'min:0', 'max:50'],
+            'scheduled_batch_time' => ['nullable', 'date_format:H:i'],
         ]);
 
         foreach ($validated as $key => $value) {
@@ -48,7 +50,7 @@ class SocialIntegrationController extends Controller
                 Setting::set($key, $request->boolean('tiktok_audited') ? '1' : '0', 'integrations');
                 continue;
             }
-            if (filled($value)) {
+            if (filled($value) || $value === '0') {
                 Setting::set($key, $value, 'integrations');
             }
         }

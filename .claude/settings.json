@@ -67,7 +67,9 @@
       "Bash(grep -i \"twit\\\\|/x$\\\\|-x-\")",
       "Bash(composer dump-autoload *)",
       "Bash(php -r \"require 'vendor/autoload.php'; var_dump\\(class_exists\\('Google\\\\\\\\Client'\\)\\);\")",
-      "Bash(composer validate *)"
+      "Bash(composer validate *)",
+      "Bash(crontab -l)",
+      "Bash(OPENSSL_CONF=\"/d/xampp/php/extras/ssl/openssl.cnf\" php artisan wall:publish-scheduled)"
     ],
     "additionalDirectories": [
       "\\tmp"

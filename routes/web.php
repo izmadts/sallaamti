@@ -309,6 +309,15 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::post('community-posts/{community_post}/toggle', [CommunityPostController::class, 'toggle'])->name('community-posts.toggle');
     Route::post('community-posts/{community_post}/pin', [CommunityPostController::class, 'togglePin'])->name('community-posts.pin');
 
+    // Bulk import old photos/videos, then a daily scheduled batch drains
+    // the queue automatically (see routes/console.php and
+    // PublishScheduledCommunityPosts).
+    Route::get('community-posts-bulk-upload', [CommunityPostController::class, 'bulkUpload'])->name('community-posts.bulk-upload');
+    Route::post('community-posts-bulk-upload', [CommunityPostController::class, 'bulkStore'])->name('community-posts.bulk-store');
+    Route::get('community-posts-queue', [CommunityPostController::class, 'queue'])->name('community-posts.queue');
+    Route::post('community-posts-queue/reorder', [CommunityPostController::class, 'queueReorder'])->name('community-posts.queue.reorder');
+    Route::post('community-posts/{community_post}/publish-now', [CommunityPostController::class, 'queuePublishNow'])->name('community-posts.publish-now');
+
     // Social media auto-posting — connect accounts + review/retry deliveries.
     Route::get('integrations', [SocialIntegrationController::class, 'index'])->name('integrations.index');
     Route::post('integrations/settings', [SocialIntegrationController::class, 'updateSettings'])->name('integrations.settings.update');

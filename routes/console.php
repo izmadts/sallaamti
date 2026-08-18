@@ -10,3 +10,9 @@ Artisan::command('inspire', function () {
 
 Schedule::command('bookings:send-reminders')->hourly();
 Schedule::command('users:purge-deactivated')->daily();
+
+// Admin-configurable via Settings (Admin > Integrations) — read fresh on
+// every schedule:run tick, so a changed batch size/time takes effect
+// within a minute without a deploy.
+Schedule::command('wall:publish-scheduled')
+    ->dailyAt(\App\Models\Setting::get('scheduled_batch_time', '09:00'));

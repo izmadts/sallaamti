@@ -22,14 +22,22 @@
                 </a>
                 @endforeach
             </div>
-            <a href="{{ route('admin.community-posts.create') }}" class="bg-teal-700 text-white text-sm px-4 py-2 rounded hover:bg-teal-800 flex-shrink-0">+ New Post</a>
+            <div class="flex gap-2 flex-shrink-0">
+                <a href="{{ route('admin.community-posts.queue') }}" class="bg-white border border-gray-200 text-gray-700 text-sm px-4 py-2 rounded hover:border-teal-400">
+                    📋 Queue{{ $scheduledCount > 0 ? " ({$scheduledCount})" : '' }}
+                </a>
+                <a href="{{ route('admin.community-posts.bulk-upload') }}" class="bg-white border border-gray-200 text-gray-700 text-sm px-4 py-2 rounded hover:border-teal-400">⬆ Bulk Upload</a>
+                <a href="{{ route('admin.community-posts.create') }}" class="bg-teal-700 text-white text-sm px-4 py-2 rounded hover:bg-teal-800">+ New Post</a>
+            </div>
         </div>
 
         <div class="bg-white rounded-lg shadow-sm divide-y">
             @forelse ($posts as $post)
             <div class="p-4 flex gap-4 items-start">
                 <div class="w-16 h-16 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
-                    @if ($post->photo)
+                    @if ($post->video)
+                    <div class="w-full h-full flex items-center justify-center text-gray-400 text-xl">🎬</div>
+                    @elseif ($post->photo)
                     <img src="{{ Storage::url($post->photo) }}" class="w-full h-full object-cover">
                     @else
                     <div class="w-full h-full flex items-center justify-center text-gray-400 text-xl">📣</div>
@@ -72,16 +80,21 @@
                     @endif
                 </div>
                 <div class="flex flex-col items-end gap-2 flex-shrink-0">
-                    <span class="text-xs px-2 py-0.5 rounded-full {{ $post->status === 'published' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500' }}">
-                        {{ $post->status === 'published' ? 'Published' : 'Draft' }}
+                    <span class="text-xs px-2 py-0.5 rounded-full
+                        {{ $post->status === 'published' ? 'bg-green-100 text-green-700' : ($post->status === 'scheduled' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-500') }}">
+                        {{ ucfirst($post->status) }}
                     </span>
                     <div class="flex gap-2">
+                        @if ($post->status === 'scheduled')
+                        <a href="{{ route('admin.community-posts.queue') }}" class="text-xs text-blue-600 hover:underline">In Queue</a>
+                        @else
                         <form method="POST" action="{{ route('admin.community-posts.toggle', $post) }}">
                             @csrf
                             <button class="text-xs {{ $post->status === 'published' ? 'text-orange-500' : 'text-green-600' }} hover:underline">
                                 {{ $post->status === 'published' ? 'Unpublish' : 'Publish' }}
                             </button>
                         </form>
+                        @endif
                         <form method="POST" action="{{ route('admin.community-posts.pin', $post) }}">
                             @csrf
                             <button class="text-xs {{ $post->is_pinned ? 'text-amber-600' : 'text-gray-500' }} hover:underline">

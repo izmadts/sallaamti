@@ -90,10 +90,16 @@
                 </div>
             </div>
 
+            @if ($post->status === 'scheduled')
+            <div class="p-3 rounded-lg bg-blue-50 border border-blue-100 text-sm text-blue-700">
+                📋 This post is in the scheduled queue. Saving here only updates its content — use the <a href="{{ route('admin.community-posts.queue') }}" class="underline">Queue page</a> to publish it now or reorder it.
+            </div>
+            @else
             <div class="flex items-center gap-2">
                 <input type="checkbox" name="publish" value="1" id="publish" {{ $post->status === 'published' ? 'checked' : '' }}>
                 <label for="publish" class="text-sm text-gray-700">Published (uncheck to move to draft)</label>
             </div>
+            @endif
 
             <x-primary-button>Save Changes</x-primary-button>
         </form>

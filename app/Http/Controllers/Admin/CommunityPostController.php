@@ -3,17 +3,23 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
-use App\Jobs\PublishCommunityPostToSocialJob;
 use App\Models\CommunityPost;
+use App\Models\Setting;
 use App\Models\SocialAccount;
-use App\Models\SocialPostDispatch;
+use App\Services\CommunityPostPublisher;
 use App\Support\HtmlSanitizer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class CommunityPostController extends Controller
 {
+    public function __construct(private CommunityPostPublisher $publisher)
+    {
+    }
+
     public function index(Request $request)
     {
         $tag = $request->get('tag');
@@ -25,8 +31,9 @@ class CommunityPostController extends Controller
         $posts = $query->get();
 
         $tags = CommunityPost::pluck('tags')->flatten()->filter()->unique()->values();
+        $scheduledCount = CommunityPost::where('status', 'scheduled')->count();
 
-        return view('admin.community-posts.index', ['posts' => $posts, 'tags' => $tags, 'activeTag' => $tag]);
+        return view('admin.community-posts.index', ['posts' => $posts, 'tags' => $tags, 'activeTag' => $tag, 'scheduledCount' => $scheduledCount]);
     }
 
     public function create()
@@ -55,7 +62,7 @@ class CommunityPostController extends Controller
         $post = CommunityPost::create($validated);
 
         if ($post->status === 'published') {
-            $this->dispatchSocialPosts($post);
+            $this->publisher->dispatchSocialPosts($post);
         }
 
         return redirect()->route('admin.community-posts.index')->with('status', 'Post added.');
@@ -69,16 +76,23 @@ class CommunityPostController extends Controller
     public function update(Request $request, CommunityPost $community_post)
     {
         $wasPublished = $community_post->status === 'published';
+        $isScheduled = $community_post->status === 'scheduled';
 
         $validated = $this->validated($request);
 
         $validated['tags'] = $this->parseTags($request->input('tags'));
         $validated['social_targets'] = $this->parseSocialTargets($request);
         $validated['body'] = HtmlSanitizer::clean($validated['body']);
-        $validated['status'] = $request->boolean('publish') ? 'published' : 'draft';
-        $validated['published_at'] = $validated['status'] === 'published'
-            ? ($community_post->published_at ?? now())
-            : null;
+
+        // A scheduled post's status/queue position is only ever changed by
+        // the dedicated Queue actions (Post Now / reorder / delete) — a
+        // normal caption edit shouldn't silently knock it out of the queue.
+        if (!$isScheduled) {
+            $validated['status'] = $request->boolean('publish') ? 'published' : 'draft';
+            $validated['published_at'] = $validated['status'] === 'published'
+                ? ($community_post->published_at ?? now())
+                : null;
+        }
 
         if ($request->hasFile('photo')) {
             if ($community_post->photo) Storage::disk('public')->delete($community_post->photo);
@@ -92,7 +106,7 @@ class CommunityPostController extends Controller
         $community_post->update($validated);
 
         if (!$wasPublished && $community_post->status === 'published') {
-            $this->dispatchSocialPosts($community_post);
+            $this->publisher->dispatchSocialPosts($community_post);
         }
 
         return redirect()->route('admin.community-posts.index')->with('status', 'Post updated.');
@@ -108,6 +122,8 @@ class CommunityPostController extends Controller
 
     public function toggle(CommunityPost $community_post)
     {
+        abort_if($community_post->status === 'scheduled', 422, 'Use the Queue page to publish a scheduled post.');
+
         $wasPublished = $community_post->status === 'published';
 
         $community_post->update([
@@ -116,7 +132,7 @@ class CommunityPostController extends Controller
         ]);
 
         if (!$wasPublished) {
-            $this->dispatchSocialPosts($community_post);
+            $this->publisher->dispatchSocialPosts($community_post);
         }
 
         return back()->with('status', 'Updated.');
@@ -134,26 +150,84 @@ class CommunityPostController extends Controller
         return back()->with('status', $pinned ? 'Unpinned.' : 'Pinned to the top of the Wall.');
     }
 
-    // Queues a delivery per selected platform that's actually connected —
-    // platforms picked in the form but not (or no longer) connected are
-    // silently skipped rather than failing the whole save.
-    private function dispatchSocialPosts(CommunityPost $post): void
-    {
-        foreach ($post->social_targets ?? [] as $platform) {
-            $account = SocialAccount::active($platform);
-            if (!$account) {
-                continue;
-            }
+    // ===== Bulk upload — old photos/videos become scheduled posts =====
 
-            $dispatch = SocialPostDispatch::create([
-                'community_post_id' => $post->id,
-                'platform' => $platform,
-                'social_account_id' => $account->id,
-                'status' => 'queued',
+    public function bulkUpload()
+    {
+        return view('admin.community-posts.bulk-upload', ['connectedPlatforms' => $this->connectedPlatforms()]);
+    }
+
+    public function bulkStore(Request $request)
+    {
+        $validated = $request->validate([
+            'files' => ['required', 'array', 'min:1', 'max:30'],
+            'files.*' => ['file', 'mimes:jpg,jpeg,png,webp,mp4,mov,webm', 'max:51200'],
+            'tags' => ['nullable', 'string'],
+        ]);
+
+        $tags = $this->parseTags($validated['tags'] ?? null);
+        $socialTargets = $this->parseSocialTargets($request);
+        $nextPosition = (int) (CommunityPost::where('status', 'scheduled')->max('queue_position') ?? -1) + 1;
+
+        foreach ($request->file('files') as $file) {
+            $isVideo = str_starts_with($file->getMimeType(), 'video/');
+
+            $post = CommunityPost::create([
+                'author_id' => Auth::id(),
+                'title' => Str::of($file->getClientOriginalName())->beforeLast('.')->replace(['-', '_'], ' ')->title()->limit(150),
+                'body' => '',
+                'tags' => $tags,
+                'social_targets' => $socialTargets,
+                'status' => 'scheduled',
+                'queue_position' => $nextPosition++,
             ]);
 
-            PublishCommunityPostToSocialJob::dispatch($dispatch);
+            if ($isVideo) {
+                $post->update(['video' => $file->store('community-posts/videos', 'public')]);
+            } else {
+                $post->update(['photo' => $file->store('community-posts', 'public')]);
+            }
         }
+
+        $count = count($request->file('files'));
+
+        return redirect()->route('admin.community-posts.queue')->with('status', "{$count} " . Str::plural('item', $count) . ' added to the queue — edit captions before they go out.');
+    }
+
+    // ===== Queue — drag-and-drop ordering + manual "post now" =====
+
+    public function queue()
+    {
+        $posts = CommunityPost::scheduled()->get();
+        $batchSize = (int) Setting::get('scheduled_batch_size', 3);
+        $batchTime = Setting::get('scheduled_batch_time', '09:00');
+
+        return view('admin.community-posts.queue', compact('posts', 'batchSize', 'batchTime'));
+    }
+
+    public function queueReorder(Request $request)
+    {
+        $validated = $request->validate([
+            'ids' => ['required', 'array'],
+            'ids.*' => ['integer', 'exists:community_posts,id'],
+        ]);
+
+        DB::transaction(function () use ($validated) {
+            foreach ($validated['ids'] as $position => $id) {
+                CommunityPost::where('id', $id)->where('status', 'scheduled')->update(['queue_position' => $position]);
+            }
+        });
+
+        return response()->json(['status' => 'ok']);
+    }
+
+    public function queuePublishNow(CommunityPost $community_post)
+    {
+        abort_unless($community_post->status === 'scheduled', 404);
+
+        $this->publisher->publish($community_post);
+
+        return back()->with('status', 'Published now.');
     }
 
     private function connectedPlatforms(): array

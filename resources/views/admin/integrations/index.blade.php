@@ -214,6 +214,26 @@
                 </label>
             </div>
 
+            {{-- Scheduled batch posting --}}
+            <div class="bg-white rounded-lg shadow-sm p-6 space-y-4">
+                <div>
+                    <h4 class="text-sm font-semibold text-gray-700">📅 Scheduled Posting</h4>
+                    <p class="text-xs text-gray-400 mt-1">
+                        Bulk-upload old photos/videos in <a href="{{ route('admin.community-posts.bulk-upload') }}" class="text-[--teal] hover:underline">Community Posts → Bulk Upload</a> — they land in the <a href="{{ route('admin.community-posts.queue') }}" class="text-[--teal] hover:underline">Queue</a>, and this many go out automatically every day.
+                    </p>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <x-input-label value="Posts per day (0 pauses auto-posting)" />
+                        <x-text-input name="scheduled_batch_size" type="number" min="0" max="50" class="w-full mt-1" :value="$settings['scheduled_batch_size'] ?? '3'" />
+                    </div>
+                    <div>
+                        <x-input-label value="Time of day" />
+                        <x-text-input name="scheduled_batch_time" type="time" class="w-full mt-1" :value="$settings['scheduled_batch_time'] ?? '09:00'" />
+                    </div>
+                </div>
+            </div>
+
             <button class="text-white text-sm font-semibold px-5 py-2.5 rounded-lg" style="background: var(--teal)">Save Integration Settings</button>
         </form>
 
