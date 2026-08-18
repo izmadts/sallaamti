@@ -30,19 +30,19 @@
 
         {{-- Stats Row --}}
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-            <a href="{{ route('courses.my-learning') }}" class="bg-white rounded-lg shadow-sm p-5 text-center hover:shadow-md transition border-l-4 border-green-500">
+            <a href="{{ route('courses.my-learning') }}" class="bg-white rounded-lg shadow-sm p-5 text-center hover:shadow-lg hover:-translate-y-1 transition-all duration-150 border-l-4 border-green-500">
                 <div class="text-3xl font-bold text-gray-800">{{ $enrollments->count() }}</div>
                 <div class="text-sm text-gray-500 mt-1">Courses Enrolled</div>
             </a>
-            <a href="{{ route('certificate.index') }}" class="bg-white rounded-lg shadow-sm p-5 text-center hover:shadow-md transition border-l-4 border-yellow-500">
+            <a href="{{ route('certificate.index') }}" class="bg-white rounded-lg shadow-sm p-5 text-center hover:shadow-lg hover:-translate-y-1 transition-all duration-150 border-l-4 border-yellow-500">
                 <div class="text-3xl font-bold text-gray-800">{{ $certificates->count() }}</div>
                 <div class="text-sm text-gray-500 mt-1">Certificates</div>
             </a>
-            <a href="{{ route('quran-live.my-class') }}" class="bg-white rounded-lg shadow-sm p-5 text-center hover:shadow-md transition border-l-4 border-blue-500">
+            <a href="{{ route('quran-live.my-class') }}" class="bg-white rounded-lg shadow-sm p-5 text-center hover:shadow-lg hover:-translate-y-1 transition-all duration-150 border-l-4 border-blue-500">
                 <div class="text-3xl font-bold text-gray-800">{{ $liveSubscriptions->count() }}</div>
                 <div class="text-sm text-gray-500 mt-1">Live Classes Active</div>
             </a>
-            <a href="{{ route('nikah.interests') }}" class="bg-white rounded-lg shadow-sm p-5 text-center hover:shadow-md transition border-l-4 border-pink-500">
+            <a href="{{ route('nikah.interests') }}" class="bg-white rounded-lg shadow-sm p-5 text-center hover:shadow-lg hover:-translate-y-1 transition-all duration-150 border-l-4 border-pink-500">
                 <div class="text-3xl font-bold {{ $unreadCount > 0 ? 'text-red-600' : 'text-gray-800' }}">{{ $unreadCount }}</div>
                 <div class="text-sm text-gray-500 mt-1">Notifications</div>
             </a>
@@ -60,9 +60,9 @@
 
                         @if (Auth::user()->quran_module_enabled)
                         {{-- Quran Self-Paced --}}
-                        <a href="{{ route('courses.index') }}" class="border rounded-lg p-4 hover:shadow-md transition {{ $enrollments->count() > 0 ? 'border-green-200 bg-green-50' : 'border-gray-100' }}">
+                        <a href="{{ route('courses.index') }}" class="border-2 rounded-lg p-4 hover:shadow-md hover:-translate-y-0.5 transition-all duration-150 {{ $enrollments->count() > 0 ? 'border-green-200 bg-green-50' : 'border-gray-100 hover:border-green-200' }}">
                             <div class="flex justify-between items-start">
-                                <div class="text-2xl">📖</div>
+                                <div class="w-10 h-10 rounded-full flex items-center justify-center text-xl {{ $enrollments->count() > 0 ? 'bg-green-500' : 'bg-gray-200' }}">📖</div>
                                 <span class="text-xs px-2 py-0.5 rounded-full {{ $enrollments->count() > 0 ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500' }}">
                                     {{ $enrollments->count() > 0 ? $enrollments->count().' enrolled' : 'Not enrolled' }}
                                 </span>
@@ -72,9 +72,9 @@
                         </a>
 
                         {{-- Quran Live --}}
-                        <a href="{{ route('quran-live.my-class') }}" class="border rounded-lg p-4 hover:shadow-md transition {{ $liveSubscriptions->count() > 0 ? 'border-teal-200 bg-teal-50' : 'border-gray-100' }}">
+                        <a href="{{ route('quran-live.my-class') }}" class="border-2 rounded-lg p-4 hover:shadow-md hover:-translate-y-0.5 transition-all duration-150 {{ $liveSubscriptions->count() > 0 ? 'border-teal-200 bg-teal-50' : 'border-gray-100 hover:border-teal-200' }}">
                             <div class="flex justify-between items-start">
-                                <div class="text-2xl">🎥</div>
+                                <div class="w-10 h-10 rounded-full flex items-center justify-center text-xl" style="background: {{ $liveSubscriptions->count() > 0 ? 'var(--teal)' : '#e5e7eb' }}">🎥</div>
                                 <span class="text-xs px-2 py-0.5 rounded-full {{ $liveSubscriptions->count() > 0 ? 'bg-teal-100 text-teal-700' : 'bg-gray-100 text-gray-500' }}">
                                     {{ $liveSubscriptions->count() > 0 ? 'Active' : 'Not subscribed' }}
                                 </span>
@@ -86,9 +86,9 @@
 
                         @if (Auth::user()->nikah_module_enabled)
                         {{-- Nikah --}}
-                        <a href="{{ $nikahProfile ? route('nikah.show') : route('nikah.create') }}" class="border rounded-lg p-4 hover:shadow-md transition {{ $nikahProfile ? 'border-pink-200 bg-pink-50' : 'border-gray-100' }}">
+                        <a href="{{ $nikahProfile ? route('nikah.show') : route('nikah.create') }}" class="border-2 rounded-lg p-4 hover:shadow-md hover:-translate-y-0.5 transition-all duration-150 {{ $nikahProfile ? 'border-pink-200 bg-pink-50' : 'border-gray-100 hover:border-pink-200' }}">
                             <div class="flex justify-between items-start">
-                                <div class="text-2xl">💍</div>
+                                <div class="w-10 h-10 rounded-full flex items-center justify-center text-xl {{ $nikahProfile ? 'bg-pink-500' : 'bg-gray-200' }}">💍</div>
                                 @if ($nikahProfile)
                                 <span class="text-xs px-2 py-0.5 rounded-full
                                             {{ $nikahProfile->verification_status === 'verified' ? 'bg-green-100 text-green-700' :
@@ -112,9 +112,9 @@
 
                         @if (Auth::user()->quran_module_enabled)
                         {{-- Certificates --}}
-                        <a href="{{ route('certificate.index') }}" class="border rounded-lg p-4 hover:shadow-md transition {{ $certificates->count() > 0 ? 'border-yellow-200 bg-yellow-50' : 'border-gray-100' }}">
+                        <a href="{{ route('certificate.index') }}" class="border-2 rounded-lg p-4 hover:shadow-md hover:-translate-y-0.5 transition-all duration-150 {{ $certificates->count() > 0 ? 'border-yellow-200 bg-yellow-50' : 'border-gray-100 hover:border-yellow-200' }}">
                             <div class="flex justify-between items-start">
-                                <div class="text-2xl">🎓</div>
+                                <div class="w-10 h-10 rounded-full flex items-center justify-center text-xl {{ $certificates->count() > 0 ? 'bg-yellow-500' : 'bg-gray-200' }}">🎓</div>
                                 <span class="text-xs px-2 py-0.5 rounded-full {{ $certificates->count() > 0 ? 'bg-yellow-100 text-yellow-700' : 'bg-gray-100 text-gray-500' }}">
                                     {{ $certificates->count() > 0 ? $certificates->count().' earned' : 'None yet' }}
                                 </span>
@@ -218,25 +218,45 @@
                 {{-- Quick Links --}}
                 <div class="bg-white rounded-lg shadow-sm p-6">
                     <h3 class="font-semibold text-gray-700 mb-4">Quick Links</h3>
-                    <div class="space-y-2">
-                        <a href="{{ route('profile.edit') }}" class="flex items-center gap-2 text-sm text-gray-600 hover:text-teal-600 py-1">👤 Edit Profile</a>
+                    <div class="space-y-1.5">
+                        <a href="{{ route('profile.edit') }}" class="flex items-center gap-3 text-sm font-medium text-gray-600 hover:text-[--teal-dark] hover:bg-[--teal-light] rounded-lg px-2 py-2 -mx-2 transition-colors duration-150">
+                            <span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-base">👤</span> Edit Profile
+                        </a>
                         @if (Auth::user()->quran_module_enabled)
-                        <a href="{{ route('courses.index') }}" class="flex items-center gap-2 text-sm text-gray-600 hover:text-teal-600 py-1">📖 Browse Courses</a>
-                        <a href="{{ route('quran-live.index') }}" class="flex items-center gap-2 text-sm text-gray-600 hover:text-teal-600 py-1">🎥 Live Classes</a>
-                        <a href="{{ route('quran-live.my-class') }}" class="flex items-center gap-2 text-sm text-gray-600 hover:text-teal-600 py-1">📡 My Quran Class</a>
+                        <a href="{{ route('courses.index') }}" class="flex items-center gap-3 text-sm font-medium text-gray-600 hover:text-[--teal-dark] hover:bg-[--teal-light] rounded-lg px-2 py-2 -mx-2 transition-colors duration-150">
+                            <span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-base">📖</span> Browse Courses
+                        </a>
+                        <a href="{{ route('quran-live.index') }}" class="flex items-center gap-3 text-sm font-medium text-gray-600 hover:text-[--teal-dark] hover:bg-[--teal-light] rounded-lg px-2 py-2 -mx-2 transition-colors duration-150">
+                            <span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-base">🎥</span> Live Classes
+                        </a>
+                        <a href="{{ route('quran-live.my-class') }}" class="flex items-center gap-3 text-sm font-medium text-gray-600 hover:text-[--teal-dark] hover:bg-[--teal-light] rounded-lg px-2 py-2 -mx-2 transition-colors duration-150">
+                            <span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-base">📡</span> My Quran Class
+                        </a>
                         @endif
                         @if (Auth::user()->nikah_module_enabled)
-                        <a href="{{ route('nikah.browse') }}" class="flex items-center gap-2 text-sm text-gray-600 hover:text-teal-600 py-1">💍 {{ __('db.Check Profiles') }}</a>
-                        <a href="{{ route('nikah.interests') }}" class="flex items-center gap-2 text-sm text-gray-600 hover:text-teal-600 py-1">💌 My Interests</a>
+                        <a href="{{ route('nikah.browse') }}" class="flex items-center gap-3 text-sm font-medium text-gray-600 hover:text-[--teal-dark] hover:bg-[--teal-light] rounded-lg px-2 py-2 -mx-2 transition-colors duration-150">
+                            <span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-base">💍</span> {{ __('db.Check Profiles') }}
+                        </a>
+                        <a href="{{ route('nikah.interests') }}" class="flex items-center gap-3 text-sm font-medium text-gray-600 hover:text-[--teal-dark] hover:bg-[--teal-light] rounded-lg px-2 py-2 -mx-2 transition-colors duration-150">
+                            <span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-base">💌</span> My Interests
+                        </a>
                         @endif
                         @if (Auth::user()->counseling_module_enabled)
-                        <a href="{{ route('support.create') }}" class="flex items-center gap-2 text-sm text-gray-600 hover:text-teal-600 py-1">🤝 Get Family Support</a>
+                        <a href="{{ route('support.create') }}" class="flex items-center gap-3 text-sm font-medium text-gray-600 hover:text-[--teal-dark] hover:bg-[--teal-light] rounded-lg px-2 py-2 -mx-2 transition-colors duration-150">
+                            <span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-base">🤝</span> Get Family Support
+                        </a>
                         @endif
                         @if (Auth::user()->quran_module_enabled)
-                        <a href="{{ route('certificate.index') }}" class="flex items-center gap-2 text-sm text-gray-600 hover:text-teal-600 py-1">🎓 My Certificates</a>
+                        <a href="{{ route('certificate.index') }}" class="flex items-center gap-3 text-sm font-medium text-gray-600 hover:text-[--teal-dark] hover:bg-[--teal-light] rounded-lg px-2 py-2 -mx-2 transition-colors duration-150">
+                            <span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-base">🎓</span> My Certificates
+                        </a>
                         @endif
-                        <a href="{{ route('volunteer.create') }}" class="flex items-center gap-2 text-sm text-gray-600 hover:text-teal-600 py-1">🤝 Volunteer</a>
-                        <a href="{{ route('donate.create') }}" class="flex items-center gap-2 text-sm text-gray-600 hover:text-teal-600 py-1">💝 Donate</a>
+                        <a href="{{ route('volunteer.create') }}" class="flex items-center gap-3 text-sm font-medium text-gray-600 hover:text-[--teal-dark] hover:bg-[--teal-light] rounded-lg px-2 py-2 -mx-2 transition-colors duration-150">
+                            <span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-base">🤝</span> Volunteer
+                        </a>
+                        <a href="{{ route('donate.create') }}" class="flex items-center gap-3 text-sm font-semibold text-white bg-[--gold] hover:bg-[#9a7b25] rounded-lg px-3 py-2.5 mt-2 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-150">
+                            <span class="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center text-base">💝</span> Donate
+                        </a>
                     </div>
                 </div>
 

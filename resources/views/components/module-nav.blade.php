@@ -70,8 +70,8 @@ $isBar = $layout === 'bar';
             @continue(!\Illuminate\Support\Facades\Route::has($link['route']))
             @php $isActive = request()->routeIs($link['route']); @endphp
             <a href="{{ route($link['route']) }}"
-                class="flex-shrink-0 flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition
-                {{ $isActive ? 'bg-teal-50 text-teal-700' : 'text-gray-600 hover:bg-gray-50' }}">
+                class="flex-shrink-0 flex items-center gap-2 px-3 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition-all duration-150
+                {{ $isActive ? 'bg-[--teal] text-white shadow-sm' : 'text-gray-600 hover:bg-[--teal-light] hover:text-[--teal-dark]' }}">
                 <span>{{ $link['icon'] }}</span> {{ $link['label'] }}
             </a>
         @endforeach
