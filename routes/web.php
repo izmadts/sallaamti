@@ -15,6 +15,7 @@ use App\Http\Controllers\PushSubscriptionController;
 use App\Http\Controllers\WallController;
 use App\Http\Controllers\Admin\DuaWallAdminController;
 use App\Http\Controllers\Admin\CommunityPostController;
+use App\Http\Controllers\Admin\SocialIntegrationController;
 use App\Http\Controllers\NikahPaymentController;
 use App\Http\Controllers\NikahSafetyController;
 use App\Http\Controllers\NikahGuardianMessageController;
@@ -298,6 +299,14 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::post('daily-content/{daily_content}/toggle', [DailyContentController::class, 'toggle'])->name('daily-content.toggle');
     Route::resource('community-posts', CommunityPostController::class)->except(['show']);
     Route::post('community-posts/{community_post}/toggle', [CommunityPostController::class, 'toggle'])->name('community-posts.toggle');
+
+    // Social media auto-posting — connect accounts + review/retry deliveries.
+    Route::get('integrations', [SocialIntegrationController::class, 'index'])->name('integrations.index');
+    Route::post('integrations/settings', [SocialIntegrationController::class, 'updateSettings'])->name('integrations.settings.update');
+    Route::get('integrations/{platform}/connect', [SocialIntegrationController::class, 'connect'])->name('integrations.connect');
+    Route::get('integrations/{platform}/callback', [SocialIntegrationController::class, 'callback'])->name('integrations.callback');
+    Route::post('integrations/{account}/disconnect', [SocialIntegrationController::class, 'disconnect'])->name('integrations.disconnect');
+    Route::post('social-dispatches/{dispatch}/retry', [SocialIntegrationController::class, 'retryDispatch'])->name('social-dispatches.retry');
 
     // Certificates (admin-issued)
     Route::get('certificates', [CertificateAdminController::class, 'index'])->name('certificates.index');

@@ -59,7 +59,15 @@
       "Bash(grep -n 'protected $fillable' -A 40 app/Models/NikahProfile.php)",
       "Bash(curl -s -b /tmp/cookies.txt -o /tmp/myprofile2.html -D /tmp/headers.txt http://127.0.0.1:8123/nikah/my-profile -L)",
       "Bash(xargs -r -I{} taskkill //PID {} //F)",
-      "Bash(grep -rn 'Banner::active\\\\|$banner->image\\\\|Storage::url\\($banner' resources/views/ app/Http/Controllers/)"
+      "Bash(grep -rn 'Banner::active\\\\|$banner->image\\\\|Storage::url\\($banner' resources/views/ app/Http/Controllers/)",
+      "Bash(composer show *)",
+      "Bash(timeout 10 php -r \"var_dump\\(@file_get_contents\\('https://repo.packagist.org/packages.json', false, stream_context_create\\(['http'=>['timeout'=>5]]\\)\\) !== false\\);\")",
+      "Bash(php -v)",
+      "Bash(composer search *)",
+      "Bash(grep -i \"twit\\\\|/x$\\\\|-x-\")",
+      "Bash(composer dump-autoload *)",
+      "Bash(php -r \"require 'vendor/autoload.php'; var_dump\\(class_exists\\('Google\\\\\\\\Client'\\)\\);\")",
+      "Bash(composer validate *)"
     ],
     "additionalDirectories": [
       "\\tmp"

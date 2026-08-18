@@ -56,4 +56,25 @@ return [
         'redirect' => env('FACEBOOK_REDIRECT_URI'),
     ],
 
+    // Social-posting integrations (Admin > Integrations) — separate from
+    // the 'google'/'facebook' blocks above, which are for user login.
+    // Facebook posting reuses the same Meta App ID/secret (one App can
+    // register multiple redirect URIs and request different scopes per
+    // flow) but Twitter/YouTube/TikTok have no login use in this app, so
+    // they get their own dedicated client credentials.
+    'twitter' => [
+        'client_id' => env('TWITTER_CLIENT_ID'),
+        'client_secret' => env('TWITTER_CLIENT_SECRET'),
+    ],
+
+    'youtube' => [
+        'client_id' => env('YOUTUBE_CLIENT_ID'),
+        'client_secret' => env('YOUTUBE_CLIENT_SECRET'),
+    ],
+
+    'tiktok' => [
+        'client_id' => env('TIKTOK_CLIENT_ID'),
+        'client_secret' => env('TIKTOK_CLIENT_SECRET'),
+    ],
+
 ];

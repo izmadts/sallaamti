@@ -48,6 +48,23 @@
                         @endforeach
                     </div>
                     @endif
+                    @if ($post->socialDispatches->isNotEmpty())
+                    <div class="flex flex-wrap gap-1.5 mt-2">
+                        @foreach ($post->socialDispatches as $dispatch)
+                        <span class="inline-flex items-center gap-1 text-[11px] px-2 py-0.5 rounded-full
+                            {{ $dispatch->status === 'sent' ? 'bg-green-100 text-green-700' : ($dispatch->status === 'failed' ? 'bg-red-100 text-red-700' : 'bg-yellow-100 text-yellow-700') }}"
+                            title="{{ $dispatch->error_message }}">
+                            {{ ucfirst($dispatch->platform) }}: {{ $dispatch->status }}
+                            @if ($dispatch->status === 'failed')
+                            <form method="POST" action="{{ route('admin.social-dispatches.retry', $dispatch) }}" class="inline">
+                                @csrf
+                                <button class="underline">retry</button>
+                            </form>
+                            @endif
+                        </span>
+                        @endforeach
+                    </div>
+                    @endif
                 </div>
                 <div class="flex flex-col items-end gap-2 flex-shrink-0">
                     <span class="text-xs px-2 py-0.5 rounded-full {{ $post->status === 'published' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500' }}">

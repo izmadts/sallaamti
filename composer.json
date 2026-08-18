@@ -11,6 +11,7 @@
         "doctrine/dbal": "^4.4",
         "endroid/qr-code": "^6.0",
         "ezyang/htmlpurifier": "*",
+        "google/apiclient": "^2.19",
         "intervention/image": "^3.0",
         "khanamiryan/qrcode-detector-decoder": "^2.0",
         "laravel/framework": "^12.0",

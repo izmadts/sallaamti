@@ -3,7 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Jobs\PublishCommunityPostToSocialJob;
 use App\Models\CommunityPost;
+use App\Models\SocialAccount;
+use App\Models\SocialPostDispatch;
 use App\Support\HtmlSanitizer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -15,7 +18,7 @@ class CommunityPostController extends Controller
     {
         $tag = $request->get('tag');
 
-        $query = CommunityPost::with('author')->latest();
+        $query = CommunityPost::with(['author', 'socialDispatches'])->latest();
         if ($tag) {
             $query->withTag($tag);
         }
@@ -28,7 +31,7 @@ class CommunityPostController extends Controller
 
     public function create()
     {
-        return view('admin.community-posts.create');
+        return view('admin.community-posts.create', ['connectedPlatforms' => $this->connectedPlatforms()]);
     }
 
     public function store(Request $request)
@@ -36,6 +39,7 @@ class CommunityPostController extends Controller
         $validated = $this->validated($request);
 
         $validated['tags'] = $this->parseTags($request->input('tags'));
+        $validated['social_targets'] = $this->parseSocialTargets($request);
         $validated['body'] = HtmlSanitizer::clean($validated['body']);
         $validated['author_id'] = Auth::id();
         $validated['status'] = $request->boolean('publish') ? 'published' : 'draft';
@@ -44,22 +48,32 @@ class CommunityPostController extends Controller
         if ($request->hasFile('photo')) {
             $validated['photo'] = $request->file('photo')->store('community-posts', 'public');
         }
+        if ($request->hasFile('video')) {
+            $validated['video'] = $request->file('video')->store('community-posts/videos', 'public');
+        }
 
-        CommunityPost::create($validated);
+        $post = CommunityPost::create($validated);
+
+        if ($post->status === 'published') {
+            $this->dispatchSocialPosts($post);
+        }
 
         return redirect()->route('admin.community-posts.index')->with('status', 'Post added.');
     }
 
     public function edit(CommunityPost $community_post)
     {
-        return view('admin.community-posts.edit', ['post' => $community_post]);
+        return view('admin.community-posts.edit', ['post' => $community_post, 'connectedPlatforms' => $this->connectedPlatforms()]);
     }
 
     public function update(Request $request, CommunityPost $community_post)
     {
+        $wasPublished = $community_post->status === 'published';
+
         $validated = $this->validated($request);
 
         $validated['tags'] = $this->parseTags($request->input('tags'));
+        $validated['social_targets'] = $this->parseSocialTargets($request);
         $validated['body'] = HtmlSanitizer::clean($validated['body']);
         $validated['status'] = $request->boolean('publish') ? 'published' : 'draft';
         $validated['published_at'] = $validated['status'] === 'published'
@@ -70,8 +84,16 @@ class CommunityPostController extends Controller
             if ($community_post->photo) Storage::disk('public')->delete($community_post->photo);
             $validated['photo'] = $request->file('photo')->store('community-posts', 'public');
         }
+        if ($request->hasFile('video')) {
+            if ($community_post->video) Storage::disk('public')->delete($community_post->video);
+            $validated['video'] = $request->file('video')->store('community-posts/videos', 'public');
+        }
 
         $community_post->update($validated);
+
+        if (!$wasPublished && $community_post->status === 'published') {
+            $this->dispatchSocialPosts($community_post);
+        }
 
         return redirect()->route('admin.community-posts.index')->with('status', 'Post updated.');
     }
@@ -79,19 +101,52 @@ class CommunityPostController extends Controller
     public function destroy(CommunityPost $community_post)
     {
         if ($community_post->photo) Storage::disk('public')->delete($community_post->photo);
+        if ($community_post->video) Storage::disk('public')->delete($community_post->video);
         $community_post->delete();
         return back()->with('status', 'Post deleted.');
     }
 
     public function toggle(CommunityPost $community_post)
     {
-        $published = $community_post->status === 'published';
+        $wasPublished = $community_post->status === 'published';
+
         $community_post->update([
-            'status' => $published ? 'draft' : 'published',
-            'published_at' => $published ? null : ($community_post->published_at ?? now()),
+            'status' => $wasPublished ? 'draft' : 'published',
+            'published_at' => $wasPublished ? null : ($community_post->published_at ?? now()),
         ]);
 
+        if (!$wasPublished) {
+            $this->dispatchSocialPosts($community_post);
+        }
+
         return back()->with('status', 'Updated.');
+    }
+
+    // Queues a delivery per selected platform that's actually connected —
+    // platforms picked in the form but not (or no longer) connected are
+    // silently skipped rather than failing the whole save.
+    private function dispatchSocialPosts(CommunityPost $post): void
+    {
+        foreach ($post->social_targets ?? [] as $platform) {
+            $account = SocialAccount::active($platform);
+            if (!$account) {
+                continue;
+            }
+
+            $dispatch = SocialPostDispatch::create([
+                'community_post_id' => $post->id,
+                'platform' => $platform,
+                'social_account_id' => $account->id,
+                'status' => 'queued',
+            ]);
+
+            PublishCommunityPostToSocialJob::dispatch($dispatch);
+        }
+    }
+
+    private function connectedPlatforms(): array
+    {
+        return SocialAccount::where('status', 'connected')->pluck('platform')->all();
     }
 
     private function validated(Request $request): array
@@ -101,6 +156,7 @@ class CommunityPostController extends Controller
             'body' => ['required', 'string'],
             'event_at' => ['nullable', 'date'],
             'photo' => ['nullable', 'image', 'max:2048'],
+            'video' => ['nullable', 'mimes:mp4,mov,webm', 'max:51200'],
         ]);
     }
 
@@ -114,6 +170,14 @@ class CommunityPostController extends Controller
             ->map(fn ($t) => trim($t))
             ->filter()
             ->unique()
+            ->values()
+            ->all();
+    }
+
+    private function parseSocialTargets(Request $request): array
+    {
+        return collect($request->input('social_targets', []))
+            ->filter(fn ($platform) => in_array($platform, SocialAccount::PLATFORMS, true))
             ->values()
             ->all();
     }

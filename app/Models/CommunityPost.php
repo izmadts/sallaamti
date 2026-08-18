@@ -12,8 +12,10 @@ class CommunityPost extends Model
         'title',
         'body',
         'photo',
+        'video',
         'event_at',
         'tags',
+        'social_targets',
         'status',
         'published_at',
     ];
@@ -22,6 +24,7 @@ class CommunityPost extends Model
     {
         return [
             'tags' => 'array',
+            'social_targets' => 'array',
             'event_at' => 'datetime',
             'published_at' => 'datetime',
         ];
@@ -45,6 +48,11 @@ class CommunityPost extends Model
     public function reactions(): MorphMany
     {
         return $this->morphMany(Reaction::class, 'reactable');
+    }
+
+    public function socialDispatches()
+    {
+        return $this->hasMany(SocialPostDispatch::class);
     }
 
     public function reactionTypeBy(?User $user): ?string

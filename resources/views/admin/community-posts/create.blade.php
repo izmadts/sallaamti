@@ -42,6 +42,11 @@
             </div>
 
             <div>
+                <x-input-label value="Video (optional — for Reels/YouTube/TikTok, max 50MB)" />
+                <input type="file" name="video" accept="video/mp4,video/quicktime,video/webm" class="w-full mt-1">
+            </div>
+
+            <div>
                 <x-input-label value="Tags" />
                 <input type="text" name="tags" x-model="tags" class="w-full mt-1 border-gray-300 rounded-lg text-sm"
                     value="{{ old('tags') }}" placeholder="Activity, Ramadan, Youth">
@@ -57,18 +62,24 @@
                 </div>
             </div>
 
-            {{-- Social posting — not functional yet, no credentials are
-                 configured anywhere in this app. Visible so the workflow is
-                 ready to wire up once accounts are connected, but disabled
-                 so nothing pretends to work. --}}
+            {{-- Share to social media — posts the moment this is published,
+                 to whichever connected platforms are checked. --}}
             <div class="p-4 rounded-lg bg-gray-50 border border-gray-200">
-                <p class="text-sm font-semibold text-gray-500 mb-1">📣 Share to social media</p>
-                <p class="text-xs text-gray-400 mb-3">Connect your account in Settings first — nothing is sent yet.</p>
+                <p class="text-sm font-semibold text-gray-700 mb-1">📣 Share to social media</p>
+                <p class="text-xs text-gray-400 mb-3">
+                    Posts automatically when you publish. Nothing connected yet? <a href="{{ route('admin.integrations.index') }}" class="text-[--teal] hover:underline">Connect accounts in Integrations</a>.
+                </p>
                 <div class="flex flex-wrap gap-3">
-                    @foreach (['Facebook', 'Instagram', 'YouTube', 'TikTok'] as $platform)
-                    <label class="flex items-center gap-1.5 text-sm text-gray-400 cursor-not-allowed">
-                        <input type="checkbox" disabled class="rounded border-gray-300">
-                        {{ $platform }}
+                    @foreach (['facebook' => 'Facebook', 'instagram' => 'Instagram', 'twitter' => 'X (Twitter)', 'youtube' => 'YouTube', 'tiktok' => 'TikTok'] as $key => $label)
+                    <label class="flex items-center gap-1.5 text-sm {{ in_array($key, $connectedPlatforms) ? 'text-gray-700' : 'text-gray-400 cursor-not-allowed' }}">
+                        <input type="checkbox" name="social_targets[]" value="{{ $key }}"
+                            {{ in_array($key, old('social_targets', [])) ? 'checked' : '' }}
+                            {{ in_array($key, $connectedPlatforms) ? '' : 'disabled' }}
+                            class="rounded border-gray-300 text-teal-600">
+                        {{ $label }}
+                        @unless (in_array($key, $connectedPlatforms))
+                        <span class="text-[10px] text-gray-400">(not connected)</span>
+                        @endunless
                     </label>
                     @endforeach
                 </div>
