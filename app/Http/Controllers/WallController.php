@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\CommunityPost;
 use App\Models\DuaRequest;
 use App\Models\Reaction;
+use App\Models\SavedPost;
 use App\Notifications\ReactionReceived;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
@@ -24,13 +25,15 @@ class WallController extends Controller
         if ($tag && $tag !== 'all' && $tag !== 'dua') {
             // A real CommunityPost tag (Activity/Event/Sermon/anything an
             // admin has used) — single-model query, can paginate directly.
+            // Pinned posts lead within their own tag too.
             $items = CommunityPost::published()->withTag($tag)
-                ->with(['author', 'reactions'])
+                ->with(['author', 'reactions', 'savedPosts'])
+                ->orderByDesc('is_pinned')
                 ->orderByDesc('created_at')
                 ->paginate($perPage, ['*'], 'page', $page);
         } elseif ($tag === 'dua') {
             $items = DuaRequest::where('status', 'approved')
-                ->with(['user', 'reactions'])
+                ->with(['user', 'reactions', 'savedPosts'])
                 ->orderByDesc('created_at')
                 ->paginate($perPage, ['*'], 'page', $page);
         } else {
@@ -38,18 +41,25 @@ class WallController extends Controller
             // rather than an unbounded ->get(), since this now covers two
             // growing tables instead of one.
             $duas = DuaRequest::where('status', 'approved')
-                ->with(['user', 'reactions'])
+                ->with(['user', 'reactions', 'savedPosts'])
                 ->latest()
                 ->limit(300)
                 ->get();
 
             $posts = CommunityPost::published()
-                ->with(['author', 'reactions'])
+                ->with(['author', 'reactions', 'savedPosts'])
                 ->latest()
                 ->limit(300)
                 ->get();
 
-            $merged = $duas->concat($posts)->sortByDesc('created_at')->values();
+            // Pinned CommunityPosts float to the top of the merged feed,
+            // then everything else falls back to newest-first. DuaRequest
+            // has no is_pinned attribute — accessing it just returns null,
+            // which the null-coalesce treats as "not pinned".
+            $merged = $duas->concat($posts)->sortBy([
+                fn ($a, $b) => (($b->is_pinned ?? false) <=> ($a->is_pinned ?? false)),
+                fn ($a, $b) => ($b->created_at <=> $a->created_at),
+            ])->values();
 
             $items = new \Illuminate\Pagination\LengthAwarePaginator(
                 $merged->forPage($page, $perPage),
@@ -107,6 +117,49 @@ class WallController extends Controller
         return response()->json($this->toggleReaction($communityPost, $request));
     }
 
+    public function save(DuaRequest $duaRequest)
+    {
+        abort_unless($duaRequest->status === 'approved', 404);
+
+        return response()->json($this->toggleSave($duaRequest));
+    }
+
+    public function postSave(CommunityPost $communityPost)
+    {
+        abort_unless($communityPost->status === 'published', 404);
+
+        return response()->json($this->toggleSave($communityPost));
+    }
+
+    // A member's own bookmarked posts — same merged-feed shape as index(),
+    // just sourced from SavedPost and ordered by when it was saved rather
+    // than when it was posted.
+    public function saved(Request $request)
+    {
+        $page = $request->get('page', 1);
+        $perPage = 10;
+
+        $paginated = SavedPost::where('user_id', Auth::id())
+            ->with(['saveable' => function ($morphTo) {
+                $morphTo->morphWith([
+                    DuaRequest::class => ['user', 'reactions', 'savedPosts'],
+                    CommunityPost::class => ['author', 'reactions', 'savedPosts'],
+                ]);
+            }])
+            ->latest()
+            ->paginate($perPage, ['*'], 'page', $page)
+            ->through(fn (SavedPost $savedPost) => $savedPost->saveable);
+
+        if ($request->ajax()) {
+            return response()->json([
+                'html' => view('dua-wall.partials.feed-items', ['items' => $paginated])->render(),
+                'has_more' => $paginated->hasMorePages(),
+            ]);
+        }
+
+        return view('dua-wall.saved', ['paginated' => $paginated]);
+    }
+
     private function toggleReaction(Model $reactable, Request $request): array
     {
         $type = $request->input('type', 'ameen');
@@ -156,5 +209,27 @@ class WallController extends Controller
             'type' => $activeType,
             'count' => $reactable->reactions()->count(),
         ];
+    }
+
+    private function toggleSave(Model $saveable): array
+    {
+        $existing = SavedPost::where('saveable_type', get_class($saveable))
+            ->where('saveable_id', $saveable->id)
+            ->where('user_id', Auth::id())
+            ->first();
+
+        if ($existing) {
+            $existing->delete();
+            $saved = false;
+        } else {
+            SavedPost::create([
+                'saveable_type' => get_class($saveable),
+                'saveable_id' => $saveable->id,
+                'user_id' => Auth::id(),
+            ]);
+            $saved = true;
+        }
+
+        return ['saved' => $saved];
     }
 }

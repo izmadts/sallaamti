@@ -11,8 +11,9 @@
             </div>
             <p class="text-gray-700 text-sm mt-1.5 whitespace-pre-line break-words">{{ $dua->body }}</p>
 
-            <div class="mt-3">
+            <div class="mt-3 flex items-center justify-between gap-2">
                 <x-reaction-picker :model="$dua" :react-url="route('wall.react', $dua)" />
+                <x-save-button :model="$dua" :save-url="route('wall.save', $dua)" />
             </div>
         </div>
     </div>

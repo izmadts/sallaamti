@@ -39,6 +39,14 @@
                             </a>
                             @endforeach
                         </div>
+                        @auth
+                        <div class="border-t border-gray-100 mt-2 pt-2 lg:mt-2">
+                            <a href="{{ route('wall.saved') }}"
+                                class="flex-shrink-0 block px-3 py-2 rounded-lg text-sm font-medium whitespace-nowrap transition {{ request()->routeIs('wall.saved') ? 'bg-teal-50 text-[--teal]' : 'text-gray-600 hover:bg-gray-50' }}">
+                                🔖 {{ __('db.Saved') }}
+                            </a>
+                        </div>
+                        @endauth
                     </div>
                 </aside>
 
@@ -112,105 +120,5 @@
         </div>
     </div>
 
-    <script>
-        (function () {
-            const grid = document.getElementById('dua-grid');
-            const sentinel = document.getElementById('dua-scroll-sentinel');
-            const loadingEl = document.getElementById('dua-scroll-loading');
-            const endEl = document.getElementById('dua-scroll-end');
-            const loadMoreBtn = document.getElementById('dua-scroll-load-more');
-
-            let page = 1;
-            let hasMore = {{ $paginated->hasMorePages() ? 'true' : 'false' }};
-            let loading = false;
-
-            async function loadNextPage() {
-                if (loading || !hasMore) return;
-                loading = true;
-                loadMoreBtn.classList.add('hidden');
-                loadingEl.classList.remove('hidden');
-                loadingEl.classList.add('flex');
-
-                page += 1;
-                const params = new URLSearchParams(window.location.search);
-                params.set('page', page);
-
-                try {
-                    const res = await fetch('{{ route('wall.index') }}?' + params.toString(), {
-                        headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' },
-                    });
-                    const data = await res.json();
-                    if (data.html && data.html.trim()) {
-                        grid.insertAdjacentHTML('beforeend', data.html);
-                    }
-                    hasMore = data.has_more;
-                } catch (e) {
-                    hasMore = false;
-                }
-
-                loading = false;
-                loadingEl.classList.add('hidden');
-                loadingEl.classList.remove('flex');
-                if (hasMore) {
-                    loadMoreBtn.classList.remove('hidden');
-                } else {
-                    endEl.classList.remove('hidden');
-                    if (observer) observer.disconnect();
-                }
-            }
-
-            let observer = null;
-            if (hasMore) {
-                loadMoreBtn.addEventListener('click', loadNextPage);
-                observer = new IntersectionObserver((entries) => {
-                    if (entries[0].isIntersecting) loadNextPage();
-                }, { rootMargin: '400px' });
-                observer.observe(sentinel);
-            } else {
-                endEl.classList.remove('hidden');
-            }
-
-            // Reactions — delegated so it keeps working on cards appended by infinite scroll.
-            // A user has one active reaction per post: tapping their current type removes it,
-            // tapping a different type swaps it.
-            document.addEventListener('click', async function (event) {
-                const btn = event.target.closest('[data-react]');
-                if (!btn) return;
-                event.preventDefault();
-
-                const group = btn.closest('[data-reaction-group]');
-
-                try {
-                    const res = await fetch(btn.dataset.url, {
-                        method: 'POST',
-                        headers: {
-                            'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
-                            'Content-Type': 'application/json',
-                            'X-Requested-With': 'XMLHttpRequest',
-                            'Accept': 'application/json',
-                        },
-                        body: JSON.stringify({ type: btn.dataset.type }),
-                    });
-                    const data = await res.json();
-
-                    group.querySelectorAll('[data-react]').forEach((b) => {
-                        const active = data.reacted && b.dataset.type === data.type;
-                        b.classList.toggle('bg-teal-50', active);
-                        b.classList.toggle('border-teal-300', active);
-                        b.classList.toggle('text-[--teal]', active);
-                        b.classList.toggle('border-gray-200', !active);
-                        b.classList.toggle('text-gray-500', !active);
-                    });
-
-                    const total = group.querySelector('.reaction-total');
-                    if (total) {
-                        total.textContent = data.count > 0 ? data.count : '';
-                        total.classList.toggle('hidden', data.count === 0);
-                    }
-                } catch (e) {
-                    // silently ignore — worst case the tap just didn't register
-                }
-            });
-        })();
-    </script>
+    @include('dua-wall.partials.wall-scripts', ['feedUrl' => route('wall.index'), 'paginated' => $paginated])
 </x-dynamic-component>

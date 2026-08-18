@@ -43,6 +43,9 @@
             <a href="{{ route('wall.index') }}" class="flex items-center gap-3 px-2 py-2 rounded-lg text-sm text-gray-700 hover:bg-gray-50 transition">
                 <span class="text-lg">🤲</span> {{ __('db.Sallaamti Wall') }}
             </a>
+            <a href="{{ route('wall.saved') }}" class="flex items-center gap-3 px-2 py-2 rounded-lg text-sm text-gray-700 hover:bg-gray-50 transition">
+                <span class="text-lg">🔖</span> {{ __('db.Saved') }}
+            </a>
         </div>
 
         <div class="bg-white rounded-lg shadow-sm p-3">

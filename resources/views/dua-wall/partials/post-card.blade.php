@@ -10,6 +10,9 @@
             <div class="w-10 h-10 rounded-full flex items-center justify-center text-lg flex-shrink-0" style="background: #fdf6e3">📣</div>
             <div class="flex-1 min-w-0">
                 <div class="flex items-center gap-2 flex-wrap">
+                    @if ($post->is_pinned)
+                    <span class="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-amber-50 text-amber-700">📌 {{ __('db.Pinned') }}</span>
+                    @endif
                     <p class="font-semibold text-sm text-gray-800">{{ $displayName }}</p>
                     <span class="text-xs text-gray-400">{{ $post->created_at->diffForHumans() }}</span>
                 </div>
@@ -31,8 +34,9 @@
                 </div>
                 @endif
 
-                <div class="mt-3">
+                <div class="mt-3 flex items-center justify-between gap-2">
                     <x-reaction-picker :model="$post" :react-url="route('wall.post.react', $post)" />
+                    <x-save-button :model="$post" :save-url="route('wall.post.save', $post)" />
                 </div>
             </div>
         </div>

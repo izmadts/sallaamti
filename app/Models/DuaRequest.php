@@ -40,4 +40,18 @@ class DuaRequest extends Model
 
         return $this->reactions->firstWhere('user_id', $user->id)?->type;
     }
+
+    public function savedPosts(): MorphMany
+    {
+        return $this->morphMany(SavedPost::class, 'saveable');
+    }
+
+    public function savedBy(?User $user): bool
+    {
+        if (!$user) {
+            return false;
+        }
+
+        return $this->savedPosts->contains('user_id', $user->id);
+    }
 }

@@ -18,7 +18,7 @@ class CommunityPostController extends Controller
     {
         $tag = $request->get('tag');
 
-        $query = CommunityPost::with(['author', 'socialDispatches'])->latest();
+        $query = CommunityPost::with(['author', 'socialDispatches'])->orderByDesc('is_pinned')->latest();
         if ($tag) {
             $query->withTag($tag);
         }
@@ -120,6 +120,18 @@ class CommunityPostController extends Controller
         }
 
         return back()->with('status', 'Updated.');
+    }
+
+    public function togglePin(CommunityPost $community_post)
+    {
+        $pinned = $community_post->is_pinned;
+
+        $community_post->update([
+            'is_pinned' => !$pinned,
+            'pinned_at' => $pinned ? null : now(),
+        ]);
+
+        return back()->with('status', $pinned ? 'Unpinned.' : 'Pinned to the top of the Wall.');
     }
 
     // Queues a delivery per selected platform that's actually connected —

@@ -36,7 +36,12 @@
                     @endif
                 </div>
                 <div class="flex-1">
-                    <p class="font-medium text-gray-800">{{ $post->title }}</p>
+                    <p class="font-medium text-gray-800">
+                        @if ($post->is_pinned)
+                        <span class="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 align-middle">📌 Pinned</span>
+                        @endif
+                        {{ $post->title }}
+                    </p>
                     @if ($post->event_at)
                     <p class="text-xs text-gray-400 mb-1">🗓️ {{ $post->event_at->format('d M Y, g:i A') }}</p>
                     @endif
@@ -75,6 +80,12 @@
                             @csrf
                             <button class="text-xs {{ $post->status === 'published' ? 'text-orange-500' : 'text-green-600' }} hover:underline">
                                 {{ $post->status === 'published' ? 'Unpublish' : 'Publish' }}
+                            </button>
+                        </form>
+                        <form method="POST" action="{{ route('admin.community-posts.pin', $post) }}">
+                            @csrf
+                            <button class="text-xs {{ $post->is_pinned ? 'text-amber-600' : 'text-gray-500' }} hover:underline">
+                                {{ $post->is_pinned ? 'Unpin' : 'Pin' }}
                             </button>
                         </form>
                         <a href="{{ route('admin.community-posts.edit', $post) }}" class="text-xs text-blue-600 hover:underline">Edit</a>

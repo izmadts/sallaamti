@@ -176,6 +176,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/wall', [WallController::class, 'store'])->name('wall.store');
     Route::post('/wall/{duaRequest}/react', [WallController::class, 'react'])->name('wall.react');
     Route::post('/wall/post/{communityPost}/react', [WallController::class, 'postReact'])->name('wall.post.react');
+    Route::get('/wall/saved', [WallController::class, 'saved'])->name('wall.saved');
+    Route::post('/wall/{duaRequest}/save', [WallController::class, 'save'])->name('wall.save');
+    Route::post('/wall/post/{communityPost}/save', [WallController::class, 'postSave'])->name('wall.post.save');
 
     // --- NIKAH MODULE ---
     Route::middleware('nikah.activity')->group(function () {
@@ -299,6 +302,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::post('daily-content/{daily_content}/toggle', [DailyContentController::class, 'toggle'])->name('daily-content.toggle');
     Route::resource('community-posts', CommunityPostController::class)->except(['show']);
     Route::post('community-posts/{community_post}/toggle', [CommunityPostController::class, 'toggle'])->name('community-posts.toggle');
+    Route::post('community-posts/{community_post}/pin', [CommunityPostController::class, 'togglePin'])->name('community-posts.pin');
 
     // Social media auto-posting — connect accounts + review/retry deliveries.
     Route::get('integrations', [SocialIntegrationController::class, 'index'])->name('integrations.index');
