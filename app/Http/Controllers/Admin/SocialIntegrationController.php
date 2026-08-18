@@ -32,8 +32,8 @@ class SocialIntegrationController extends Controller
     public function updateSettings(Request $request)
     {
         $validated = $request->validate([
-            'facebook_client_id' => ['nullable', 'string'],
-            'facebook_client_secret' => ['nullable', 'string'],
+            'facebook_posting_client_id' => ['nullable', 'string'],
+            'facebook_posting_client_secret' => ['nullable', 'string'],
             'twitter_client_id' => ['nullable', 'string'],
             'twitter_client_secret' => ['nullable', 'string'],
             'youtube_client_id' => ['nullable', 'string'],
@@ -191,10 +191,29 @@ class SocialIntegrationController extends Controller
     // token — there is no separate Instagram login for a Business account,
     // see InstagramPublisher) =====
 
+    // Deliberately a separate Meta App from the one Settings → Social Login
+    // uses for "Sign in with Facebook" (App\Http\Controllers\Auth\SocialAuthController)
+    // — two admin accounts here means two real, independently-configured
+    // Facebook Apps, so this never falls back to config('services.facebook.*'),
+    // which holds the LOGIN app's env-configured credentials. Only
+    // facebook_posting_client_id/secret (set on this Integrations page) are
+    // ever used for posting, so the two can never accidentally cross.
+    private function facebookPostingClientId(): ?string
+    {
+        return Setting::get('facebook_posting_client_id');
+    }
+
+    private function facebookPostingClientSecret(): ?string
+    {
+        return Setting::get('facebook_posting_client_secret');
+    }
+
     private function redirectToFacebook(): RedirectResponse
     {
-        Config::set('services.facebook.client_id', Setting::get('facebook_client_id') ?: config('services.facebook.client_id'));
-        Config::set('services.facebook.client_secret', Setting::get('facebook_client_secret') ?: config('services.facebook.client_secret'));
+        abort_unless($this->facebookPostingClientId() && $this->facebookPostingClientSecret(), 422, 'Save the posting App ID and Secret on this page first.');
+
+        Config::set('services.facebook.client_id', $this->facebookPostingClientId());
+        Config::set('services.facebook.client_secret', $this->facebookPostingClientSecret());
         Config::set('services.facebook.redirect', route('admin.integrations.callback', 'facebook'));
 
         return Socialite::driver('facebook')
@@ -204,8 +223,8 @@ class SocialIntegrationController extends Controller
 
     private function handleFacebookCallback(): void
     {
-        Config::set('services.facebook.client_id', Setting::get('facebook_client_id') ?: config('services.facebook.client_id'));
-        Config::set('services.facebook.client_secret', Setting::get('facebook_client_secret') ?: config('services.facebook.client_secret'));
+        Config::set('services.facebook.client_id', $this->facebookPostingClientId());
+        Config::set('services.facebook.client_secret', $this->facebookPostingClientSecret());
         Config::set('services.facebook.redirect', route('admin.integrations.callback', 'facebook'));
 
         $socialUser = Socialite::driver('facebook')->user();

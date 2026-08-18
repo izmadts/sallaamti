@@ -31,11 +31,16 @@
             </p>
         </div>
 
-        {{-- Facebook / Instagram --}}
+        {{-- Facebook / Instagram — this is a SEPARATE Meta App from the one
+             under Settings → Social Login, which is only for "Sign in with
+             Facebook". Two different apps, two different credential pairs,
+             on purpose: this one only ever posts to a Page, that one only
+             ever signs members in — keeping them apart means a change to
+             one can never accidentally break the other. --}}
         <div class="bg-white rounded-lg shadow-sm p-6 space-y-4">
             <div class="flex items-center justify-between">
                 <h4 class="text-sm font-semibold text-gray-700 flex items-center gap-2">
-                    <i class="{{ $platformMeta['facebook']['icon'] }}"></i> Facebook Page
+                    <i class="{{ $platformMeta['facebook']['icon'] }}"></i> Facebook Page (posting)
                 </h4>
                 @if ($account = $accounts['facebook'] ?? null)
                 <div class="flex items-center gap-2">
@@ -49,17 +54,33 @@
                 <a href="{{ route('admin.integrations.connect', 'facebook') }}" class="text-xs font-semibold px-3 py-1.5 rounded-full text-white" style="background: var(--teal)">Connect Facebook</a>
                 @endif
             </div>
+            <p class="text-xs text-amber-700 bg-amber-50 border border-amber-100 rounded-lg px-3 py-2">
+                Uses its <strong>own</strong> Meta App — a different App ID/Secret from the one under Settings → Social Login (that one is only for member sign-in). Enter this app's credentials below, not that one's.
+            </p>
             <ol class="text-xs text-gray-500 list-decimal ms-4 space-y-0.5">
-                <li>Uses the same Meta App configured under Settings → Social Login — make sure an App ID/Secret is saved there first.</li>
-                <li>In that Meta App, add the "Facebook Login for Business" product and, under its settings, add the redirect URI below as a valid OAuth redirect URI.</li>
+                <li>In this <strong>posting</strong> Meta App's dashboard, add the "Facebook Login for Business" product and, under its settings, add the redirect URI below as a valid OAuth redirect URI.</li>
                 <li>While the app is in Development Mode, add yourself as an Admin/Tester on the app so you can connect immediately — no App Review needed for posting to your own Page.</li>
-                <li>Click Connect and choose the Page you manage when prompted by Facebook.</li>
+                <li>Copy this app's App ID and Secret into the fields below, save, then click Connect and choose the Page you manage.</li>
             </ol>
             <div>
                 <x-input-label value="Valid OAuth redirect URI" />
                 <input type="text" readonly value="{{ route('admin.integrations.callback', 'facebook') }}" onclick="this.select()"
                     class="w-full mt-1 border border-gray-200 rounded-lg px-3 py-2 text-sm bg-gray-50 font-mono text-gray-600">
             </div>
+            <form method="POST" action="{{ route('admin.integrations.settings.update') }}" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                @csrf
+                <div>
+                    <x-input-label value="Posting App ID" />
+                    <x-text-input name="facebook_posting_client_id" class="w-full mt-1" :value="$settings['facebook_posting_client_id'] ?? ''" />
+                </div>
+                <div>
+                    <x-input-label value="Posting App Secret" />
+                    <x-text-input name="facebook_posting_client_secret" class="w-full mt-1" :value="$settings['facebook_posting_client_secret'] ?? ''" />
+                </div>
+                <div class="sm:col-span-2">
+                    <x-secondary-button type="submit">Save Posting App Credentials</x-secondary-button>
+                </div>
+            </form>
         </div>
 
         {{-- Instagram (derived) --}}
