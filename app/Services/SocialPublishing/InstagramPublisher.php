@@ -64,9 +64,8 @@ class InstagramPublisher implements SocialPublisher
     private function waitUntilProcessed(string $creationId, string $accessToken, int $maxAttempts = 10): bool
     {
         for ($attempt = 0; $attempt < $maxAttempts; $attempt++) {
-            $status = Http::get('https://graph.facebook.com/' . self::GRAPH_VERSION . "/{$creationId}", [
+            $status = Http::withToken($accessToken)->get('https://graph.facebook.com/' . self::GRAPH_VERSION . "/{$creationId}", [
                 'fields' => 'status_code',
-                'access_token' => $accessToken,
             ])->json('status_code');
 
             if ($status === 'FINISHED') {

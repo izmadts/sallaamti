@@ -143,9 +143,7 @@ class SocialIntegrationController extends Controller
             'fb_exchange_token' => $socialUser->token,
         ])->json('access_token', $socialUser->token);
 
-        $pages = Http::get('https://graph.facebook.com/' . self::GRAPH_VERSION . '/me/accounts', [
-            'access_token' => $exchanged,
-        ])->json('data', []);
+        $pages = Http::withToken($exchanged)->get('https://graph.facebook.com/' . self::GRAPH_VERSION . '/me/accounts')->json('data', []);
 
         abort_if(empty($pages), 422, 'No Facebook Pages found for this account — you need to manage at least one Page.');
 
@@ -164,15 +162,13 @@ class SocialIntegrationController extends Controller
             ]
         );
 
-        $igLookup = Http::get('https://graph.facebook.com/' . self::GRAPH_VERSION . "/{$page['id']}", [
+        $igLookup = Http::withToken($page['access_token'])->get('https://graph.facebook.com/' . self::GRAPH_VERSION . "/{$page['id']}", [
             'fields' => 'instagram_business_account',
-            'access_token' => $page['access_token'],
         ])->json('instagram_business_account.id');
 
         if ($igLookup) {
-            $igUsername = Http::get('https://graph.facebook.com/' . self::GRAPH_VERSION . "/{$igLookup}", [
+            $igUsername = Http::withToken($page['access_token'])->get('https://graph.facebook.com/' . self::GRAPH_VERSION . "/{$igLookup}", [
                 'fields' => 'username',
-                'access_token' => $page['access_token'],
             ])->json('username');
 
             SocialAccount::updateOrCreate(
@@ -271,11 +267,20 @@ class SocialIntegrationController extends Controller
 
     private function redirectToYoutube(): RedirectResponse
     {
-        return redirect($this->googleClient()->createAuthUrl());
+        $state = Str::random(32);
+        session(['youtube_oauth_state' => $state]);
+
+        $client = $this->googleClient();
+        $client->setState($state);
+
+        return redirect($client->createAuthUrl());
     }
 
     private function handleYoutubeCallback(Request $request): void
     {
+        abort_unless($request->get('state') === session('youtube_oauth_state'), 422, 'Invalid OAuth state.');
+        session()->forget('youtube_oauth_state');
+
         $client = $this->googleClient();
         $token = $client->fetchAccessTokenWithAuthCode($request->get('code'));
 

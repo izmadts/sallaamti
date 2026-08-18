@@ -32,6 +32,10 @@ class BookingController extends Controller
     {
         abort_unless($booking->counselor_id === Auth::id(), 403);
 
+        if ($booking->status !== 'requested') {
+            return back()->with('error', 'This session is already ' . str_replace('_', ' ', $booking->status) . ' — nothing to confirm.');
+        }
+
         $booking->update(['status' => 'confirmed', 'confirmed_at' => now()]);
         $booking->member->notify(new CounselingBookingConfirmed($booking));
 
@@ -41,6 +45,10 @@ class BookingController extends Controller
     public function complete(Request $request, CounselingBooking $booking)
     {
         abort_unless($booking->counselor_id === Auth::id(), 403);
+
+        if (in_array($booking->status, ['completed', 'cancelled', 'no_show'])) {
+            return back()->with('error', 'This session is already ' . str_replace('_', ' ', $booking->status) . ' — it can\'t be marked complete.');
+        }
 
         $request->validate(['notes' => ['nullable', 'string', 'max:2000']]);
 
@@ -57,6 +65,10 @@ class BookingController extends Controller
     {
         abort_unless($booking->counselor_id === Auth::id(), 403);
 
+        if (in_array($booking->status, ['completed', 'cancelled'])) {
+            return back()->with('error', 'This session is already ' . str_replace('_', ' ', $booking->status) . ' — it can\'t be cancelled.');
+        }
+
         $booking->update([
             'status' => 'cancelled',
             'cancellation_reason' => $request->input('reason'),
@@ -71,6 +83,10 @@ class BookingController extends Controller
     public function markNoShow(CounselingBooking $booking)
     {
         abort_unless($booking->counselor_id === Auth::id(), 403);
+
+        if (in_array($booking->status, ['completed', 'cancelled', 'no_show'])) {
+            return back()->with('error', 'This session is already ' . str_replace('_', ' ', $booking->status) . ' — it can\'t be marked no-show.');
+        }
 
         $booking->update(['status' => 'no_show']);
 

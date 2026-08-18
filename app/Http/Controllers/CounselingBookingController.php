@@ -11,6 +11,7 @@ use App\Notifications\CounselingBookingRequested;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class CounselingBookingController extends Controller
 {
@@ -152,22 +153,48 @@ class CounselingBookingController extends Controller
 
         $data = $this->wizardAllData();
 
-        $query = SupportQuery::create([
-            'user_id' => Auth::id(),
-            'category' => $data['category'],
-            'subject' => $data['subject'],
-            'description' => $data['description'],
-            'is_anonymous' => $data['is_anonymous'] ?? false,
-        ]);
+        // The 'slot' wizard step already checked availability, but that
+        // happened in an earlier request — the member can sit on the review
+        // screen for a while before finalizing, and two members can race for
+        // the same counselor/time in that window. Re-check inside a locked
+        // transaction right before inserting: SELECT ... FOR UPDATE against
+        // no matching row still takes a gap lock under MySQL's default
+        // REPEATABLE READ isolation, so a concurrent finalize() for the same
+        // slot blocks until this one commits, then correctly sees the
+        // conflict instead of creating a duplicate booking.
+        $booking = DB::transaction(function () use ($data) {
+            $conflict = CounselingBooking::where('counselor_id', $data['counselor_id'])
+                ->where('scheduled_at', $data['scheduled_at'])
+                ->whereIn('status', ['requested', 'confirmed'])
+                ->lockForUpdate()
+                ->exists();
 
-        $booking = CounselingBooking::create([
-            'support_query_id' => $query->id,
-            'member_id' => Auth::id(),
-            'counselor_id' => $data['counselor_id'],
-            'scheduled_at' => $data['scheduled_at'],
-            'contact_method' => $data['contact_method'],
-            'status' => 'requested',
-        ]);
+            if ($conflict) {
+                return null;
+            }
+
+            $query = SupportQuery::create([
+                'user_id' => Auth::id(),
+                'category' => $data['category'],
+                'subject' => $data['subject'],
+                'description' => $data['description'],
+                'is_anonymous' => $data['is_anonymous'] ?? false,
+            ]);
+
+            return CounselingBooking::create([
+                'support_query_id' => $query->id,
+                'member_id' => Auth::id(),
+                'counselor_id' => $data['counselor_id'],
+                'scheduled_at' => $data['scheduled_at'],
+                'contact_method' => $data['contact_method'],
+                'status' => 'requested',
+            ]);
+        });
+
+        if (!$booking) {
+            return redirect()->route('counseling.book.step', 'slot')
+                ->withErrors(['slot' => 'That slot was just taken — please pick another.']);
+        }
 
         $booking->counselor?->notify(new CounselingBookingRequested($booking));
 

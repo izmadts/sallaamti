@@ -38,6 +38,16 @@ class CounselingBookingAdminController extends Controller
     {
         $request->validate(['counselor_id' => ['required', 'exists:users,id']]);
 
+        $conflict = CounselingBooking::where('counselor_id', $request->counselor_id)
+            ->where('scheduled_at', $booking->scheduled_at)
+            ->whereIn('status', ['requested', 'confirmed'])
+            ->where('id', '!=', $booking->id)
+            ->exists();
+
+        if ($conflict) {
+            return back()->with('error', 'That counselor already has a session booked at this time — pick a different counselor or reschedule first.');
+        }
+
         $booking->update(['counselor_id' => $request->counselor_id, 'status' => 'requested', 'confirmed_at' => null]);
 
         return back()->with('status', 'Booking reassigned.');
