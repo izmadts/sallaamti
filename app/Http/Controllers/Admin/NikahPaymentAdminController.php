@@ -53,6 +53,16 @@ class NikahPaymentAdminController extends Controller
 
     public function confirm(NikahProfile $profile)
     {
+        // Mirror bulkConfirm()'s own guard: only a payment actually awaiting
+        // review can be confirmed. Without this, a double-click / two admin
+        // tabs re-sends the confirmation notification (and the "pending
+        // verification" broadcast to every admin) on every click, and a
+        // stale link could silently re-confirm a profile that was already
+        // rejected with no new proof submitted.
+        if ($profile->payment_status !== 'submitted') {
+            return back()->with('error', "This payment is already {$profile->payment_status} — nothing to confirm.");
+        }
+
         $profile->update(['payment_status' => 'confirmed', 'payment_confirmed_at' => now()]);
 
         try {
@@ -82,6 +92,10 @@ class NikahPaymentAdminController extends Controller
     // a normal online submission.
     public function recordOffline(Request $request, NikahProfile $profile)
     {
+        if ($profile->payment_status === 'confirmed') {
+            return back()->with('error', 'Payment is already confirmed for this profile.');
+        }
+
         $validated = $request->validate([
             'payment_method' => ['required', 'in:whatsapp,cash,jazzcash,bank_transfer,other'],
             'payment_reference' => ['nullable', 'string', 'max:100'],
@@ -97,12 +111,14 @@ class NikahPaymentAdminController extends Controller
         $validated['payment_amount'] = $profile->payment_amount ?: setting('nikah_verification_fee', config('services.nikah.verification_fee'));
         $validated['payment_rejection_reason'] = null;
 
-        $profile->update($validated);
+        \DB::transaction(function () use ($profile, $validated) {
+            $profile->update($validated);
 
-        $profile->moderationNotes()->create([
-            'admin_id' => auth()->id(),
-            'note' => 'Payment recorded manually by admin — received via ' . $validated['payment_method'] . '.',
-        ]);
+            $profile->moderationNotes()->create([
+                'admin_id' => auth()->id(),
+                'note' => 'Payment recorded manually by admin — received via ' . $validated['payment_method'] . '.',
+            ]);
+        });
 
         try {
             $profile->user->notify(new \App\Notifications\NikahPaymentConfirmed());

@@ -28,6 +28,10 @@ class DonationAdminController extends Controller
 
     public function confirm(Donation $donation)
     {
+        if ($donation->payment_status !== 'submitted') {
+            return back()->with('error', "This donation is already {$donation->payment_status} — nothing to confirm.");
+        }
+
         $donation->update(['payment_status' => 'confirmed', 'payment_confirmed_at' => now()]);
 
         if ($donation->user_id && !$donation->user->hasRole('donor')) {
@@ -51,6 +55,21 @@ class DonationAdminController extends Controller
     {
         $request->validate(['payment_rejection_reason' => 'required|string|max:500']);
         $donation->update(['payment_status' => 'rejected', 'payment_rejection_reason' => $request->payment_rejection_reason]);
+
+        // A 'donor' role granted by an earlier confirmation of THIS donation
+        // must not outlive that confirmation once it's reversed — unless the
+        // same user has another still-confirmed donation independently
+        // backing the role.
+        if ($donation->user_id && $donation->user->hasRole('donor')) {
+            $hasOtherConfirmedDonation = Donation::where('user_id', $donation->user_id)
+                ->where('payment_status', 'confirmed')
+                ->where('id', '!=', $donation->id)
+                ->exists();
+
+            if (!$hasOtherConfirmedDonation) {
+                $donation->user->removeRole('donor');
+            }
+        }
 
         try {
             if (!empty($donation->email)) {

@@ -80,6 +80,10 @@ class QuranLiveCourseAdminController extends Controller
 
     public function confirmPayment(QuranSubscription $subscription)
     {
+        if ($subscription->payment_status !== 'submitted') {
+            return back()->with('error', "This payment is already {$subscription->payment_status} — nothing to confirm.");
+        }
+
         $subscription->update(['payment_status' => 'confirmed', 'payment_confirmed_at' => now()]);
 
         try {
