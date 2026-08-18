@@ -5,6 +5,7 @@ namespace App\Jobs;
 use App\Models\SocialPostDispatch;
 use App\Services\SocialPublishing\FacebookPublisher;
 use App\Services\SocialPublishing\InstagramPublisher;
+use App\Services\SocialPublishing\ThreadsPublisher;
 use App\Services\SocialPublishing\TiktokPublisher;
 use App\Services\SocialPublishing\TwitterPublisher;
 use App\Services\SocialPublishing\YoutubePublisher;
@@ -27,6 +28,7 @@ class PublishCommunityPostToSocialJob implements ShouldQueue
         'twitter' => TwitterPublisher::class,
         'youtube' => YoutubePublisher::class,
         'tiktok' => TiktokPublisher::class,
+        'threads' => ThreadsPublisher::class,
     ];
 
     public function __construct(private readonly SocialPostDispatch $dispatch)

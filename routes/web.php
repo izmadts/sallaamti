@@ -329,6 +329,10 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
         Route::get('integrations/{platform}/callback', [SocialIntegrationController::class, 'callback'])->name('integrations.callback');
         Route::post('integrations/{account}/disconnect', [SocialIntegrationController::class, 'disconnect'])->name('integrations.disconnect');
         Route::post('social-dispatches/{dispatch}/retry', [SocialIntegrationController::class, 'retryDispatch'])->name('social-dispatches.retry');
+        // WhatsApp Business — manual credential form, not an OAuth redirect
+        // (see SocialIntegrationController::connectWhatsapp()), so it needs
+        // its own POST route rather than the generic {platform}/connect GET.
+        Route::post('integrations/whatsapp/connect', [SocialIntegrationController::class, 'connectWhatsapp'])->name('integrations.whatsapp.connect');
     });
 
     // Certificates (admin-issued)

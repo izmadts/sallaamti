@@ -36,6 +36,7 @@ class ProfileUpdateRequest extends FormRequest
             ],
             'gender' => ['nullable', 'in:male,female'],
             'city' => ['nullable', 'string', 'max:100'],
+            'whatsapp_notify_opt_in' => ['nullable', 'boolean'],
         ];
     }
 }

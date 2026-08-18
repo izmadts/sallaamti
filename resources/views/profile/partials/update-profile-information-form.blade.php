@@ -59,6 +59,10 @@
  <x-input-label for="phone" :value="__('db.WhatsApp / Phone Number')" />
  <x-text-input id="phone" name="phone" type="text" class="mt-1 block w-full" :value="old('phone', $user->phone)" autocomplete="tel" />
  <x-input-error class="mt-2" :messages="$errors->get('phone')" />
+ <label class="flex items-center gap-2 mt-2 text-sm text-gray-600">
+ <input type="checkbox" name="whatsapp_notify_opt_in" value="1" {{ old('whatsapp_notify_opt_in', $user->whatsapp_notify_opt_in) ? 'checked' : '' }} class="rounded border-gray-300 text-teal-600">
+ {{ __('db.Notify me on WhatsApp about new community posts') }}
+ </label>
  </div>
 
  <div class="grid grid-cols-2 gap-4">

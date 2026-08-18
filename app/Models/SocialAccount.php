@@ -7,8 +7,13 @@ use Illuminate\Database\Eloquent\Model;
 class SocialAccount extends Model
 {
     // One connected account per platform (facebook, instagram, twitter,
-    // youtube, tiktok) that CommunityPosts can be auto-published to.
-    public const PLATFORMS = ['facebook', 'instagram', 'twitter', 'youtube', 'tiktok'];
+    // youtube, tiktok, threads) that CommunityPosts can be auto-published
+    // to. WhatsApp is deliberately NOT in this list — it has no public API
+    // for posting to a feed, so a connected 'whatsapp' row (see
+    // SocialIntegrationController::connectWhatsapp()) is used only for the
+    // separate WhatsApp broadcast-notification feature, never as a
+    // CommunityPost social_targets option.
+    public const PLATFORMS = ['facebook', 'instagram', 'twitter', 'youtube', 'tiktok', 'threads'];
 
     protected $fillable = [
         'platform',

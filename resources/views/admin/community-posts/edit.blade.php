@@ -75,7 +75,7 @@
                     Posts automatically the next time this moves from draft to published. Nothing connected yet? <a href="{{ route('admin.integrations.index') }}" class="text-[--teal] hover:underline">Connect accounts in Integrations</a>.
                 </p>
                 <div class="flex flex-wrap gap-3">
-                    @foreach (['facebook' => 'Facebook', 'instagram' => 'Instagram', 'twitter' => 'X (Twitter)', 'youtube' => 'YouTube', 'tiktok' => 'TikTok'] as $key => $label)
+                    @foreach (['facebook' => 'Facebook', 'instagram' => 'Instagram', 'twitter' => 'X (Twitter)', 'youtube' => 'YouTube', 'tiktok' => 'TikTok', 'threads' => 'Threads'] as $key => $label)
                     <label class="flex items-center gap-1.5 text-sm {{ in_array($key, $connectedPlatforms) ? 'text-gray-700' : 'text-gray-400 cursor-not-allowed' }}">
                         <input type="checkbox" name="social_targets[]" value="{{ $key }}"
                             {{ in_array($key, old('social_targets', $post->social_targets ?? [])) ? 'checked' : '' }}

@@ -28,6 +28,7 @@ class ProfileController extends Controller
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
         $request->user()->fill($request->validated());
+        $request->user()->whatsapp_notify_opt_in = $request->boolean('whatsapp_notify_opt_in');
 
         if ($request->hasFile('avatar')) {
             $request->user()->avatar = ImageOptimizer::store($request->file('avatar'), 'avatars', 'private', maxDimension: 512);

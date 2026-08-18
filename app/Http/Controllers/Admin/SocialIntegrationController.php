@@ -41,13 +41,19 @@ class SocialIntegrationController extends Controller
             'tiktok_client_id' => ['nullable', 'string'],
             'tiktok_client_secret' => ['nullable', 'string'],
             'tiktok_audited' => ['nullable', 'boolean'],
+            'threads_client_id' => ['nullable', 'string'],
+            'threads_client_secret' => ['nullable', 'string'],
+            'whatsapp_notifications_enabled' => ['nullable', 'boolean'],
+            'whatsapp_template_name' => ['nullable', 'string', 'max:255'],
             'scheduled_batch_size' => ['nullable', 'integer', 'min:0', 'max:50'],
             'scheduled_batch_time' => ['nullable', 'date_format:H:i'],
         ]);
 
+        $checkboxKeys = ['tiktok_audited', 'whatsapp_notifications_enabled'];
+
         foreach ($validated as $key => $value) {
-            if ($key === 'tiktok_audited') {
-                Setting::set($key, $request->boolean('tiktok_audited') ? '1' : '0', 'integrations');
+            if (in_array($key, $checkboxKeys, true)) {
+                Setting::set($key, $request->boolean($key) ? '1' : '0', 'integrations');
                 continue;
             }
             if (filled($value) || $value === '0') {
@@ -60,19 +66,20 @@ class SocialIntegrationController extends Controller
 
     public function connect(string $platform): RedirectResponse
     {
-        abort_unless(in_array($platform, ['facebook', 'twitter', 'youtube', 'tiktok'], true), 404);
+        abort_unless(in_array($platform, ['facebook', 'twitter', 'youtube', 'tiktok', 'threads'], true), 404);
 
         return match ($platform) {
             'facebook' => $this->redirectToFacebook(),
             'twitter' => $this->redirectToTwitter(),
             'youtube' => $this->redirectToYoutube(),
             'tiktok' => $this->redirectToTiktok(),
+            'threads' => $this->redirectToThreads(),
         };
     }
 
     public function callback(string $platform, Request $request): RedirectResponse
     {
-        abort_unless(in_array($platform, ['facebook', 'twitter', 'youtube', 'tiktok'], true), 404);
+        abort_unless(in_array($platform, ['facebook', 'twitter', 'youtube', 'tiktok', 'threads'], true), 404);
 
         try {
             match ($platform) {
@@ -80,6 +87,7 @@ class SocialIntegrationController extends Controller
                 'twitter' => $this->handleTwitterCallback($request),
                 'youtube' => $this->handleYoutubeCallback($request),
                 'tiktok' => $this->handleTiktokCallback($request),
+                'threads' => $this->handleThreadsCallback($request),
             };
         } catch (\Throwable $e) {
             \Log::error("SocialIntegrationController: {$platform} connect failed — " . $e->getMessage());
@@ -87,6 +95,37 @@ class SocialIntegrationController extends Controller
         }
 
         return redirect()->route('admin.integrations.index')->with('status', ucfirst($platform) . ' connected.');
+    }
+
+    // WhatsApp Business Platform has no OAuth "connect" dialog for this use
+    // case — an admin generates a permanent access token for a System User
+    // in Meta Business Manager and pastes it here along with the Phone
+    // Number ID, rather than redirecting through a login flow. Stored as a
+    // SocialAccount the same way the OAuth-connected platforms are (same
+    // encrypted-at-rest access_token column), but this is deliberately NOT
+    // in SocialAccount::PLATFORMS — see that constant's docblock for why.
+    public function connectWhatsapp(Request $request)
+    {
+        $validated = $request->validate([
+            'whatsapp_phone_number_id' => ['required', 'string'],
+            'whatsapp_business_account_id' => ['required', 'string'],
+            'whatsapp_access_token' => ['required', 'string'],
+            'whatsapp_display_name' => ['nullable', 'string', 'max:255'],
+        ]);
+
+        SocialAccount::updateOrCreate(
+            ['platform' => 'whatsapp', 'external_account_id' => $validated['whatsapp_phone_number_id']],
+            [
+                'display_name' => $validated['whatsapp_display_name'] ?: 'WhatsApp Business',
+                'access_token' => $validated['whatsapp_access_token'],
+                'extra' => ['waba_id' => $validated['whatsapp_business_account_id']],
+                'connected_by' => Auth::id(),
+                'status' => 'connected',
+                'last_error' => null,
+            ]
+        );
+
+        return back()->with('status', 'WhatsApp Business connected. Notifications stay off until you enable them below.');
     }
 
     public function disconnect(SocialAccount $account)
@@ -397,5 +436,74 @@ class SocialIntegrationController extends Controller
         );
 
         session()->forget('tiktok_oauth_state');
+    }
+
+    // ===== Threads — own OAuth endpoints entirely separate from Facebook's
+    // (graph.threads.net, not graph.facebook.com), and its own dedicated
+    // App ID/Secret — the Facebook App ID does not work here. No maintained
+    // Socialite driver exists, same manual-OAuth2 approach as Twitter/TikTok. =====
+
+    private function redirectToThreads(): RedirectResponse
+    {
+        $state = Str::random(32);
+        session(['threads_oauth_state' => $state]);
+
+        $query = http_build_query([
+            'client_id' => Setting::get('threads_client_id') ?: config('services.threads.client_id'),
+            'redirect_uri' => route('admin.integrations.callback', 'threads'),
+            'scope' => 'threads_basic,threads_content_publish',
+            'response_type' => 'code',
+            'state' => $state,
+        ]);
+
+        return redirect("https://threads.net/oauth/authorize?{$query}");
+    }
+
+    private function handleThreadsCallback(Request $request): void
+    {
+        abort_unless($request->get('state') === session('threads_oauth_state'), 422, 'Invalid OAuth state.');
+        session()->forget('threads_oauth_state');
+
+        $clientId = Setting::get('threads_client_id') ?: config('services.threads.client_id');
+        $clientSecret = Setting::get('threads_client_secret') ?: config('services.threads.client_secret');
+
+        $token = Http::asForm()->post('https://graph.threads.net/oauth/access_token', [
+            'client_id' => $clientId,
+            'client_secret' => $clientSecret,
+            'grant_type' => 'authorization_code',
+            'redirect_uri' => route('admin.integrations.callback', 'threads'),
+            'code' => $request->get('code'),
+        ]);
+
+        abort_if($token->failed(), 422, $token->json('error_message', 'Threads token exchange failed.'));
+
+        // Short-lived token from the exchange above (~1hr) — swap it for a
+        // long-lived one (~60 days) before storing, same reason as
+        // Facebook's fb_exchange_token step in handleFacebookCallback().
+        $longLived = Http::get('https://graph.threads.net/access_token', [
+            'grant_type' => 'th_exchange_token',
+            'client_secret' => $clientSecret,
+            'access_token' => $token->json('access_token'),
+        ]);
+
+        $accessToken = $longLived->json('access_token', $token->json('access_token'));
+        $expiresIn = $longLived->json('expires_in');
+        $userId = $token->json('user_id');
+
+        $profile = Http::withToken($accessToken)->get('https://graph.threads.net/v1.0/me', [
+            'fields' => 'id,username',
+        ]);
+
+        SocialAccount::updateOrCreate(
+            ['platform' => 'threads', 'external_account_id' => (string) ($profile->json('id') ?? $userId)],
+            [
+                'display_name' => $profile->json('username') ? '@' . $profile->json('username') : 'Threads',
+                'access_token' => $accessToken,
+                'token_expires_at' => $expiresIn ? now()->addSeconds($expiresIn) : null,
+                'connected_by' => Auth::id(),
+                'status' => 'connected',
+                'last_error' => null,
+            ]
+        );
     }
 }

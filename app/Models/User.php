@@ -27,6 +27,7 @@ class User extends Authenticatable
         'current_streak',
         'longest_streak',
         'last_active_date',
+        'whatsapp_notify_opt_in',
     ];
 
     protected $hidden = [
@@ -44,6 +45,7 @@ class User extends Authenticatable
             'nikah_module_enabled' => 'boolean',
             'quran_module_enabled' => 'boolean',
             'counseling_module_enabled' => 'boolean',
+            'whatsapp_notify_opt_in' => 'boolean',
         ];
     }
 

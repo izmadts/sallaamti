@@ -77,4 +77,12 @@ return [
         'client_secret' => env('TIKTOK_CLIENT_SECRET'),
     ],
 
+    // Threads issues its own dedicated App ID/Secret, separate from the
+    // main Meta App ID used for Facebook Login above — using the Facebook
+    // App ID here fails outright, this genuinely has to be a different pair.
+    'threads' => [
+        'client_id' => env('THREADS_CLIENT_ID'),
+        'client_secret' => env('THREADS_CLIENT_SECRET'),
+    ],
+
 ];

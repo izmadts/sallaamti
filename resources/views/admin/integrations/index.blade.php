@@ -14,6 +14,7 @@
             'twitter' => ['icon' => 'fab fa-x-twitter text-gray-800', 'name' => 'X (Twitter)'],
             'youtube' => ['icon' => 'fab fa-youtube text-red-600', 'name' => 'YouTube'],
             'tiktok' => ['icon' => 'fab fa-tiktok text-gray-800', 'name' => 'TikTok'],
+            'threads' => ['icon' => 'fab fa-threads text-gray-800', 'name' => 'Threads'],
         ];
     @endphp
 
@@ -23,7 +24,7 @@
             <h3 class="font-semibold text-gray-700 border-b pb-2">📣 Social Media Auto-Posting</h3>
             <p class="text-xs text-gray-500 mt-2">
                 Connect each platform below, then check the platforms you want under "Share to social media" when publishing a Community Post — it posts automatically the moment you publish.
-                WhatsApp isn't listed: it has no public API for posting to a feed/wall the way these five do, so it stays a plain contact link in Settings.
+                WhatsApp isn't in this list: it has no public API for posting to a feed/wall the way these six do. It has its own card further down for a different purpose — notifying members directly, not publishing a post.
             </p>
             <p class="text-xs text-gray-500 mt-2">
                 <strong>Facebook Page + Instagram share one connection</strong> — Instagram Business accounts are always linked through a Facebook Page, so there's no separate Instagram login; connecting Facebook below picks up the linked Instagram account automatically if one exists.
@@ -82,6 +83,70 @@
             <p class="text-xs text-gray-400">
                 Connected automatically when you connect Facebook above, if that Page has an Instagram Business account linked to it. No Instagram Business account yet? Link one to your Page in Meta Business Suite, then reconnect Facebook.
             </p>
+        </div>
+
+        {{-- WhatsApp Business — connect the account. This is a manual
+             credential form, not an OAuth redirect: WhatsApp's Cloud API
+             uses a permanent access token generated for a System User in
+             Meta Business Manager, pasted in directly. --}}
+        <div class="bg-white rounded-lg shadow-sm p-6 space-y-4">
+            <div class="flex items-center justify-between">
+                <h4 class="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                    <i class="fab fa-whatsapp text-green-600"></i> WhatsApp Business
+                </h4>
+                @if ($whatsappAccount = $accounts['whatsapp'] ?? null)
+                <div class="flex items-center gap-2">
+                    <span class="text-xs px-2 py-1 rounded-full bg-green-100 text-green-700 font-semibold">✅ {{ $whatsappAccount->display_name }}</span>
+                    <form method="POST" action="{{ route('admin.integrations.disconnect', $whatsappAccount) }}">
+                        @csrf
+                        <button class="text-xs text-red-500 hover:underline">Disconnect</button>
+                    </form>
+                </div>
+                @else
+                <span class="text-xs px-2 py-1 rounded-full bg-gray-100 text-gray-500">Not connected</span>
+                @endif
+            </div>
+            <p class="text-xs text-gray-500">
+                This is <strong>not</strong> for posting to a public feed — WhatsApp has no such API. It sends a direct notification to individual members who've opted in, when a Community Post publishes. See "WhatsApp Notifications" further down to actually turn sending on — it stays off by default even once connected.
+            </p>
+            <ol class="text-xs text-gray-500 list-decimal ms-4 space-y-0.5">
+                <li>In Meta Business Manager, add the WhatsApp product to your app and complete phone number setup.</li>
+                <li>Create a System User with WhatsApp permissions, generate a <strong>permanent</strong> access token for it (not a temporary 24-hour one).</li>
+                <li>Create and get a message template approved in Meta Business Manager — business-initiated messages can't be free-form text, they must use a pre-approved template with one body variable (the post title fills it in).</li>
+                <li>Copy the Phone Number ID, WhatsApp Business Account ID, and the permanent token below.</li>
+            </ol>
+            @if ($errors->has('whatsapp_phone_number_id') || $errors->has('whatsapp_business_account_id') || $errors->has('whatsapp_access_token'))
+            <div class="p-3 rounded-lg bg-red-50 border border-red-200 text-xs text-red-700">
+                @foreach ($errors->only(['whatsapp_phone_number_id', 'whatsapp_business_account_id', 'whatsapp_access_token']) as $fieldErrors)
+                    @foreach ((array) $fieldErrors as $error)
+                        <p>{{ $error }}</p>
+                    @endforeach
+                @endforeach
+            </div>
+            @endif
+            <form method="POST" action="{{ route('admin.integrations.whatsapp.connect') }}" class="space-y-4">
+                @csrf
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <x-input-label value="Phone Number ID" />
+                        <x-text-input name="whatsapp_phone_number_id" class="w-full mt-1" :value="old('whatsapp_phone_number_id', $whatsappAccount->external_account_id ?? '')" />
+                    </div>
+                    <div>
+                        <x-input-label value="WhatsApp Business Account ID" />
+                        <x-text-input name="whatsapp_business_account_id" class="w-full mt-1" :value="old('whatsapp_business_account_id', $whatsappAccount->extra['waba_id'] ?? '')" />
+                    </div>
+                </div>
+                <div>
+                    <x-input-label value="Permanent Access Token" />
+                    <x-text-input name="whatsapp_access_token" type="password" class="w-full mt-1" placeholder="{{ $whatsappAccount ? 'Re-enter the token to update the connection' : '' }}" required />
+                    <p class="text-xs text-gray-400 mt-1">Not shown once saved — re-enter it here any time you need to update the connection.</p>
+                </div>
+                <div>
+                    <x-input-label value="Display Name (optional)" />
+                    <x-text-input name="whatsapp_display_name" class="w-full mt-1" :value="old('whatsapp_display_name', $whatsappAccount->display_name ?? '')" placeholder="e.g. Sallaamti Business Number" />
+                </div>
+                <x-secondary-button type="submit">{{ $whatsappAccount ? 'Update Connection' : 'Connect WhatsApp' }}</x-secondary-button>
+            </form>
         </div>
 
         <form method="POST" action="{{ route('admin.integrations.settings.update') }}" class="space-y-6">
@@ -212,6 +277,74 @@
                     <input type="checkbox" name="tiktok_audited" value="1" {{ ($settings['tiktok_audited'] ?? '0') === '1' ? 'checked' : '' }} class="rounded border-gray-300 text-teal-600">
                     Approved for public posting (TikTok's Content Posting API audit passed)
                 </label>
+            </div>
+
+            {{-- Threads --}}
+            <div class="bg-white rounded-lg shadow-sm p-6 space-y-4">
+                <div class="flex items-center justify-between">
+                    <h4 class="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                        <i class="{{ $platformMeta['threads']['icon'] }}"></i> Threads
+                    </h4>
+                    @if ($account = $accounts['threads'] ?? null)
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs px-2 py-1 rounded-full bg-green-100 text-green-700 font-semibold">✅ {{ $account->display_name }}</span>
+                        <form method="POST" action="{{ route('admin.integrations.disconnect', $account) }}">
+                            @csrf
+                            <button class="text-xs text-red-500 hover:underline">Disconnect</button>
+                        </form>
+                    </div>
+                    @else
+                    <a href="{{ route('admin.integrations.connect', 'threads') }}" class="text-xs font-semibold px-3 py-1.5 rounded-full text-white" style="background: var(--teal)">Connect Threads</a>
+                    @endif
+                </div>
+                <ol class="text-xs text-gray-500 list-decimal ms-4 space-y-0.5">
+                    <li>Go to <span class="font-mono">developers.facebook.com/apps</span>, click "Create App," and choose the "Access Threads API" use case — this issues a <strong>separate</strong> Threads App ID/Secret, not the same as the Facebook App ID above.</li>
+                    <li>Add the redirect URI below as a valid OAuth redirect URI for the Threads use case.</li>
+                    <li>While in Development Mode, add yourself as a Threads tester under App Roles so you can connect immediately — no App Review needed for posting to your own account.</li>
+                    <li>Copy the Threads App ID and Secret into the fields below, save, then click Connect.</li>
+                </ol>
+                <div>
+                    <x-input-label value="Redirect URI" />
+                    <input type="text" readonly value="{{ route('admin.integrations.callback', 'threads') }}" onclick="this.select()"
+                        class="w-full mt-1 border border-gray-200 rounded-lg px-3 py-2 text-sm bg-gray-50 font-mono text-gray-600">
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <x-input-label value="Threads App ID" />
+                        <x-text-input name="threads_client_id" class="w-full mt-1" :value="$settings['threads_client_id'] ?? ''" />
+                    </div>
+                    <div>
+                        <x-input-label value="Threads App Secret" />
+                        <x-text-input name="threads_client_secret" class="w-full mt-1" :value="$settings['threads_client_secret'] ?? ''" />
+                    </div>
+                </div>
+            </div>
+
+            {{-- WhatsApp Notifications — the actual on/off switch. Off by
+                 default even after the account above is connected, per the
+                 "implement it but keep it disabled for now" request — flip
+                 this on once the template is approved and you're ready. --}}
+            <div class="bg-white rounded-lg shadow-sm p-6 space-y-4">
+                <div>
+                    <h4 class="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                        <i class="fab fa-whatsapp text-green-600"></i> WhatsApp Notifications
+                    </h4>
+                    <p class="text-xs text-gray-400 mt-1">
+                        When on, every member who's opted in (Profile → Notifications) gets a WhatsApp message when a Community Post publishes, using the approved template named below.
+                    </p>
+                </div>
+                <label class="flex items-center gap-2 text-sm text-gray-700">
+                    <input type="checkbox" name="whatsapp_notifications_enabled" value="1" {{ ($settings['whatsapp_notifications_enabled'] ?? '0') === '1' ? 'checked' : '' }} class="rounded border-gray-300 text-teal-600">
+                    Send WhatsApp notifications on publish
+                    @unless ($accounts['whatsapp'] ?? null)
+                    <span class="text-xs text-amber-600">(connect WhatsApp Business above first)</span>
+                    @endunless
+                </label>
+                <div>
+                    <x-input-label value="Approved template name" />
+                    <x-text-input name="whatsapp_template_name" class="w-full mt-1" :value="$settings['whatsapp_template_name'] ?? ''" placeholder="e.g. new_community_post" />
+                    <p class="text-xs text-gray-400 mt-1">Must exactly match a template already approved in Meta Business Manager, with one body variable (filled in with the post title).</p>
+                </div>
             </div>
 
             {{-- Scheduled batch posting --}}
