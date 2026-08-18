@@ -407,42 +407,96 @@
  </div>
  </div>
 
- {{-- ===== MOBILE APP-STYLE BOTTOM TAB BAR ===== --}}
+ {{-- ===== MOBILE APP-STYLE BOTTOM TAB BAR =====
+ Context-aware: while the member is inside a module (Nikah, Quran,
+ Family Support, the Wall), the bar swaps to that module's own most-
+ used pages instead of always showing the same global Home/Nikah/
+ Support/Quran/Menu row — the same way a native app's tab bar changes
+ per-section. Outside any module (dashboard, profile, donate, etc.) it
+ falls back to the original global row so there's always a way to jump
+ straight to another module from anywhere. Each set deliberately mirrors
+ the first few entries of module-nav.blade.php's own $allLinks for that
+ module, so the two navs never suggest a different "most important
+ pages" order. --}}
  @php
- $tabBarColsClass = match (2 + collect([
+ $moduleTabs = [
+ 'nikah' => [
+ 'match' => request()->routeIs('nikah.*'),
+ 'items' => [
+ ['route' => Auth::user()?->nikahProfile ? 'nikah.show' : 'nikah.create', 'match' => 'nikah.show', 'icon' => '💍', 'label' => __('db.My Profile')],
+ ['route' => 'nikah.browse', 'match' => 'nikah.browse', 'icon' => '🔍', 'label' => __('db.Browse')],
+ ['route' => 'nikah.interests', 'match' => 'nikah.interests', 'icon' => '💌', 'label' => __('db.Interests')],
+ ],
+ ],
+ 'quran' => [
+ 'match' => request()->routeIs('courses.*') || request()->routeIs('lessons.*') || request()->routeIs('quran-live.*') || request()->routeIs('quiz.*') || request()->routeIs('certificate.*'),
+ 'items' => [
+ ['route' => 'courses.index', 'match' => 'courses.*|lessons.*|quiz.*', 'icon' => '📖', 'label' => __('db.Courses')],
+ ['route' => 'quran-live.my-class', 'match' => 'quran-live.*', 'icon' => '🎥', 'label' => __('db.Live Class')],
+ ['route' => 'certificate.index', 'match' => 'certificate.*', 'icon' => '🏆', 'label' => __('db.Certificates')],
+ ],
+ ],
+ 'counseling' => [
+ 'match' => request()->routeIs('counseling.*') || request()->routeIs('support.*'),
+ 'items' => [
+ ['route' => 'support.create', 'match' => 'support.create', 'icon' => '📝', 'label' => __('db.New Query')],
+ ['route' => 'support.index', 'match' => 'support.index|support.show', 'icon' => '📋', 'label' => __('db.My Queries')],
+ ['route' => 'counseling.bookings.index', 'match' => 'counseling.book.*|counseling.bookings.*', 'icon' => '📅', 'label' => __('db.Bookings')],
+ ],
+ ],
+ 'wall' => [
+ 'match' => request()->routeIs('wall.*'),
+ 'items' => [
+ ['route' => 'wall.index', 'match' => 'wall.index|wall.comments|wall.post.comments', 'icon' => '🤲', 'label' => __('db.Feed')],
+ ['route' => 'wall.saved', 'match' => 'wall.saved', 'icon' => '🔖', 'label' => __('db.Saved')],
+ ],
+ ],
+ ];
+ $activeModule = collect($moduleTabs)->first(fn ($m) => $m['match']);
+ $tabCount = 2 + ($activeModule ? count($activeModule['items']) : collect([
  Auth::user()->nikah_module_enabled,
  Auth::user()->counseling_module_enabled,
  Auth::user()->quran_module_enabled,
- ])->filter()->count()) {
- 2 => 'grid-cols-2', 3 => 'grid-cols-3', 4 => 'grid-cols-4', default => 'grid-cols-5',
+ ])->filter()->count());
+ $tabBarColsClass = match ($tabCount) {
+ 2 => 'grid-cols-2', 3 => 'grid-cols-3', 4 => 'grid-cols-4', 5 => 'grid-cols-5', default => 'grid-cols-6',
  };
  @endphp
- <div class="sm:hidden fixed bottom-0 inset-x-0 z-40 bg-teal-800 border-t border-teal-900 safe-bottom-nav">
+ @php
+ // Renders one tab: an icon in a filled pill when active (instead of
+ // just a text-color swap) plus a tap-scale for touch feedback, so the
+ // bar feels tactile rather than a flat row of links.
+ $tab = function (string $href, string $icon, string $label, bool $active) {
+ $iconWrap = $active ? 'bg-white/20 shadow-sm scale-105' : 'bg-transparent';
+ $text = $active ? 'text-white' : 'text-teal-300';
+ return '<a href="' . $href . '" class="flex flex-col items-center justify-center gap-1 py-2 text-[11px] font-semibold ' . $text . ' active:scale-90 transition-transform duration-150">'
+ . '<span class="flex items-center justify-center w-8 h-8 rounded-full text-lg leading-none transition-all duration-200 ' . $iconWrap . '">' . $icon . '</span>'
+ . $label . '</a>';
+ };
+ @endphp
+ <div class="sm:hidden fixed bottom-0 inset-x-0 z-40 bg-teal-800 border-t border-teal-900 shadow-[0_-4px_12px_rgba(0,0,0,0.18)] safe-bottom-nav">
  <div class="grid {{ $tabBarColsClass }}">
- <a href="{{ route('dashboard') }}" class="flex flex-col items-center justify-center gap-0.5 py-2 text-[11px] font-medium {{ request()->routeIs('dashboard') ? 'text-white' : 'text-teal-300' }}">
- <span class="text-lg leading-none">🏠</span>
- {{ __('db.Home') }}
- </a>
+ {!! $tab(route('dashboard'), '🏠', __('db.Home'), request()->routeIs('dashboard')) !!}
+
+ @if ($activeModule)
+ @foreach ($activeModule['items'] as $item)
+ @continue(!\Illuminate\Support\Facades\Route::has($item['route']))
+ {!! $tab(route($item['route']), $item['icon'], $item['label'], request()->routeIs(...explode('|', $item['match']))) !!}
+ @endforeach
+ @else
  @if (Auth::user()->nikah_module_enabled)
- <a href="{{ Auth::user()?->nikahProfile ? route('nikah.show') : route('nikah.create') }}" class="flex flex-col items-center justify-center gap-0.5 py-2 text-[11px] font-medium {{ request()->routeIs('nikah.*') ? 'text-white' : 'text-teal-300' }}">
- <span class="text-lg leading-none">💍</span>
- {{ __('db.Nikah') }}
- </a>
+ {!! $tab(Auth::user()?->nikahProfile ? route('nikah.show') : route('nikah.create'), '💍', __('db.Nikah'), false) !!}
  @endif
  @if (Auth::user()->counseling_module_enabled)
- <a href="{{ route('counseling.book.start') }}" class="flex flex-col items-center justify-center gap-0.5 py-2 text-[11px] font-medium {{ request()->routeIs('counseling.*') || request()->routeIs('support.*') ? 'text-white' : 'text-teal-300' }}">
- <span class="text-lg leading-none">🤝</span>
- {{ __('db.Support') }}
- </a>
+ {!! $tab(route('counseling.book.start'), '🤝', __('db.Support'), false) !!}
  @endif
  @if (Auth::user()->quran_module_enabled)
- <a href="{{ route('courses.index') }}" class="flex flex-col items-center justify-center gap-0.5 py-2 text-[11px] font-medium {{ request()->routeIs('courses.*') || request()->routeIs('quran-live.*') ? 'text-white' : 'text-teal-300' }}">
- <span class="text-lg leading-none">📖</span>
- {{ __('db.Quran') }}
- </a>
+ {!! $tab(route('courses.index'), '📖', __('db.Quran'), false) !!}
  @endif
- <button type="button" @click="open = !open" class="flex flex-col items-center justify-center gap-0.5 py-2 text-[11px] font-medium" :class="open ? 'text-white' : 'text-teal-300'">
- <span class="text-lg leading-none">☰</span>
+ @endif
+
+ <button type="button" @click="open = !open" class="flex flex-col items-center justify-center gap-1 py-2 text-[11px] font-semibold active:scale-90 transition-transform duration-150" :class="open ? 'text-white' : 'text-teal-300'">
+ <span class="flex items-center justify-center w-8 h-8 rounded-full text-lg leading-none transition-all duration-200" :class="open ? 'bg-white/20 shadow-sm scale-105' : ''">☰</span>
  {{ __('db.Menu') }}
  </button>
  </div>
