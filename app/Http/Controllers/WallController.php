@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Comment;
 use App\Models\CommunityPost;
 use App\Models\DuaRequest;
 use App\Models\Reaction;
 use App\Models\SavedPost;
+use App\Notifications\CommentReceived;
 use App\Notifications\ReactionReceived;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
@@ -28,12 +30,14 @@ class WallController extends Controller
             // Pinned posts lead within their own tag too.
             $items = CommunityPost::published()->withTag($tag)
                 ->with(['author', 'reactions', 'savedPosts'])
+                ->withCount('allComments as comments_count')
                 ->orderByDesc('is_pinned')
                 ->orderByDesc('created_at')
                 ->paginate($perPage, ['*'], 'page', $page);
         } elseif ($tag === 'dua') {
             $items = DuaRequest::where('status', 'approved')
                 ->with(['user', 'reactions', 'savedPosts'])
+                ->withCount('allComments as comments_count')
                 ->orderByDesc('created_at')
                 ->paginate($perPage, ['*'], 'page', $page);
         } else {
@@ -42,12 +46,14 @@ class WallController extends Controller
             // growing tables instead of one.
             $duas = DuaRequest::where('status', 'approved')
                 ->with(['user', 'reactions', 'savedPosts'])
+                ->withCount('allComments as comments_count')
                 ->latest()
                 ->limit(300)
                 ->get();
 
             $posts = CommunityPost::published()
                 ->with(['author', 'reactions', 'savedPosts'])
+                ->withCount('allComments as comments_count')
                 ->latest()
                 ->limit(300)
                 ->get();
@@ -148,7 +154,9 @@ class WallController extends Controller
             }])
             ->latest()
             ->paginate($perPage, ['*'], 'page', $page)
-            ->through(fn (SavedPost $savedPost) => $savedPost->saveable);
+            ->through(function (SavedPost $savedPost) {
+                return tap($savedPost->saveable, fn ($model) => $model?->loadCount('allComments as comments_count'));
+            });
 
         if ($request->ajax()) {
             return response()->json([
@@ -158,6 +166,105 @@ class WallController extends Controller
         }
 
         return view('dua-wall.saved', ['paginated' => $paginated]);
+    }
+
+    public function comments(DuaRequest $duaRequest)
+    {
+        abort_unless($duaRequest->status === 'approved', 404);
+
+        return response()->json(['html' => $this->renderComments($duaRequest)]);
+    }
+
+    public function postComments(CommunityPost $communityPost)
+    {
+        abort_unless($communityPost->status === 'published', 404);
+
+        return response()->json(['html' => $this->renderComments($communityPost)]);
+    }
+
+    public function storeComment(DuaRequest $duaRequest, Request $request)
+    {
+        abort_unless($duaRequest->status === 'approved', 404);
+
+        return $this->createComment($duaRequest, $request);
+    }
+
+    public function storePostComment(CommunityPost $communityPost, Request $request)
+    {
+        abort_unless($communityPost->status === 'published', 404);
+
+        return $this->createComment($communityPost, $request);
+    }
+
+    // Live the moment it's posted — comments aren't pre-moderated the way
+    // duas are (too high-volume for that to be usable). Deletion is the
+    // moderation lever instead: the author or any admin can remove one.
+    public function destroyComment(Comment $comment)
+    {
+        abort_unless($comment->user_id === Auth::id() || Auth::user()->hasRole('admin'), 403);
+
+        $comment->delete();
+
+        return response()->json(['deleted' => true]);
+    }
+
+    private function createComment(Model $commentable, Request $request)
+    {
+        $validated = $request->validate([
+            'body' => ['required', 'string', 'max:1000'],
+            'parent_id' => ['nullable', 'integer', 'exists:comments,id'],
+        ]);
+
+        $parent = null;
+        if (!empty($validated['parent_id'])) {
+            $parent = Comment::where('id', $validated['parent_id'])
+                ->where('commentable_type', get_class($commentable))
+                ->where('commentable_id', $commentable->id)
+                ->whereNull('parent_id') // one level deep only — can't reply to a reply
+                ->first();
+
+            abort_unless($parent, 422, 'Cannot reply to that comment.');
+        }
+
+        $comment = Comment::create([
+            'commentable_type' => get_class($commentable),
+            'commentable_id' => $commentable->id,
+            'user_id' => Auth::id(),
+            'parent_id' => $parent?->id,
+            'body' => $validated['body'],
+        ]);
+        $comment->load('user');
+
+        $this->notifyOnComment($commentable, $parent, $comment);
+
+        return response()->json([
+            'html' => $this->renderComments($commentable),
+        ]);
+    }
+
+    private function notifyOnComment(Model $commentable, ?Comment $parent, Comment $comment): void
+    {
+        $postAuthor = $commentable instanceof DuaRequest ? $commentable->user : $commentable->author;
+        $recipients = collect([$postAuthor, $parent?->user])
+            ->filter()
+            ->unique('id')
+            ->reject(fn ($user) => $user->id === Auth::id());
+
+        foreach ($recipients as $recipient) {
+            try {
+                $recipient->notify(new CommentReceived($comment, Auth::user()));
+            } catch (\Throwable $e) {
+                \Log::error('CommentReceived notification failed: ' . $e->getMessage());
+            }
+        }
+    }
+
+    private function renderComments(Model $commentable): string
+    {
+        return view('dua-wall.partials.comment-thread', [
+            'commentable' => $commentable,
+            'comments' => $commentable->comments,
+        ])->render();
     }
 
     private function toggleReaction(Model $reactable, Request $request): array

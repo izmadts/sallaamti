@@ -46,6 +46,18 @@ class DuaRequest extends Model
         return $this->morphMany(SavedPost::class, 'saveable');
     }
 
+    public function comments(): MorphMany
+    {
+        return $this->morphMany(Comment::class, 'commentable')->visible()->topLevel()->with('replies.user')->latest();
+    }
+
+    // Unfiltered by top-level/reply — used only for a count() including
+    // replies (see WallController's withCount('allComments as comments_count')).
+    public function allComments(): MorphMany
+    {
+        return $this->morphMany(Comment::class, 'commentable')->visible();
+    }
+
     public function savedBy(?User $user): bool
     {
         if (!$user) {

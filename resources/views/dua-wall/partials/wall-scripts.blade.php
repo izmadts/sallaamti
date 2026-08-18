@@ -135,5 +135,109 @@
                 // silently ignore — worst case the tap just didn't register
             }
         });
+
+        // Comments — thread-id links a toggle button to its container
+        // (and any post/reply form it's holding) regardless of how deep
+        // that container is nested inside the card's markup.
+        function commentsContainerFor(threadId) {
+            return document.querySelector('[data-comments-container][data-thread-id="' + threadId + '"]');
+        }
+        function commentsCountBadgeFor(threadId) {
+            return document.querySelector('[data-comments-toggle][data-thread-id="' + threadId + '"] [data-comments-count]');
+        }
+        function syncCommentsCount(container) {
+            const badge = commentsCountBadgeFor(container.dataset.threadId);
+            if (badge) badge.textContent = container.querySelectorAll('[data-comment-id]').length;
+        }
+
+        document.addEventListener('click', async function (event) {
+            const toggle = event.target.closest('[data-comments-toggle]');
+            if (!toggle) return;
+            event.preventDefault();
+
+            const container = commentsContainerFor(toggle.dataset.threadId);
+            const opening = container.classList.contains('hidden');
+            container.classList.toggle('hidden');
+            if (!opening || container.dataset.loaded === '1') return;
+
+            try {
+                const res = await fetch(toggle.dataset.commentsUrl, {
+                    headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' },
+                });
+                const data = await res.json();
+                container.innerHTML = data.html;
+                container.dataset.loaded = '1';
+            } catch (e) {
+                container.innerHTML = '<p class="text-xs text-red-500">{{ __('db.Could not load comments.') }}</p>';
+            }
+        });
+
+        document.addEventListener('submit', async function (event) {
+            const form = event.target.closest('[data-comment-form]');
+            if (!form) return;
+            event.preventDefault();
+
+            const container = form.closest('[data-comments-container]');
+            const textarea = form.querySelector('textarea');
+            const button = form.querySelector('button');
+            button.disabled = true;
+
+            try {
+                const res = await fetch(form.action, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json',
+                    },
+                    body: new FormData(form),
+                });
+                if (!res.ok) throw new Error('failed');
+                const data = await res.json();
+                container.innerHTML = data.html;
+                container.dataset.loaded = '1';
+                syncCommentsCount(container);
+            } catch (e) {
+                textarea.disabled = false;
+                button.disabled = false;
+            }
+        });
+
+        document.addEventListener('click', function (event) {
+            const toggle = event.target.closest('[data-reply-toggle]');
+            if (!toggle) return;
+            event.preventDefault();
+
+            const form = toggle.closest('[data-comment-id]')?.querySelector(':scope > div > [data-comment-form]');
+            if (!form) return;
+            form.classList.toggle('hidden');
+            if (!form.classList.contains('hidden')) form.querySelector('textarea')?.focus();
+        });
+
+        document.addEventListener('click', async function (event) {
+            const btn = event.target.closest('[data-comment-delete]');
+            if (!btn) return;
+            event.preventDefault();
+            if (!confirm('{{ __('db.Delete this comment?') }}')) return;
+
+            const commentEl = btn.closest('[data-comment-id]');
+            const container = btn.closest('[data-comments-container]');
+
+            try {
+                const res = await fetch(btn.dataset.url, {
+                    method: 'DELETE',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json',
+                    },
+                });
+                if (!res.ok) throw new Error('failed');
+                commentEl.remove();
+                if (container) syncCommentsCount(container);
+            } catch (e) {
+                // silently ignore — worst case the delete just didn't register
+            }
+        });
     })();
 </script>

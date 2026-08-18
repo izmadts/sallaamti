@@ -145,7 +145,7 @@
                         </div>
                     </form>
 
-                    @php $dashboardWallDuas = \App\Models\DuaRequest::where('status', 'approved')->with(['user', 'reactions'])->latest()->take(3)->get(); @endphp
+                    @php $dashboardWallDuas = \App\Models\DuaRequest::where('status', 'approved')->with(['user', 'reactions', 'savedPosts'])->withCount('allComments as comments_count')->latest()->take(3)->get(); @endphp
                     @forelse ($dashboardWallDuas as $dua)
                     <div class="{{ !$loop->first ? 'mt-3 pt-3 border-t border-gray-100' : '' }}">
                         @include('dua-wall.partials.dua-card', ['dua' => $dua])

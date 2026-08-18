@@ -12,9 +12,16 @@
             <p class="text-gray-700 text-sm mt-1.5 whitespace-pre-line break-words">{{ $dua->body }}</p>
 
             <div class="mt-3 flex items-center justify-between gap-2">
-                <x-reaction-picker :model="$dua" :react-url="route('wall.react', $dua)" />
+                <div class="flex items-center gap-1.5">
+                    <x-reaction-picker :model="$dua" :react-url="route('wall.react', $dua)" />
+                    <button type="button" data-comments-toggle data-thread-id="dua-{{ $dua->id }}" data-comments-url="{{ route('wall.comments', $dua) }}"
+                        class="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1.5 rounded-full border border-gray-200 text-gray-500 hover:border-gray-300">
+                        💬 <span data-comments-count>{{ $dua->comments_count ?? 0 }}</span>
+                    </button>
+                </div>
                 <x-save-button :model="$dua" :save-url="route('wall.save', $dua)" />
             </div>
+            <div data-comments-container data-thread-id="dua-{{ $dua->id }}" class="hidden mt-3"></div>
         </div>
     </div>
 </div>

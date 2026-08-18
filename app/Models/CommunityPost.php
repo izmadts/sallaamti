@@ -73,6 +73,16 @@ class CommunityPost extends Model
         return $this->morphMany(SavedPost::class, 'saveable');
     }
 
+    public function comments(): MorphMany
+    {
+        return $this->morphMany(Comment::class, 'commentable')->visible()->topLevel()->with('replies.user')->latest();
+    }
+
+    public function allComments(): MorphMany
+    {
+        return $this->morphMany(Comment::class, 'commentable')->visible();
+    }
+
     public function savedBy(?User $user): bool
     {
         if (!$user) {

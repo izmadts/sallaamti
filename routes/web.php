@@ -134,6 +134,8 @@ Route::get('/subscriber/unsubscribe/{token}', [SubscriberController::class, 'uns
 // unified feed for duas + admin-authored posts (activities/events/sermons),
 // filterable by tag via ?tag=.
 Route::get('/wall', [WallController::class, 'index'])->name('wall.index');
+Route::get('/wall/{duaRequest}/comments', [WallController::class, 'comments'])->name('wall.comments');
+Route::get('/wall/post/{communityPost}/comments', [WallController::class, 'postComments'])->name('wall.post.comments');
 
 // Certificate verification (public — no login needed)
 Route::get('/verify-certificate/{certificateNumber?}', [CertificateController::class, 'verify'])->name('certificate.verify');
@@ -179,6 +181,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/wall/saved', [WallController::class, 'saved'])->name('wall.saved');
     Route::post('/wall/{duaRequest}/save', [WallController::class, 'save'])->name('wall.save');
     Route::post('/wall/post/{communityPost}/save', [WallController::class, 'postSave'])->name('wall.post.save');
+    Route::post('/wall/{duaRequest}/comments', [WallController::class, 'storeComment'])->name('wall.comments.store');
+    Route::post('/wall/post/{communityPost}/comments', [WallController::class, 'storePostComment'])->name('wall.post.comments.store');
+    Route::delete('/comments/{comment}', [WallController::class, 'destroyComment'])->name('comments.destroy');
 
     // --- NIKAH MODULE ---
     Route::middleware('nikah.activity')->group(function () {
