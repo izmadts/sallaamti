@@ -38,11 +38,32 @@ class YoutubePublisher implements SocialPublisher
         $youtube = new YouTubeService($client);
 
         $snippet = new VideoSnippet();
-        $snippet->setTitle(\Illuminate\Support\Str::limit($post->title, 100, ''));
-        $snippet->setDescription(strip_tags($post->body));
-        if (!empty($post->tags)) {
-            $snippet->setTags($post->tags);
+
+        $description = strip_tags($post->body);
+        if ($hashtagsLine = $this->hashtagsLine($post)) {
+            // YouTube also recognizes '#' hashtags placed in the description
+            // itself (shown above the title on the watch page), separate
+            // from the structured keyword tags field below — worth having
+            // both since they serve different discovery surfaces.
+            $description .= "\n\n" . $hashtagsLine;
         }
+        $snippet->setDescription(\Illuminate\Support\Str::limit($description, 5000, ''));
+
+        // Merge the admin's hashtag/keyword field with the Wall's own
+        // category tags (Activity/Event/Sermon etc., already on $post->tags)
+        // — both are genuinely useful keywords for YouTube's search/
+        // discovery. keywordTags() caps the hashtag-derived portion, but
+        // the wall tags get merged back in afterward, so re-cap the final
+        // combined list too — YouTube hard-rejects the whole upload if the
+        // combined tags exceed 500 characters.
+        $keywordTags = $this->capKeywordLength(
+            array_values(array_unique(array_merge($this->keywordTags($post), $post->tags ?? [])))
+        );
+        if (!empty($keywordTags)) {
+            $snippet->setTags($keywordTags);
+        }
+
+        $snippet->setTitle(\Illuminate\Support\Str::limit($post->title, 100, ''));
 
         $status = new VideoStatus();
         $status->setPrivacyStatus('public');
@@ -73,5 +94,24 @@ class YoutubePublisher implements SocialPublisher
         }
 
         return ['success' => true, 'external_id' => $uploadStatus['id'] ?? null, 'error' => null];
+    }
+
+    // YouTube hard-rejects a video upload if the tags array's combined
+    // length exceeds 500 characters — drop trailing tags once adding
+    // another would cross that, rather than let the whole upload fail.
+    private function capKeywordLength(array $tags, int $maxCombinedLength = 500): array
+    {
+        $kept = [];
+        $length = 0;
+
+        foreach ($tags as $tag) {
+            $length += strlen($tag) + 1;
+            if ($length > $maxCombinedLength) {
+                break;
+            }
+            $kept[] = $tag;
+        }
+
+        return $kept;
     }
 }

@@ -163,6 +163,7 @@ class CommunityPostController extends Controller
             'files' => ['required', 'array', 'min:1', 'max:30'],
             'files.*' => ['file', 'mimes:jpg,jpeg,png,webp,mp4,mov,webm', 'max:51200'],
             'tags' => ['nullable', 'string'],
+            'hashtags' => ['nullable', 'string', 'max:500'],
         ]);
 
         $tags = $this->parseTags($validated['tags'] ?? null);
@@ -177,6 +178,7 @@ class CommunityPostController extends Controller
                 'title' => Str::of($file->getClientOriginalName())->beforeLast('.')->replace(['-', '_'], ' ')->title()->limit(150),
                 'body' => '',
                 'tags' => $tags,
+                'hashtags' => $validated['hashtags'] ?? null,
                 'social_targets' => $socialTargets,
                 'status' => 'scheduled',
                 'queue_position' => $nextPosition++,
@@ -241,6 +243,7 @@ class CommunityPostController extends Controller
             'title' => ['required', 'string', 'max:150'],
             'body' => ['required', 'string'],
             'event_at' => ['nullable', 'date'],
+            'hashtags' => ['nullable', 'string', 'max:500'],
             'photo' => ['nullable', 'image', 'max:2048'],
             'video' => ['nullable', 'mimes:mp4,mov,webm', 'max:51200'],
         ]);

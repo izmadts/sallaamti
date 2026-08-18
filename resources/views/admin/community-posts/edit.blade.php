@@ -74,6 +74,12 @@
                 <p class="text-xs text-gray-400 mb-3">
                     Posts automatically the next time this moves from draft to published. Nothing connected yet? <a href="{{ route('admin.integrations.index') }}" class="text-[--teal] hover:underline">Connect accounts in Integrations</a>.
                 </p>
+                <div class="mb-4">
+                    @php $hashtagsTooltip = "Space or comma-separated keywords, with or without '#'. Appended to the caption on Facebook, Instagram, X, Threads & TikTok, and added as searchable tags on YouTube.\n\nRecommended lengths: X/Twitter ~1-2 hashtags (280 char post limit), Instagram 3-8 (2200 char max), Threads 500 char max, TikTok 150 char max caption, Facebook ~2000 char max. YouTube's keyword tags are automatically capped at 500 combined characters, so extra ones are safely dropped rather than failing the upload."; @endphp
+                    <x-input-label for="hashtags" value="Hashtags / keywords" title="{{ $hashtagsTooltip }}" />
+                    <x-text-input id="hashtags" name="hashtags" class="w-full mt-1" :value="old('hashtags', $post->hashtags)" placeholder="#Islam #Sallaamti #Community" title="{{ $hashtagsTooltip }}" />
+                    <p class="text-xs text-gray-400 mt-1">Space or comma-separated, with or without '#'. Hover the field for per-platform length guidance.</p>
+                </div>
                 <div class="flex flex-wrap gap-3">
                     @foreach (['facebook' => 'Facebook', 'instagram' => 'Instagram', 'twitter' => 'X (Twitter)', 'youtube' => 'YouTube', 'tiktok' => 'TikTok', 'threads' => 'Threads'] as $key => $label)
                     <label class="flex items-center gap-1.5 text-sm {{ in_array($key, $connectedPlatforms) ? 'text-gray-700' : 'text-gray-400 cursor-not-allowed' }}">

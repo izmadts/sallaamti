@@ -15,6 +15,7 @@ class CommunityPost extends Model
         'video',
         'event_at',
         'tags',
+        'hashtags',
         'social_targets',
         'status',
         'published_at',
