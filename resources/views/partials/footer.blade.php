@@ -80,10 +80,8 @@
                 <div class="flex flex-col items-start">
                     <a class="text-gray-300 hover:text-white mb-2" href="{{ route('index') }}"><i class="fa fa-check text-[--teal] mr-2"></i>{{ __('db.Home') }}</a>
                     <a class="text-gray-300 hover:text-white mb-2" href="{{ url('/about') }}"><i class="fa fa-check text-[--teal] mr-2"></i>{{ __('db.About Us') }}</a>
-                    <a class="text-gray-300 hover:text-white mb-2" href="{{ url('/activities') }}"><i class="fa fa-check text-[--teal] mr-2"></i>{{ __('db.Activities') }}</a>
+                    <a class="text-gray-300 hover:text-white mb-2" href="{{ route('wall.index') }}"><i class="fa fa-check text-[--teal] mr-2"></i>{{ __('db.Sallaamti Wall') }}</a>
                     <a class="text-gray-300 hover:text-white mb-2" href="{{ route('blog.index') }}"><i class="fa fa-check text-[--teal] mr-2"></i>{{ __('db.Blog') }}</a>
-                    <a class="text-gray-300 hover:text-white mb-2" href="{{ url('/events') }}"><i class="fa fa-check text-[--teal] mr-2"></i>{{ __('db.Events') }}</a>
-                    <a class="text-gray-300 hover:text-white mb-2" href="{{ url('/sermons') }}"><i class="fa fa-check text-[--teal] mr-2"></i>{{ __('db.Sermons') }}</a>
                     <a class="text-gray-300 hover:text-white mb-2" href="{{ url('/contact') }}"><i class="fa fa-check text-[--teal] mr-2"></i>{{ __('db.Contact us') }}</a>
                     <a class="text-gray-300 hover:text-white mb-2" href="{{ url('/donate') }}"><i class="fa fa-check text-[--teal] mr-2"></i>{{ __('db.Donations') }}</a>
                     <a class="text-gray-300 hover:text-white mb-2" href="{{ url('/volunteer') }}"><i class="fa fa-check text-[--teal] mr-2"></i>{{ __('db.Become Volunteer') }}</a>

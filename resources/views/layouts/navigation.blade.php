@@ -20,40 +20,6 @@
  🏠 {{ __('db.Dashboard') }}
  </x-nav-link>
 
- {{-- Sallaamti Wall — deliberately a standalone standout link, not buried in a dropdown --}}
- <x-wall-nav-badge :dua="$latestApprovedDua ?? null">
- <a href="{{ route('wall.index') }}" class="inline-flex items-center gap-1 px-3 py-2 rounded-md text-sm font-medium transition
- {{ request()->routeIs('wall.*') ? 'bg-teal-800 text-white' : 'text-white hover:bg-teal-600' }}">
- 🤲 {{ __('db.Sallaamti Wall') }}
- <span class="w-1.5 h-1.5 rounded-full animate-pulse" style="background: var(--gold)"></span>
- </a>
- </x-wall-nav-badge>
-
- {{-- Site Dropdown — public pages stay reachable after login --}}
- <x-dropdown align="left" width="48">
- <x-slot name="trigger">
- <button class="inline-flex items-center px-3 py-2 rounded-md text-sm font-medium text-white hover:bg-teal-600 focus:outline-none transition">
- 🌐 {{ __('db.Website') }}
- <svg class="ms-1 h-4 w-4 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
- <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
- </svg>
- </button>
- </x-slot>
- <x-slot name="content">
- <x-dropdown-link :href="route('index')">🏡 {{ __('db.Home Page') }}</x-dropdown-link>
- <x-dropdown-link :href="url('/about')">ℹ️ {{ __('db.About Us') }}</x-dropdown-link>
- <x-dropdown-link :href="url('/activities')">📅 {{ __('db.Activities') }}</x-dropdown-link>
- <x-dropdown-link :href="url('/events')">🎉 {{ __('db.Events') }}</x-dropdown-link>
- <x-dropdown-link :href="url('/sermons')">🎙️ {{ __('db.Sermons') }}</x-dropdown-link>
- <x-dropdown-link :href="route('blog.index')">📰 {{ __('db.Blog') }}</x-dropdown-link>
- <x-dropdown-link :href="url('/team')">👥 {{ __('db.Our Team') }}</x-dropdown-link>
- <x-dropdown-link :href="url('/contact')">✉️ {{ __('db.Contact') }}</x-dropdown-link>
- <div class="border-t border-gray-100 my-1"></div>
- <x-dropdown-link :href="route('volunteer.create')">🤝 {{ __('db.Volunteer') }}</x-dropdown-link>
- <x-dropdown-link :href="route('donate.create')">💝 {{ __('db.Donate') }}</x-dropdown-link>
- </x-slot>
- </x-dropdown>
-
  {{-- Quran Dropdown --}}
  @if (Auth::user()->quran_module_enabled)
  <x-dropdown align="left" width="56">
@@ -345,13 +311,6 @@
  🏠 Dashboard
  </x-responsive-nav-link>
 
- <x-responsive-nav-link :href="route('wall.index')" :active="request()->routeIs('wall.*')" class="text-white">
- 🤲 {{ __('db.Sallaamti Wall') }}
- @if ($latestApprovedDua ?? null)
- <span class="w-1.5 h-1.5 rounded-full animate-pulse inline-block ms-1" style="background: var(--gold)"></span>
- @endif
- </x-responsive-nav-link>
-
  {{-- Nikah — prominent gold block, one place for every Nikah action --}}
  @if (Auth::user()->nikah_module_enabled)
  <div class="rounded-lg mt-2 mb-1 overflow-hidden" style="background: rgba(184,150,46,0.18); border: 1px solid rgba(184,150,46,0.4);">
@@ -386,9 +345,6 @@
  <div class="px-3 py-1 text-xs text-teal-300 font-semibold uppercase tracking-wider mt-2">Website</div>
  <x-responsive-nav-link :href="route('index')" class="text-white">🏡 Home Page</x-responsive-nav-link>
  <x-responsive-nav-link :href="url('/about')" class="text-white">ℹ️ About Us</x-responsive-nav-link>
- <x-responsive-nav-link :href="url('/activities')" class="text-white">📅 Activities</x-responsive-nav-link>
- <x-responsive-nav-link :href="url('/events')" class="text-white">🎉 Events</x-responsive-nav-link>
- <x-responsive-nav-link :href="url('/sermons')" class="text-white">🎙️ Sermons</x-responsive-nav-link>
  <x-responsive-nav-link :href="route('blog.index')" class="text-white">📰 Blog</x-responsive-nav-link>
  <x-responsive-nav-link :href="url('/team')" class="text-white">👥 Our Team</x-responsive-nav-link>
  <x-responsive-nav-link :href="url('/contact')" class="text-white">✉️ Contact</x-responsive-nav-link>

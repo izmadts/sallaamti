@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 class DuaRequest extends Model
 {
@@ -17,9 +18,9 @@ class DuaRequest extends Model
         return $this->belongsTo(User::class);
     }
 
-    public function reactions()
+    public function reactions(): MorphMany
     {
-        return $this->hasMany(DuaReaction::class);
+        return $this->morphMany(Reaction::class, 'reactable');
     }
 
     public function reactedBy(?User $user): bool
@@ -29,5 +30,14 @@ class DuaRequest extends Model
         }
 
         return $this->reactions->contains('user_id', $user->id);
+    }
+
+    public function reactionTypeBy(?User $user): ?string
+    {
+        if (!$user) {
+            return null;
+        }
+
+        return $this->reactions->firstWhere('user_id', $user->id)?->type;
     }
 }

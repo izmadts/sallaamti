@@ -12,8 +12,9 @@ use App\Http\Controllers\NikahFileController;
 use App\Http\Controllers\NikahPhotoController;
 use App\Http\Controllers\UserAvatarController;
 use App\Http\Controllers\PushSubscriptionController;
-use App\Http\Controllers\DuaWallController;
+use App\Http\Controllers\WallController;
 use App\Http\Controllers\Admin\DuaWallAdminController;
+use App\Http\Controllers\Admin\CommunityPostController;
 use App\Http\Controllers\NikahPaymentController;
 use App\Http\Controllers\NikahSafetyController;
 use App\Http\Controllers\NikahGuardianMessageController;
@@ -47,7 +48,6 @@ use App\Http\Controllers\Admin\BlogPostController;
 use App\Http\Controllers\Admin\EditorImageController;
 use App\Http\Controllers\Admin\TeamMemberController;
 use App\Http\Controllers\Admin\DailyContentController;
-use App\Http\Controllers\Admin\ActivityPostController;
 use App\Http\Controllers\Admin\CertificateAdminController;
 use App\Http\Controllers\SupportQueryController;
 use App\Http\Controllers\Admin\SupportQueryAdminController;
@@ -84,12 +84,11 @@ Route::get('/about', function () {
     $previewCourses = \App\Models\Course::where('is_published', true)->take(4)->get();
     return view('about', compact('teamMembers', 'testimonials', 'previewCourses'));
 });
-Route::get('/activities', function () {
-    $activityPosts = \App\Models\ActivityPost::active()->orderBy('activity_date', 'desc')->orderBy('order')->get();
-    return view('activities', compact('activityPosts'));
-});
-Route::get('/events', fn() => view('events'));
-Route::get('/sermons', fn() => view('sermons'));
+// Retired — content now lives on the unified Wall, filtered by tag. Kept as
+// redirects (not a 404) since these URLs may be bookmarked/indexed.
+Route::get('/activities', fn() => redirect('/wall?tag=Activity', 301));
+Route::get('/events', fn() => redirect('/wall?tag=Event', 301));
+Route::get('/sermons', fn() => redirect('/wall?tag=Sermon', 301));
 Route::get('/team', function () {
     $teamMembers = \App\Models\TeamMember::active()->orderBy('order')->get();
     return view('team', compact('teamMembers'));
@@ -130,8 +129,10 @@ Route::get('/subscriber/verify/{token}', [SubscriberController::class, 'verify']
 Route::get('/subscriber/unsubscribe/{token}', [SubscriberController::class, 'unsubscribe'])->name('subscriber.unsubscribe');
 
 // Sallaamti Wall — guest-readable (good top-of-funnel content), posting/
-// reacting requires login (see the auth-gated routes further down).
-Route::get('/wall', [DuaWallController::class, 'index'])->name('wall.index');
+// reacting requires login (see the auth-gated routes further down). One
+// unified feed for duas + admin-authored posts (activities/events/sermons),
+// filterable by tag via ?tag=.
+Route::get('/wall', [WallController::class, 'index'])->name('wall.index');
 
 // Certificate verification (public — no login needed)
 Route::get('/verify-certificate/{certificateNumber?}', [CertificateController::class, 'verify'])->name('certificate.verify');
@@ -171,8 +172,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/push/unsubscribe', [PushSubscriptionController::class, 'destroy'])->name('push.unsubscribe');
 
     // Sallaamti Wall — posting and reacting (viewing the wall itself is public, see above)
-    Route::post('/wall', [DuaWallController::class, 'store'])->name('wall.store');
-    Route::post('/wall/{duaRequest}/react', [DuaWallController::class, 'react'])->name('wall.react');
+    Route::post('/wall', [WallController::class, 'store'])->name('wall.store');
+    Route::post('/wall/{duaRequest}/react', [WallController::class, 'react'])->name('wall.react');
+    Route::post('/wall/post/{communityPost}/react', [WallController::class, 'postReact'])->name('wall.post.react');
 
     // --- NIKAH MODULE ---
     Route::middleware('nikah.activity')->group(function () {
@@ -294,8 +296,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 
     Route::resource('daily-content', DailyContentController::class)->except(['show']);
     Route::post('daily-content/{daily_content}/toggle', [DailyContentController::class, 'toggle'])->name('daily-content.toggle');
-    Route::resource('activity-posts', ActivityPostController::class)->except(['show']);
-    Route::post('activity-posts/{activity_post}/toggle', [ActivityPostController::class, 'toggle'])->name('activity-posts.toggle');
+    Route::resource('community-posts', CommunityPostController::class)->except(['show']);
+    Route::post('community-posts/{community_post}/toggle', [CommunityPostController::class, 'toggle'])->name('community-posts.toggle');
 
     // Certificates (admin-issued)
     Route::get('certificates', [CertificateAdminController::class, 'index'])->name('certificates.index');

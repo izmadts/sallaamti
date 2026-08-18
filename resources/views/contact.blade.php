@@ -311,7 +311,7 @@
                 <a href="{{ route('register') }}" class="btn-base btn-gold text-lg px-10 py-4 font-semibold">
                     Register Free <i class="fa fa-arrow-right ml-2"></i>
                 </a>
-                <a href="{{ url('/activities') }}" class="btn-base btn-outline-light text-lg px-10 py-4">
+                <a href="{{ route('wall.index', ['tag' => 'Activity']) }}" class="btn-base btn-outline-light text-lg px-10 py-4">
                     Explore Activities
                 </a>
                 @else

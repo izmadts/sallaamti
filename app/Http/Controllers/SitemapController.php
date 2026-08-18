@@ -17,9 +17,7 @@ class SitemapController extends Controller
         $staticPages = [
             ['loc' => '/', 'priority' => '1.0', 'changefreq' => 'weekly'],
             ['loc' => '/about', 'priority' => '0.8', 'changefreq' => 'monthly'],
-            ['loc' => '/activities', 'priority' => '0.7', 'changefreq' => 'monthly'],
-            ['loc' => '/events', 'priority' => '0.5', 'changefreq' => 'weekly'],
-            ['loc' => '/sermons', 'priority' => '0.5', 'changefreq' => 'weekly'],
+            ['loc' => '/wall', 'priority' => '0.7', 'changefreq' => 'daily'],
             ['loc' => '/team', 'priority' => '0.5', 'changefreq' => 'monthly'],
             ['loc' => '/testimonial', 'priority' => '0.5', 'changefreq' => 'monthly'],
             ['loc' => '/contact', 'priority' => '0.6', 'changefreq' => 'yearly'],

@@ -50,9 +50,6 @@
             @foreach ([
                 ['url' => url('/'), 'icon' => '🏠', 'label' => 'Home'],
                 ['url' => url('/about'), 'icon' => 'ℹ️', 'label' => 'About Us'],
-                ['url' => url('/activities'), 'icon' => '📅', 'label' => 'Activities'],
-                ['url' => url('/events'), 'icon' => '🎉', 'label' => 'Events'],
-                ['url' => url('/sermons'), 'icon' => '🎙️', 'label' => 'Sermons'],
                 ['url' => route('blog.index'), 'icon' => '📰', 'label' => 'Blog'],
                 ['url' => url('/contact'), 'icon' => '✉️', 'label' => 'Contact'],
             ] as $link)
