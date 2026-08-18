@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\TeamMember;
+use App\Support\HtmlSanitizer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -29,6 +30,7 @@ class TeamMemberController extends Controller
             'photo' => ['nullable', 'image', 'max:2048'],
         ]);
 
+        $validated['bio'] = HtmlSanitizer::clean($validated['bio'] ?? null);
         $validated['is_active'] = $request->has('is_active');
         $validated['order'] = TeamMember::max('order') + 1;
 
@@ -55,6 +57,7 @@ class TeamMemberController extends Controller
             'photo' => ['nullable', 'image', 'max:2048'],
         ]);
 
+        $validated['bio'] = HtmlSanitizer::clean($validated['bio'] ?? null);
         $validated['is_active'] = $request->has('is_active');
 
         if ($request->hasFile('photo')) {

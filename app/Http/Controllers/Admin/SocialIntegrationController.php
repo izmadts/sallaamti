@@ -91,9 +91,47 @@ class SocialIntegrationController extends Controller
 
     public function disconnect(SocialAccount $account)
     {
+        // Deleting the local row alone doesn't invalidate the token at the
+        // platform — it stays live (Facebook Page tokens effectively don't
+        // expire; Google/X/TikTok issue long-lived refresh tokens) and
+        // usable by anyone who captured it, even though the admin believes
+        // they've disconnected the account. Best-effort revoke first; a
+        // failed revoke call still proceeds to delete the local record
+        // (revocation failing shouldn't trap the admin unable to disconnect
+        // at all), but we at least try instead of never asking.
+        $this->revokeToken($account);
+
         $account->delete();
 
         return back()->with('status', ucfirst($account->platform) . ' disconnected.');
+    }
+
+    private function revokeToken(SocialAccount $account): void
+    {
+        try {
+            match ($account->platform) {
+                'facebook', 'instagram' => Http::withToken($account->access_token)
+                    ->delete('https://graph.facebook.com/' . self::GRAPH_VERSION . '/me/permissions'),
+                'twitter' => Http::asForm()->withBasicAuth(
+                    Setting::get('twitter_client_id') ?: config('services.twitter.client_id'),
+                    Setting::get('twitter_client_secret') ?: config('services.twitter.client_secret'),
+                )->post('https://api.twitter.com/2/oauth2/revoke', [
+                    'token' => $account->access_token,
+                    'token_type_hint' => 'access_token',
+                ]),
+                'youtube' => Http::asForm()->post('https://oauth2.googleapis.com/revoke', [
+                    'token' => $account->access_token,
+                ]),
+                'tiktok' => Http::asForm()->post('https://open.tiktokapis.com/v2/oauth/revoke/', [
+                    'client_key' => Setting::get('tiktok_client_id') ?: config('services.tiktok.client_id'),
+                    'client_secret' => Setting::get('tiktok_client_secret') ?: config('services.tiktok.client_secret'),
+                    'token' => $account->access_token,
+                ]),
+                default => null,
+            };
+        } catch (\Throwable $e) {
+            \Log::warning("SocialIntegrationController: failed to revoke {$account->platform} token before disconnect — " . $e->getMessage());
+        }
     }
 
     public function retryDispatch(SocialPostDispatch $dispatch)

@@ -321,10 +321,15 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     // Social media auto-posting — connect accounts + review/retry deliveries.
     Route::get('integrations', [SocialIntegrationController::class, 'index'])->name('integrations.index');
     Route::post('integrations/settings', [SocialIntegrationController::class, 'updateSettings'])->name('integrations.settings.update');
-    Route::get('integrations/{platform}/connect', [SocialIntegrationController::class, 'connect'])->name('integrations.connect');
-    Route::get('integrations/{platform}/callback', [SocialIntegrationController::class, 'callback'])->name('integrations.callback');
-    Route::post('integrations/{account}/disconnect', [SocialIntegrationController::class, 'disconnect'])->name('integrations.disconnect');
-    Route::post('social-dispatches/{dispatch}/retry', [SocialIntegrationController::class, 'retryDispatch'])->name('social-dispatches.retry');
+    // Throttled: these hit external OAuth/API endpoints on every call, and an
+    // automated loop against them risks the app's API keys getting rate
+    // limited or banned by the platform, not just wasted local work.
+    Route::middleware('throttle:20,1')->group(function () {
+        Route::get('integrations/{platform}/connect', [SocialIntegrationController::class, 'connect'])->name('integrations.connect');
+        Route::get('integrations/{platform}/callback', [SocialIntegrationController::class, 'callback'])->name('integrations.callback');
+        Route::post('integrations/{account}/disconnect', [SocialIntegrationController::class, 'disconnect'])->name('integrations.disconnect');
+        Route::post('social-dispatches/{dispatch}/retry', [SocialIntegrationController::class, 'retryDispatch'])->name('social-dispatches.retry');
+    });
 
     // Certificates (admin-issued)
     Route::get('certificates', [CertificateAdminController::class, 'index'])->name('certificates.index');
@@ -447,7 +452,13 @@ Route::middleware(['auth', 'blog.manage'])->prefix('admin')->name('admin.')->gro
 Route::middleware(['auth', 'teacher'])->prefix('teacher')->name('teacher.')->group(function () {
     Route::get('/courses', [QuranTeacherController::class, 'index'])->name('courses.index');
     Route::get('/courses/{course}', [QuranTeacherController::class, 'show'])->name('courses.show');
-    Route::post('/courses/{course}/daily-link', [QuranTeacherController::class, 'postDailyLink'])->name('courses.daily-link.store');
+    // The daily-link form on teacher/courses/show.blade.php that posted here
+    // is unreachable — show() above always redirects to groups.index before
+    // that view can render — and the route itself never worked anyway
+    // (postDailyLink() type-hints $group, so a {course} route parameter
+    // never bound to it and the ownership check always 403'd). Removed
+    // rather than fixed: the working, actually-used path is the groups
+    // route directly below.
     // Add to teacher group:
     Route::get('/groups', [QuranTeacherController::class, 'groups'])->name('groups.index');
     Route::get('/groups/{group}', [QuranTeacherController::class, 'showGroup'])->name('groups.show');
