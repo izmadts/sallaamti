@@ -47,4 +47,11 @@ class DuaWallAdminController extends Controller
 
         return back()->with('status', 'Dua hidden from the wall.');
     }
+
+    public function destroy(DuaRequest $duaRequest)
+    {
+        $duaRequest->delete();
+
+        return back()->with('status', 'Dua permanently deleted.');
+    }
 }

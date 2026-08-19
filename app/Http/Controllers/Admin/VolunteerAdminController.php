@@ -57,4 +57,11 @@ class VolunteerAdminController extends Controller
         $volunteer->update(['status' => 'rejected']);
         return back()->with('status', 'Rejected.');
     }
+
+    public function destroy(VolunteerApplication $volunteer)
+    {
+        $volunteer->delete();
+
+        return back()->with('status', 'Volunteer application deleted.');
+    }
 }

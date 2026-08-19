@@ -339,6 +339,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('certificates', [CertificateAdminController::class, 'index'])->name('certificates.index');
     Route::get('certificates/create', [CertificateAdminController::class, 'create'])->name('certificates.create');
     Route::post('certificates', [CertificateAdminController::class, 'store'])->name('certificates.store');
+    Route::delete('certificates/{certificate}', [CertificateAdminController::class, 'destroy'])->name('certificates.destroy');
 
     // Nikah Management
     Route::get('/nikah-profiles', [NikahVerificationController::class, 'directory'])->name('nikah.profiles');
@@ -388,6 +389,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::post('quran-live-courses/{course}/groups', [QuranClassGroupAdminController::class, 'store'])->name('quran-live-courses.groups.store');
     Route::get('quran-class-groups/{group}/edit', [QuranClassGroupAdminController::class, 'edit'])->name('quran-class-groups.edit');
     Route::put('quran-class-groups/{group}', [QuranClassGroupAdminController::class, 'update'])->name('quran-class-groups.update');
+    Route::delete('quran-class-groups/{group}', [QuranClassGroupAdminController::class, 'destroyGroup'])->name('quran-class-groups.destroy');
     Route::get('quran-admissions', [QuranClassGroupAdminController::class, 'admissions'])->name('quran-admissions.index');
     Route::post('quran-admissions/{admission}/assign', [QuranClassGroupAdminController::class, 'assignToGroup'])->name('quran-admissions.assign');
     Route::post('quran-admissions/{admission}/reject', [QuranClassGroupAdminController::class, 'rejectAdmission'])->name('quran-admissions.reject');
@@ -396,17 +398,20 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('volunteers', [VolunteerAdminController::class, 'index'])->name('volunteers.index');
     Route::post('volunteers/{volunteer}/approve', [VolunteerAdminController::class, 'approve'])->name('volunteers.approve');
     Route::post('volunteers/{volunteer}/reject', [VolunteerAdminController::class, 'reject'])->name('volunteers.reject');
+    Route::delete('volunteers/{volunteer}', [VolunteerAdminController::class, 'destroy'])->name('volunteers.destroy');
 
     // Sallaamti Wall moderation
     Route::get('wall', [DuaWallAdminController::class, 'index'])->name('wall.index');
     Route::post('wall/{duaRequest}/approve', [DuaWallAdminController::class, 'approve'])->name('wall.approve');
     Route::post('wall/{duaRequest}/reject', [DuaWallAdminController::class, 'reject'])->name('wall.reject');
+    Route::delete('wall/{duaRequest}', [DuaWallAdminController::class, 'destroy'])->name('wall.destroy');
 
     // Donation Management
     Route::get('donations', [DonationAdminController::class, 'index'])->name('donations.index');
     Route::post('donations/{donation}/confirm', [DonationAdminController::class, 'confirm'])->name('donations.confirm');
     Route::post('donations/{donation}/reject', [DonationAdminController::class, 'reject'])->name('donations.reject');
     Route::get('donation-screenshot/{donation}', [DonationAdminController::class, 'screenshot'])->name('admin.donation.screenshot');
+    Route::delete('donations/{donation}', [DonationAdminController::class, 'destroy'])->name('donations.destroy');
 
     // Subscribers
     Route::get('/subscribers', [SubscriberAdminController::class, 'index'])->name('subscribers.index');
@@ -417,6 +422,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::post('support/{query}/assign', [SupportQueryAdminController::class, 'assign'])->name('support.assign');
     Route::post('support/{query}/status', [SupportQueryAdminController::class, 'updateStatus'])->name('support.status');
     Route::post('support/{query}/reply', [SupportQueryAdminController::class, 'reply'])->name('support.reply');
+    Route::delete('support/{query}', [SupportQueryAdminController::class, 'destroy'])->name('support.destroy');
 
     // Localization
     Route::get('languages', [LanguageController::class, 'index'])->name('languages.index');

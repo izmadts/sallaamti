@@ -22,7 +22,13 @@
                     </p>
                     <p class="text-xs text-gray-400 mt-1">{{ $cert->certificate_number }} — issued {{ $cert->issued_at->format('d M Y') }}</p>
                 </div>
-                <a href="{{ route('certificate.download', $cert) }}" class="text-sm text-blue-600 hover:underline">Download</a>
+                <div class="flex items-center gap-3">
+                    <a href="{{ route('certificate.download', $cert) }}" class="text-sm text-blue-600 hover:underline">Download</a>
+                    <form method="POST" action="{{ route('admin.certificates.destroy', $cert) }}" onsubmit="return confirm('Delete this certificate permanently?')">
+                        @csrf @method('DELETE')
+                        <button class="text-sm text-red-500 hover:underline">Delete</button>
+                    </form>
+                </div>
             </div>
             @empty
             <p class="p-5 text-gray-400">No certificates issued yet.</p>

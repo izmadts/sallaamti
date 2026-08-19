@@ -137,4 +137,13 @@ class QuranClassGroupAdminController extends Controller
 
         return back()->with('status', 'Student status updated.');
     }
+
+    public function destroyGroup(QuranClassGroup $group)
+    {
+        $course = $group->course;
+        $group->delete();
+
+        return redirect()->route('admin.quran-live-courses.groups.index', $course)
+            ->with('status', 'Group deleted.');
+    }
 }

@@ -88,5 +88,16 @@ class DonationAdminController extends Controller
         abort_unless($path && \Storage::disk('private')->exists($path), 404);
         return \Storage::disk('private')->response($path);
     }
-    
+
+    public function destroy(Donation $donation)
+    {
+        if ($donation->payment_screenshot) {
+            \Storage::disk('private')->delete($donation->payment_screenshot);
+        }
+
+        $donation->delete();
+
+        return back()->with('status', 'Donation record deleted.');
+    }
+
 }

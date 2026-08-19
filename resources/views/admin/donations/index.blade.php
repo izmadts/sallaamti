@@ -55,6 +55,10 @@
                             </form>
                         </div>
                         @endif
+                        <form method="POST" action="{{ route('admin.donations.destroy', $donation) }}" onsubmit="return confirm('Permanently delete this donation record?')">
+                            @csrf @method('DELETE')
+                            <button class="text-xs text-red-400 hover:text-red-600 hover:underline">Delete record</button>
+                        </form>
                     </div>
                 </div>
                 @empty

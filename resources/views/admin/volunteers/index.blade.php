@@ -39,6 +39,10 @@
                             </form>
                         </div>
                         @endif
+                        <form method="POST" action="{{ route('admin.volunteers.destroy', $volunteer) }}" onsubmit="return confirm('Permanently delete this application?')">
+                            @csrf @method('DELETE')
+                            <button class="text-xs text-red-400 hover:text-red-600 hover:underline">Delete</button>
+                        </form>
                     </div>
                 </div>
                 @empty

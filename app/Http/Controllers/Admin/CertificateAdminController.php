@@ -41,4 +41,11 @@ class CertificateAdminController extends Controller
 
         return redirect()->route('certificate.download', $certificate)->with('status', 'Certificate generated.');
     }
+
+    public function destroy(Certificate $certificate)
+    {
+        $certificate->delete();
+
+        return back()->with('status', 'Certificate deleted.');
+    }
 }

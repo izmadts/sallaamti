@@ -59,6 +59,10 @@
                             </form>
                         </details>
                         @endif
+                        <form method="POST" action="{{ route('admin.wall.destroy', $dua) }}" onsubmit="return confirm('Permanently delete this dua? This cannot be undone.')">
+                            @csrf @method('DELETE')
+                            <button class="text-xs text-red-400 hover:text-red-600 hover:underline">Delete permanently</button>
+                        </form>
                     </div>
                 </div>
                 @empty

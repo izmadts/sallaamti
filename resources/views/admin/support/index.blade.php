@@ -99,9 +99,15 @@
                             </td>
                             <td class="px-4 py-3 text-xs text-gray-400">{{ $query->created_at->format('d M Y') }}</td>
                             <td class="px-4 py-3 text-right">
-                                <a href="{{ route('admin.support.show', $query) }}" class="text-xs px-3 py-1 rounded border border-gray-200 text-gray-600 hover:bg-gray-50">
-                                    Open →
-                                </a>
+                                <div class="flex items-center justify-end gap-2">
+                                    <a href="{{ route('admin.support.show', $query) }}" class="text-xs px-3 py-1 rounded border border-gray-200 text-gray-600 hover:bg-gray-50">
+                                        Open →
+                                    </a>
+                                    <form method="POST" action="{{ route('admin.support.destroy', $query) }}" onsubmit="return confirm('Permanently delete this support query and its replies?')">
+                                        @csrf @method('DELETE')
+                                        <button class="text-xs px-3 py-1 rounded border border-red-200 text-red-500 hover:bg-red-50">Delete</button>
+                                    </form>
+                                </div>
                             </td>
                         </tr>
                         @empty

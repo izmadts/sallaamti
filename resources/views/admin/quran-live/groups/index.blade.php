@@ -19,11 +19,15 @@
                         <p class="text-sm text-gray-500">{{ is_array($group->class_days) ? implode(', ', $group->class_days) : $group->class_days }} | {{ $group->class_time }}</p>
                         <p class="text-sm text-gray-500">{{ $group->students->count() }}/{{ $group->max_students }} students | {{ ucfirst($group->gender) }}</p>
                     </div>
-                    <div class="flex gap-2">
+                    <div class="flex items-center gap-2">
                         <a href="{{ route('admin.quran-class-groups.edit', $group) }}" class="text-sm text-blue-600">Edit</a>
                         <span class="text-xs px-2 py-1 rounded-full {{ $group->is_active ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500' }}">
                             {{ $group->is_active ? 'Active' : 'Inactive' }}
                         </span>
+                        <form method="POST" action="{{ route('admin.quran-class-groups.destroy', $group) }}" onsubmit="return confirm('Delete this group? Students in it will need to be reassigned.')">
+                            @csrf @method('DELETE')
+                            <button class="text-sm text-red-500 hover:underline">Delete</button>
+                        </form>
                     </div>
                 </div>
 

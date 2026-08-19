@@ -92,4 +92,11 @@ class SupportQueryAdminController extends Controller
 
         return back()->with('status', 'Response sent.');
     }
+
+    public function destroy(SupportQuery $query)
+    {
+        $query->delete();
+
+        return redirect()->route('admin.support.index')->with('status', 'Support query deleted.');
+    }
 }
