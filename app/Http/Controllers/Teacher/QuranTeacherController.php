@@ -36,7 +36,7 @@ class QuranTeacherController extends Controller
     {
         abort_unless($group->teacher_id === Auth::id(), 403);
 
-        $students = $group->activeStudents()->get();
+        $students = $group->activeStudents()->with('admission.messages.sender')->get();
         $todaysLink = $group->todaysLink();
         $currentMonth = now()->format('Y-m');
 
@@ -84,6 +84,7 @@ class QuranTeacherController extends Controller
 
         $validated['quran_class_group_id'] = $group->id;
         $validated['user_id'] = $student->user_id;
+        $validated['quran_admission_id'] = $student->quran_admission_id;
         $validated['recorded_by'] = Auth::id();
         $validated['grade'] = QuranAssessment::gradeFromScore($validated['score']);
 
@@ -110,12 +111,14 @@ class QuranTeacherController extends Controller
 
         $validated['quran_class_group_id'] = $group->id;
         $validated['user_id'] = $student->user_id;
+        $validated['quran_admission_id'] = $student->quran_admission_id;
         $validated['written_by'] = Auth::id();
 
         QuranProgressReport::updateOrCreate(
             [
                 'quran_class_group_id' => $group->id,
                 'user_id' => $student->user_id,
+                'quran_admission_id' => $student->quran_admission_id,
                 'month' => $validated['month'],
             ],
             $validated
@@ -152,17 +155,35 @@ class QuranTeacherController extends Controller
         $group = $student->group;
         abort_unless($group->teacher_id === Auth::id(), 403);
 
-        $assessments = QuranAssessment::where('user_id', $student->user_id)
+        $assessments = QuranAssessment::where('quran_admission_id', $student->quran_admission_id)
             ->where('quran_class_group_id', $group->id)
             ->orderByDesc('assessment_date')
             ->get();
 
-        $progressReports = QuranProgressReport::where('user_id', $student->user_id)
+        $progressReports = QuranProgressReport::where('quran_admission_id', $student->quran_admission_id)
             ->where('quran_class_group_id', $group->id)
             ->orderByDesc('month')
             ->get();
 
         return view('teacher.students.show', compact('student', 'group', 'assessments', 'progressReports'));
+    }
+
+    public function replyToStudent(Request $request, QuranGroupStudent $student)
+    {
+        abort_unless($student->group->teacher_id === Auth::id(), 403);
+        abort_unless($student->admission, 404);
+
+        $validated = $request->validate([
+            'message' => ['required', 'string', 'min:1', 'max:2000'],
+        ]);
+
+        \App\Models\QuranMessage::create([
+            'quran_admission_id' => $student->admission->id,
+            'sender_id' => Auth::id(),
+            'message' => $validated['message'],
+        ]);
+
+        return back()->with('status', 'Message sent.');
     }
 
     public function schedule()

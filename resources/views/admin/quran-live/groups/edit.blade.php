@@ -17,7 +17,7 @@
                         <option value="">-- Assign later --</option>
                         @foreach ($teachers as $t)
                         <option value="{{ $t->id }}" {{ $t->id == $group->teacher_id ? 'selected' : '' }}>
-                            {{ $t->name }}
+                            {{ $t->name }} — {{ $t->isApprovedTeacher() ? '✅ Approved' : '⏳ Pending vetting' }}
                         </option>
                         @endforeach
                     </select>

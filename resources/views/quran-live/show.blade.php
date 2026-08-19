@@ -12,6 +12,8 @@
                 <p class="text-sm font-medium text-pink-600 mt-1">Rs. {{ number_format($course->monthly_fee) }}/month</p>
             </div>
 
+            <x-quran-safety-card />
+
             @if (!auth()->check())
             {{-- Guest --}}
             <div class="bg-white rounded-lg shadow-sm p-6">
@@ -23,32 +25,24 @@
                     </div>
                 </div>
             </div>
-            @elseif (!$admission)
-            {{-- Logged in, no admission yet --}}
-            <div class="bg-white rounded-lg shadow-sm p-6">
-                <h3 class="font-semibold text-gray-700 mb-3">Register for this Class</h3>
-                <a href="{{ route('quran-live.admission', $course) }}" class="inline-block bg-pink-600 text-white text-sm px-5 py-2 rounded-lg hover:bg-pink-700">
-                    Apply for Admission
-                </a>
-            </div>
             @else
-            {{-- Has admission — show payment/link status --}}
-            @if (!$admission)
-            <a href="{{ route('quran-live.admission', $course) }}" class="inline-block bg-pink-600 text-white text-sm px-5 py-2 rounded hover:bg-pink-700">Apply for Admission</a>
-            @elseif (!$subscription || $subscription->payment_status === 'unpaid')
+
+            @forelse ($admissions as $admission)
+            @php
+                $subscription = $course->subscriptionFor($admission);
+                $todaysLink = $subscription && $subscription->payment_status === 'confirmed' ? $course->todaysLink() : null;
+            @endphp
             <div class="bg-white rounded-lg shadow-sm p-6">
+                <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">{{ $admission->student_name }}</p>
+                @if (!$subscription || $subscription->payment_status === 'unpaid')
                 <p class="text-sm text-gray-600 mb-3">💳 This month's fee payment required.</p>
-                <a href="{{ route('quran-live.subscribe', $course) }}" class="inline-block bg-pink-600 text-white text-sm px-5 py-2 rounded">Pay This Month's Fee</a>
-            </div>
-            @elseif ($subscription->payment_status === 'submitted')
-            <div class="bg-white rounded-lg shadow-sm p-6 text-sm text-yellow-700">⏳ Payment under review for {{ $subscription->month }}.</div>
-            @elseif ($subscription->payment_status === 'rejected')
-            <div class="bg-white rounded-lg shadow-sm p-6">
+                <a href="{{ route('quran-live.subscribe', [$course, $admission]) }}" class="inline-block bg-pink-600 text-white text-sm px-5 py-2 rounded">Pay This Month's Fee</a>
+                @elseif ($subscription->payment_status === 'submitted')
+                <p class="text-sm text-yellow-700">⏳ Payment under review for {{ $subscription->month }}.</p>
+                @elseif ($subscription->payment_status === 'rejected')
                 <p class="text-sm text-red-600 mb-3">❌ Rejected: {{ $subscription->payment_rejection_reason }}</p>
-                <a href="{{ route('quran-live.subscribe', $course) }}" class="inline-block bg-pink-600 text-white text-sm px-5 py-2 rounded">Resubmit Payment</a>
-            </div>
-            @elseif ($subscription->payment_status === 'confirmed')
-            <div class="bg-white rounded-lg shadow-sm p-6">
+                <a href="{{ route('quran-live.subscribe', [$course, $admission]) }}" class="inline-block bg-pink-600 text-white text-sm px-5 py-2 rounded">Resubmit Payment</a>
+                @elseif ($subscription->payment_status === 'confirmed')
                 <p class="text-sm text-green-600 font-medium mb-3">✅ Active for {{ $subscription->month }}</p>
                 @if ($todaysLink)
                 <div class="bg-gray-50 border rounded p-4 text-sm">
@@ -58,9 +52,23 @@
                 @else
                 <p class="text-sm text-gray-500">Today's link hasn't been posted yet by your teacher. Check back closer to class time.</p>
                 @endif
+                @endif
+            </div>
+            @empty
+            <div class="bg-white rounded-lg shadow-sm p-6">
+                <h3 class="font-semibold text-gray-700 mb-3">Register for this Class</h3>
+                <a href="{{ route('quran-live.admission', $course) }}" class="inline-block bg-pink-600 text-white text-sm px-5 py-2 rounded-lg hover:bg-pink-700">
+                    Apply for Admission
+                </a>
+            </div>
+            @endforelse
+
+            @if ($admissions->isNotEmpty())
+            <div class="text-center">
+                <a href="{{ route('quran-live.admission', $course) }}" class="text-sm text-teal-700 hover:underline">+ Apply for another child</a>
             </div>
             @endif
-            {{-- ... existing status code ... --}}
+
             @endif
 
 

@@ -6,6 +6,19 @@
     <div class="py-12">
         <div class="max-w-4xl mx-auto sm:px-6 lg:px-8 space-y-6">
 
+            {{-- Child switcher — only shown when a family has more than one child --}}
+            @if ($groupStudents->count() > 1)
+            <div class="flex flex-wrap gap-2">
+                @foreach ($groupStudents as $gs)
+                <a href="{{ route('quran-live.my-progress', ['child' => $gs->id]) }}"
+                    class="text-sm px-4 py-2 rounded-full font-medium {{ $gs->id === $current->id ? 'text-white' : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50' }}"
+                    @if ($gs->id === $current->id) style="background: #0d6b6b" @endif>
+                    {{ $gs->admission?->student_name ?? $gs->user->name }}
+                </a>
+                @endforeach
+            </div>
+            @endif
+
             {{-- Assessments --}}
             <div class="bg-white rounded-lg shadow-sm p-6">
                 <h3 class="font-semibold text-gray-700 mb-4">Assessment Results</h3>

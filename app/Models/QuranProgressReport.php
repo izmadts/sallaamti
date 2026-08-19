@@ -9,6 +9,7 @@ class QuranProgressReport extends Model
     protected $fillable = [
         'quran_class_group_id',
         'user_id',
+        'quran_admission_id',
         'month',
         'classes_attended',
         'classes_total',
@@ -20,6 +21,15 @@ class QuranProgressReport extends Model
         'written_by',
     ];
 
+    protected function casts(): array
+    {
+        return [
+            'quran_class_group_id' => 'integer',
+            'user_id' => 'integer',
+            'quran_admission_id' => 'integer',
+        ];
+    }
+
     public function group()
     {
         return $this->belongsTo(QuranClassGroup::class, 'quran_class_group_id');
@@ -27,6 +37,10 @@ class QuranProgressReport extends Model
     public function student()
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+    public function admission()
+    {
+        return $this->belongsTo(QuranAdmission::class, 'quran_admission_id');
     }
     public function teacher()
     {

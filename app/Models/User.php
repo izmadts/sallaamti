@@ -30,6 +30,9 @@ class User extends Authenticatable
         'whatsapp_notify_opt_in',
         'newsletter_opt_out',
         'counselor_bio',
+        'teacher_vetting_status',
+        'teacher_vetting_notes',
+        'teacher_vetted_at',
     ];
 
     protected $hidden = [
@@ -43,6 +46,7 @@ class User extends Authenticatable
             'id' => 'integer',
             'email_verified_at' => 'datetime',
             'deactivated_at' => 'datetime',
+            'teacher_vetted_at' => 'datetime',
             'last_active_date' => 'date',
             'password' => 'hashed',
             'nikah_module_enabled' => 'boolean',
@@ -55,6 +59,11 @@ class User extends Authenticatable
     public function isDeactivated(): bool
     {
         return $this->deactivated_at !== null;
+    }
+
+    public function isApprovedTeacher(): bool
+    {
+        return $this->teacher_vetting_status === 'approved';
     }
 
     public function deactivate(): void

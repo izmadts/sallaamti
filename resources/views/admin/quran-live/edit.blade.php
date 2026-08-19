@@ -49,7 +49,7 @@
                     <select name="teacher_id" class="border-gray-300 rounded-md w-full mt-1">
                         <option value="">-- None yet --</option>
                         @foreach ($teachers as $t)
-                        <option value="{{ $t->id }}" {{ old('teacher_id', $course->teacher_id) == $t->id ? 'selected' : '' }}>{{ $t->name }}</option>
+                        <option value="{{ $t->id }}" {{ old('teacher_id', $course->teacher_id) == $t->id ? 'selected' : '' }}>{{ $t->name }} — {{ $t->isApprovedTeacher() ? '✅ Approved' : '⏳ Pending vetting' }}</option>
                         @endforeach
                     </select>
                 </div>

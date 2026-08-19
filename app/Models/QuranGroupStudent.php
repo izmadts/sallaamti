@@ -17,7 +17,13 @@ class QuranGroupStudent extends Model
 
     protected function casts(): array
     {
-        return ['joined_date' => 'date', 'completed_date' => 'date'];
+        return [
+            'quran_class_group_id' => 'integer',
+            'quran_admission_id' => 'integer',
+            'user_id' => 'integer',
+            'joined_date' => 'date',
+            'completed_date' => 'date',
+        ];
     }
 
     public function group()

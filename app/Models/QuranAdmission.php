@@ -44,6 +44,9 @@ class QuranAdmission extends Model
     protected function casts(): array
     {
         return [
+            'quran_live_course_id' => 'integer',
+            'user_id' => 'integer',
+            'assigned_group_id' => 'integer',
             'preferred_days' => 'array',
             'learned_quran_before' => 'boolean',
             'declaration_accepted' => 'boolean',
@@ -57,5 +60,9 @@ class QuranAdmission extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+    public function messages()
+    {
+        return $this->hasMany(QuranMessage::class)->oldest();
     }
 }

@@ -8,6 +8,7 @@ use App\Models\QuranClassGroup;
 use App\Models\QuranGroupStudent;
 use App\Models\QuranLiveCourse;
 use App\Models\User;
+use App\Rules\ApprovedTeacherRule;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -29,7 +30,7 @@ class QuranClassGroupAdminController extends Controller
     {
         $validated = $request->validate([
             'group_name' => ['required', 'string', 'max:255'],
-            'teacher_id' => ['nullable', 'exists:users,id'],
+            'teacher_id' => ['nullable', 'exists:users,id', new ApprovedTeacherRule()],
             'class_days' => ['required', 'array'],
             'class_time' => ['required', 'string', 'max:100'],
             'timezone' => ['nullable', 'string', 'max:100'],
@@ -57,7 +58,7 @@ class QuranClassGroupAdminController extends Controller
     {
         $validated = $request->validate([
             'group_name' => ['required', 'string', 'max:255'],
-            'teacher_id' => ['nullable', 'exists:users,id'],
+            'teacher_id' => ['nullable', 'exists:users,id', new ApprovedTeacherRule()],
             'class_days' => ['required', 'array'],
             'class_time' => ['required', 'string', 'max:100'],
             'timezone' => ['nullable', 'string', 'max:100'],
@@ -91,11 +92,13 @@ class QuranClassGroupAdminController extends Controller
 
         abort_if($group->isFull(), 422, 'This group is full.');
 
+        // Matched by admission (child), not just user_id — two siblings
+        // assigned to the same group must land as two separate rows.
         QuranGroupStudent::firstOrCreate([
             'quran_class_group_id' => $group->id,
-            'user_id' => $admission->user_id,
-        ], [
             'quran_admission_id' => $admission->id,
+        ], [
+            'user_id' => $admission->user_id,
             'joined_date' => now()->toDateString(),
             'status' => 'active',
         ]);

@@ -67,6 +67,21 @@
                         <textarea id="counselor_bio" name="counselor_bio" rows="2" maxlength="500" class="w-full mt-1 border-gray-300 rounded-lg text-sm">{{ old('counselor_bio', $user->counselor_bio) }}</textarea>
                     </div>
                     @endif
+                    @if ($user->hasRole('teacher'))
+                    <div class="rounded-lg p-4" style="background: var(--cream)">
+                        <x-input-label for="teacher_vetting_status" value="Teacher vetting status" />
+                        <p class="text-xs text-gray-500 mb-2">Students are children — only approved teachers can be assigned to a live class group or course.</p>
+                        <select id="teacher_vetting_status" name="teacher_vetting_status" class="w-full border-gray-300 rounded-lg text-sm">
+                            @foreach (['pending' => '⏳ Pending', 'approved' => '✅ Approved', 'rejected' => '🚫 Rejected'] as $value => $label)
+                            <option value="{{ $value }}" {{ old('teacher_vetting_status', $user->teacher_vetting_status) === $value ? 'selected' : '' }}>{{ $label }}</option>
+                            @endforeach
+                        </select>
+                        <textarea name="teacher_vetting_notes" rows="2" maxlength="1000" placeholder="Internal notes — background check reference, who vetted them, etc." class="w-full mt-2 border-gray-300 rounded-lg text-sm">{{ old('teacher_vetting_notes', $user->teacher_vetting_notes) }}</textarea>
+                        @if ($user->teacher_vetted_at)
+                        <p class="text-xs text-gray-400 mt-1">Last updated {{ $user->teacher_vetted_at->format('d M Y, h:i A') }}</p>
+                        @endif
+                    </div>
+                    @endif
                     <p class="text-xs text-amber-600">Changing the email clears this account's verification status — they'll need to verify the new address.</p>
                     <x-primary-button>Save Details</x-primary-button>
                 </form>

@@ -246,12 +246,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // --- QURAN LIVE CLASSES ---
     Route::get('/quran-live/{course}/admission', [QuranLiveCourseController::class, 'admissionForm'])->name('quran-live.admission');
     Route::post('/quran-live/{course}/admission', [QuranLiveCourseController::class, 'storeAdmission'])->name('quran-live.admission.store');
-    Route::get('/quran-live/{course}/subscribe', [QuranLiveCourseController::class, 'subscribe'])->name('quran-live.subscribe');
-    Route::post('/quran-live/{course}/subscribe', [QuranLiveCourseController::class, 'storeSubscription'])->name('quran-live.subscribe.store');
+    Route::get('/quran-live/{course}/subscribe/{admission}', [QuranLiveCourseController::class, 'subscribe'])->name('quran-live.subscribe');
+    Route::post('/quran-live/{course}/subscribe/{admission}', [QuranLiveCourseController::class, 'storeSubscription'])->name('quran-live.subscribe.store');
     Route::get('/quran-subscriptions/{subscription}/screenshot', [QuranSubscriptionFileController::class, 'show'])->name('quran-subscription.screenshot');
-    // Add to auth user group:
-    Route::get('/my-quran-class', [QuranLiveCourseController::class, 'myClass'])->name('quran-live.my-class');
-    Route::get('/my-quran-progress', [QuranLiveCourseController::class, 'myProgress'])->name('quran-live.my-progress');
+    Route::post('/quran-admissions/{admission}/reply', [QuranLiveCourseController::class, 'reply'])->name('quran-live.admission.reply');
     
     // --- DONATIONS (auth extras) ---
     Route::get('/my-donations', [DonationController::class, 'myDonations'])->name('donate.my');
@@ -529,6 +527,7 @@ Route::middleware(['auth', 'teacher'])->prefix('teacher')->name('teacher.')->gro
     Route::post('/groups/{group}/students/{student}/progress-report', [QuranTeacherController::class, 'storeProgressReport'])->name('groups.progress-report.store');
     Route::get('/students', [QuranTeacherController::class, 'students'])->name('students.index');
     Route::get('/students/{student}', [QuranTeacherController::class, 'studentDetail'])->name('students.show');
+    Route::post('/students/{student}/message', [QuranTeacherController::class, 'replyToStudent'])->name('students.message');
     Route::get('/schedule', [QuranTeacherController::class, 'schedule'])->name('schedule');
 });
 

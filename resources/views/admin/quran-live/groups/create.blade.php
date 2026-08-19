@@ -15,7 +15,7 @@
                     <select name="teacher_id" class="border-gray-300 rounded-md w-full mt-1">
                         <option value="">-- Assign later --</option>
                         @foreach ($teachers as $t)
-                        <option value="{{ $t->id }}">{{ $t->name }}</option>
+                        <option value="{{ $t->id }}" {{ !$t->isApprovedTeacher() ? 'disabled' : '' }}>{{ $t->name }} — {{ $t->isApprovedTeacher() ? '✅ Approved' : '⏳ Pending vetting' }}</option>
                         @endforeach
                     </select>
                 </div>

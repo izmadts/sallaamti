@@ -26,14 +26,44 @@
 
             {{-- Students list with assessment + report forms --}}
             @foreach ($students as $groupStudent)
-            <div class="bg-white rounded-lg shadow-sm p-6">
+            <div class="bg-white rounded-lg shadow-sm p-6" x-data="{ threadOpen: false }">
                 <div class="flex justify-between items-center mb-4">
                     <div>
-                        <h4 class="font-semibold text-gray-800">{{ $groupStudent->user->name }}</h4>
-                        <p class="text-xs text-gray-500">{{ $groupStudent->user->email }} | Joined: {{ $groupStudent->joined_date->format('d M Y') }}</p>
+                        <h4 class="font-semibold text-gray-800">{{ $groupStudent->admission?->student_name ?? $groupStudent->user->name }}</h4>
+                        <p class="text-xs text-gray-500">Guardian account: {{ $groupStudent->user->name }} | Joined: {{ $groupStudent->joined_date->format('d M Y') }}</p>
                     </div>
-                    <span class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">{{ ucfirst($groupStudent->status) }}</span>
+                    <div class="flex items-center gap-2">
+                        <span class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">{{ ucfirst($groupStudent->status) }}</span>
+                        @if ($groupStudent->admission)
+                        <button type="button" @click="threadOpen = !threadOpen" class="text-xs px-3 py-1 rounded-full border border-teal-200 text-teal-700 hover:bg-teal-50">
+                            💬 Message<span x-show="!threadOpen">{{ $groupStudent->admission->messages->isNotEmpty() ? ' (' . $groupStudent->admission->messages->count() . ')' : '' }}</span>
+                        </button>
+                        @endif
+                    </div>
                 </div>
+
+                @if ($groupStudent->admission)
+                <div x-show="threadOpen" x-cloak class="mb-5 rounded-xl border border-gray-100 p-4 space-y-3" style="background: var(--cream)">
+                    @forelse ($groupStudent->admission->messages as $message)
+                    @php $isMe = $message->sender_id === auth()->id(); @endphp
+                    <div class="flex {{ $isMe ? 'justify-end' : 'justify-start' }}">
+                        <div class="max-w-md rounded-2xl px-4 py-2.5 text-sm {{ $isMe ? 'bg-teal-600 text-white' : 'bg-white text-gray-800 shadow-sm' }}">
+                            <p class="font-semibold text-xs mb-0.5 {{ $isMe ? 'text-teal-100' : 'text-gray-400' }}">{{ $isMe ? 'You' : ($message->sender->name ?? 'Guardian') }}</p>
+                            <p class="leading-relaxed">{{ $message->message }}</p>
+                            <p class="text-xs mt-1 {{ $isMe ? 'text-teal-200' : 'text-gray-400' }}">{{ $message->created_at->format('d M, h:i A') }}</p>
+                        </div>
+                    </div>
+                    @empty
+                    <p class="text-sm text-gray-400 text-center py-2">No messages yet — say hello!</p>
+                    @endforelse
+
+                    <form method="POST" action="{{ route('teacher.students.message', $groupStudent) }}" class="flex gap-2 pt-1">
+                        @csrf
+                        <input type="text" name="message" required maxlength="2000" placeholder="Message the guardian..." class="flex-1 border border-gray-200 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-teal-500">
+                        <button class="px-4 py-2 rounded-lg text-white text-sm font-semibold" style="background: #0d6b6b">Send</button>
+                    </form>
+                </div>
+                @endif
 
                 <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     {{-- Assessment Form --}}

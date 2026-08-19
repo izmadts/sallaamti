@@ -3,7 +3,9 @@
         <h2 class="font-semibold text-xl text-gray-800">Admission Form — {{ $course->title }}</h2>
     </x-slot>
     <div class="py-12">
-        <div class="max-w-2xl mx-auto sm:px-6 lg:px-8 bg-white rounded-lg shadow-sm p-6">
+        <div class="max-w-2xl mx-auto sm:px-6 lg:px-8 space-y-6">
+            <x-quran-safety-card />
+        <div class="bg-white rounded-lg shadow-sm p-6">
             @if ($errors->any())
             <div class="mb-4 p-4 bg-red-50 text-red-700 rounded text-sm">
                 <ul class="list-disc list-inside">@foreach ($errors->all() as $e)<li>{{ $e }}</li>@endforeach</ul>
@@ -105,6 +107,7 @@
 
                 <x-primary-button>Submit Admission</x-primary-button>
             </form>
+        </div>
         </div>
     </div>
 </x-app-layout>

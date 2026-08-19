@@ -4,6 +4,7 @@
     </x-slot>
     <div class="py-12">
         <div class="max-w-2xl mx-auto sm:px-6 lg:px-8 bg-white rounded-lg shadow-sm p-6">
+            <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">For {{ $admission->student_name }}</p>
             <h3 class="font-semibold mb-2">Fee: Rs. {{ number_format($course->monthly_fee) }}</h3>
             <div class="bg-gray-50 border rounded p-4 text-sm mb-6">
                 <img src="{{ asset('images/jazzcash.png') }}" alt="Icon Description" class="h-8 w-auto">
@@ -27,7 +28,7 @@
             @if ($subscription && $subscription->payment_status === 'rejected')
             <div class="p-4 bg-red-50 text-red-700 rounded text-sm mb-4">❌ {{ $subscription->payment_rejection_reason }}</div>
             @endif
-            <form method="POST" action="{{ route('quran-live.subscribe.store', $course) }}" enctype="multipart/form-data" class="space-y-4">
+            <form method="POST" action="{{ route('quran-live.subscribe.store', [$course, $admission]) }}" enctype="multipart/form-data" class="space-y-4">
                 @csrf
                 <div>
                     <x-input-label value="Payment Method" />

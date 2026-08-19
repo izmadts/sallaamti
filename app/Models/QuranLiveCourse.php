@@ -58,20 +58,32 @@ class QuranLiveCourse extends Model
         return $this->hasMany(QuranDailyLink::class);
     }
 
+    // All of this account's admissions (children) for this course — a
+    // family with two kids in the same course has two rows here.
+    public function admissionsFor(User $user)
+    {
+        return $this->admissions()->where('user_id', $user->id)->oldest()->get();
+    }
+
+    // Kept for the few call sites that only care "has this account applied
+    // at all" (e.g. redirecting a guest); prefer admissionsFor() wherever a
+    // family might have more than one child.
     public function admissionFor(User $user): ?QuranAdmission
     {
         return $this->admissions()->where('user_id', $user->id)->first();
     }
 
-    public function subscriptionFor(User $user, ?string $month = null): ?QuranSubscription
+    // Subscriptions are per child (per admission), not per account — two
+    // siblings in the same course each owe their own monthly fee.
+    public function subscriptionFor(QuranAdmission $admission, ?string $month = null): ?QuranSubscription
     {
         $month = $month ?? now()->format('Y-m');
-        return $this->subscriptions()->where('user_id', $user->id)->where('month', $month)->first();
+        return $this->subscriptions()->where('quran_admission_id', $admission->id)->where('month', $month)->first();
     }
 
-    public function hasActiveSubscriptionFor(User $user): bool
+    public function hasActiveSubscriptionFor(QuranAdmission $admission): bool
     {
-        $sub = $this->subscriptionFor($user);
+        $sub = $this->subscriptionFor($admission);
         return $sub && $sub->payment_status === 'confirmed';
     }
 

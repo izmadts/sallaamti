@@ -57,9 +57,15 @@ class UserManagementController extends Controller
             'city' => ['nullable', 'string', 'max:100'],
             'avatar' => ['nullable', 'image', 'max:2048'],
             'counselor_bio' => ['nullable', 'string', 'max:500'],
+            'teacher_vetting_status' => ['nullable', 'in:pending,approved,rejected'],
+            'teacher_vetting_notes' => ['nullable', 'string', 'max:1000'],
         ]);
 
         $emailChanged = $user->email !== ($validated['email'] ?? null);
+
+        if (isset($validated['teacher_vetting_status']) && $validated['teacher_vetting_status'] !== $user->teacher_vetting_status) {
+            $validated['teacher_vetted_at'] = now();
+        }
 
         $user->fill($validated);
 

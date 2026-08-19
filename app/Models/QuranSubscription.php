@@ -9,6 +9,7 @@ class QuranSubscription extends Model
     protected $fillable = [
         'quran_live_course_id',
         'user_id',
+        'quran_admission_id',
         'month',
         'amount',
         'payment_status',
@@ -21,7 +22,12 @@ class QuranSubscription extends Model
 
     protected function casts(): array
     {
-        return ['payment_confirmed_at' => 'datetime'];
+        return [
+            'quran_live_course_id' => 'integer',
+            'user_id' => 'integer',
+            'quran_admission_id' => 'integer',
+            'payment_confirmed_at' => 'datetime',
+        ];
     }
 
     public function course()
@@ -31,5 +37,9 @@ class QuranSubscription extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+    public function admission()
+    {
+        return $this->belongsTo(QuranAdmission::class, 'quran_admission_id');
     }
 }
