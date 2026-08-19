@@ -29,6 +29,10 @@ class BulkMessageController extends Controller
         $totalMatching = UserFilter::apply(User::query(), $request)->count();
 
         $whatsappConnected = SocialAccount::active('whatsapp') !== null;
+        // Mirrors emailEligible below — the checkbox list per channel should
+        // only ever offer/pre-select users that channel can actually reach,
+        // rather than relying on the admin to have filtered for it first.
+        $emailEligible = $matching->whereNotNull('email')->where('email', '!=', '');
         $whatsappEligible = $matching->where('whatsapp_notify_opt_in', true)->whereNotNull('phone');
 
         return view('admin.users.broadcast', [
@@ -37,6 +41,7 @@ class BulkMessageController extends Controller
             'truncated' => $totalMatching > self::MAX_RECIPIENTS,
             'maxRecipients' => self::MAX_RECIPIENTS,
             'whatsappConnected' => $whatsappConnected,
+            'emailEligible' => $emailEligible,
             'whatsappEligible' => $whatsappEligible,
             'filters' => $request->query(),
         ]);

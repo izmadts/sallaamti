@@ -25,6 +25,14 @@
                     <input type="text" name="phone" value="{{ request('phone') }}" placeholder="e.g. 0334" class="border-gray-300 rounded text-sm block w-32">
                 </div>
                 <div>
+                    <label class="text-xs text-gray-500" title="Filters by whether the contact field is filled in at all — use this before messaging, since it guarantees every result is actually reachable on that channel.">Can be contacted via</label>
+                    <select name="contact" class="border-gray-300 rounded text-sm block">
+                        <option value="">Any</option>
+                        <option value="has_email" {{ request('contact') === 'has_email' ? 'selected' : '' }}>📧 Has an email</option>
+                        <option value="has_phone" {{ request('contact') === 'has_phone' ? 'selected' : '' }}>💬 Has a phone number</option>
+                    </select>
+                </div>
+                <div>
                     <label class="text-xs text-gray-500">Role</label>
                     <select name="role" class="border-gray-300 rounded text-sm block">
                         <option value="">All Roles</option>

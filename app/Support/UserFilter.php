@@ -30,6 +30,18 @@ class UserFilter
             $query->where('phone', 'like', '%' . $request->phone . '%');
         }
 
+        // Which contact channel a user actually has on file — the thing
+        // that determines whether an Email or WhatsApp broadcast can reach
+        // them at all, as opposed to the free-text email/phone filters
+        // above which just narrow by content.
+        if ($request->filled('contact')) {
+            if ($request->contact === 'has_email') {
+                $query->whereNotNull('email')->where('email', '!=', '');
+            } elseif ($request->contact === 'has_phone') {
+                $query->whereNotNull('phone')->where('phone', '!=', '');
+            }
+        }
+
         if ($request->filled('role')) {
             $query->role($request->role);
         }

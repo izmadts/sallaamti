@@ -32,7 +32,7 @@
                     @endif
                 </p>
                 @php
-                    $emailCount = $matching->count();
+                    $emailCount = $emailEligible->count();
                     $emailAdvisoryClass = $emailCount >= 500 ? 'text-red-600' : ($emailCount >= 400 ? 'text-amber-600' : 'text-gray-400');
                 @endphp
                 <p class="text-xs {{ $emailAdvisoryClass }} mt-1">
@@ -45,7 +45,7 @@
             @else
             <form method="POST" action="{{ route('admin.bulk-messages.store') }}" x-data="{
                 channel: 'email',
-                selected: {{ json_encode($matching->pluck('id')->all()) }},
+                selected: {{ json_encode($emailEligible->pluck('id')->all()) }},
                 whatsappSelected: {{ json_encode($whatsappEligible->pluck('id')->all()) }},
                 toggle(id, list) { this[list].includes(id) ? this[list] = this[list].filter(x => x !== id) : this[list].push(id) },
                 selectAll(ids, list) { this[list] = [...ids] },
@@ -70,6 +70,17 @@
 
                     {{-- Email compose --}}
                     <div x-show="channel === 'email'" x-cloak class="space-y-3">
+                        <div class="text-xs text-teal-800 bg-teal-50 border border-teal-100 rounded-lg px-3 py-2 space-y-1">
+                            <p class="font-semibold">Requirements</p>
+                            <p>A Subject and Message are both required. Only the {{ $emailCount }} recipient(s) with an email on file can be selected — sent through the app's branded template, with an unsubscribe link added automatically at the bottom.</p>
+                            <p class="font-semibold mt-2">Precautions</p>
+                            <ul class="list-disc list-inside space-y-0.5">
+                                <li>Keep the subject honest and specific — avoid ALL CAPS, excessive "!!!", or "FREE"/"URGENT"-style wording, which spam filters flag heavily.</li>
+                                <li>Every recipient sees the same message — don't paste in a personal name expecting it to auto-fill, there's no merge-field support here.</li>
+                                <li>Stay well under ~500 recipients per campaign and avoid sending more than once a day — Gmail can temporarily restrict an account that suddenly sends like a mailing list.</li>
+                                <li>Once sent, a campaign can't be recalled or edited — proofread before hitting Send Now.</li>
+                            </ul>
+                        </div>
                         <div>
                             <x-input-label for="subject" value="Subject" />
                             <x-text-input id="subject" name="subject" class="w-full mt-1" placeholder="An update from Sallaamti" />
@@ -77,7 +88,6 @@
                         <div>
                             <x-input-label for="body" value="Message" />
                             <textarea id="body" name="body" rows="8" class="w-full mt-1 border-gray-300 rounded-lg text-sm" placeholder="Assalamu Alaikum, ..."></textarea>
-                            <p class="text-xs text-gray-400 mt-1">Sent using the app's branded email template, with an unsubscribe link added automatically.</p>
                         </div>
                     </div>
 
@@ -86,9 +96,20 @@
                         @if (!$whatsappConnected)
                         <p class="text-sm text-gray-400">No WhatsApp Business account connected yet — <a href="{{ route('admin.integrations.index') }}" class="text-teal-600 hover:underline">connect one in Integrations</a> first.</p>
                         @else
-                        <p class="text-xs text-amber-700 bg-amber-50 border border-amber-100 rounded-lg px-3 py-2">
-                            WhatsApp doesn't allow free-form broadcast text — Meta requires a pre-approved message template for any message you initiate. Enter that template's name below and fill in its variables (in order); only users who opted in to WhatsApp notifications ({{ $whatsappEligible->count() }} of the {{ $matching->count() }} shown) will receive it.
-                        </p>
+                        <div class="text-xs text-amber-800 bg-amber-50 border border-amber-100 rounded-lg px-3 py-2 space-y-1">
+                            <p class="font-semibold">Requirements</p>
+                            <ul class="list-disc list-inside space-y-0.5">
+                                <li>The template must already be approved in Meta Business Manager — type its exact name below (case-sensitive), not the message text itself.</li>
+                                <li>Fill in the template's variables in order, top to bottom. Leave a field blank only if that variable is genuinely unused.</li>
+                                <li>Only users who explicitly opted in to WhatsApp notifications can be messaged — {{ $whatsappEligible->count() }} of the {{ $matching->count() }} filtered above qualify; the rest are hidden from this list.</li>
+                            </ul>
+                            <p class="font-semibold mt-2">Precautions</p>
+                            <ul class="list-disc list-inside space-y-0.5">
+                                <li>WhatsApp is for genuine updates, not promotions — Meta can restrict or ban a business number for policy violations or repeated low engagement/blocks.</li>
+                                <li>Space out broadcasts; sending too often is the fastest way to get opted-in users to block the number.</li>
+                                <li>Double-check the template name and variable order in a small test send before a large one — a bad match fails silently per-recipient rather than warning up front.</li>
+                            </ul>
+                        </div>
                         <div>
                             <x-input-label for="whatsapp_template_name" value="Approved template name" />
                             <x-text-input id="whatsapp_template_name" name="whatsapp_template_name" class="w-full mt-1" placeholder="e.g. member_update" />
@@ -112,7 +133,7 @@
                             Recipients (<span x-text="channel === 'email' ? selected.length : whatsappSelected.length"></span> selected)
                         </p>
                         <div class="text-xs text-teal-600 space-x-3">
-                            <button type="button" x-show="channel === 'email'" @click="selectAll({{ json_encode($matching->pluck('id')->all()) }}, 'selected')" class="hover:underline">Select all</button>
+                            <button type="button" x-show="channel === 'email'" @click="selectAll({{ json_encode($emailEligible->pluck('id')->all()) }}, 'selected')" class="hover:underline">Select all</button>
                             <button type="button" x-show="channel === 'email'" @click="selectNone('selected')" class="hover:underline">Select none</button>
                             <button type="button" x-show="channel === 'whatsapp'" @click="selectAll({{ json_encode($whatsappEligible->pluck('id')->all()) }}, 'whatsappSelected')" class="hover:underline">Select all</button>
                             <button type="button" x-show="channel === 'whatsapp'" @click="selectNone('whatsappSelected')" class="hover:underline">Select none</button>
@@ -120,7 +141,8 @@
                     </div>
                     <div class="max-h-80 overflow-y-auto divide-y divide-gray-100 border border-gray-100 rounded-lg">
                         @foreach ($matching as $user)
-                        <label class="flex items-center gap-3 px-3 py-2 text-sm hover:bg-gray-50" x-show="channel === 'email' || {{ $user->whatsapp_notify_opt_in && $user->phone ? 'true' : 'false' }}">
+                        <label class="flex items-center gap-3 px-3 py-2 text-sm hover:bg-gray-50"
+                            x-show="channel === 'email' ? {{ ($user->email ?: false) ? 'true' : 'false' }} : {{ ($user->whatsapp_notify_opt_in && $user->phone) ? 'true' : 'false' }}">
                             <input type="checkbox"
                                 name="user_ids[]"
                                 value="{{ $user->id }}"
