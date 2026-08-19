@@ -298,6 +298,8 @@ class SocialIntegrationController extends Controller
 
     private function redirectToTwitter(): RedirectResponse
     {
+        abort_unless(filled(Setting::get('twitter_client_id') ?: config('services.twitter.client_id')), 422, 'Save the X (Twitter) Client ID and Secret below first.');
+
         $verifier = Str::random(64);
         $state = Str::random(32);
         session(['twitter_oauth_verifier' => $verifier, 'twitter_oauth_state' => $state]);
@@ -361,9 +363,17 @@ class SocialIntegrationController extends Controller
 
     private function googleClient(): GoogleClient
     {
+        $clientId = Setting::get('youtube_client_id') ?: config('services.youtube.client_id');
+        $clientSecret = Setting::get('youtube_client_secret') ?: config('services.youtube.client_secret');
+        // Google's own client library throws a raw InvalidArgumentException
+        // ("missing the required client identifier") once it actually tries
+        // to build the auth URL with an empty client_id — this catches the
+        // same problem earlier with a message that's actually actionable.
+        abort_unless(filled($clientId) && filled($clientSecret), 422, 'Save the YouTube Client ID and Secret below first.');
+
         $client = new GoogleClient();
-        $client->setClientId(Setting::get('youtube_client_id') ?: config('services.youtube.client_id'));
-        $client->setClientSecret(Setting::get('youtube_client_secret') ?: config('services.youtube.client_secret'));
+        $client->setClientId($clientId);
+        $client->setClientSecret($clientSecret);
         $client->setRedirectUri(route('admin.integrations.callback', 'youtube'));
         $client->setScopes(['https://www.googleapis.com/auth/youtube.upload', 'https://www.googleapis.com/auth/youtube.readonly']);
         $client->setAccessType('offline');
@@ -417,6 +427,8 @@ class SocialIntegrationController extends Controller
 
     private function redirectToTiktok(): RedirectResponse
     {
+        abort_unless(filled(Setting::get('tiktok_client_id') ?: config('services.tiktok.client_id')), 422, 'Save the TikTok Client Key and Secret below first.');
+
         $state = Str::random(32);
         session(['tiktok_oauth_state' => $state]);
 
