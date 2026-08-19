@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\NewsletterUnsubscribeController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Route;
@@ -15,6 +16,7 @@ use App\Http\Controllers\PushSubscriptionController;
 use App\Http\Controllers\WallController;
 use App\Http\Controllers\Admin\DuaWallAdminController;
 use App\Http\Controllers\Admin\CommunityPostController;
+use App\Http\Controllers\Admin\BulkMessageController;
 use App\Http\Controllers\Admin\SocialIntegrationController;
 use App\Http\Controllers\NikahPaymentController;
 use App\Http\Controllers\NikahSafetyController;
@@ -78,6 +80,11 @@ Route::get('/', function () {
 
     return view('index', compact('banners', 'latestDuas'));
 })->name('index');
+
+Route::get('/newsletter/unsubscribe/{user}', [NewsletterUnsubscribeController::class, 'unsubscribe'])
+    ->middleware('signed')
+    ->name('newsletter.unsubscribe');
+
 // Static pages
 Route::get('/about', function () {
     $teamMembers = \App\Models\TeamMember::active()->orderBy('order')->get();
@@ -278,24 +285,43 @@ Route::middleware(['auth', 'verified'])->group(function () {
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
 
     Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('dashboard');
-    // User Management
-    Route::get('users', [UserManagementController::class, 'index'])->name('users.index');
-    Route::get('users/{user}', [UserManagementController::class, 'show'])->name('users.show');
-    Route::put('users/{user}/role', [UserManagementController::class, 'updateRole'])->name('users.role');
-    Route::put('users/{user}/toggle-active', [UserManagementController::class, 'toggleActive'])->name('users.toggle-active');
-    Route::delete('users/{user}', [UserManagementController::class, 'destroy'])->name('users.destroy');
-    Route::get('users/roles/manage', [UserManagementController::class, 'roles'])->name('users.roles');
-    Route::post('users/roles', [UserManagementController::class, 'storeRole'])->name('users.roles.store');
-    Route::post('users/roles/{role}/permissions', [UserManagementController::class, 'updatePermissions'])->name('users.roles.permissions');
+    // User Management, Settings, and Maintenance — always admin-role-only
+    // (see PermissionCatalog's docblock). The general 'admin' middleware
+    // above lets in any staff role holding even one narrow permission (e.g.
+    // wall.view), so these need the stricter 'admin.only' on top of it —
+    // role assignment, live app config, and destructive maintenance actions
+    // are not "can this staff member moderate content" style decisions.
+    Route::middleware('admin.only')->group(function () {
+        Route::get('users', [UserManagementController::class, 'index'])->name('users.index');
+        // Must be registered before users/{user} below — otherwise Laravel's
+        // implicit route-model binding swallows this as {user}="broadcast"
+        // (confirmed via router match test) and 404s.
+        Route::get('users/broadcast', [BulkMessageController::class, 'create'])->name('users.broadcast');
+        Route::get('users/{user}', [UserManagementController::class, 'show'])->name('users.show');
+        Route::put('users/{user}/role', [UserManagementController::class, 'updateRole'])->name('users.role');
+        Route::put('users/{user}/toggle-active', [UserManagementController::class, 'toggleActive'])->name('users.toggle-active');
+        Route::delete('users/{user}', [UserManagementController::class, 'destroy'])->name('users.destroy');
+        Route::get('users/roles/manage', [UserManagementController::class, 'roles'])->name('users.roles');
+        Route::post('users/roles', [UserManagementController::class, 'storeRole'])->name('users.roles.store');
+        Route::post('users/roles/{role}/permissions', [UserManagementController::class, 'updatePermissions'])->name('users.roles.permissions');
 
-    // Settings & Frontend
-    Route::get('settings', [SettingsController::class, 'index'])->name('settings.index');
-    Route::post('settings', [SettingsController::class, 'update'])->name('settings.update');
-    Route::post('settings/demo-nikah-profiles/generate', [SettingsController::class, 'generateDemoNikahProfiles'])->name('settings.demo-nikah.generate');
-    Route::post('settings/demo-nikah-profiles/remove', [SettingsController::class, 'removeDemoNikahProfiles'])->name('settings.demo-nikah.remove');
-    Route::get('maintenance', [SystemMaintenanceController::class, 'index'])->name('maintenance.index');
-    Route::post('maintenance/optimize-database', [SystemMaintenanceController::class, 'optimizeDatabase'])->name('maintenance.optimize-database');
-    Route::post('maintenance/optimize-images', [SystemMaintenanceController::class, 'optimizeImages'])->name('maintenance.optimize-images');
+        Route::get('settings', [SettingsController::class, 'index'])->name('settings.index');
+        Route::post('settings', [SettingsController::class, 'update'])->name('settings.update');
+        Route::post('settings/demo-nikah-profiles/generate', [SettingsController::class, 'generateDemoNikahProfiles'])->name('settings.demo-nikah.generate');
+        Route::post('settings/demo-nikah-profiles/remove', [SettingsController::class, 'removeDemoNikahProfiles'])->name('settings.demo-nikah.remove');
+        Route::get('maintenance', [SystemMaintenanceController::class, 'index'])->name('maintenance.index');
+        Route::post('maintenance/optimize-database', [SystemMaintenanceController::class, 'optimizeDatabase'])->name('maintenance.optimize-database');
+        Route::post('maintenance/optimize-images', [SystemMaintenanceController::class, 'optimizeImages'])->name('maintenance.optimize-images');
+
+        // Bulk messaging (Email / WhatsApp) — uses the same Gmail/WhatsApp
+        // credentials as Integrations, and touches every member's contact
+        // info at once, so it stays admin-role-only rather than being added
+        // to PermissionCatalog.
+        Route::post('users/broadcast', [BulkMessageController::class, 'store'])->name('bulk-messages.store');
+        Route::get('bulk-messages', [BulkMessageController::class, 'index'])->name('bulk-messages.index');
+        Route::get('bulk-messages/{bulkMessage}', [BulkMessageController::class, 'show'])->name('bulk-messages.show');
+    });
+
     Route::post('banners/reorder', [BannerController::class, 'reorder'])->name('banners.reorder');
     Route::post('banners/{banner}/toggle', [BannerController::class, 'toggle'])->name('banners.toggle');
     Route::resource('banners', BannerController::class);
@@ -326,20 +352,24 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::post('community-posts/{community_post}/publish-now', [CommunityPostController::class, 'queuePublishNow'])->name('community-posts.publish-now')->middleware('can:community-posts.manage');
 
     // Social media auto-posting — connect accounts + review/retry deliveries.
-    Route::get('integrations', [SocialIntegrationController::class, 'index'])->name('integrations.index');
-    Route::post('integrations/settings', [SocialIntegrationController::class, 'updateSettings'])->name('integrations.settings.update');
-    // Throttled: these hit external OAuth/API endpoints on every call, and an
-    // automated loop against them risks the app's API keys getting rate
-    // limited or banned by the platform, not just wasted local work.
-    Route::middleware('throttle:20,1')->group(function () {
-        Route::get('integrations/{platform}/connect', [SocialIntegrationController::class, 'connect'])->name('integrations.connect');
-        Route::get('integrations/{platform}/callback', [SocialIntegrationController::class, 'callback'])->name('integrations.callback');
-        Route::post('integrations/{account}/disconnect', [SocialIntegrationController::class, 'disconnect'])->name('integrations.disconnect');
-        Route::post('social-dispatches/{dispatch}/retry', [SocialIntegrationController::class, 'retryDispatch'])->name('social-dispatches.retry');
-        // WhatsApp Business — manual credential form, not an OAuth redirect
-        // (see SocialIntegrationController::connectWhatsapp()), so it needs
-        // its own POST route rather than the generic {platform}/connect GET.
-        Route::post('integrations/whatsapp/connect', [SocialIntegrationController::class, 'connectWhatsapp'])->name('integrations.whatsapp.connect');
+    // Live API credentials, so this whole block is admin-role-only (see the
+    // Users/Settings/Maintenance group above for why).
+    Route::middleware('admin.only')->group(function () {
+        Route::get('integrations', [SocialIntegrationController::class, 'index'])->name('integrations.index');
+        Route::post('integrations/settings', [SocialIntegrationController::class, 'updateSettings'])->name('integrations.settings.update');
+        // Throttled: these hit external OAuth/API endpoints on every call, and an
+        // automated loop against them risks the app's API keys getting rate
+        // limited or banned by the platform, not just wasted local work.
+        Route::middleware('throttle:20,1')->group(function () {
+            Route::get('integrations/{platform}/connect', [SocialIntegrationController::class, 'connect'])->name('integrations.connect');
+            Route::get('integrations/{platform}/callback', [SocialIntegrationController::class, 'callback'])->name('integrations.callback');
+            Route::post('integrations/{account}/disconnect', [SocialIntegrationController::class, 'disconnect'])->name('integrations.disconnect');
+            Route::post('social-dispatches/{dispatch}/retry', [SocialIntegrationController::class, 'retryDispatch'])->name('social-dispatches.retry');
+            // WhatsApp Business — manual credential form, not an OAuth redirect
+            // (see SocialIntegrationController::connectWhatsapp()), so it needs
+            // its own POST route rather than the generic {platform}/connect GET.
+            Route::post('integrations/whatsapp/connect', [SocialIntegrationController::class, 'connectWhatsapp'])->name('integrations.whatsapp.connect');
+        });
     });
 
     // Certificates (admin-issued)

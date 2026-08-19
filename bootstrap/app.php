@@ -15,6 +15,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->alias([
         'admin' => \App\Http\Middleware\EnsureUserIsAdmin::class,
+        'admin.only' => \App\Http\Middleware\EnsureUserIsFullAdmin::class,
         'teacher' => \App\Http\Middleware\EnsureUserIsTeacher::class,
         'active' => \App\Http\Middleware\EnsureUserIsActive::class,
         'maintenance' => \App\Http\Middleware\MaintenanceMode::class,

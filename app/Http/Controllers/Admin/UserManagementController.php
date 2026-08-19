@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Support\PermissionCatalog;
+use App\Support\UserFilter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Spatie\Permission\Models\Role;
@@ -13,32 +14,10 @@ class UserManagementController extends Controller
 {
     public function index(Request $request)
     {
-        $query = User::with('roles', 'nikahProfile')
-            ->withCount(['enrollments', 'counselingBookings'])
-            ->latest();
-
-        if ($request->filled('search')) {
-            $search = $request->search;
-            $query->where(function ($q) use ($search) {
-                $q->where('name', 'like', "%{$search}%")
-                    ->orWhere('email', 'like', "%{$search}%")
-                    ->orWhere('phone', 'like', "%{$search}%");
-            });
-        }
-
-        if ($request->filled('role')) {
-            $query->role($request->role);
-        }
-
-        if ($request->filled('status')) {
-            $query->where('is_active', $request->status === 'active');
-        }
-
-        if ($request->filled('provider')) {
-            $request->provider === 'unknown'
-                ? $query->whereNull('provider')
-                : $query->where('provider', $request->provider);
-        }
+        $query = UserFilter::apply(
+            User::with('roles', 'nikahProfile')->withCount(['enrollments', 'counselingBookings'])->latest(),
+            $request
+        );
 
         $users = $query->paginate(15)->withQueryString();
         $roles = Role::all();

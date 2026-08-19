@@ -3,9 +3,11 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Cache\RateLimiting\Limit;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\View;
 use App\Models\BlogPost;
@@ -31,6 +33,14 @@ class AppServiceProvider extends ServiceProvider
         // Lets Notification classes return 'webpush' from via() the same way
         // they already return 'mail'/'database'.
         Notification::extend('webpush', fn ($app) => $app->make(WebPushChannel::class));
+
+        // Throttles SendBulkEmailJob/SendBulkWhatsappJob (admin bulk
+        // messaging) regardless of campaign size — 15/minute keeps Gmail
+        // SMTP (500/day cap) comfortably safe even sending non-stop for
+        // hours; WhatsApp Cloud API has its own per-second tiers this stays
+        // well under too.
+        RateLimiter::for('bulk-email', fn () => Limit::perMinute(15));
+        RateLimiter::for('bulk-whatsapp', fn () => Limit::perMinute(15));
 
         // db.* translation keys are the verbatim English string (see
         // App\Models\Translation) — so an untranslated string (including all

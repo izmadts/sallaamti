@@ -14,7 +14,15 @@
             <form method="GET" class="bg-white p-4 rounded-lg shadow-sm flex flex-wrap gap-3 items-end">
                 <div>
                     <label class="text-xs text-gray-500">Search</label>
-                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Name, email or phone" class="border-gray-300 rounded text-sm block w-56">
+                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Name, email or phone" class="border-gray-300 rounded text-sm block w-48">
+                </div>
+                <div>
+                    <label class="text-xs text-gray-500">Email contains</label>
+                    <input type="text" name="email" value="{{ request('email') }}" placeholder="e.g. gmail.com" class="border-gray-300 rounded text-sm block w-40">
+                </div>
+                <div>
+                    <label class="text-xs text-gray-500">Number contains</label>
+                    <input type="text" name="phone" value="{{ request('phone') }}" placeholder="e.g. 0334" class="border-gray-300 rounded text-sm block w-32">
                 </div>
                 <div>
                     <label class="text-xs text-gray-500">Role</label>
@@ -46,6 +54,9 @@
                 </div>
                 <button class="bg-gray-800 text-white text-sm px-4 py-2 rounded">Filter</button>
                 <a href="{{ route('admin.users.index') }}" class="text-sm text-gray-500 px-2">Reset</a>
+                <a href="{{ route('admin.users.broadcast', request()->query()) }}" class="ml-auto bg-teal-600 hover:bg-teal-700 text-white text-sm font-semibold px-4 py-2 rounded-lg transition">
+                    📨 Message These Users
+                </a>
             </form>
 
             {{-- User Table --}}

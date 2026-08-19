@@ -28,6 +28,7 @@ class User extends Authenticatable
         'longest_streak',
         'last_active_date',
         'whatsapp_notify_opt_in',
+        'newsletter_opt_out',
     ];
 
     protected $hidden = [
