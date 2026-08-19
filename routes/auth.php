@@ -39,11 +39,11 @@ Route::middleware('guest')->group(function () {
         ->name('otp.verify.store');
 
     Route::get('auth/{provider}/redirect', [SocialAuthController::class, 'redirect'])
-        ->whereIn('provider', ['google', 'facebook'])
+        ->whereIn('provider', ['google', 'facebook', 'tiktok'])
         ->name('social.redirect');
 
     Route::get('auth/{provider}/callback', [SocialAuthController::class, 'callback'])
-        ->whereIn('provider', ['google', 'facebook'])
+        ->whereIn('provider', ['google', 'facebook', 'tiktok'])
         ->name('social.callback');
 
     Route::get('forgot-password', [PasswordResetLinkController::class, 'create'])

@@ -82,6 +82,13 @@ class SettingsController extends Controller
             'facebook_client_id'     => ['nullable', 'string', 'max:255'],
             'facebook_client_secret' => ['nullable', 'string', 'max:255'],
             'facebook_login_enabled' => ['nullable', 'boolean'],
+            // Deliberately separate from tiktok_client_id/secret, which
+            // belong to the posting-integration TikTok app configured under
+            // Admin > Integrations — a different TikTok Developer app, same
+            // split as facebook_client_id (login) vs facebook_posting_client_id.
+            'tiktok_login_client_id'     => ['nullable', 'string', 'max:255'],
+            'tiktok_login_client_secret' => ['nullable', 'string', 'max:255'],
+            'tiktok_login_enabled'       => ['nullable', 'boolean'],
         ]);
 
         // Save each setting
@@ -123,9 +130,12 @@ class SettingsController extends Controller
             'facebook_client_id'     => 'oauth',
             'facebook_client_secret' => 'oauth',
             'facebook_login_enabled' => 'oauth',
+            'tiktok_login_client_id'     => 'oauth',
+            'tiktok_login_client_secret' => 'oauth',
+            'tiktok_login_enabled'       => 'oauth',
         ];
 
-        $checkboxKeys = ['maintenance_mode', 'google_login_enabled', 'facebook_login_enabled'];
+        $checkboxKeys = ['maintenance_mode', 'google_login_enabled', 'facebook_login_enabled', 'tiktok_login_enabled'];
 
         foreach ($groups as $key => $group) {
             $value = in_array($key, $checkboxKeys, true)

@@ -244,10 +244,10 @@
                     </div>
                 </div>
             </div>
-            {{-- Social Login (Google / Facebook) --}}
+            {{-- Social Login (Google / Facebook / TikTok) --}}
             <div class="bg-white rounded-lg shadow-sm p-6 space-y-6">
                 <div>
-                    <h3 class="font-semibold text-gray-700 border-b pb-2">🔐 Social Login (Google / Facebook)</h3>
+                    <h3 class="font-semibold text-gray-700 border-b pb-2">🔐 Social Login (Google / Facebook / TikTok)</h3>
                     <p class="text-xs text-gray-400 mt-2">
                         Lets visitors register/sign in with one tap instead of filling a form. Each provider needs a Client ID and Client Secret from its own developer console, and that console needs to know the exact "Redirect URI" below — copy it in exactly, trailing slashes and all.
                     </p>
@@ -332,6 +332,49 @@
                         <div>
                             <x-input-label value="App Secret" />
                             <x-text-input name="facebook_client_secret" class="w-full mt-1" :value="$settings['facebook_client_secret'] ?? ''" />
+                        </div>
+                    </div>
+                </div>
+
+                {{-- TikTok — Login Kit, a SEPARATE TikTok Developer app from
+                     the one configured under Admin > Integrations for
+                     auto-posting (that one needs the Content Posting API
+                     product; this one needs Login Kit). Same split as
+                     Facebook above. --}}
+                <div class="border border-gray-100 rounded-lg p-4 space-y-3">
+                    <div class="flex items-center justify-between">
+                        <h4 class="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                            <i class="fab fa-tiktok text-gray-800"></i> TikTok
+                        </h4>
+                        <label class="flex items-center gap-2 text-xs text-gray-600">
+                            <input type="checkbox" name="tiktok_login_enabled" value="1"
+                                {{ ($settings['tiktok_login_enabled'] ?? '1') === '1' ? 'checked' : '' }}
+                                class="rounded border-gray-300 text-teal-600">
+                            Enabled
+                        </label>
+                    </div>
+
+                    <ol class="text-xs text-gray-500 list-decimal ms-4 space-y-0.5">
+                        <li>Go to <span class="font-mono">developers.tiktok.com/apps</span> and create an app with the "Login Kit" product — a <strong>different</strong> app from the one used for auto-posting under Admin → Integrations, even if both exist in the same developer account.</li>
+                        <li>Under Login Kit → Settings, add the redirect URI below.</li>
+                        <li>Copy the Client Key and Client Secret into the two fields below.</li>
+                    </ol>
+
+                    <div>
+                        <x-input-label value="Redirect URI" />
+                        <input type="text" readonly value="{{ route('social.callback', 'tiktok') }}"
+                            onclick="this.select()"
+                            class="w-full mt-1 border border-gray-200 rounded-lg px-3 py-2 text-sm bg-gray-50 font-mono text-gray-600">
+                    </div>
+
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <x-input-label value="Client Key" />
+                            <x-text-input name="tiktok_login_client_id" class="w-full mt-1" :value="$settings['tiktok_login_client_id'] ?? ''" />
+                        </div>
+                        <div>
+                            <x-input-label value="Client Secret" />
+                            <x-text-input name="tiktok_login_client_secret" class="w-full mt-1" :value="$settings['tiktok_login_client_secret'] ?? ''" />
                         </div>
                     </div>
                 </div>

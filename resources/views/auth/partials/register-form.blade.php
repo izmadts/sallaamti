@@ -120,8 +120,9 @@
     @php
         $googleReady = \App\Http\Controllers\Auth\SocialAuthController::isEnabled('google');
         $facebookReady = \App\Http\Controllers\Auth\SocialAuthController::isEnabled('facebook');
+        $tiktokReady = \App\Http\Controllers\Auth\SocialAuthController::isEnabled('tiktok');
     @endphp
-    @if ($googleReady || $facebookReady)
+    @if ($googleReady || $facebookReady || $tiktokReady)
     <div class="auth-divider"><span>{{ __('db.or continue with') }}</span></div>
 
     <div class="space-y-3">
@@ -135,6 +136,12 @@
         <a href="{{ route('social.redirect', 'facebook') }}"
             class="flex items-center justify-center gap-2.5 border-2 border-[#1877F2] rounded-lg py-2.5 text-sm font-semibold text-white bg-[#1877F2] hover:bg-[#1465d1] hover:border-[#1465d1] hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 transition-all duration-150">
             <i class="fab fa-facebook"></i> {{ __('db.Sign up with Facebook') }}
+        </a>
+        @endif
+        @if ($tiktokReady)
+        <a href="{{ route('social.redirect', 'tiktok') }}"
+            class="flex items-center justify-center gap-2.5 border-2 border-black rounded-lg py-2.5 text-sm font-semibold text-white bg-black hover:bg-gray-900 hover:shadow-md hover:-translate-y-0.5 active:translate-y-0 transition-all duration-150">
+            <i class="fab fa-tiktok"></i> {{ __('db.Sign up with TikTok') }}
         </a>
         @endif
     </div>
