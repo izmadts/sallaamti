@@ -381,6 +381,34 @@
                 <x-secondary-button type="submit">Save WhatsApp Notification Settings</x-secondary-button>
             </div>
 
+            {{-- Counseling session reminders — separate template from the
+                 one above, since it's a different message (a session
+                 reminder, not a new-post announcement) and needs its own
+                 approved Meta template. Off by default, same as above. --}}
+            <div class="bg-white rounded-lg shadow-sm p-6 space-y-4">
+                <div>
+                    <h4 class="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                        <i class="fab fa-whatsapp text-green-600"></i> WhatsApp Counseling Reminders
+                    </h4>
+                    <p class="text-xs text-gray-400 mt-1">
+                        When on, opted-in members and counselors get a WhatsApp reminder ~24 hours before a confirmed counseling session, alongside the existing email reminder.
+                    </p>
+                </div>
+                <label class="flex items-center gap-2 text-sm text-gray-700">
+                    <input type="checkbox" name="whatsapp_counseling_reminders_enabled" value="1" {{ ($settings['whatsapp_counseling_reminders_enabled'] ?? '0') === '1' ? 'checked' : '' }} class="rounded border-gray-300 text-teal-600">
+                    Send WhatsApp counseling reminders
+                    @unless ($accounts['whatsapp'] ?? null)
+                    <span class="text-xs text-amber-600">(connect WhatsApp Business above first)</span>
+                    @endunless
+                </label>
+                <div>
+                    <x-input-label value="Approved template name" />
+                    <x-text-input name="whatsapp_template_name_counseling_reminder" class="w-full mt-1" :value="$settings['whatsapp_template_name_counseling_reminder'] ?? ''" placeholder="e.g. counseling_session_reminder" />
+                    <p class="text-xs text-gray-400 mt-1">A separate approved template from the one above — its variable should be filled with the session's date/time.</p>
+                </div>
+                <x-secondary-button type="submit">Save WhatsApp Notification Settings</x-secondary-button>
+            </div>
+
             {{-- Scheduled batch posting --}}
             <div class="bg-white rounded-lg shadow-sm p-6 space-y-4">
                 <div>

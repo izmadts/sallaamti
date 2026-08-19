@@ -14,8 +14,12 @@ class CounselingBooking extends Model
         'duration_minutes',
         'status',
         'contact_method',
+        'meeting_link',
         'notes',
+        'internal_notes',
         'cancellation_reason',
+        'member_rating',
+        'member_feedback',
         'confirmed_at',
         'completed_at',
         'cancelled_at',
@@ -55,5 +59,18 @@ class CounselingBooking extends Model
             'no_show' => 'red',
             default => 'gray',
         };
+    }
+
+    // "Anonymous to the counselor" — the checkbox's own wording. Admin views
+    // deliberately keep showing the real name regardless; this only governs
+    // counselor-facing display.
+    public function isAnonymous(): bool
+    {
+        return (bool) $this->supportQuery?->is_anonymous;
+    }
+
+    public function isUrgent(): bool
+    {
+        return $this->supportQuery?->priority === 'high';
     }
 }

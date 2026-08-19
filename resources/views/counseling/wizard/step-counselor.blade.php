@@ -38,7 +38,15 @@
                     <label class="flex items-center gap-3 border rounded-lg p-4 cursor-pointer hover:border-teal-400 {{ (string) $current === (string) $counselor->id ? 'border-teal-600 bg-teal-50' : 'border-gray-200' }}">
                         <input type="radio" name="counselor_choice" value="{{ $counselor->id }}" {{ (string) $current === (string) $counselor->id ? 'checked' : '' }} class="text-teal-700">
                         <img src="{{ $counselor->avatarUrl() }}" class="w-8 h-8 rounded-full object-cover">
-                        <span class="text-sm font-medium text-gray-700">{{ $counselor->name }}</span>
+                        <span>
+                            <span class="text-sm font-medium text-gray-700">
+                                {{ $counselor->name }}
+                                @if ($counselor->gender) <span class="text-xs text-gray-400">({{ ucfirst($counselor->gender) }})</span>@endif
+                            </span>
+                            @if ($counselor->counselor_bio)
+                            <span class="block text-xs text-gray-500">{{ $counselor->counselor_bio }}</span>
+                            @endif
+                        </span>
                     </label>
                     @endforeach
 

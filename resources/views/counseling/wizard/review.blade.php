@@ -28,6 +28,9 @@
                         @if (!empty($data['is_anonymous']))
                         <p class="text-xs text-gray-400 mt-2">🔒 {{ __('db.Anonymous to counselor') }}</p>
                         @endif
+                        @if (!empty($data['is_urgent']))
+                        <p class="text-xs text-red-600 font-semibold mt-2">🚨 {{ __('db.Flagged as urgent / a safety concern') }}</p>
+                        @endif
                     </div>
 
                     <div class="border rounded-lg p-4 flex justify-between items-center">

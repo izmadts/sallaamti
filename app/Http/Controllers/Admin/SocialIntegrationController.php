@@ -45,11 +45,13 @@ class SocialIntegrationController extends Controller
             'threads_client_secret' => ['nullable', 'string'],
             'whatsapp_notifications_enabled' => ['nullable', 'boolean'],
             'whatsapp_template_name' => ['nullable', 'string', 'max:255'],
+            'whatsapp_counseling_reminders_enabled' => ['nullable', 'boolean'],
+            'whatsapp_template_name_counseling_reminder' => ['nullable', 'string', 'max:255'],
             'scheduled_batch_size' => ['nullable', 'integer', 'min:0', 'max:50'],
             'scheduled_batch_time' => ['nullable', 'date_format:H:i'],
         ]);
 
-        $checkboxKeys = ['tiktok_audited', 'whatsapp_notifications_enabled'];
+        $checkboxKeys = ['tiktok_audited', 'whatsapp_notifications_enabled', 'whatsapp_counseling_reminders_enabled'];
 
         foreach ($validated as $key => $value) {
             if (in_array($key, $checkboxKeys, true)) {

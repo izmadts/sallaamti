@@ -273,6 +273,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/support/bookings', [CounselingBookingController::class, 'index'])->name('counseling.bookings.index');
     Route::get('/support/bookings/{booking}', [CounselingBookingController::class, 'show'])->name('counseling.bookings.show');
     Route::post('/support/bookings/{booking}/cancel', [CounselingBookingController::class, 'cancel'])->name('counseling.bookings.cancel');
+    Route::post('/support/bookings/{booking}/reply', [CounselingBookingController::class, 'reply'])->name('counseling.bookings.reply');
+    Route::post('/support/bookings/{booking}/rate', [CounselingBookingController::class, 'rate'])->name('counseling.bookings.rate');
 
     Route::get('/support/{query}', [SupportQueryController::class, 'show'])->name('support.show');
     Route::post('/support/{query}/reply', [SupportQueryController::class, 'reply'])->name('support.reply');
@@ -486,10 +488,12 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::delete('translations/{translation}', [TranslationController::class, 'destroy'])->name('translations.destroy');
 
     // Counseling Bookings
-    Route::get('counseling-bookings', [CounselingBookingAdminController::class, 'index'])->name('counseling-bookings.index');
-    Route::get('counseling-bookings/{booking}', [CounselingBookingAdminController::class, 'show'])->name('counseling-bookings.show');
-    Route::post('counseling-bookings/{booking}/reassign', [CounselingBookingAdminController::class, 'reassign'])->name('counseling-bookings.reassign');
-    Route::post('counseling-bookings/{booking}/cancel', [CounselingBookingAdminController::class, 'cancel'])->name('counseling-bookings.cancel');
+    // Counseling Bookings (permission-gated, see App\Support\PermissionCatalog)
+    Route::get('counseling-bookings', [CounselingBookingAdminController::class, 'index'])->name('counseling-bookings.index')->middleware('can:counseling.view');
+    Route::get('counseling-bookings/{booking}', [CounselingBookingAdminController::class, 'show'])->name('counseling-bookings.show')->middleware('can:counseling.view');
+    Route::post('counseling-bookings/{booking}/reassign', [CounselingBookingAdminController::class, 'reassign'])->name('counseling-bookings.reassign')->middleware('can:counseling.manage');
+    Route::post('counseling-bookings/{booking}/cancel', [CounselingBookingAdminController::class, 'cancel'])->name('counseling-bookings.cancel')->middleware('can:counseling.delete');
+    Route::post('counseling-bookings/{booking}/reply', [CounselingBookingAdminController::class, 'reply'])->name('counseling-bookings.reply')->middleware('can:counseling.manage');
 });
 
 // ============================================================
@@ -537,10 +541,12 @@ Route::middleware(['auth', 'counselor'])->prefix('counselor')->name('counselor.'
     Route::post('/availability', [CounselorAvailabilityController::class, 'store'])->name('availability.store');
     Route::delete('/availability/{availability}', [CounselorAvailabilityController::class, 'destroy'])->name('availability.destroy');
     Route::get('/bookings', [CounselorBookingController::class, 'index'])->name('bookings.index');
+    Route::get('/bookings/{booking}', [CounselorBookingController::class, 'show'])->name('bookings.show');
     Route::post('/bookings/{booking}/confirm', [CounselorBookingController::class, 'confirm'])->name('bookings.confirm');
     Route::post('/bookings/{booking}/complete', [CounselorBookingController::class, 'complete'])->name('bookings.complete');
     Route::post('/bookings/{booking}/cancel', [CounselorBookingController::class, 'cancel'])->name('bookings.cancel');
     Route::post('/bookings/{booking}/no-show', [CounselorBookingController::class, 'markNoShow'])->name('bookings.no-show');
+    Route::post('/bookings/{booking}/reply', [CounselorBookingController::class, 'reply'])->name('bookings.reply');
 });
 
 require __DIR__ . '/auth.php';

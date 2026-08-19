@@ -29,6 +29,7 @@ class User extends Authenticatable
         'last_active_date',
         'whatsapp_notify_opt_in',
         'newsletter_opt_out',
+        'counselor_bio',
     ];
 
     protected $hidden = [

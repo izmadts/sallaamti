@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Http\Controllers\Concerns\HasWizardSteps;
 use App\Models\CounselingBooking;
 use App\Models\CounselorAvailability;
+use App\Models\QueryResponse;
 use App\Models\SupportQuery;
 use App\Models\User;
 use App\Notifications\CounselingBookingRequested;
@@ -21,7 +22,7 @@ class CounselingBookingController extends Controller
 
     protected array $wizardStepFields = [
         'category' => ['category'],
-        'describe' => ['subject', 'description', 'is_anonymous'],
+        'describe' => ['subject', 'description', 'is_anonymous', 'is_urgent'],
         'contact' => ['contact_method'],
         'counselor' => ['counselor_choice'],
         'slot' => ['counselor_id', 'scheduled_at'],
@@ -87,8 +88,10 @@ class CounselingBookingController extends Controller
                 'subject' => ['required', 'string', 'max:255'],
                 'description' => ['required', 'string', 'min:20', 'max:5000'],
                 'is_anonymous' => ['nullable', 'boolean'],
+                'is_urgent' => ['nullable', 'boolean'],
             ]);
             $validated['is_anonymous'] = $request->boolean('is_anonymous');
+            $validated['is_urgent'] = $request->boolean('is_urgent');
         } elseif ($step === 'contact') {
             $validated = $request->validate([
                 'contact_method' => ['required', 'in:phone,video,in_person,chat'],
@@ -97,6 +100,13 @@ class CounselingBookingController extends Controller
             $validated = $request->validate([
                 'counselor_choice' => ['required'],
             ]);
+        } elseif ($step === 'slot' && $request->filled('preferred_at')) {
+            // No counselor has open availability (or none is registered at
+            // all yet) — rather than dead-end the member, let them submit a
+            // preferred date/time with no counselor attached. Admin assigns
+            // one afterward (see CounselingBookingAdminController::reassign()).
+            $request->validate(['preferred_at' => ['required', 'date', 'after:now']]);
+            $validated = ['counselor_id' => null, 'scheduled_at' => Carbon::parse($request->preferred_at)->toDateTimeString()];
         } elseif ($step === 'slot') {
             $request->validate(['slot' => ['required', 'string']]);
             [$counselorId, $scheduledAt] = explode('|', $request->slot, 2);
@@ -163,14 +173,19 @@ class CounselingBookingController extends Controller
         // slot blocks until this one commits, then correctly sees the
         // conflict instead of creating a duplicate booking.
         $booking = DB::transaction(function () use ($data) {
-            $conflict = CounselingBooking::where('counselor_id', $data['counselor_id'])
-                ->where('scheduled_at', $data['scheduled_at'])
-                ->whereIn('status', ['requested', 'confirmed'])
-                ->lockForUpdate()
-                ->exists();
+            // No conflict is possible when nobody's assigned yet — several
+            // members can have the same "preferred time, unassigned" request
+            // pending simultaneously without anyone actually being double-booked.
+            if ($data['counselor_id']) {
+                $conflict = CounselingBooking::where('counselor_id', $data['counselor_id'])
+                    ->where('scheduled_at', $data['scheduled_at'])
+                    ->whereIn('status', ['requested', 'confirmed'])
+                    ->lockForUpdate()
+                    ->exists();
 
-            if ($conflict) {
-                return null;
+                if ($conflict) {
+                    return null;
+                }
             }
 
             $query = SupportQuery::create([
@@ -179,6 +194,7 @@ class CounselingBookingController extends Controller
                 'subject' => $data['subject'],
                 'description' => $data['description'],
                 'is_anonymous' => $data['is_anonymous'] ?? false,
+                'priority' => !empty($data['is_urgent']) ? 'high' : 'medium',
             ]);
 
             return CounselingBooking::create([
@@ -235,6 +251,38 @@ class CounselingBookingController extends Controller
         ]);
 
         return back()->with('status', 'Your session has been cancelled.');
+    }
+
+    public function reply(Request $request, CounselingBooking $booking)
+    {
+        abort_unless($booking->member_id === Auth::id(), 403);
+        abort_unless($booking->support_query_id, 404);
+
+        $validated = $request->validate(['message' => ['required', 'string', 'max:2000']]);
+
+        QueryResponse::create([
+            'support_query_id' => $booking->support_query_id,
+            'responder_id' => Auth::id(),
+            'message' => $validated['message'],
+            'is_internal' => false,
+        ]);
+
+        return back()->with('status', 'Message sent.');
+    }
+
+    public function rate(Request $request, CounselingBooking $booking)
+    {
+        abort_unless($booking->member_id === Auth::id(), 403);
+        abort_unless($booking->status === 'completed', 403);
+
+        $validated = $request->validate([
+            'member_rating' => ['required', 'integer', 'min:1', 'max:5'],
+            'member_feedback' => ['nullable', 'string', 'max:2000'],
+        ]);
+
+        $booking->update($validated);
+
+        return back()->with('status', 'Thank you for your feedback!');
     }
 
     private function availableSlots(array $counselorIds, Carbon $date): array

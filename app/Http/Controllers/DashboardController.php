@@ -53,11 +53,12 @@ class DashboardController extends Controller
             'pending_requests' => \App\Models\CounselingBooking::where('counselor_id', $authUser->id)->where('status', 'requested')->count(),
             'upcoming' => \App\Models\CounselingBooking::where('counselor_id', $authUser->id)->whereIn('status', ['requested', 'confirmed'])->count(),
             'completed_total' => \App\Models\CounselingBooking::where('counselor_id', $authUser->id)->where('status', 'completed')->count(),
+            'avg_rating' => round((float) \App\Models\CounselingBooking::where('counselor_id', $authUser->id)->whereNotNull('member_rating')->avg('member_rating'), 1),
         ];
 
         $nextBookings = \App\Models\CounselingBooking::where('counselor_id', $authUser->id)
             ->whereIn('status', ['requested', 'confirmed'])
-            ->with('member')
+            ->with(['member', 'supportQuery'])
             ->orderBy('scheduled_at')
             ->take(5)
             ->get();

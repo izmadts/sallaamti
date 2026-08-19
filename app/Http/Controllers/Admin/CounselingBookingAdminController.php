@@ -4,24 +4,35 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\CounselingBooking;
+use App\Models\QueryResponse;
 use App\Models\User;
+use App\Notifications\CounselingBookingCancelled;
+use App\Notifications\CounselingBookingReassigned;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class CounselingBookingAdminController extends Controller
 {
     public function index(Request $request)
     {
-        $query = CounselingBooking::with(['member', 'counselor'])->orderByDesc('scheduled_at');
+        $query = CounselingBooking::with(['member', 'counselor', 'supportQuery'])->orderByDesc('scheduled_at');
 
         if ($request->filled('status')) {
             $query->where('status', $request->status);
         }
         if ($request->filled('counselor_id')) {
-            $query->where('counselor_id', $request->counselor_id);
+            $request->counselor_id === 'unassigned'
+                ? $query->whereNull('counselor_id')
+                : $query->where('counselor_id', $request->counselor_id);
+        }
+        if ($request->boolean('urgent_only')) {
+            $query->whereHas('supportQuery', fn ($q) => $q->where('priority', 'high'));
         }
 
         $bookings = $query->paginate(20)->withQueryString();
-        $counselors = User::role('counselor')->orderBy('name')->get();
+        // Admin can assign any counselor — or themselves, or any other
+        // admin, to personally take a session ("admin by self can attend").
+        $counselors = User::role(['counselor', 'admin'])->orderBy('name')->get();
 
         return view('admin.counseling-bookings.index', compact('bookings', 'counselors'));
     }
@@ -29,7 +40,7 @@ class CounselingBookingAdminController extends Controller
     public function show(CounselingBooking $booking)
     {
         $booking->load(['member', 'counselor', 'supportQuery.responses.responder']);
-        $counselors = User::role('counselor')->orderBy('name')->get();
+        $counselors = User::role(['counselor', 'admin'])->orderBy('name')->get();
 
         return view('admin.counseling-bookings.show', compact('booking', 'counselors'));
     }
@@ -49,8 +60,12 @@ class CounselingBookingAdminController extends Controller
         }
 
         $booking->update(['counselor_id' => $request->counselor_id, 'status' => 'requested', 'confirmed_at' => null]);
+        $booking->refresh();
 
-        return back()->with('status', 'Booking reassigned.');
+        $booking->counselor?->notify(new CounselingBookingReassigned($booking, forCounselor: true));
+        $booking->member?->notify(new CounselingBookingReassigned($booking, forCounselor: false));
+
+        return back()->with('status', 'Booking reassigned — both the counselor and member have been notified. The counselor will need to re-confirm the session.');
     }
 
     public function cancel(Request $request, CounselingBooking $booking)
@@ -61,6 +76,24 @@ class CounselingBookingAdminController extends Controller
             'cancelled_at' => now(),
         ]);
 
-        return back()->with('status', 'Booking cancelled.');
+        $booking->member?->notify(new CounselingBookingCancelled($booking));
+
+        return back()->with('status', 'Booking cancelled and the member has been notified.');
+    }
+
+    public function reply(Request $request, CounselingBooking $booking)
+    {
+        abort_unless($booking->support_query_id, 404);
+
+        $validated = $request->validate(['message' => ['required', 'string', 'max:2000']]);
+
+        QueryResponse::create([
+            'support_query_id' => $booking->support_query_id,
+            'responder_id' => Auth::id(),
+            'message' => $validated['message'],
+            'is_internal' => false,
+        ]);
+
+        return back()->with('status', 'Message sent.');
     }
 }

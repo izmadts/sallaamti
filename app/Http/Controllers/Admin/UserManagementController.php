@@ -56,6 +56,7 @@ class UserManagementController extends Controller
             'gender' => ['nullable', 'in:male,female'],
             'city' => ['nullable', 'string', 'max:100'],
             'avatar' => ['nullable', 'image', 'max:2048'],
+            'counselor_bio' => ['nullable', 'string', 'max:500'],
         ]);
 
         $emailChanged = $user->email !== ($validated['email'] ?? null);

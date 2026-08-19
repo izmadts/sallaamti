@@ -61,6 +61,12 @@
                             <input id="avatar" type="file" name="avatar" accept="image/*" class="w-full mt-1 text-sm">
                         </div>
                     </div>
+                    @if ($user->hasRole('counselor'))
+                    <div>
+                        <x-input-label for="counselor_bio" value="Counselor specialty / bio (shown to members picking a counselor)" />
+                        <textarea id="counselor_bio" name="counselor_bio" rows="2" maxlength="500" class="w-full mt-1 border-gray-300 rounded-lg text-sm">{{ old('counselor_bio', $user->counselor_bio) }}</textarea>
+                    </div>
+                    @endif
                     <p class="text-xs text-amber-600">Changing the email clears this account's verification status — they'll need to verify the new address.</p>
                     <x-primary-button>Save Details</x-primary-button>
                 </form>
