@@ -25,10 +25,16 @@
  <link rel="canonical" href="@yield('canonical', url()->current())">
 
  {{-- ===== OPEN GRAPH (Facebook, WhatsApp previews) ===== --}}
+ @php
+     // The admin's uploaded SEO image (Settings → SEO → Social Share
+     // Image) was being saved but never actually read anywhere — every
+     // page fell back to the static img/og-default.jpg regardless.
+     $defaultOgImage = setting('seo_og_image') ? \Illuminate\Support\Facades\Storage::disk('public')->url(setting('seo_og_image')) : asset('img/og-default.jpg');
+ @endphp
  <meta property="og:type" content="@yield('og_type', 'website')">
  <meta property="og:title" content="@yield('og_title', setting('site_name') . ' | ' . setting('site_tagline'))">
  <meta property="og:description" content="@yield('og_description', 'Learn Quran online with expert teachers. Self-paced courses, live classes, Islamic matrimonial and family support.')">
- <meta property="og:image" content="@yield('og_image', asset('img/og-default.jpg'))">
+ <meta property="og:image" content="@yield('og_image', $defaultOgImage)">
  <meta property="og:url" content="{{ url()->current() }}">
  <meta property="og:site_name" content="{{ setting('site_name', 'Sallaamti') }}">
  <meta property="og:locale" content="en_PK">
@@ -37,7 +43,7 @@
  <meta name="twitter:card" content="summary_large_image">
  <meta name="twitter:title" content="@yield('og_title', setting('site_name'))">
  <meta name="twitter:description" content="@yield('og_description', 'Learn Quran online with expert teachers.')">
- <meta name="twitter:image" content="@yield('og_image', asset('img/og-default.jpg'))">
+ <meta name="twitter:image" content="@yield('og_image', $defaultOgImage)">
  {{-- ===== STRUCTURED DATA (JSON-LD) ===== --}}
  @php
  $structuredData = [

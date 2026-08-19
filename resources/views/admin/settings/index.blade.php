@@ -9,8 +9,18 @@
 
     <div class="w-full space-y-6">
 
+        @if ($errors->any())
+        <div class="p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg">
+            <p class="font-medium text-sm mb-1">Please fix the following before saving:</p>
+            <ul class="list-disc list-inside text-sm">
+                @foreach ($errors->all() as $error)
+                <li>{{ $error }}</li>
+                @endforeach
+            </ul>
+        </div>
+        @endif
 
-        <form method="POST" action="{{ route('admin.settings.update') }}" class="space-y-6">
+        <form method="POST" action="{{ route('admin.settings.update') }}" enctype="multipart/form-data" class="space-y-6">
             @csrf
 
             {{-- General --}}

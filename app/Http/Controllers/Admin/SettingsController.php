@@ -137,12 +137,30 @@ class SettingsController extends Controller
 
         $checkboxKeys = ['maintenance_mode', 'google_login_enabled', 'facebook_login_enabled', 'tiktok_login_enabled'];
 
-        foreach ($groups as $key => $group) {
-            $value = in_array($key, $checkboxKeys, true)
-                ? ($request->has($key) ? '1' : '0')
-                : $request->input($key, '');
+        // Required fields (validated above, so never blank here) always
+        // get written. Everything else is nullable — only overwrite when a
+        // real value was actually submitted, same as
+        // SocialIntegrationController::updateSettings() already does.
+        // Writing an empty string was silently permanent: Setting::get()
+        // returns whatever's stored once a row exists, even '', so a
+        // fallback default like setting('seo_home_title', 'Nice Title')
+        // stopped falling back the moment ANY settings save happened with
+        // that field blank — which is how seo_home_description, seo_keywords,
+        // and site_tagline ended up permanently empty, breaking the site's
+        // <title>/meta description on every guest page.
+        $requiredKeys = ['site_name', 'nikah_verification_fee'];
 
-            Setting::set($key, $value, $group);
+        foreach ($groups as $key => $group) {
+            if (in_array($key, $checkboxKeys, true)) {
+                Setting::set($key, $request->has($key) ? '1' : '0', $group);
+                continue;
+            }
+
+            $value = $request->input($key, '');
+
+            if (in_array($key, $requiredKeys, true) || filled($value)) {
+                Setting::set($key, $value, $group);
+            }
         }
 
         if ($request->hasFile('seo_og_image')) {
