@@ -286,6 +286,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::delete('users/{user}', [UserManagementController::class, 'destroy'])->name('users.destroy');
     Route::get('users/roles/manage', [UserManagementController::class, 'roles'])->name('users.roles');
     Route::post('users/roles', [UserManagementController::class, 'storeRole'])->name('users.roles.store');
+    Route::post('users/roles/{role}/permissions', [UserManagementController::class, 'updatePermissions'])->name('users.roles.permissions');
 
     // Settings & Frontend
     Route::get('settings', [SettingsController::class, 'index'])->name('settings.index');
@@ -305,18 +306,24 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 
     Route::resource('daily-content', DailyContentController::class)->except(['show']);
     Route::post('daily-content/{daily_content}/toggle', [DailyContentController::class, 'toggle'])->name('daily-content.toggle');
-    Route::resource('community-posts', CommunityPostController::class)->except(['show']);
-    Route::post('community-posts/{community_post}/toggle', [CommunityPostController::class, 'toggle'])->name('community-posts.toggle');
-    Route::post('community-posts/{community_post}/pin', [CommunityPostController::class, 'togglePin'])->name('community-posts.pin');
+    // First-wave granular-permission resource (see App\Support\PermissionCatalog)
+    // — view/manage/delete split per method; the 'admin' role bypasses all
+    // of this via Gate::before regardless.
+    Route::resource('community-posts', CommunityPostController::class)->except(['show'])
+        ->middlewareFor(['index'], 'can:community-posts.view')
+        ->middlewareFor(['create', 'store', 'edit', 'update'], 'can:community-posts.manage')
+        ->middlewareFor(['destroy'], 'can:community-posts.delete');
+    Route::post('community-posts/{community_post}/toggle', [CommunityPostController::class, 'toggle'])->name('community-posts.toggle')->middleware('can:community-posts.manage');
+    Route::post('community-posts/{community_post}/pin', [CommunityPostController::class, 'togglePin'])->name('community-posts.pin')->middleware('can:community-posts.manage');
 
     // Bulk import old photos/videos, then a daily scheduled batch drains
     // the queue automatically (see routes/console.php and
     // PublishScheduledCommunityPosts).
-    Route::get('community-posts-bulk-upload', [CommunityPostController::class, 'bulkUpload'])->name('community-posts.bulk-upload');
-    Route::post('community-posts-bulk-upload', [CommunityPostController::class, 'bulkStore'])->name('community-posts.bulk-store');
-    Route::get('community-posts-queue', [CommunityPostController::class, 'queue'])->name('community-posts.queue');
-    Route::post('community-posts-queue/reorder', [CommunityPostController::class, 'queueReorder'])->name('community-posts.queue.reorder');
-    Route::post('community-posts/{community_post}/publish-now', [CommunityPostController::class, 'queuePublishNow'])->name('community-posts.publish-now');
+    Route::get('community-posts-bulk-upload', [CommunityPostController::class, 'bulkUpload'])->name('community-posts.bulk-upload')->middleware('can:community-posts.manage');
+    Route::post('community-posts-bulk-upload', [CommunityPostController::class, 'bulkStore'])->name('community-posts.bulk-store')->middleware('can:community-posts.manage');
+    Route::get('community-posts-queue', [CommunityPostController::class, 'queue'])->name('community-posts.queue')->middleware('can:community-posts.view');
+    Route::post('community-posts-queue/reorder', [CommunityPostController::class, 'queueReorder'])->name('community-posts.queue.reorder')->middleware('can:community-posts.manage');
+    Route::post('community-posts/{community_post}/publish-now', [CommunityPostController::class, 'queuePublishNow'])->name('community-posts.publish-now')->middleware('can:community-posts.manage');
 
     // Social media auto-posting — connect accounts + review/retry deliveries.
     Route::get('integrations', [SocialIntegrationController::class, 'index'])->name('integrations.index');
@@ -341,29 +348,35 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::post('certificates', [CertificateAdminController::class, 'store'])->name('certificates.store');
     Route::delete('certificates/{certificate}', [CertificateAdminController::class, 'destroy'])->name('certificates.destroy');
 
-    // Nikah Management
-    Route::get('/nikah-profiles', [NikahVerificationController::class, 'directory'])->name('nikah.profiles');
-    Route::get('/nikah-verifications', [NikahVerificationController::class, 'index'])->name('nikah.verifications');
-    Route::get('/nikah-verifications/{profile}', [NikahVerificationController::class, 'show'])->name('nikah.show');
-    Route::delete('/nikah-verifications/{profile}', [NikahVerificationController::class, 'destroy'])->name('nikah.destroy');
-    Route::post('/nikah-verifications/{profile}/contact', [NikahVerificationController::class, 'contact'])->name('nikah.contact');
-    Route::post('/nikah-verifications/bulk-approve', [NikahVerificationController::class, 'bulkApprove'])->name('nikah.verifications.bulk-approve');
-    Route::post('/nikah-verifications/{profile}/approve', [NikahVerificationController::class, 'approve'])->name('nikah.approve');
-    Route::post('/nikah-verifications/{profile}/reject', [NikahVerificationController::class, 'reject'])->name('nikah.reject');
-    Route::post('/nikah-verifications/{profile}/verify-guardian', [NikahVerificationController::class, 'verifyGuardian'])->name('nikah.verify-guardian');
-    Route::post('/nikah-verifications/{profile}/remind', [NikahVerificationController::class, 'sendReminder'])->name('nikah.remind');
-    Route::post('/nikah-verifications/bulk-remind', [NikahVerificationController::class, 'bulkRemind'])->name('nikah.verifications.bulk-remind');
-    Route::post('/nikah-verifications/{profile}/notes', [NikahVerificationController::class, 'addNote'])->name('nikah.notes.store');
-    Route::post('/nikah-verifications/{profile}/unsuspend', [NikahSafetyController::class, 'unsuspendProfile'])->name('nikah.unsuspend');
-    Route::get('/nikah-payments', [NikahPaymentAdminController::class, 'index'])->name('nikah.payments');
-    Route::post('/nikah-payments/bulk-confirm', [NikahPaymentAdminController::class, 'bulkConfirm'])->name('nikah.payments.bulk-confirm');
-    Route::post('/nikah-payments/{profile}/confirm', [NikahPaymentAdminController::class, 'confirm'])->name('nikah.payments.confirm');
-    Route::post('/nikah-payments/{profile}/record-offline', [NikahPaymentAdminController::class, 'recordOffline'])->name('nikah.payments.record-offline');
-    Route::post('/nikah-payments/{profile}/reject', [NikahPaymentAdminController::class, 'reject'])->name('nikah.payments.reject');
-    Route::get('nikah-reports', [NikahSafetyController::class, 'adminReports'])->name('nikah.reports');
-    Route::post('nikah-reports/{report}/dismiss', [NikahSafetyController::class, 'dismissReport'])->name('nikah.reports.dismiss');
-    Route::post('nikah-reports/{report}/suspend', [NikahSafetyController::class, 'suspendReportedProfile'])->name('nikah.reports.suspend');
-    Route::get('nikah-reports/{report}/conversation', [NikahSafetyController::class, 'reportConversation'])->name('nikah.reports.conversation');
+    // Nikah Management — GET routes need nikah.view, mutating POST routes
+    // need nikah.manage, the one DELETE needs nikah.delete (see
+    // App\Support\PermissionCatalog; 'admin' role bypasses all of this).
+    Route::middleware('can:nikah.view')->group(function () {
+        Route::get('/nikah-profiles', [NikahVerificationController::class, 'directory'])->name('nikah.profiles');
+        Route::get('/nikah-verifications', [NikahVerificationController::class, 'index'])->name('nikah.verifications');
+        Route::get('/nikah-verifications/{profile}', [NikahVerificationController::class, 'show'])->name('nikah.show');
+        Route::get('/nikah-payments', [NikahPaymentAdminController::class, 'index'])->name('nikah.payments');
+        Route::get('nikah-reports', [NikahSafetyController::class, 'adminReports'])->name('nikah.reports');
+        Route::get('nikah-reports/{report}/conversation', [NikahSafetyController::class, 'reportConversation'])->name('nikah.reports.conversation');
+    });
+    Route::delete('/nikah-verifications/{profile}', [NikahVerificationController::class, 'destroy'])->name('nikah.destroy')->middleware('can:nikah.delete');
+    Route::middleware('can:nikah.manage')->group(function () {
+        Route::post('/nikah-verifications/{profile}/contact', [NikahVerificationController::class, 'contact'])->name('nikah.contact');
+        Route::post('/nikah-verifications/bulk-approve', [NikahVerificationController::class, 'bulkApprove'])->name('nikah.verifications.bulk-approve');
+        Route::post('/nikah-verifications/{profile}/approve', [NikahVerificationController::class, 'approve'])->name('nikah.approve');
+        Route::post('/nikah-verifications/{profile}/reject', [NikahVerificationController::class, 'reject'])->name('nikah.reject');
+        Route::post('/nikah-verifications/{profile}/verify-guardian', [NikahVerificationController::class, 'verifyGuardian'])->name('nikah.verify-guardian');
+        Route::post('/nikah-verifications/{profile}/remind', [NikahVerificationController::class, 'sendReminder'])->name('nikah.remind');
+        Route::post('/nikah-verifications/bulk-remind', [NikahVerificationController::class, 'bulkRemind'])->name('nikah.verifications.bulk-remind');
+        Route::post('/nikah-verifications/{profile}/notes', [NikahVerificationController::class, 'addNote'])->name('nikah.notes.store');
+        Route::post('/nikah-verifications/{profile}/unsuspend', [NikahSafetyController::class, 'unsuspendProfile'])->name('nikah.unsuspend');
+        Route::post('/nikah-payments/bulk-confirm', [NikahPaymentAdminController::class, 'bulkConfirm'])->name('nikah.payments.bulk-confirm');
+        Route::post('/nikah-payments/{profile}/confirm', [NikahPaymentAdminController::class, 'confirm'])->name('nikah.payments.confirm');
+        Route::post('/nikah-payments/{profile}/record-offline', [NikahPaymentAdminController::class, 'recordOffline'])->name('nikah.payments.record-offline');
+        Route::post('/nikah-payments/{profile}/reject', [NikahPaymentAdminController::class, 'reject'])->name('nikah.payments.reject');
+        Route::post('nikah-reports/{report}/dismiss', [NikahSafetyController::class, 'dismissReport'])->name('nikah.reports.dismiss');
+        Route::post('nikah-reports/{report}/suspend', [NikahSafetyController::class, 'suspendReportedProfile'])->name('nikah.reports.suspend');
+    });
 
     // Quran Courses Management
     Route::resource('courses', CourseAdminController::class);
@@ -394,35 +407,36 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::post('quran-admissions/{admission}/assign', [QuranClassGroupAdminController::class, 'assignToGroup'])->name('quran-admissions.assign');
     Route::post('quran-admissions/{admission}/reject', [QuranClassGroupAdminController::class, 'rejectAdmission'])->name('quran-admissions.reject');
     Route::post('quran-group-students/{student}/status', [QuranClassGroupAdminController::class, 'updateStudentStatus'])->name('quran-group-students.status');
-    // Volunteer Management
-    Route::get('volunteers', [VolunteerAdminController::class, 'index'])->name('volunteers.index');
-    Route::post('volunteers/{volunteer}/approve', [VolunteerAdminController::class, 'approve'])->name('volunteers.approve');
-    Route::post('volunteers/{volunteer}/reject', [VolunteerAdminController::class, 'reject'])->name('volunteers.reject');
-    Route::delete('volunteers/{volunteer}', [VolunteerAdminController::class, 'destroy'])->name('volunteers.destroy');
+    // Volunteer Management (permission-gated, see App\Support\PermissionCatalog)
+    Route::get('volunteers', [VolunteerAdminController::class, 'index'])->name('volunteers.index')->middleware('can:volunteers.view');
+    Route::post('volunteers/{volunteer}/approve', [VolunteerAdminController::class, 'approve'])->name('volunteers.approve')->middleware('can:volunteers.manage');
+    Route::post('volunteers/{volunteer}/reject', [VolunteerAdminController::class, 'reject'])->name('volunteers.reject')->middleware('can:volunteers.manage');
+    Route::delete('volunteers/{volunteer}', [VolunteerAdminController::class, 'destroy'])->name('volunteers.destroy')->middleware('can:volunteers.delete');
 
-    // Sallaamti Wall moderation
-    Route::get('wall', [DuaWallAdminController::class, 'index'])->name('wall.index');
-    Route::post('wall/{duaRequest}/approve', [DuaWallAdminController::class, 'approve'])->name('wall.approve');
-    Route::post('wall/{duaRequest}/reject', [DuaWallAdminController::class, 'reject'])->name('wall.reject');
-    Route::delete('wall/{duaRequest}', [DuaWallAdminController::class, 'destroy'])->name('wall.destroy');
+    // Sallaamti Wall moderation (permission-gated)
+    Route::get('wall', [DuaWallAdminController::class, 'index'])->name('wall.index')->middleware('can:wall.view');
+    Route::post('wall/{duaRequest}/approve', [DuaWallAdminController::class, 'approve'])->name('wall.approve')->middleware('can:wall.manage');
+    Route::post('wall/{duaRequest}/reject', [DuaWallAdminController::class, 'reject'])->name('wall.reject')->middleware('can:wall.manage');
+    Route::delete('wall/{duaRequest}', [DuaWallAdminController::class, 'destroy'])->name('wall.destroy')->middleware('can:wall.delete');
 
-    // Donation Management
-    Route::get('donations', [DonationAdminController::class, 'index'])->name('donations.index');
-    Route::post('donations/{donation}/confirm', [DonationAdminController::class, 'confirm'])->name('donations.confirm');
-    Route::post('donations/{donation}/reject', [DonationAdminController::class, 'reject'])->name('donations.reject');
-    Route::get('donation-screenshot/{donation}', [DonationAdminController::class, 'screenshot'])->name('admin.donation.screenshot');
-    Route::delete('donations/{donation}', [DonationAdminController::class, 'destroy'])->name('donations.destroy');
+    // Donation Management (permission-gated)
+    Route::get('donations', [DonationAdminController::class, 'index'])->name('donations.index')->middleware('can:donations.view');
+    Route::post('donations/{donation}/confirm', [DonationAdminController::class, 'confirm'])->name('donations.confirm')->middleware('can:donations.manage');
+    Route::post('donations/{donation}/reject', [DonationAdminController::class, 'reject'])->name('donations.reject')->middleware('can:donations.manage');
+    Route::get('donation-screenshot/{donation}', [DonationAdminController::class, 'screenshot'])->name('admin.donation.screenshot')->middleware('can:donations.view');
+    Route::delete('donations/{donation}', [DonationAdminController::class, 'destroy'])->name('donations.destroy')->middleware('can:donations.delete');
 
     // Subscribers
     Route::get('/subscribers', [SubscriberAdminController::class, 'index'])->name('subscribers.index');
     Route::delete('/subscribers/{subscriber}', [SubscriberAdminController::class, 'destroy'])->name('subscribers.destroy');
 
-    Route::get('support', [SupportQueryAdminController::class, 'index'])->name('support.index');
-    Route::get('support/{query}', [SupportQueryAdminController::class, 'show'])->name('support.show');
-    Route::post('support/{query}/assign', [SupportQueryAdminController::class, 'assign'])->name('support.assign');
-    Route::post('support/{query}/status', [SupportQueryAdminController::class, 'updateStatus'])->name('support.status');
-    Route::post('support/{query}/reply', [SupportQueryAdminController::class, 'reply'])->name('support.reply');
-    Route::delete('support/{query}', [SupportQueryAdminController::class, 'destroy'])->name('support.destroy');
+    // Family Support queries (permission-gated)
+    Route::get('support', [SupportQueryAdminController::class, 'index'])->name('support.index')->middleware('can:support.view');
+    Route::get('support/{query}', [SupportQueryAdminController::class, 'show'])->name('support.show')->middleware('can:support.view');
+    Route::post('support/{query}/assign', [SupportQueryAdminController::class, 'assign'])->name('support.assign')->middleware('can:support.manage');
+    Route::post('support/{query}/status', [SupportQueryAdminController::class, 'updateStatus'])->name('support.status')->middleware('can:support.manage');
+    Route::post('support/{query}/reply', [SupportQueryAdminController::class, 'reply'])->name('support.reply')->middleware('can:support.manage');
+    Route::delete('support/{query}', [SupportQueryAdminController::class, 'destroy'])->name('support.destroy')->middleware('can:support.delete');
 
     // Localization
     Route::get('languages', [LanguageController::class, 'index'])->name('languages.index');

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Support\PermissionCatalog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 use Spatie\Permission\Models\Role;
@@ -96,8 +97,15 @@ class UserManagementController extends Controller
 
     public function roles()
     {
-        $roles = Role::withCount('users')->get();
-        return view('admin.users.roles', compact('roles'));
+        PermissionCatalog::ensureSeeded();
+
+        $roles = Role::withCount('users')->with('permissions')->get();
+
+        return view('admin.users.roles', [
+            'roles' => $roles,
+            'resources' => PermissionCatalog::RESOURCES,
+            'actions' => PermissionCatalog::ACTIONS,
+        ]);
     }
 
     public function storeRole(Request $request)
@@ -109,5 +117,23 @@ class UserManagementController extends Controller
         Role::create(['name' => Str::lower($request->name)]);
 
         return back()->with('status', 'Role created.');
+    }
+
+    // The 'admin' role is intentionally not editable here — it's a full
+    // bypass for every permission check (see AppServiceProvider's
+    // Gate::before), so toggling individual permissions for it would look
+    // like it does something and actually do nothing.
+    public function updatePermissions(Request $request, Role $role)
+    {
+        abort_if($role->name === 'admin', 422, "The admin role already has full access — it can't be restricted.");
+
+        $validated = $request->validate([
+            'permissions' => ['nullable', 'array'],
+            'permissions.*' => ['string', 'in:' . implode(',', PermissionCatalog::all())],
+        ]);
+
+        $role->syncPermissions($validated['permissions'] ?? []);
+
+        return back()->with('status', "Permissions updated for {$role->name}.");
     }
 }

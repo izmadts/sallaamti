@@ -3,6 +3,7 @@
 namespace App\Providers;
 
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\Schema;
@@ -16,6 +17,16 @@ class AppServiceProvider extends ServiceProvider
     {
         // Fix for shared hosting MySQL key length limit
         Schema::defaultStringLength(191);
+
+        // The 'admin' role is always a full, unrestricted bypass for every
+        // permission check (via $user->can(...), @can, can: middleware,
+        // authorize()) — granular permissions (see PermissionCatalog) exist
+        // to hand a LIMITED staff role access to specific admin areas
+        // without also granting them the full admin role; they never
+        // narrow what an actual admin can already do.
+        Gate::before(function ($user, string $ability) {
+            return $user->hasRole('admin') ? true : null;
+        });
 
         // Lets Notification classes return 'webpush' from via() the same way
         // they already return 'mail'/'database'.
