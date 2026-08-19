@@ -32,8 +32,12 @@ class CertificateController extends Controller
         $certificate->load('user', 'course', 'issuer');
 
         if ($certificate->type === 'volunteer_id') {
+            // 85.6mm x 54mm (ISO/IEC 7810 ID-1) converted to points and
+            // rounded up slightly — rounding down here left the page a hair
+            // short of the CSS-declared mm size, which made DomPDF spill a
+            // near-invisible sliver onto a blank second page.
             $pdf = Pdf::loadView('certificates.volunteer-id-card', ['certificate' => $certificate])
-                ->setPaper([0, 0, 242.65, 153.07]);
+                ->setPaper([0, 0, 242.7, 153.15]);
 
             return $pdf->download('Sallaamti-Volunteer-ID-' . $certificate->certificate_number . '.pdf');
         }
