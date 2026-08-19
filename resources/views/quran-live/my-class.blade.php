@@ -40,7 +40,7 @@
                 <a href="{{ route('quran-live.my-class', ['child' => $gs->id]) }}"
                     class="text-sm px-4 py-2 rounded-full font-medium {{ $gs->id === $current->id ? 'text-white' : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50' }}"
                     @if ($gs->id === $current->id) style="background: #0d6b6b" @endif>
-                    {{ $gs->admission?->student_name ?? $gs->user->name }}
+                    {{ $gs->admission?->student_name ?? $gs->user?->name ?? 'Unknown' }}
                 </a>
                 @endforeach
             </div>
@@ -115,7 +115,7 @@
                     @php $isMe = $message->sender_id === auth()->id(); @endphp
                     <div class="flex {{ $isMe ? 'justify-end' : 'justify-start' }}">
                         <div class="max-w-md rounded-2xl px-4 py-2.5 text-sm {{ $isMe ? 'bg-teal-600 text-white' : 'bg-gray-50 text-gray-800' }}">
-                            <p class="font-semibold text-xs mb-0.5 {{ $isMe ? 'text-teal-100' : 'text-gray-400' }}">{{ $isMe ? 'You' : ($message->sender->name ?? 'Teacher') }}</p>
+                            <p class="font-semibold text-xs mb-0.5 {{ $isMe ? 'text-teal-100' : 'text-gray-400' }}">{{ $isMe ? 'You' : ($message->sender?->name ?? 'Teacher') }}</p>
                             <p class="leading-relaxed">{{ $message->message }}</p>
                             <p class="text-xs mt-1 {{ $isMe ? 'text-teal-200' : 'text-gray-400' }}">{{ $message->created_at->format('d M, h:i A') }}</p>
                         </div>

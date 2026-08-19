@@ -37,7 +37,7 @@
                     <div class="flex flex-wrap gap-2">
                         @foreach ($group->students as $gs)
                         <div class="flex items-center gap-2 bg-gray-50 rounded px-2 py-1 text-xs">
-                            <span>{{ $gs->user->name }}</span>
+                            <span>{{ $gs->admission?->student_name ?? $gs->user?->name ?? 'Unknown' }}</span>
                             <form method="POST" action="{{ route('admin.quran-group-students.status', $gs) }}">
                                 @csrf
                                 <select name="status" onchange="this.form.submit()" class="text-xs border-0 bg-transparent">

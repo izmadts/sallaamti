@@ -29,8 +29,8 @@
             <div class="bg-white rounded-lg shadow-sm p-6" x-data="{ threadOpen: false }">
                 <div class="flex justify-between items-center mb-4">
                     <div>
-                        <h4 class="font-semibold text-gray-800">{{ $groupStudent->admission?->student_name ?? $groupStudent->user->name }}</h4>
-                        <p class="text-xs text-gray-500">Guardian account: {{ $groupStudent->user->name }} | Joined: {{ $groupStudent->joined_date->format('d M Y') }}</p>
+                        <h4 class="font-semibold text-gray-800">{{ $groupStudent->admission?->student_name ?? $groupStudent->user?->name ?? 'Unknown' }}</h4>
+                        <p class="text-xs text-gray-500">Guardian account: {{ $groupStudent->user?->name ?? 'deleted account' }} | Joined: {{ $groupStudent->joined_date->format('d M Y') }}</p>
                     </div>
                     <div class="flex items-center gap-2">
                         <span class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full">{{ ucfirst($groupStudent->status) }}</span>
@@ -48,7 +48,7 @@
                     @php $isMe = $message->sender_id === auth()->id(); @endphp
                     <div class="flex {{ $isMe ? 'justify-end' : 'justify-start' }}">
                         <div class="max-w-md rounded-2xl px-4 py-2.5 text-sm {{ $isMe ? 'bg-teal-600 text-white' : 'bg-white text-gray-800 shadow-sm' }}">
-                            <p class="font-semibold text-xs mb-0.5 {{ $isMe ? 'text-teal-100' : 'text-gray-400' }}">{{ $isMe ? 'You' : ($message->sender->name ?? 'Guardian') }}</p>
+                            <p class="font-semibold text-xs mb-0.5 {{ $isMe ? 'text-teal-100' : 'text-gray-400' }}">{{ $isMe ? 'You' : ($message->sender?->name ?? 'Guardian') }}</p>
                             <p class="leading-relaxed">{{ $message->message }}</p>
                             <p class="text-xs mt-1 {{ $isMe ? 'text-teal-200' : 'text-gray-400' }}">{{ $message->created_at->format('d M, h:i A') }}</p>
                         </div>

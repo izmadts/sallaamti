@@ -54,7 +54,7 @@
                     <tbody class="divide-y divide-gray-100">
                         @forelse ($recipients as $recipient)
                         <tr class="hover:bg-gray-50">
-                            <td class="px-4 py-3 text-gray-700">{{ $recipient->user->name ?? ($recipient->subscriber ? 'Newsletter subscriber' : '—') }}</td>
+                            <td class="px-4 py-3 text-gray-700">{{ $recipient->user?->name ?? ($recipient->subscriber ? 'Newsletter subscriber' : '—') }}</td>
                             <td class="px-4 py-3 text-gray-500">{{ $recipient->channel_address }}</td>
                             <td class="px-4 py-3">
                                 <span class="text-xs px-2 py-0.5 rounded-full

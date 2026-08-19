@@ -9,7 +9,7 @@
             <div class="bg-white shadow-sm rounded-lg p-5">
                 <div class="flex justify-between items-start">
                     <div>
-                        <p class="font-medium">{{ $sub->user->name }} ({{ $sub->user->email }})</p>
+                        <p class="font-medium">{{ $sub->user?->name ?? 'Deleted account' }} ({{ $sub->user?->email ?? '—' }})</p>
                         <p class="text-sm text-gray-500">Rs. {{ number_format($sub->amount) }} via {{ $sub->payment_method }} | Ref: {{ $sub->payment_reference }}</p>
                     </div>
                     <span class="text-xs px-2 py-1 rounded-full {{ $sub->payment_status === 'confirmed' ? 'bg-green-100 text-green-800' : ($sub->payment_status === 'rejected' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800') }}">{{ ucfirst($sub->payment_status) }}</span>

@@ -26,7 +26,7 @@
                         <tr class="hover:bg-gray-50">
                             <td class="px-4 py-3">{{ $campaign->channel === 'email' ? '📧 Email' : '💬 WhatsApp' }}</td>
                             <td class="px-4 py-3 text-gray-700">{{ $campaign->subject ?? $campaign->whatsapp_template_name }}</td>
-                            <td class="px-4 py-3 text-gray-500">{{ $campaign->createdBy->name ?? '—' }}</td>
+                            <td class="px-4 py-3 text-gray-500">{{ $campaign->createdBy?->name ?? '—' }}</td>
                             <td class="px-4 py-3">{{ $campaign->recipient_count }} <span class="text-xs text-gray-400">({{ $campaign->recipient_type === 'subscriber' ? 'subscribers' : 'users' }})</span></td>
                             <td class="px-4 py-3 text-green-600">{{ $campaign->sent_count }}</td>
                             <td class="px-4 py-3 {{ $campaign->failed_count > 0 ? 'text-red-500' : 'text-gray-300' }}">{{ $campaign->failed_count }}</td>

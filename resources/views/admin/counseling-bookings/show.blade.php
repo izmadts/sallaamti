@@ -108,7 +108,7 @@
         <div class="flex {{ $response->responder_id === auth()->id() ? 'justify-end' : 'justify-start' }}">
             <div class="max-w-lg rounded-2xl p-4 text-sm {{ $response->responder_id === auth()->id() ? 'bg-teal-600 text-white' : 'bg-white text-gray-800 shadow-sm' }}">
                 <p class="font-semibold text-xs mb-1 {{ $response->responder_id === auth()->id() ? 'text-teal-100' : 'text-gray-400' }}">
-                    {{ $response->responder_id === auth()->id() ? 'You' : ($response->responder->name ?? ($booking->isAnonymous() ? 'Member' : $booking->member->name)) }}
+                    {{ $response->responder_id === auth()->id() ? 'You' : ($response->responder?->name ?? ($booking->isAnonymous() ? 'Member' : $booking->member->name)) }}
                 </p>
                 <p class="leading-relaxed">{{ $response->message }}</p>
                 <p class="text-xs mt-2 {{ $response->responder_id === auth()->id() ? 'text-teal-200' : 'text-gray-400' }}">{{ $response->created_at->format('d M, h:i A') }}</p>

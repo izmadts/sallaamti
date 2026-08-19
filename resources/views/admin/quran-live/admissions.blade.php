@@ -12,7 +12,7 @@
                 <div class="flex justify-between items-start flex-wrap gap-3">
                     <div>
                         <h3 class="font-semibold">{{ $admission->student_name }}
-                            <span class="text-sm font-normal text-gray-500">({{ $admission->user->name }})</span>
+                            <span class="text-sm font-normal text-gray-500">({{ $admission->user?->name ?? 'deleted account' }})</span>
                         </h3>
                         <p class="text-sm text-gray-500">
                             Age: {{ $admission->student_age }} |

@@ -13,7 +13,7 @@
                 <a href="{{ route('quran-live.my-progress', ['child' => $gs->id]) }}"
                     class="text-sm px-4 py-2 rounded-full font-medium {{ $gs->id === $current->id ? 'text-white' : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50' }}"
                     @if ($gs->id === $current->id) style="background: #0d6b6b" @endif>
-                    {{ $gs->admission?->student_name ?? $gs->user->name }}
+                    {{ $gs->admission?->student_name ?? $gs->user?->name ?? 'Unknown' }}
                 </a>
                 @endforeach
             </div>

@@ -16,7 +16,7 @@ class QuranClassGroupAdminController extends Controller
 {
     public function index(QuranLiveCourse $course)
     {
-        $groups = $course->classGroups()->with('teacher', 'students')->get();
+        $groups = $course->classGroups()->with('teacher', 'students.admission')->get();
         return view('admin.quran-live.groups.index', compact('course', 'groups'));
     }
 
