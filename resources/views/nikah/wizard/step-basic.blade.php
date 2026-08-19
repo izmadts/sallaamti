@@ -84,11 +84,10 @@
                                 <x-text-input id="city" name="city" type="text" class="w-full mt-1" :value="old('city', $data['city'] ?? '')" required
                                     placeholder="{{ __('db.e.g. Karachi, Lahore, Islamabad') }}" title="{{ __('db.The city you currently live in.') }}" />
                             </div>
-                            <div>
-                                <x-input-label for="country" :value="__('db.Country')" />
-                                <x-text-input id="country" name="country" type="text" class="w-full mt-1" :value="old('country', $data['country'] ?? 'Pakistan')"
-                                    placeholder="{{ __('db.e.g. Pakistan') }}" title="{{ __('db.The country you currently live in.') }}" />
-                            </div>
+                            <x-country-state-fields
+                                :country-value="old('country', $data['country'] ?? 'Pakistan')"
+                                :state-value="old('state', $data['state'] ?? '')"
+                                :all-states="$countryStates" />
                         </div>
                     </x-nikah-section>
 

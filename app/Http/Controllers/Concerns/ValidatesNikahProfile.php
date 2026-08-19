@@ -29,6 +29,7 @@ trait ValidatesNikahProfile
             'education' => ['nullable', 'string', 'max:255'],
             'profession' => ['nullable', 'string', 'max:255'],
             'city' => ['required', 'string', 'max:100'],
+            'state' => ['nullable', 'string', 'max:100'],
             'country' => ['nullable', 'string', 'max:100'],
             'ethnicity' => ['nullable', 'string', 'max:100'],
             'languages' => ['nullable', 'array'],

@@ -6,6 +6,7 @@ use App\Http\Controllers\Concerns\ValidatesNikahProfile;
 use App\Models\NikahProfile;
 use App\Models\NikahSavedProfile;
 use App\Services\ImageOptimizer;
+use App\Support\CountryStates;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -81,7 +82,11 @@ class NikahProfileController extends Controller
             return redirect()->route('nikah.create');
         }
 
-        return view('nikah.edit', compact('profile'));
+        return view('nikah.edit', [
+            'profile' => $profile,
+            'countries' => CountryStates::countries(),
+            'countryStates' => CountryStates::map(),
+        ]);
     }
 
     public function update(Request $request)
@@ -195,6 +200,12 @@ class NikahProfileController extends Controller
         if ($request->filled('city')) {
             $query->where('city', 'like', '%' . $request->city . '%');
         }
+        if ($request->filled('state')) {
+            $query->where('state', $request->state);
+        }
+        if ($request->filled('country')) {
+            $query->where('country', $request->country);
+        }
         if ($request->filled('min_age')) {
             $query->where('age', '>=', $request->min_age);
         }
@@ -283,7 +294,10 @@ class NikahProfileController extends Controller
             ]);
         }
 
-        return view('nikah.browse', compact('paginated', 'sentInterestIds', 'savedProfileIds', 'myProfile'));
+        $countries = CountryStates::countries();
+        $countryStates = CountryStates::map();
+
+        return view('nikah.browse', compact('paginated', 'sentInterestIds', 'savedProfileIds', 'myProfile', 'countries', 'countryStates'));
     }
 
     public function toggleSave(NikahProfile $profile)

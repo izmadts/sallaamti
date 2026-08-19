@@ -163,11 +163,10 @@
                                 <x-text-input id="city" name="city" type="text" class="w-full mt-1" :value="old('city', $profile->city ?: auth()->user()->city)" required
                                     placeholder="{{ __('db.e.g. Karachi, Lahore, Islamabad') }}" title="{{ __('db.The city you currently live in.') }}" />
                             </div>
-                            <div>
-                                <x-input-label for="country" value="Country" />
-                                <x-text-input id="country" name="country" type="text" class="w-full mt-1" :value="old('country', $profile->country)"
-                                    placeholder="{{ __('db.e.g. Pakistan') }}" title="{{ __('db.The country you currently live in.') }}" />
-                            </div>
+                            <x-country-state-fields
+                                :country-value="old('country', $profile->country ?: 'Pakistan')"
+                                :state-value="old('state', $profile->state)"
+                                :all-states="$countryStates" />
                             <div>
                                 <x-input-label for="ethnicity" value="Ethnicity (optional)" />
                                 <x-text-input id="ethnicity" name="ethnicity" type="text" class="w-full mt-1" :value="old('ethnicity', $profile->ethnicity)" placeholder="e.g. Punjabi, Pashtun, Sindhi, Muhajir"

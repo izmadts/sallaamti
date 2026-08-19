@@ -120,6 +120,12 @@
                                 <dt class="text-gray-500">City</dt>
                                 <dd>{{ $profile->city }}</dd>
                             </div>
+                            @if ($profile->state)
+                            <div class="flex justify-between">
+                                <dt class="text-gray-500">State / Province</dt>
+                                <dd>{{ $profile->state }}</dd>
+                            </div>
+                            @endif
                             <div class="flex justify-between">
                                 <dt class="text-gray-500">Country</dt>
                                 <dd>{{ $profile->country }}</dd>

@@ -6,6 +6,7 @@ use App\Http\Controllers\Concerns\HasWizardSteps;
 use App\Http\Controllers\Concerns\ValidatesNikahProfile;
 use App\Models\NikahProfile;
 use App\Services\ImageOptimizer;
+use App\Support\CountryStates;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
@@ -17,7 +18,7 @@ class NikahProfileWizardController extends Controller
     protected string $wizardKey = 'nikah_profile';
 
     protected array $wizardStepFields = [
-        'basic' => ['age', 'height', 'height_other', 'marital_status', 'education', 'profession', 'city', 'country'],
+        'basic' => ['age', 'height', 'height_other', 'marital_status', 'education', 'profession', 'city', 'state', 'country'],
         'family' => ['caste', 'family_type', 'guardian_name', 'guardian_contact', 'guardian_relation', 'ethnicity', 'languages', 'languages.*', 'language_other'],
         'deen' => ['sect', 'sect_other', 'prayer_frequency', 'hijab_or_beard', 'smokes', 'diet', 'open_to_polygamy'],
         'about' => ['about', 'expectations', 'pref_min_age', 'pref_max_age', 'pref_city', 'pref_sect', 'pref_education', 'pref_marital_status'],
@@ -68,6 +69,8 @@ class NikahProfileWizardController extends Controller
             'stepTitles' => $this->stepTitles,
             'data' => $data,
             'accountGender' => Auth::user()->gender,
+            'countries' => $step === 'basic' ? CountryStates::countries() : [],
+            'countryStates' => $step === 'basic' ? CountryStates::map() : [],
         ]);
     }
 

@@ -46,6 +46,12 @@
                         <label class="text-xs text-gray-500">{{ __('db.City') }}</label>
                         <input type="text" name="city" value="{{ request('city') }}" class="border-gray-300 focus:border-[--teal] focus:ring-[--teal] rounded-lg text-sm block w-32">
                     </div>
+                    <x-country-state-fields
+                        country-name="country" state-name="state"
+                        :country-value="request('country')" :state-value="request('state')"
+                        :all-states="$countryStates"
+                        label-class="text-xs text-gray-500"
+                        input-class="border-gray-300 focus:border-[--teal] focus:ring-[--teal] rounded-lg text-sm block w-32" />
                     <div>
                         <label class="text-xs text-gray-500">{{ __('db.Min Age') }}</label>
                         <input type="number" name="min_age" value="{{ request('min_age') }}" class="border-gray-300 focus:border-[--teal] focus:ring-[--teal] rounded-lg text-sm block w-16">
