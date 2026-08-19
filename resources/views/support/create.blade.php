@@ -5,7 +5,10 @@
     <div class="py-12">
         <div class="max-w-5xl mx-auto sm:px-6 lg:px-8">
         <div class="flex flex-col lg:flex-row gap-6">
-        <x-module-nav module="counseling" />
+        <div class="lg:w-64 lg:flex-shrink-0 space-y-4">
+            <x-module-nav module="counseling" />
+            <x-counseling-info-card />
+        </div>
         <div class="flex-1 min-w-0 max-w-3xl">
 
             {{-- Info banner --}}

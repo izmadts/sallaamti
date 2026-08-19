@@ -6,7 +6,13 @@
     </x-slot>
 
     <div class="py-12">
-        <div class="max-w-4xl mx-auto sm:px-6 lg:px-8 space-y-4">
+        <div class="max-w-5xl mx-auto sm:px-6 lg:px-8">
+        <div class="flex flex-col lg:flex-row gap-6">
+        <div class="lg:w-64 lg:flex-shrink-0 space-y-4">
+            <x-module-nav module="counseling" />
+            <x-counseling-info-card />
+        </div>
+        <div class="flex-1 min-w-0 max-w-3xl space-y-4">
 
             <div class="flex justify-end">
                 <a href="{{ route('counseling.book.start') }}" class="bg-teal-700 text-white text-sm px-4 py-2 rounded hover:bg-teal-800">+ {{ __('db.Book a Session') }}</a>
@@ -31,6 +37,8 @@
             </div>
 
             {{ $bookings->links() }}
+        </div>
+        </div>
         </div>
     </div>
 </x-app-layout>

@@ -58,10 +58,12 @@
                     </div>
                 </div>
 
-                <form method="POST" action="{{ route('counseling.book.finalize') }}" class="mt-6 flex justify-between">
+                <p class="text-xs text-gray-400 mt-4">{{ __('db.This sends your request — nothing is booked yet until a counselor confirms the time.') }}</p>
+
+                <form method="POST" action="{{ route('counseling.book.finalize') }}" class="mt-2 flex justify-between">
                     @csrf
                     <a href="{{ route('counseling.book.step', 'slot') }}" class="btn-base text-gray-600 border border-gray-300 px-4 py-2 rounded-md hover:bg-gray-50">← {{ __('db.Back') }}</a>
-                    <x-primary-button>{{ __('db.Request Session') }}</x-primary-button>
+                    <x-primary-button>{{ __('db.Confirm & Send Request') }} →</x-primary-button>
                 </form>
 
             </div>
