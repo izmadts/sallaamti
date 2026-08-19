@@ -27,6 +27,8 @@ class CounselingBooking extends Model
     ];
 
     protected $casts = [
+        'member_id' => 'integer',
+        'counselor_id' => 'integer',
         'scheduled_at' => 'datetime',
         'confirmed_at' => 'datetime',
         'completed_at' => 'datetime',

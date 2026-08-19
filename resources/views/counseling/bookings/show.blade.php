@@ -12,11 +12,30 @@
             <div class="p-4 bg-green-50 text-green-700 rounded-lg text-sm">{{ session('status') }}</div>
             @endif
 
+            @if ($booking->status === 'requested')
+            <div class="rounded-xl p-4 flex items-start gap-3" style="background: var(--teal-light); border: 1px solid #0d6b6b33">
+                <span class="text-xl">🕊️</span>
+                <p class="text-sm text-gray-700 leading-relaxed">
+                    @if ($booking->counselor)
+                        {{ __('db.Waiting for :name to confirm your session. You\'ll be notified as soon as it\'s confirmed, in sha Allah.', ['name' => $booking->counselor->name]) }}
+                    @else
+                        {{ __("db.Your request has been received. We'll assign a counselor and confirm your time shortly, in sha Allah.") }}
+                    @endif
+                </p>
+            </div>
+            @elseif ($booking->status === 'confirmed')
+            <div class="rounded-xl p-4 flex items-start gap-3 bg-blue-50 border border-blue-200">
+                <span class="text-xl">✅</span>
+                <p class="text-sm text-gray-700 leading-relaxed">{{ __('db.Your session is confirmed. We look forward to speaking with you, in sha Allah.') }}</p>
+            </div>
+            @endif
+
             <div class="bg-white rounded-lg shadow-sm p-6">
                 <div class="flex justify-between items-start mb-4">
                     <div>
                         <p class="text-lg font-semibold text-gray-800">{{ $booking->scheduled_at->format('l, d M Y — h:i A') }}</p>
-                        <p class="text-sm text-gray-500">{{ $booking->counselor?->name ?? __('db.Counselor to be assigned') }}</p>
+                        <p class="text-xs text-gray-400">{{ $booking->status === 'requested' ? __('db.Preferred time — pending confirmation') : __('db.Scheduled time') }}</p>
+                        <p class="text-sm text-gray-500 mt-1">{{ $booking->counselor?->name ?? __('db.Counselor to be assigned') }}</p>
                         @if ($booking->isUrgent())
                         <span class="text-xs font-bold text-red-700 bg-red-100 px-2 py-0.5 rounded-full inline-block mt-1">🚨 {{ __('db.Flagged urgent') }}</span>
                         @endif
