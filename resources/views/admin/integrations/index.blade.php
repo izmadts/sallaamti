@@ -214,6 +214,7 @@
                         <x-text-input name="twitter_client_secret" class="w-full mt-1" :value="$settings['twitter_client_secret'] ?? ''" />
                     </div>
                 </div>
+                <x-secondary-button type="submit">Save X (Twitter) Credentials</x-secondary-button>
             </div>
 
             {{-- YouTube --}}
@@ -257,6 +258,7 @@
                         <x-text-input name="youtube_client_secret" class="w-full mt-1" :value="$settings['youtube_client_secret'] ?? ''" />
                     </div>
                 </div>
+                <x-secondary-button type="submit">Save YouTube Credentials</x-secondary-button>
             </div>
 
             {{-- TikTok --}}
@@ -304,6 +306,7 @@
                     <input type="checkbox" name="tiktok_audited" value="1" {{ ($settings['tiktok_audited'] ?? '0') === '1' ? 'checked' : '' }} class="rounded border-gray-300 text-teal-600">
                     Approved for public posting (TikTok's Content Posting API audit passed)
                 </label>
+                <x-secondary-button type="submit">Save TikTok Credentials</x-secondary-button>
             </div>
 
             {{-- Threads --}}
@@ -347,6 +350,7 @@
                         <x-text-input name="threads_client_secret" class="w-full mt-1" :value="$settings['threads_client_secret'] ?? ''" />
                     </div>
                 </div>
+                <x-secondary-button type="submit">Save Threads Credentials</x-secondary-button>
             </div>
 
             {{-- WhatsApp Notifications — the actual on/off switch. Off by
@@ -374,6 +378,7 @@
                     <x-text-input name="whatsapp_template_name" class="w-full mt-1" :value="$settings['whatsapp_template_name'] ?? ''" placeholder="e.g. new_community_post" />
                     <p class="text-xs text-gray-400 mt-1">Must exactly match a template already approved in Meta Business Manager, with one body variable (filled in with the post title).</p>
                 </div>
+                <x-secondary-button type="submit">Save WhatsApp Notification Settings</x-secondary-button>
             </div>
 
             {{-- Scheduled batch posting --}}
@@ -394,9 +399,15 @@
                         <x-text-input name="scheduled_batch_time" type="time" class="w-full mt-1" :value="$settings['scheduled_batch_time'] ?? '09:00'" />
                     </div>
                 </div>
+                <x-secondary-button type="submit">Save Scheduled Posting Settings</x-secondary-button>
             </div>
 
-            <button class="text-white text-sm font-semibold px-5 py-2.5 rounded-lg" style="background: var(--teal)">Save Integration Settings</button>
+            {{-- Every button above and this one submit the exact same form,
+                 so any of them saves everything currently filled in on this
+                 page — they're just placed next to the section someone is
+                 actually editing instead of forcing a scroll to one button
+                 at the very bottom. --}}
+            <button class="text-white text-sm font-semibold px-5 py-2.5 rounded-lg" style="background: var(--teal)">Save All Integration Settings</button>
         </form>
 
     </div>
