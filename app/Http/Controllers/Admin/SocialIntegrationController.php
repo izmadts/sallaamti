@@ -68,13 +68,24 @@ class SocialIntegrationController extends Controller
     {
         abort_unless(in_array($platform, ['facebook', 'twitter', 'youtube', 'tiktok', 'threads'], true), 404);
 
-        return match ($platform) {
-            'facebook' => $this->redirectToFacebook(),
-            'twitter' => $this->redirectToTwitter(),
-            'youtube' => $this->redirectToYoutube(),
-            'tiktok' => $this->redirectToTiktok(),
-            'threads' => $this->redirectToThreads(),
-        };
+        // Same try/catch as callback() below — redirectTo*() methods can
+        // throw too (e.g. the missing-credentials guards in
+        // redirectToFacebook()/redirectToThreads()), and this was
+        // previously unguarded here, so any of those surfaced as a raw
+        // unhandled error page instead of a friendly message back on the
+        // Integrations page.
+        try {
+            return match ($platform) {
+                'facebook' => $this->redirectToFacebook(),
+                'twitter' => $this->redirectToTwitter(),
+                'youtube' => $this->redirectToYoutube(),
+                'tiktok' => $this->redirectToTiktok(),
+                'threads' => $this->redirectToThreads(),
+            };
+        } catch (\Throwable $e) {
+            \Log::error("SocialIntegrationController: {$platform} connect redirect failed — " . $e->getMessage());
+            return redirect()->route('admin.integrations.index')->with('error', ucfirst($platform) . ' could not be connected: ' . $e->getMessage());
+        }
     }
 
     public function callback(string $platform, Request $request): RedirectResponse
@@ -464,11 +475,14 @@ class SocialIntegrationController extends Controller
 
     private function redirectToThreads(): RedirectResponse
     {
+        $clientId = Setting::get('threads_client_id') ?: config('services.threads.client_id');
+        abort_unless(filled($clientId), 422, 'Save the Threads App ID and Secret below first.');
+
         $state = Str::random(32);
         session(['threads_oauth_state' => $state]);
 
         $query = http_build_query([
-            'client_id' => Setting::get('threads_client_id') ?: config('services.threads.client_id'),
+            'client_id' => $clientId,
             'redirect_uri' => route('admin.integrations.callback', 'threads'),
             'scope' => 'threads_basic,threads_content_publish',
             'response_type' => 'code',
