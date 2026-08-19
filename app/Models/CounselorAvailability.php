@@ -20,6 +20,8 @@ class CounselorAvailability extends Model
     protected $casts = [
         'specific_date' => 'date',
         'is_active' => 'boolean',
+        'day_of_week' => 'integer',
+        'slot_duration_minutes' => 'integer',
     ];
 
     public function counselor()
@@ -42,7 +44,7 @@ class CounselorAvailability extends Model
             })
             ->get();
 
-        $override = $rules->firstWhere('specific_date', $date->toDateString());
+        $override = $rules->first(fn ($rule) => $rule->specific_date?->isSameDay($date));
         $applicable = $override ? collect([$override]) : $rules->whereNull('specific_date');
 
         $slots = collect();
