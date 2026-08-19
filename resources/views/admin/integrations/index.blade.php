@@ -409,6 +409,38 @@
                 <x-secondary-button type="submit">Save WhatsApp Notification Settings</x-secondary-button>
             </div>
 
+            {{-- Quran Live Class reminders — same off-by-default guarded
+                 pattern, separate templates since these are two different
+                 messages (a class-day nudge vs. a fee-due nudge). --}}
+            <div class="bg-white rounded-lg shadow-sm p-6 space-y-4">
+                <div>
+                    <h4 class="text-sm font-semibold text-gray-700 flex items-center gap-2">
+                        <i class="fab fa-whatsapp text-green-600"></i> WhatsApp Quran Class Reminders
+                    </h4>
+                    <p class="text-xs text-gray-400 mt-1">
+                        When on, opted-in parents get a WhatsApp reminder on days their child has a scheduled class, and again if a monthly fee is still unpaid — alongside the existing email/in-app notifications.
+                    </p>
+                </div>
+                <label class="flex items-center gap-2 text-sm text-gray-700">
+                    <input type="checkbox" name="whatsapp_quran_reminders_enabled" value="1" {{ ($settings['whatsapp_quran_reminders_enabled'] ?? '0') === '1' ? 'checked' : '' }} class="rounded border-gray-300 text-teal-600">
+                    Send WhatsApp Quran class/fee reminders
+                    @unless ($accounts['whatsapp'] ?? null)
+                    <span class="text-xs text-amber-600">(connect WhatsApp Business above first)</span>
+                    @endunless
+                </label>
+                <div>
+                    <x-input-label value="Approved template name — class reminder" />
+                    <x-text-input name="whatsapp_template_name_quran_class_reminder" class="w-full mt-1" :value="$settings['whatsapp_template_name_quran_class_reminder'] ?? ''" placeholder="e.g. quran_class_today" />
+                    <p class="text-xs text-gray-400 mt-1">Its variable should be filled with the child's name and class time.</p>
+                </div>
+                <div>
+                    <x-input-label value="Approved template name — fee reminder" />
+                    <x-text-input name="whatsapp_template_name_quran_fee_reminder" class="w-full mt-1" :value="$settings['whatsapp_template_name_quran_fee_reminder'] ?? ''" placeholder="e.g. quran_fee_due" />
+                    <p class="text-xs text-gray-400 mt-1">Its variable should be filled with the child's name and course title.</p>
+                </div>
+                <x-secondary-button type="submit">Save WhatsApp Notification Settings</x-secondary-button>
+            </div>
+
             {{-- Scheduled batch posting --}}
             <div class="bg-white rounded-lg shadow-sm p-6 space-y-4">
                 <div>

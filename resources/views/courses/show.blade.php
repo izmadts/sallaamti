@@ -76,9 +76,13 @@
                 </div>
                 @else
                 @auth
-                <form method="POST" action="{{ route('courses.enroll', $course) }}" class="mt-4">
+                <form method="POST" action="{{ route('courses.enroll', $course) }}" class="mt-4" x-data="{ ok: false }">
                     @csrf
-                    <button class="bg-pink-600 text-white px-5 py-2 rounded text-sm hover:bg-pink-700">
+                    <label class="flex items-start gap-2 text-sm text-gray-600 mb-3 cursor-pointer">
+                        <input type="checkbox" x-model="ok" class="mt-0.5">
+                        <span>A parent/guardian is aware of and okay with this enrollment.</span>
+                    </label>
+                    <button :disabled="!ok" class="bg-pink-600 text-white px-5 py-2 rounded text-sm hover:bg-pink-700 disabled:opacity-50 disabled:cursor-not-allowed">
                         Enroll Now — It's Free
                     </button>
                 </form>

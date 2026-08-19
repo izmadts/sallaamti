@@ -13,6 +13,8 @@ class QuranGroupStudent extends Model
         'joined_date',
         'completed_date',
         'status',
+        'last_class_reminder_date',
+        'last_fee_reminder_month',
     ];
 
     protected function casts(): array
@@ -23,6 +25,7 @@ class QuranGroupStudent extends Model
             'user_id' => 'integer',
             'joined_date' => 'date',
             'completed_date' => 'date',
+            'last_class_reminder_date' => 'date',
         ];
     }
 
