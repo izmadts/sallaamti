@@ -4,10 +4,14 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\User;
+use App\Rules\ValidPhoneNumber;
+use App\Services\ImageOptimizer;
 use App\Support\PermissionCatalog;
 use App\Support\UserFilter;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 use Spatie\Permission\Models\Role;
 
 class UserManagementController extends Controller
@@ -32,6 +36,67 @@ class UserManagementController extends Controller
         $allRoles = Role::all();
 
         return view('admin.users.show', compact('user', 'roles', 'allRoles'));
+    }
+
+    // Same fields/rules a member can edit on their own profile (see
+    // ProfileUpdateRequest) — admin just edits them on the member's behalf,
+    // e.g. fixing a typo'd email that's locking someone out.
+    public function updateDetails(Request $request, User $user)
+    {
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => [
+                'nullable', 'string', 'lowercase', 'email', 'max:255',
+                Rule::unique(User::class)->ignore($user->id),
+            ],
+            'phone' => [
+                'nullable', 'string', 'max:20', new ValidPhoneNumber(),
+                Rule::unique(User::class)->ignore($user->id),
+            ],
+            'gender' => ['nullable', 'in:male,female'],
+            'city' => ['nullable', 'string', 'max:100'],
+            'avatar' => ['nullable', 'image', 'max:2048'],
+        ]);
+
+        $emailChanged = $user->email !== ($validated['email'] ?? null);
+
+        $user->fill($validated);
+
+        if ($request->hasFile('avatar')) {
+            $user->avatar = ImageOptimizer::store($request->file('avatar'), 'avatars', 'private', maxDimension: 512);
+        }
+
+        if ($emailChanged) {
+            $user->email_verified_at = null;
+        }
+
+        $user->save();
+
+        // Same both-directions-if-empty sync ProfileController uses when a
+        // member edits their own city.
+        if ($user->city && $nikahProfile = $user->nikahProfile) {
+            if (!$nikahProfile->city) {
+                $nikahProfile->update(['city' => $user->city]);
+            }
+        }
+
+        return back()->with('status', 'Details updated for ' . $user->name . '.');
+    }
+
+    // Doesn't set or reveal a password directly — sends the same reset
+    // email a member would trigger themselves from "Forgot your password",
+    // so admin never has to know or type someone else's credential.
+    public function sendPasswordReset(User $user)
+    {
+        if (!$user->email) {
+            return back()->with('error', "{$user->name} has no email on file to send a reset link to.");
+        }
+
+        $status = Password::sendResetLink(['email' => $user->email]);
+
+        return $status === Password::RESET_LINK_SENT
+            ? back()->with('status', "Password reset link sent to {$user->email}.")
+            : back()->with('error', 'Could not send the reset link: ' . __($status));
     }
 
     public function updateRole(Request $request, User $user)

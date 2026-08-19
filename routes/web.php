@@ -298,6 +298,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
         // (confirmed via router match test) and 404s.
         Route::get('users/broadcast', [BulkMessageController::class, 'create'])->name('users.broadcast');
         Route::get('users/{user}', [UserManagementController::class, 'show'])->name('users.show');
+        Route::put('users/{user}/details', [UserManagementController::class, 'updateDetails'])->name('users.update-details');
+        Route::post('users/{user}/send-password-reset', [UserManagementController::class, 'sendPasswordReset'])->name('users.send-password-reset');
         Route::put('users/{user}/role', [UserManagementController::class, 'updateRole'])->name('users.role');
         Route::put('users/{user}/toggle-active', [UserManagementController::class, 'toggleActive'])->name('users.toggle-active');
         Route::delete('users/{user}', [UserManagementController::class, 'destroy'])->name('users.destroy');
