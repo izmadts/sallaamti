@@ -72,7 +72,7 @@
                     <div x-show="channel === 'email'" x-cloak class="space-y-3">
                         <div class="text-xs text-teal-800 bg-teal-50 border border-teal-100 rounded-lg px-3 py-2 space-y-1">
                             <p class="font-semibold">Requirements</p>
-                            <p>A Subject and Message are both required. Only the {{ $emailCount }} recipient(s) with an email on file can be selected — sent through the app's branded template, with an unsubscribe link added automatically at the bottom.</p>
+                            <p>A Subject and Message are both required. Only the {{ $emailCount }} recipient(s) with an email on file can be selected — sent through the app's branded template, with an unsubscribe link added automatically at the bottom. Emails go out from <strong>{{ config('mail.from.address') }}</strong>, the address configured on the server — if that account's credentials ever stop working, failures show up per-recipient on the <a href="{{ route('admin.bulk-messages.index') }}" class="underline">Bulk Messages</a> history page after sending, not here up front.</p>
                             <p class="font-semibold mt-2">Precautions</p>
                             <ul class="list-disc list-inside space-y-0.5">
                                 <li>Keep the subject honest and specific — avoid ALL CAPS, excessive "!!!", or "FREE"/"URGENT"-style wording, which spam filters flag heavily.</li>
@@ -94,7 +94,13 @@
                     {{-- WhatsApp compose --}}
                     <div x-show="channel === 'whatsapp'" x-cloak class="space-y-3">
                         @if (!$whatsappConnected)
-                        <p class="text-sm text-gray-400">No WhatsApp Business account connected yet — <a href="{{ route('admin.integrations.index') }}" class="text-teal-600 hover:underline">connect one in Integrations</a> first.</p>
+                        <p class="text-sm text-gray-400">
+                            No WhatsApp Business account connected yet. Before this tab will work you need to: (1) <a href="{{ route('admin.integrations.index') }}" class="text-teal-600 hover:underline">connect a WhatsApp Business account in Integrations</a>, and (2) have at least one pre-approved message template in Meta Business Manager.
+                        </p>
+                        @elseif ($whatsappOptedInTotal === 0)
+                        <p class="text-sm text-amber-700 bg-amber-50 border border-amber-100 rounded-lg px-3 py-2">
+                            WhatsApp is connected, but <strong>no members have opted in to WhatsApp notifications yet</strong> — nothing will actually send until at least one does. Members opt in themselves from their Profile → Notifications page; there's no admin override for this (it's required by WhatsApp's own consent policy). You can still prepare a message below for when someone opts in.
+                        </p>
                         @else
                         <div class="text-xs text-amber-800 bg-amber-50 border border-amber-100 rounded-lg px-3 py-2 space-y-1">
                             <p class="font-semibold">Requirements</p>

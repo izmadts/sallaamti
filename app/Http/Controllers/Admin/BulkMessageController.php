@@ -34,6 +34,10 @@ class BulkMessageController extends Controller
         // rather than relying on the admin to have filtered for it first.
         $emailEligible = $matching->whereNotNull('email')->where('email', '!=', '');
         $whatsappEligible = $matching->where('whatsapp_notify_opt_in', true)->whereNotNull('phone');
+        // Global (not filter-scoped) — so the page can tell the admin
+        // "nobody's opted in yet" even when that's just true everywhere,
+        // rather than looking like their current filter is the problem.
+        $whatsappOptedInTotal = User::where('whatsapp_notify_opt_in', true)->whereNotNull('phone')->count();
 
         return view('admin.users.broadcast', [
             'matching' => $matching,
@@ -43,6 +47,7 @@ class BulkMessageController extends Controller
             'whatsappConnected' => $whatsappConnected,
             'emailEligible' => $emailEligible,
             'whatsappEligible' => $whatsappEligible,
+            'whatsappOptedInTotal' => $whatsappOptedInTotal,
             'filters' => $request->query(),
         ]);
     }
