@@ -11,9 +11,22 @@
  <link rel="manifest" href="{{ asset('site.webmanifest') }}">
  <meta name="csrf-token" content="{{ csrf_token() }}">
  <meta name="vapid-public-key" content="{{ config('services.webpush.public_key') }}">
- {{-- ===== PRIMARY META ===== --}}
- <title>@yield('title', setting('seo_home_title', setting('site_name') . ' | ' . setting('site_tagline')))</title>
- <meta name="description" content="@yield('description', setting('seo_home_description', 'Learn Quran online with Sallaamti.'))">
+ {{-- ===== PRIMARY META =====
+      Two ways a page can override these, both supported: call
+      @section('title', ...) explicitly (what index.blade.php does), or
+      pass :title/:description/:image props to <x-guest-layout> (what
+      blog/show.blade.php and others do) — those props land here as
+      $title/$description/$image via GuestLayout's component class.
+      Previously only @section worked; the prop path was silently a
+      no-op, so every page using it (e.g. individual blog posts) showed
+      the generic site-wide title/description instead of its own. --}}
+ @php
+     $pageTitle = $title ?? setting('seo_home_title', setting('site_name') . ' | ' . setting('site_tagline'));
+     $pageDescription = $description ?? setting('seo_home_description', 'Learn Quran online with Sallaamti.');
+     $defaultOgImage = $image ?? (setting('seo_og_image') ? \Illuminate\Support\Facades\Storage::disk('public')->url(setting('seo_og_image')) : asset('img/og-default.jpg'));
+ @endphp
+ <title>@yield('title', $pageTitle)</title>
+ <meta name="description" content="@yield('description', $pageDescription)">
  <meta name="keywords" content="@yield('keywords', setting('seo_keywords', 'learn quran online'))">
 
  {{-- Google verification --}}
@@ -25,15 +38,9 @@
  <link rel="canonical" href="@yield('canonical', url()->current())">
 
  {{-- ===== OPEN GRAPH (Facebook, WhatsApp previews) ===== --}}
- @php
-     // The admin's uploaded SEO image (Settings → SEO → Social Share
-     // Image) was being saved but never actually read anywhere — every
-     // page fell back to the static img/og-default.jpg regardless.
-     $defaultOgImage = setting('seo_og_image') ? \Illuminate\Support\Facades\Storage::disk('public')->url(setting('seo_og_image')) : asset('img/og-default.jpg');
- @endphp
  <meta property="og:type" content="@yield('og_type', 'website')">
- <meta property="og:title" content="@yield('og_title', setting('site_name') . ' | ' . setting('site_tagline'))">
- <meta property="og:description" content="@yield('og_description', 'Learn Quran online with expert teachers. Self-paced courses, live classes, Islamic matrimonial and family support.')">
+ <meta property="og:title" content="@yield('og_title', $pageTitle)">
+ <meta property="og:description" content="@yield('og_description', $pageDescription)">
  <meta property="og:image" content="@yield('og_image', $defaultOgImage)">
  <meta property="og:url" content="{{ url()->current() }}">
  <meta property="og:site_name" content="{{ setting('site_name', 'Sallaamti') }}">
@@ -41,8 +48,8 @@
 
  {{-- ===== TWITTER CARD ===== --}}
  <meta name="twitter:card" content="summary_large_image">
- <meta name="twitter:title" content="@yield('og_title', setting('site_name'))">
- <meta name="twitter:description" content="@yield('og_description', 'Learn Quran online with expert teachers.')">
+ <meta name="twitter:title" content="@yield('og_title', $pageTitle)">
+ <meta name="twitter:description" content="@yield('og_description', $pageDescription)">
  <meta name="twitter:image" content="@yield('og_image', $defaultOgImage)">
  {{-- ===== STRUCTURED DATA (JSON-LD) ===== --}}
  @php
