@@ -187,8 +187,10 @@
                             <button class="text-xs text-red-500 hover:underline">Disconnect</button>
                         </form>
                     </div>
-                    @else
+                    @elseif (filled($settings['twitter_client_id'] ?? null) && filled($settings['twitter_client_secret'] ?? null))
                     <a href="{{ route('admin.integrations.connect', 'twitter') }}" class="text-xs font-semibold px-3 py-1.5 rounded-full text-white" style="background: var(--teal)">Connect X</a>
+                    @else
+                    <span class="text-xs text-gray-400 italic">Save credentials below, then connect</span>
                     @endif
                 </div>
                 <ol class="text-xs text-gray-500 list-decimal ms-4 space-y-0.5">
@@ -228,8 +230,10 @@
                             <button class="text-xs text-red-500 hover:underline">Disconnect</button>
                         </form>
                     </div>
-                    @else
+                    @elseif (filled($settings['youtube_client_id'] ?? null) && filled($settings['youtube_client_secret'] ?? null))
                     <a href="{{ route('admin.integrations.connect', 'youtube') }}" class="text-xs font-semibold px-3 py-1.5 rounded-full text-white" style="background: var(--teal)">Connect YouTube</a>
+                    @else
+                    <span class="text-xs text-gray-400 italic">Save credentials below, then connect</span>
                     @endif
                 </div>
                 <ol class="text-xs text-gray-500 list-decimal ms-4 space-y-0.5">
@@ -269,8 +273,10 @@
                             <button class="text-xs text-red-500 hover:underline">Disconnect</button>
                         </form>
                     </div>
-                    @else
+                    @elseif (filled($settings['tiktok_client_id'] ?? null) && filled($settings['tiktok_client_secret'] ?? null))
                     <a href="{{ route('admin.integrations.connect', 'tiktok') }}" class="text-xs font-semibold px-3 py-1.5 rounded-full text-white" style="background: var(--teal)">Connect TikTok</a>
+                    @else
+                    <span class="text-xs text-gray-400 italic">Save credentials below, then connect</span>
                     @endif
                 </div>
                 <ol class="text-xs text-gray-500 list-decimal ms-4 space-y-0.5">
@@ -314,8 +320,10 @@
                             <button class="text-xs text-red-500 hover:underline">Disconnect</button>
                         </form>
                     </div>
-                    @else
+                    @elseif (filled($settings['threads_client_id'] ?? null) && filled($settings['threads_client_secret'] ?? null))
                     <a href="{{ route('admin.integrations.connect', 'threads') }}" class="text-xs font-semibold px-3 py-1.5 rounded-full text-white" style="background: var(--teal)">Connect Threads</a>
+                    @else
+                    <span class="text-xs text-gray-400 italic">Save credentials below, then connect</span>
                     @endif
                 </div>
                 <ol class="text-xs text-gray-500 list-decimal ms-4 space-y-0.5">
