@@ -67,6 +67,7 @@ class NikahProfile extends Model
     protected function casts(): array
     {
         return [
+            'user_id' => 'integer',
             'open_to_polygamy' => 'boolean',
             'allow_photo_sharing' => 'boolean',
             'is_active' => 'boolean',

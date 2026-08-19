@@ -18,6 +18,7 @@ class CounselorAvailability extends Model
     ];
 
     protected $casts = [
+        'counselor_id' => 'integer',
         'specific_date' => 'date',
         'is_active' => 'boolean',
         'day_of_week' => 'integer',

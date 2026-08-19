@@ -20,7 +20,12 @@ class QuranClassGroup extends Model
 
     protected function casts(): array
     {
-        return ['class_days' => 'array', 'is_active' => 'boolean'];
+        return [
+            'quran_live_course_id' => 'integer',
+            'teacher_id' => 'integer',
+            'class_days' => 'array',
+            'is_active' => 'boolean',
+        ];
     }
 
     public function course()

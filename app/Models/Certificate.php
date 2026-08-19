@@ -13,7 +13,12 @@ class Certificate extends Model
 
     protected function casts(): array
     {
-        return ['issued_at' => 'datetime'];
+        return [
+            'user_id' => 'integer',
+            'course_id' => 'integer',
+            'issued_by' => 'integer',
+            'issued_at' => 'datetime',
+        ];
     }
 
     public function user()

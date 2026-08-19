@@ -9,6 +9,11 @@ class Comment extends Model
 {
     protected $fillable = ['commentable_type', 'commentable_id', 'user_id', 'parent_id', 'body', 'status'];
 
+    protected $casts = [
+        'user_id' => 'integer',
+        'parent_id' => 'integer',
+    ];
+
     public function commentable(): MorphTo
     {
         return $this->morphTo();

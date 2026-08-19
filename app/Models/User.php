@@ -40,6 +40,7 @@ class User extends Authenticatable
     protected function casts(): array
     {
         return [
+            'id' => 'integer',
             'email_verified_at' => 'datetime',
             'deactivated_at' => 'datetime',
             'last_active_date' => 'date',

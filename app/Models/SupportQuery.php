@@ -19,6 +19,12 @@ class SupportQuery extends Model
         'is_anonymous',
     ];
 
+    protected $casts = [
+        'user_id' => 'integer',
+        'assigned_to' => 'integer',
+        'is_anonymous' => 'boolean',
+    ];
+
     public function user()
     {
         return $this->belongsTo(User::class);
