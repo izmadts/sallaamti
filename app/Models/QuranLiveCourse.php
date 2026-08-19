@@ -10,6 +10,8 @@ class QuranLiveCourse extends Model
         'title',
         'description',
         'level_number',
+        'min_age',
+        'max_age',
         'duration',
         'topics',
         'outcome',
@@ -30,6 +32,8 @@ class QuranLiveCourse extends Model
             'class_days' => 'array',
             'topics' => 'array',
             'is_published' => 'boolean',
+            'min_age' => 'integer',
+            'max_age' => 'integer',
         ];
     }
 

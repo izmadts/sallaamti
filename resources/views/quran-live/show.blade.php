@@ -10,6 +10,11 @@
                 <p class="text-gray-600">{{ $course->description }}</p>
                 <p class="text-sm text-gray-500 mt-2">Teacher: {{ $course->teacher?->name ?? 'TBA' }} | {{ $course->class_time }}</p>
                 <p class="text-sm font-medium text-pink-600 mt-1">Rs. {{ number_format($course->monthly_fee) }}/month</p>
+                @if ($course->min_age || $course->max_age)
+                <span class="inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full mt-2" style="background: var(--teal-light); color: var(--teal)">
+                    🎂 Ages {{ $course->min_age ?? '0' }}{{ $course->max_age ? '–'.$course->max_age : '+' }}
+                </span>
+                @endif
             </div>
 
             <x-quran-safety-card />

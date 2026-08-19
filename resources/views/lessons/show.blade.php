@@ -19,7 +19,16 @@
             <!-- Content -->
             <div class="bg-white rounded-lg shadow-sm p-6 lg:col-span-3">
 
-                <h3 class="font-semibold text-xl mb-4">{{ $lesson->title }}</h3>
+                <p class="text-xs font-semibold text-teal-600 uppercase tracking-wide mb-1">
+                    ⭐ Lesson {{ $lessons->search(fn($l) => $l->id === $lesson->id) + 1 }} of {{ $lessons->count() }}
+                </p>
+                <div class="flex items-start justify-between gap-3 mb-4">
+                    <h3 class="font-semibold text-xl">{{ $lesson->title }}</h3>
+                    <button type="button" onclick="speakLessonText()"
+                        class="flex-shrink-0 w-9 h-9 rounded-full flex items-center justify-center text-lg hover:bg-teal-50" style="background: var(--teal-light)" title="Read aloud">
+                        🔊
+                    </button>
+                </div>
 
                 @if ($lesson->video_url)
                 <div class="aspect-video mb-4 rounded-lg overflow-hidden bg-black">
@@ -27,9 +36,18 @@
                 </div>
                 @endif
 
-                <div class="prose text-gray-700">
+                <div class="prose text-gray-700" id="lesson-content">
                     {!! $lesson->content !!}
                 </div>
+
+                <script>
+                    function speakLessonText() {
+                        if (!('speechSynthesis' in window)) return;
+                        window.speechSynthesis.cancel();
+                        const text = document.getElementById('lesson-content').innerText;
+                        window.speechSynthesis.speak(new SpeechSynthesisUtterance(text));
+                    }
+                </script>
 
                 @if ($lesson->file_path)
                 <div class="mt-4">
@@ -41,15 +59,18 @@
 
                 <div class="mt-6">
                     @if ($isCompleted)
-                    <span class="text-green-600 text-sm font-medium">✅ Completed</span>
+                    <div class="rounded-xl p-3 inline-flex items-center gap-2" style="background: #f0fdf4; border: 1px solid #86efac">
+                        <span class="text-xl" style="animation: celebrate-bounce 0.6s ease">⭐</span>
+                        <span class="text-green-700 text-sm font-bold">Lesson complete — great job!</span>
+                    </div>
                     @else
                     <form method="POST" action="{{ route('lessons.complete', $lesson) }}"
                         x-data="{ remaining: {{ (int) $secondsRemaining }} }"
                         x-init="remaining > 0 && setInterval(() => remaining > 0 && remaining--, 1000)">
                         @csrf
                         <button type="submit" :disabled="remaining > 0"
-                            class="bg-green-600 text-white px-5 py-2 rounded text-sm hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed">
-                            <span x-show="remaining === 0">Mark as Complete</span>
+                            class="bg-green-600 text-white px-6 py-3 rounded-xl text-sm font-bold hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm">
+                            <span x-show="remaining === 0">⭐ Mark as Complete</span>
                             <span x-show="remaining > 0" x-text="'Review the lesson (' + remaining + 's)'"></span>
                         </button>
                     </form>

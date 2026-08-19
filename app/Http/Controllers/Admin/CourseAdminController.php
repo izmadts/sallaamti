@@ -78,6 +78,8 @@ class CourseAdminController extends Controller
             'description' => ['nullable', 'string'],
             'category' => ['nullable', 'string', 'max:100'],
             'level' => ['nullable', 'string', 'max:50'],
+            'min_age' => ['nullable', 'integer', 'min:1', 'max:120'],
+            'max_age' => ['nullable', 'integer', 'min:1', 'max:120', 'gte:min_age'],
             'thumbnail' => ['nullable', 'image', 'max:2048'],
             'is_published' => ['nullable', 'boolean'],
         ]);

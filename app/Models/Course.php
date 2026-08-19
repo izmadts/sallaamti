@@ -6,11 +6,15 @@ use Illuminate\Database\Eloquent\Model;
 
 class Course extends Model
 {
-    protected $fillable = ['title', 'slug', 'description', 'category', 'level', 'thumbnail', 'is_published', 'created_by'];
+    protected $fillable = ['title', 'slug', 'description', 'category', 'level', 'min_age', 'max_age', 'thumbnail', 'is_published', 'created_by'];
 
     protected function casts(): array
     {
-        return ['is_published' => 'boolean'];
+        return [
+            'is_published' => 'boolean',
+            'min_age' => 'integer',
+            'max_age' => 'integer',
+        ];
     }
 
     public function lessons()
@@ -46,6 +50,15 @@ class Course extends Model
 
         return (int) round(($completed / $totalLessons) * 100);
     }
+
+    public function completedLessonsCountFor(User $user): int
+    {
+        return LessonProgress::whereIn('lesson_id', $this->lessons()->pluck('id'))
+            ->where('user_id', $user->id)
+            ->whereNotNull('completed_at')
+            ->count();
+    }
+
     public function quiz()
     {
         return $this->hasOne(Quiz::class);

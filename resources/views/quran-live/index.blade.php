@@ -68,6 +68,11 @@
                             style="background: {{ $color }}">
                             {{ $course->category ?? __('db.Live Class') }}
                         </span>
+                        @if ($course->min_age || $course->max_age)
+                        <span class="text-xs font-bold px-2.5 py-1 rounded-full ml-1" style="background: var(--teal-light); color: var(--teal)">
+                            🎂 {{ $course->min_age ?? '0' }}{{ $course->max_age ? '–'.$course->max_age : '+' }}
+                        </span>
+                        @endif
 
                         <h4 class="font-bold text-gray-800 text-base mt-3 mb-1 leading-snug group-hover:text-teal-700 transition-colors line-clamp-2">
                             {{ $course->title }}

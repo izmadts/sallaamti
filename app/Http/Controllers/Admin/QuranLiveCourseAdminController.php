@@ -112,6 +112,8 @@ class QuranLiveCourseAdminController extends Controller
             'description' => ['nullable', 'string'],
             'teacher_id' => ['nullable', 'exists:users,id', new ApprovedTeacherRule()],
             'class_time' => ['nullable', 'string', 'max:50'],
+            'min_age' => ['nullable', 'integer', 'min:1', 'max:120'],
+            'max_age' => ['nullable', 'integer', 'min:1', 'max:120', 'gte:min_age'],
             'monthly_fee' => ['required', 'numeric', 'min:0'],
         ]);
     }

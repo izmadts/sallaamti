@@ -8,31 +8,20 @@
 
 
             @if ($bestAttempt)
-            <div class="bg-white rounded-lg shadow-sm p-4 text-sm">
-                Best score: <strong>{{ $bestAttempt->score_percentage }}%</strong> —
+            <div class="rounded-2xl p-5 text-center" style="background: {{ $bestAttempt->passed ? '#f0fdf4' : 'var(--teal-light)' }}; border: 2px solid {{ $bestAttempt->passed ? '#86efac' : 'var(--teal)' }}">
                 @if ($bestAttempt->passed)
-                <span class="text-green-600">✅ Passed</span>
+                <p class="text-2xl mb-1" style="animation: celebrate-bounce 0.6s ease">🎉</p>
+                <p class="font-bold text-green-700">Great job! You passed with {{ $bestAttempt->score_percentage }}%!</p>
                 @else
-                <span class="text-red-600">Not passed yet (need {{ $quiz->passing_percentage }}%)</span>
+                <p class="text-2xl mb-1">💪</p>
+                <p class="font-bold text-gray-700">Almost there — you scored {{ $bestAttempt->score_percentage }}%. Try again, you need {{ $quiz->passing_percentage }}%!</p>
                 @endif
             </div>
             @endif
 
-            <form method="POST" action="{{ route('quiz.submit', $course) }}" class="bg-white rounded-lg shadow-sm p-6 space-y-6">
+            <form method="POST" action="{{ route('quiz.submit', $course) }}" class="bg-white rounded-2xl shadow-sm p-6 space-y-6">
                 @csrf
-                @foreach ($quiz->questions as $i => $q)
-                <div>
-                    <p class="font-medium text-gray-800 mb-2">{{ $i + 1 }}. {{ $q->question }}</p>
-                    <div class="space-y-1">
-                        @foreach ($q->options as $idx => $opt)
-                        <label class="flex items-center gap-2 text-sm text-gray-600">
-                            <input type="radio" name="answers[{{ $q->id }}]" value="{{ $idx }}" required>
-                            {{ $opt }}
-                        </label>
-                        @endforeach
-                    </div>
-                </div>
-                @endforeach
+                @include('quiz._questions')
 
                 <x-primary-button>Submit Quiz</x-primary-button>
             </form>

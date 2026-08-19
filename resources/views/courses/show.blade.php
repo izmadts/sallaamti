@@ -57,6 +57,11 @@
 
             <div class="bg-white rounded-lg shadow-sm p-6">
                 <p class="text-gray-600">{{ $course->description }}</p>
+                @if ($course->min_age || $course->max_age)
+                <span class="inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full mt-2" style="background: var(--teal-light); color: var(--teal)">
+                    🎂 Ages {{ $course->min_age ?? '0' }}{{ $course->max_age ? '–'.$course->max_age : '+' }}
+                </span>
+                @endif
 
                 @if ($isEnrolled)
                 {{-- Progress bar --}}
@@ -64,9 +69,10 @@
                     <div class="flex justify-between text-sm text-gray-500 mb-1">
                         <span>Progress</span><span>{{ $progress }}%</span>
                     </div>
-                    <div class="w-full bg-gray-200 rounded-full h-2">
+                    <div class="w-full bg-gray-200 rounded-full h-2 mb-2">
                         <div class="bg-green-600 h-2 rounded-full" style="width: {{ $progress }}%"></div>
                     </div>
+                    <x-lesson-stars :total="$course->lessons->count()" :completed="$course->completedLessonsCountFor(auth()->user())" />
                 </div>
                 @else
                 @auth

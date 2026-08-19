@@ -187,6 +187,11 @@
                                 </svg>
                                 {{ $course->enrollments_count ?? 0 }} {{ __('db.enrolled') }}
                             </span>
+                            @if ($course->min_age || $course->max_age)
+                            <span class="flex items-center gap-1 font-semibold px-2 py-0.5 rounded-full" style="background: var(--teal-light); color: var(--teal)">
+                                🎂 {{ __('db.Ages') }} {{ $course->min_age ?? '0' }}{{ $course->max_age ? '–'.$course->max_age : '+' }}
+                            </span>
+                            @endif
                         </div>
 
                         {{-- Progress bar (enrolled users) --}}
@@ -196,11 +201,12 @@
                                 <span class="text-gray-500">{{ __('db.Progress') }}</span>
                                 <span class="font-semibold" style="color: #0d6b6b">{{ $progress }}%</span>
                             </div>
-                            <div class="w-full bg-gray-100 rounded-full h-1.5">
+                            <div class="w-full bg-gray-100 rounded-full h-1.5 mb-1.5">
                                 <div class="h-1.5 rounded-full transition-all"
                                     style="width: {{ $progress }}%; background: {{ $progress === 100 ? '#16a34a' : '#0d6b6b' }}">
                                 </div>
                             </div>
+                            <x-lesson-stars :total="$course->lessons_count" :completed="$course->completedLessonsCountFor(auth()->user())" />
                             @if ($progress === 100)
                             <p class="text-xs text-green-600 mt-1 font-semibold">🎉 {{ __('db.Completed! Get your certificate.') }}</p>
                             @endif

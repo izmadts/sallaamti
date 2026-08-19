@@ -26,6 +26,16 @@
                         <x-text-input name="level" class="w-full mt-1" placeholder="Beginner" value="{{ $course->level }}" />
                     </div>
                 </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <x-input-label value="Recommended min age (optional)" />
+                        <x-text-input type="number" name="min_age" min="1" max="120" class="w-full mt-1" value="{{ $course->min_age }}" />
+                    </div>
+                    <div>
+                        <x-input-label value="Recommended max age (optional)" />
+                        <x-text-input type="number" name="max_age" min="1" max="120" class="w-full mt-1" value="{{ $course->max_age }}" />
+                    </div>
+                </div>
                 <div>
                     <x-input-label value="Thumbnail" />
                     <input type="file" name="thumbnail" accept="image/*" class="w-full mt-1">

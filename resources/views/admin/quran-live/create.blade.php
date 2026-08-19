@@ -59,6 +59,17 @@
                     </div>
                 </div>
 
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <x-input-label value="Recommended min age (optional)" />
+                        <x-text-input type="number" name="min_age" min="1" max="120" class="w-full mt-1" />
+                    </div>
+                    <div>
+                        <x-input-label value="Recommended max age (optional)" />
+                        <x-text-input type="number" name="max_age" min="1" max="120" class="w-full mt-1" />
+                    </div>
+                </div>
+
                 <div>
                     <x-input-label value="Gender Preference" />
                     <select name="gender_preference" class="border-gray-300 rounded-md w-full mt-1">

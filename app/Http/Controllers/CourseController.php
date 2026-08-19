@@ -80,6 +80,7 @@ class CourseController extends Controller
             return [
                 'course' => $enrollment->course,
                 'progress' => $total > 0 ? (int) round(($completed / $total) * 100) : 0,
+                'completed' => $completed,
                 'enrolled_at' => $enrollment->created_at,
             ];
         });

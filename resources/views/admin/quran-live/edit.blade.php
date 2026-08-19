@@ -44,6 +44,17 @@
                     <p class="text-xs text-gray-400 mt-1">Each line becomes a topic bullet point.</p>
                 </div>
 
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <x-input-label value="Recommended min age (optional)" />
+                        <x-text-input type="number" name="min_age" min="1" max="120" class="w-full mt-1" :value="old('min_age', $course->min_age)" />
+                    </div>
+                    <div>
+                        <x-input-label value="Recommended max age (optional)" />
+                        <x-text-input type="number" name="max_age" min="1" max="120" class="w-full mt-1" :value="old('max_age', $course->max_age)" />
+                    </div>
+                </div>
+
                 <div>
                     <x-input-label value="Assign Teacher" />
                     <select name="teacher_id" class="border-gray-300 rounded-md w-full mt-1">

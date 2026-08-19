@@ -10,6 +10,14 @@
     display: none !important;
 }
 
+/* One shared bounce for the "you did it" moments (quiz pass, lesson
+   complete) rather than each page inventing its own celebration. */
+@keyframes celebrate-bounce {
+    0% { transform: scale(0.5); opacity: 0; }
+    50% { transform: scale(1.2); }
+    100% { transform: scale(1); opacity: 1; }
+}
+
 /*
  * Mobile-app feel: snappier taps, no browser bounce/rubber-banding,
  * no blue tap-flash on links/buttons, and safe-area padding so fixed
