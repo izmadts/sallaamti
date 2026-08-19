@@ -39,7 +39,13 @@ class SendBulkEmailJob implements ShouldQueue
         $bulkMessage = $recipient->bulkMessage;
 
         try {
-            $unsubscribeUrl = URL::signedRoute('newsletter.unsubscribe', ['user' => $recipient->user_id]);
+            // Subscribers already have their own token-based unsubscribe
+            // flow (see SubscriberController) — reuse it rather than
+            // routing them through the User-specific signed URL, since a
+            // subscriber-sourced recipient has no user_id at all.
+            $unsubscribeUrl = $recipient->subscriber_id
+                ? route('subscriber.unsubscribe', $recipient->subscriber->unsubscribe_token)
+                : URL::signedRoute('newsletter.unsubscribe', ['user' => $recipient->user_id]);
 
             Mail::to($recipient->channel_address)->send(
                 new AdminNewsletter($bulkMessage->subject ?? '', $bulkMessage->body ?? '', $unsubscribeUrl)

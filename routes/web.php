@@ -320,6 +320,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
         // info at once, so it stays admin-role-only rather than being added
         // to PermissionCatalog.
         Route::post('users/broadcast', [BulkMessageController::class, 'store'])->name('bulk-messages.store');
+        Route::get('subscribers/broadcast', [BulkMessageController::class, 'createForSubscribers'])->name('subscribers.broadcast');
+        Route::post('subscribers/broadcast', [BulkMessageController::class, 'storeForSubscribers'])->name('bulk-messages.subscribers.store');
         Route::get('bulk-messages', [BulkMessageController::class, 'index'])->name('bulk-messages.index');
         Route::get('bulk-messages/{bulkMessage}', [BulkMessageController::class, 'show'])->name('bulk-messages.show');
     });

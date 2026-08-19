@@ -9,6 +9,7 @@ class BulkMessageRecipient extends Model
     protected $fillable = [
         'bulk_message_id',
         'user_id',
+        'subscriber_id',
         'channel_address',
         'status',
         'error',
@@ -30,5 +31,10 @@ class BulkMessageRecipient extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function subscriber()
+    {
+        return $this->belongsTo(Subscriber::class);
     }
 }

@@ -13,6 +13,11 @@
     </x-slot>
     <div class="py-12">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8 space-y-6">
+            <div class="flex justify-end">
+                <a href="{{ route('admin.subscribers.broadcast') }}" class="bg-teal-600 hover:bg-teal-700 text-white text-sm font-semibold px-4 py-2 rounded-lg transition">
+                    📨 Message Verified Subscribers
+                </a>
+            </div>
             {{-- Statistics --}}
             <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
                 <div class="bg-white rounded-xl shadow-sm border p-6">

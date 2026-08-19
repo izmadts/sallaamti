@@ -8,6 +8,7 @@ use App\Jobs\SendBulkWhatsappJob;
 use App\Models\BulkMessage;
 use App\Models\BulkMessageRecipient;
 use App\Models\SocialAccount;
+use App\Models\Subscriber;
 use App\Models\User;
 use App\Support\UserFilter;
 use Illuminate\Http\Request;
@@ -118,6 +119,78 @@ class BulkMessageController extends Controller
             ->with('status', "Sending to {$bulkMessage->recipient_count} " . ($validated['channel'] === 'email' ? 'email' : 'WhatsApp') . ' recipient(s) — this page updates as deliveries complete.');
     }
 
+    // Newsletter subscribers (App\Models\Subscriber) are a separate list
+    // from registered Users — people who signed up via the public /subscribe
+    // form without necessarily having an account. Email-only: there's no
+    // phone/WhatsApp data on a subscriber, so this skips the channel tabs
+    // the User-targeted composer has.
+    public function createForSubscribers(Request $request)
+    {
+        $query = Subscriber::whereNotNull('verified_at')->where('is_active', true);
+
+        if ($request->filled('search')) {
+            $query->where('email', 'like', '%' . $request->search . '%');
+        }
+
+        $subscribers = (clone $query)->orderBy('email')->limit(self::MAX_RECIPIENTS)->get(['id', 'email']);
+        $totalMatching = $query->count();
+
+        return view('admin.subscribers.broadcast', [
+            'subscribers' => $subscribers,
+            'totalMatching' => $totalMatching,
+            'truncated' => $totalMatching > self::MAX_RECIPIENTS,
+            'maxRecipients' => self::MAX_RECIPIENTS,
+            'filters' => $request->query(),
+        ]);
+    }
+
+    public function storeForSubscribers(Request $request)
+    {
+        $validated = $request->validate([
+            'subscriber_ids' => ['required', 'array', 'min:1'],
+            'subscriber_ids.*' => ['integer', 'exists:subscribers,id'],
+            'subject' => ['required', 'string', 'max:255'],
+            'body' => ['required', 'string', 'max:10000'],
+        ]);
+
+        // Re-filter server-side rather than trusting the checked ids alone —
+        // a subscriber could unsubscribe or lose verification between the
+        // compose page loading and this submit.
+        $recipients = Subscriber::whereIn('id', $validated['subscriber_ids'])
+            ->whereNotNull('verified_at')
+            ->where('is_active', true)
+            ->get();
+
+        if ($recipients->isEmpty()) {
+            return back()->with('error', 'None of the selected subscribers are still verified and active.');
+        }
+
+        $bulkMessage = BulkMessage::create([
+            'created_by' => auth()->id(),
+            'recipient_type' => 'subscriber',
+            'channel' => 'email',
+            'subject' => $validated['subject'],
+            'body' => $validated['body'],
+            'filters_snapshot' => $request->except(['subscriber_ids', 'subject', 'body', '_token']),
+            'status' => 'sending',
+            'recipient_count' => $recipients->count(),
+        ]);
+
+        foreach ($recipients as $subscriber) {
+            $recipient = BulkMessageRecipient::create([
+                'bulk_message_id' => $bulkMessage->id,
+                'subscriber_id' => $subscriber->id,
+                'channel_address' => $subscriber->email,
+                'status' => 'pending',
+            ]);
+
+            SendBulkEmailJob::dispatch($recipient);
+        }
+
+        return redirect()->route('admin.bulk-messages.show', $bulkMessage)
+            ->with('status', "Sending to {$bulkMessage->recipient_count} subscriber(s) — this page updates as deliveries complete.");
+    }
+
     public function index()
     {
         $campaigns = BulkMessage::with('createdBy')->latest()->paginate(15);
@@ -128,7 +201,7 @@ class BulkMessageController extends Controller
     public function show(BulkMessage $bulkMessage)
     {
         $bulkMessage->load('createdBy');
-        $recipients = $bulkMessage->recipients()->with('user')->latest()->paginate(50);
+        $recipients = $bulkMessage->recipients()->with('user', 'subscriber')->latest()->paginate(50);
 
         return view('admin.bulk-messages.show', compact('bulkMessage', 'recipients'));
     }

@@ -8,6 +8,7 @@ class BulkMessage extends Model
 {
     protected $fillable = [
         'created_by',
+        'recipient_type',
         'channel',
         'subject',
         'body',
