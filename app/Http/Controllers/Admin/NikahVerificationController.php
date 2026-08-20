@@ -2,13 +2,106 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Auth\Concerns\RegistersMinimalUsers;
+use App\Http\Controllers\Concerns\ValidatesNikahProfile;
 use App\Http\Controllers\Controller;
 use App\Models\NikahProfile;
+use App\Models\User;
+use App\Rules\ValidPhoneNumber;
+use App\Services\ImageOptimizer;
+use App\Support\CountryStates;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
+use Illuminate\Validation\Rule;
 
 class NikahVerificationController extends Controller
 {
+    use ValidatesNikahProfile, RegistersMinimalUsers;
+
+    // Admin/matchmaker data-entry for a walk-in registrant who can't create
+    // their own account — creates the User and NikahProfile together in one
+    // step. Held to the exact same validation (incl. required CNIC photos)
+    // as a member creating their own profile — this is a convenience for
+    // who's typing, not a way around the platform's identity-verification bar.
+    public function create()
+    {
+        return view('admin.nikah.create', [
+            'countries' => CountryStates::countries(),
+            'countryStates' => CountryStates::map(),
+        ]);
+    }
+
+    public function store(Request $request)
+    {
+        $accountValidated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'identifier' => ['required', 'string', 'max:255'],
+            'gender' => ['required', 'in:male,female'],
+        ]);
+
+        $identifier = trim($request->identifier);
+        $isEmail = (bool) filter_var($identifier, FILTER_VALIDATE_EMAIL);
+        if (!$isEmail) {
+            $identifier = preg_replace('/[\s\-]/', '', $identifier);
+        }
+
+        Validator::make(['identifier' => $identifier], [
+            'identifier' => [
+                $isEmail ? 'email' : new ValidPhoneNumber(),
+                Rule::unique(User::class, $isEmail ? 'email' : 'phone'),
+            ],
+        ])->validate();
+
+        $validated = $this->validateProfile($request);
+        $validated['sect'] = $this->resolveSect($request);
+        $validated['language'] = $this->resolveLanguage($request);
+        $validated['height'] = $this->resolveHeight($request);
+
+        try {
+            if ($request->hasFile('cnic_front_image')) {
+                $validated['cnic_front_image'] = ImageOptimizer::store($request->file('cnic_front_image'), 'nikah/cnic', 'private', maxDimension: 1600, quality: 85);
+            }
+            if ($request->hasFile('cnic_back_image')) {
+                $validated['cnic_back_image'] = ImageOptimizer::store($request->file('cnic_back_image'), 'nikah/cnic', 'private', maxDimension: 1600, quality: 85);
+            }
+            if ($request->hasFile('photo')) {
+                $validated['photo'] = ImageOptimizer::store($request->file('photo'), 'nikah/photos', 'private', maxDimension: 1200);
+            }
+        } catch (\Throwable $e) {
+            report($e);
+            return back()->withInput()->withErrors(['photo' => 'Sorry, we could not save the uploaded photo(s) — please try again in a moment.']);
+        }
+
+        $user = $this->createMinimalUser(
+            $accountValidated['name'],
+            $isEmail ? strtolower($identifier) : null,
+            $isEmail ? null : $identifier,
+        );
+        $user->update(['gender' => $accountValidated['gender'], 'city' => $validated['city'] ?? null]);
+
+        $validated['user_id'] = $user->id;
+        $validated['allow_photo_sharing'] = $request->has('allow_photo_sharing');
+        $validated['open_to_polygamy'] = $request->has('open_to_polygamy');
+        $validated['payment_amount'] = setting('nikah_verification_fee', config('services.nikah.verification_fee'));
+        $validated['public_token'] = Str::random(32);
+
+        $profile = NikahProfile::create($validated);
+
+        $status = "Profile created for {$user->name}.";
+
+        if ($isEmail) {
+            Password::sendResetLink(['email' => $user->email]);
+            $status .= ' A password-setup link was emailed to them so they can log in.';
+        } else {
+            $status .= ' No email was provided, so no login link could be sent — add one to their account later via Users, then use "Send Password Reset Link" there.';
+        }
+
+        return redirect()->route('admin.nikah.show', $profile)->with('status', $status);
+    }
+
     public function index(Request $request)
     {
         $stats = [

@@ -395,6 +395,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     });
     Route::delete('/nikah-verifications/{profile}', [NikahVerificationController::class, 'destroy'])->name('nikah.destroy')->middleware('can:nikah.delete');
     Route::middleware('can:nikah.manage')->group(function () {
+        Route::get('/nikah-profiles/create', [NikahVerificationController::class, 'create'])->name('nikah.profiles.create');
+        Route::post('/nikah-profiles', [NikahVerificationController::class, 'store'])->name('nikah.profiles.store');
         Route::post('/nikah-verifications/{profile}/contact', [NikahVerificationController::class, 'contact'])->name('nikah.contact');
         Route::post('/nikah-verifications/bulk-approve', [NikahVerificationController::class, 'bulkApprove'])->name('nikah.verifications.bulk-approve');
         Route::post('/nikah-verifications/{profile}/approve', [NikahVerificationController::class, 'approve'])->name('nikah.approve');

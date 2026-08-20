@@ -17,6 +17,7 @@ class RoleSeeder extends Seeder
         Role::firstOrCreate(['name' => 'blogger']);
         Role::firstOrCreate(['name' => 'donor']);
         Role::firstOrCreate(['name' => 'volunteer']);
+        Role::firstOrCreate(['name' => 'matchmaker']);
 
     }
 }

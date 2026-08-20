@@ -1,6 +1,9 @@
 <x-admin-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">All Nikah Profiles</h2>
+        <div class="flex justify-between items-center">
+            <h2 class="font-semibold text-xl text-gray-800 leading-tight">All Nikah Profiles</h2>
+            <a href="{{ route('admin.nikah.profiles.create') }}" class="text-sm font-semibold px-4 py-2 rounded-lg text-white hover:opacity-90" style="background: #0d6b6b">+ Create Profile</a>
+        </div>
     </x-slot>
 
     <div class="py-12">
