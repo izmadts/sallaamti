@@ -129,6 +129,15 @@
                     <span class="bg-red-400 text-red-900 text-xs font-bold px-1.5 py-0.5 rounded-full">{{ $pendingReports }}</span>
                     @endif
                 </a>
+                <a href="{{ route('admin.nikah.contact-requests') }}"
+                    class="flex items-center justify-between gap-3 px-3 py-2 rounded-lg transition
+                          {{ request()->routeIs('admin.nikah.contact-requests*') ? 'bg-teal-700 text-white' : 'text-teal-100 hover:bg-teal-800' }}">
+                    <span class="flex items-center gap-3"><span class="text-base">🤝</span> Matchmaker Requests</span>
+                    @php $pendingContactRequests = \App\Models\NikahContactRequest::where('status','pending')->count(); @endphp
+                    @if ($pendingContactRequests > 0)
+                    <span class="bg-orange-400 text-orange-900 text-xs font-bold px-1.5 py-0.5 rounded-full">{{ $pendingContactRequests }}</span>
+                    @endif
+                </a>
 
                 {{-- Quran --}}
                 <p class="text-teal-500 text-xs uppercase tracking-widest px-3 pt-4 pb-1">Quran Learning</p>

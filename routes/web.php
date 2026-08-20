@@ -394,9 +394,17 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
         Route::get('nikah-reports/{report}/conversation', [NikahSafetyController::class, 'reportConversation'])->name('nikah.reports.conversation');
     });
     Route::delete('/nikah-verifications/{profile}', [NikahVerificationController::class, 'destroy'])->name('nikah.destroy')->middleware('can:nikah.delete');
+    // Narrower than nikah.manage below — gated inside the controller via
+    // nikah.manage OR nikah.create-profile, so matchmaker can help a walk-in
+    // create an account without also unlocking approve/reject/payments/etc.
+    Route::get('/nikah-profiles/create', [NikahVerificationController::class, 'create'])->name('nikah.profiles.create');
+    Route::post('/nikah-profiles', [NikahVerificationController::class, 'store'])->name('nikah.profiles.store');
+    Route::middleware('admin.only')->group(function () {
+        Route::get('/nikah-contact-requests', [NikahVerificationController::class, 'contactRequests'])->name('nikah.contact-requests');
+        Route::post('/nikah-contact-requests/{contactRequest}/approve', [NikahVerificationController::class, 'approveContactRequest'])->name('nikah.contact-requests.approve');
+        Route::post('/nikah-contact-requests/{contactRequest}/deny', [NikahVerificationController::class, 'denyContactRequest'])->name('nikah.contact-requests.deny');
+    });
     Route::middleware('can:nikah.manage')->group(function () {
-        Route::get('/nikah-profiles/create', [NikahVerificationController::class, 'create'])->name('nikah.profiles.create');
-        Route::post('/nikah-profiles', [NikahVerificationController::class, 'store'])->name('nikah.profiles.store');
         Route::post('/nikah-verifications/{profile}/contact', [NikahVerificationController::class, 'contact'])->name('nikah.contact');
         Route::post('/nikah-verifications/bulk-approve', [NikahVerificationController::class, 'bulkApprove'])->name('nikah.verifications.bulk-approve');
         Route::post('/nikah-verifications/{profile}/approve', [NikahVerificationController::class, 'approve'])->name('nikah.approve');
@@ -548,6 +556,17 @@ Route::middleware(['auth', 'counselor'])->prefix('counselor')->name('counselor.'
     Route::post('/bookings/{booking}/cancel', [CounselorBookingController::class, 'cancel'])->name('bookings.cancel');
     Route::post('/bookings/{booking}/no-show', [CounselorBookingController::class, 'markNoShow'])->name('bookings.no-show');
     Route::post('/bookings/{booking}/reply', [CounselorBookingController::class, 'reply'])->name('bookings.reply');
+});
+
+// ============================================================
+// MATCHMAKER ROUTES — browse-only, redacted (no CNIC/photo/contact); a
+// contact detail is only visible once admin approves a specific request.
+// ============================================================
+
+Route::middleware(['auth', 'matchmaker'])->prefix('matchmaker')->name('matchmaker.')->group(function () {
+    Route::get('/nikah-profiles', [\App\Http\Controllers\Matchmaker\NikahBrowseController::class, 'index'])->name('nikah.index');
+    Route::get('/nikah-profiles/{profile}', [\App\Http\Controllers\Matchmaker\NikahBrowseController::class, 'show'])->name('nikah.show');
+    Route::post('/nikah-profiles/{profile}/request-contact', [\App\Http\Controllers\Matchmaker\NikahBrowseController::class, 'requestContact'])->name('nikah.request-contact');
 });
 
 require __DIR__ . '/auth.php';

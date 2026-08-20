@@ -24,7 +24,27 @@ class DashboardController extends Controller
             return $this->counselorDashboard($authUser);
         }
 
+        if ($authUser->hasRole('matchmaker')) {
+            return $this->matchmakerDashboard($authUser);
+        }
+
         return $this->memberDashboard($authUser);
+    }
+
+    private function matchmakerDashboard($authUser)
+    {
+        $requests = \App\Models\NikahContactRequest::where('requested_by', $authUser->id)->get();
+
+        $stats = [
+            'total_profiles' => \App\Models\NikahProfile::where('is_active', true)->whereNull('suspended_at')->count(),
+            'pending_requests' => $requests->where('status', 'pending')->count(),
+            'approved_requests' => $requests->where('status', 'approved')->count(),
+        ];
+
+        return view('dashboard.matchmaker', [
+            'user' => $authUser,
+            'stats' => $stats,
+        ]);
     }
 
     private function teacherDashboard($authUser)

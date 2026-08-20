@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Auth\Concerns\RegistersMinimalUsers;
 use App\Http\Controllers\Concerns\ValidatesNikahProfile;
 use App\Http\Controllers\Controller;
+use App\Models\NikahContactRequest;
 use App\Models\NikahProfile;
 use App\Models\User;
 use App\Rules\ValidPhoneNumber;
@@ -21,13 +22,26 @@ class NikahVerificationController extends Controller
 {
     use ValidatesNikahProfile, RegistersMinimalUsers;
 
+    // Deliberately checked in-controller rather than route middleware —
+    // nikah.create-profile is narrower than nikah.manage (matchmaker has
+    // only the former), and Laravel's `can:` route middleware has no
+    // built-in OR between two separate abilities.
+    private function authorizeProfileCreation(): void
+    {
+        abort_unless(auth()->user()->can('nikah.manage') || auth()->user()->can('nikah.create-profile'), 403);
+    }
+
     // Admin/matchmaker data-entry for a walk-in registrant who can't create
     // their own account — creates the User and NikahProfile together in one
     // step. Held to the exact same validation (incl. required CNIC photos)
-    // as a member creating their own profile — this is a convenience for
-    // who's typing, not a way around the platform's identity-verification bar.
+    // as a member creating their own profile — this is in-person, consented
+    // data entry, not the same thing as a matchmaker browsing an existing
+    // member's CNIC/photo without their knowledge (see the Matchmaker
+    // browse controller, which redacts both).
     public function create()
     {
+        $this->authorizeProfileCreation();
+
         return view('admin.nikah.create', [
             'countries' => CountryStates::countries(),
             'countryStates' => CountryStates::map(),
@@ -36,6 +50,8 @@ class NikahVerificationController extends Controller
 
     public function store(Request $request)
     {
+        $this->authorizeProfileCreation();
+
         $accountValidated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'identifier' => ['required', 'string', 'max:255'],
@@ -100,6 +116,43 @@ class NikahVerificationController extends Controller
         }
 
         return redirect()->route('admin.nikah.show', $profile)->with('status', $status);
+    }
+
+    // Real-admin-only (route middleware is `admin.only`, not a permission a
+    // matchmaker could ever hold) — a matchmaker requests, only admin decides.
+    public function contactRequests()
+    {
+        $requests = NikahContactRequest::with(['profile.user', 'requester'])
+            ->orderByRaw("status = 'pending' desc")
+            ->latest()
+            ->paginate(20);
+
+        return view('admin.nikah.contact-requests', compact('requests'));
+    }
+
+    public function approveContactRequest(NikahContactRequest $contactRequest)
+    {
+        $contactRequest->update([
+            'status' => 'approved',
+            'decided_by' => auth()->id(),
+            'decided_at' => now(),
+        ]);
+
+        return back()->with('status', 'Contact request approved — the matchmaker can now see this profile\'s guardian contact.');
+    }
+
+    public function denyContactRequest(Request $request, NikahContactRequest $contactRequest)
+    {
+        $validated = $request->validate(['admin_notes' => ['nullable', 'string', 'max:500']]);
+
+        $contactRequest->update([
+            'status' => 'denied',
+            'admin_notes' => $validated['admin_notes'] ?? null,
+            'decided_by' => auth()->id(),
+            'decided_at' => now(),
+        ]);
+
+        return back()->with('status', 'Contact request denied.');
     }
 
     public function index(Request $request)
