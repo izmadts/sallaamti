@@ -36,7 +36,7 @@
             </div>
         </div>
         <div class="border-t border-gray-700"></div>
-        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-8 pt-8">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8 pt-8">
             <div>
                 <img src="{{ asset('img/logo-w.png')}}" class="max-w-full h-auto">
                 <p class="my-4 text-gray-400">{{ __('db.Sallaamti (سلامتی) is an organization dedicated to spreading peace, knowledge, and compassion through the teachings of the Quran and Hadith.') }}</p>
