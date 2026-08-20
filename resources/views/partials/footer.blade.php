@@ -42,33 +42,16 @@
                 <p class="my-4 text-gray-400">{{ __('db.Sallaamti (سلامتی) is an organization dedicated to spreading peace, knowledge, and compassion through the teachings of the Quran and Hadith.') }}</p>
                 <a href="{{ url('/donate') }}" class="inline-flex items-center rounded-md bg-[--teal] text-white font-medium py-2 px-4 hover:bg-[--teal-dark] transition">{{ __('db.Donate Now') }}</a>
                 <a href="{{ url('/volunteer') }}" class="inline-flex items-center rounded-md bg-[--teal] text-white font-medium py-2 px-4 hover:bg-[--teal-dark] transition">{{ __('db.Become Volunteer') }}</a>
-<hr class="my-4 border-gray-700">
-                <div class="flex items-center gap-3">
-                    @if(setting('social_facebook'))
-                    <a href="{{ setting('social_facebook') }}" target="_blank" class="text-gray-400 hover:text-white transition">
-                        <i class="fab fa-facebook-f"></i>
-                    </a>
-                    @endif
-                    @if(setting('social_twitter'))
-                    <a href="{{ setting('social_twitter') }}" target="_blank" class="text-gray-400 hover:text-white transition">
-                        <i class="fab fa-twitter"></i>
-                    </a>
-                    @endif
-                    @if(setting('social_instagram'))
-                    <a href="{{ setting('social_instagram') }}" target="_blank" class="text-gray-400 hover:text-white transition">
-                        <i class="fab fa-instagram"></i>
-                    </a>
-                    @endif
-                    @if(setting('social_youtube'))
-                    <a href="{{ setting('social_youtube') }}" target="_blank" class="text-gray-400 hover:text-white transition">
-                        <i class="fab fa-youtube"></i>
-                    </a>
-                    @endif
+                <hr class="my-4 border-gray-700">
+                <div class="flex items-center gap-3 pt-1">
+                    <span class="text-gray-400 text-sm">{{ __('db.Follow Us:') }}</span>
+                    <a class="text-gray-300 hover:text-white" href="{{ setting('social_facebook') }}" target="_blank"><i class="fab fa-facebook-f"></i></a>
+                    <a class="text-gray-300 hover:text-white" href="{{ setting('social_tiktok') }}" target="_blank"><i class="fab fa-tiktok"></i></a>
+                    <a class="text-gray-300 hover:text-white" href="{{ setting('social_youtube') }}" target="_blank"><i class="fab fa-youtube"></i></a>
+                    <a class="text-gray-300 hover:text-white" href="{{ setting('social_instagram') }}" target="_blank"><i class="fab fa-instagram"></i></a>
                 </div>
-
-
             </div>
-            
+
             <div>
                 <h4 class="text-white font-semibold mb-4">{{ __('db.Contact') }}</h4>
                 <div class="flex flex-col">
@@ -93,7 +76,13 @@
                         </span>
                         <a href="mailto:{{ setting('site_email') }}" class="text-gray-300 hover:text-white">{{ setting('site_email') }}</a>
                     </div>
-
+                    <div class="flex items-center gap-3 pt-1">
+                        <span class="text-gray-400 text-sm">{{ __('db.Follow Us:') }}</span>
+                        <a class="text-gray-300 hover:text-white" href="{{ setting('social_facebook') }}" target="_blank"><i class="fab fa-facebook-f"></i></a>
+                        <a class="text-gray-300 hover:text-white" href="{{ setting('social_tiktok') }}" target="_blank"><i class="fab fa-tiktok"></i></a>
+                        <a class="text-gray-300 hover:text-white" href="{{ setting('social_youtube') }}" target="_blank"><i class="fab fa-youtube"></i></a>
+                        <a class="text-gray-300 hover:text-white" href="{{ setting('social_instagram') }}" target="_blank"><i class="fab fa-instagram"></i></a>
+                    </div>
                 </div>
             </div>
             <div>
