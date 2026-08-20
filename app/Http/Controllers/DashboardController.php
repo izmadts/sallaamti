@@ -96,13 +96,18 @@ class DashboardController extends Controller
 
         $this->updateVisitStreak($user);
 
-        // Quran courses progress
-        $enrollments = $user->enrollments->map(function ($enrollment) use ($user) {
+        // Course progress, split by track — the dashboard shows separate
+        // Quran and Skills cards, each with its own enrollment count, so a
+        // Skills enrollment must never inflate the Quran card's badge (and
+        // vice versa).
+        $allEnrollments = $user->enrollments->map(function ($enrollment) use ($user) {
             return [
                 'course' => $enrollment->course,
                 'progress' => $enrollment->course->progressFor($user),
             ];
         });
+        $enrollments = $allEnrollments->filter(fn ($e) => $e['course']->track === 'quran')->values();
+        $skillsEnrollments = $allEnrollments->filter(fn ($e) => $e['course']->track === 'skills')->values();
 
         // Nikah module status
         $nikahProfile = $user->nikahProfile;
@@ -124,6 +129,7 @@ class DashboardController extends Controller
         return view('dashboard', compact(
             'user',
             'enrollments',
+            'skillsEnrollments',
             'nikahProfile',
             'liveSubscriptions',
             'notifications',

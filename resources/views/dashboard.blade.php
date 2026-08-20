@@ -31,7 +31,7 @@
         {{-- Stats Row --}}
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
             <a href="{{ route('courses.my-learning') }}" class="bg-white rounded-lg shadow-sm p-5 text-center hover:shadow-lg hover:-translate-y-1 transition-all duration-150 border-l-4 border-green-500">
-                <div class="text-3xl font-bold text-gray-800">{{ $enrollments->count() }}</div>
+                <div class="text-3xl font-bold text-gray-800">{{ $enrollments->count() + $skillsEnrollments->count() }}</div>
                 <div class="text-sm text-gray-500 mt-1">Courses Enrolled</div>
             </a>
             <a href="{{ route('certificate.index') }}" class="bg-white rounded-lg shadow-sm p-5 text-center hover:shadow-lg hover:-translate-y-1 transition-all duration-150 border-l-4 border-yellow-500">
@@ -84,6 +84,20 @@
                         </a>
                         @endif
 
+                        @if (Auth::user()->skills_module_enabled)
+                        {{-- Digital Skills --}}
+                        <a href="{{ route('skills.index') }}" class="border-2 rounded-lg p-4 hover:shadow-md hover:-translate-y-0.5 transition-all duration-150 {{ $skillsEnrollments->count() > 0 ? 'border-teal-200 bg-teal-50' : 'border-gray-100 hover:border-teal-200' }}">
+                            <div class="flex justify-between items-start">
+                                <div class="w-10 h-10 rounded-full flex items-center justify-center text-xl {{ $skillsEnrollments->count() > 0 ? 'bg-teal-500' : 'bg-gray-200' }}">💻</div>
+                                <span class="text-xs px-2 py-0.5 rounded-full {{ $skillsEnrollments->count() > 0 ? 'bg-teal-100 text-teal-700' : 'bg-gray-100 text-gray-500' }}">
+                                    {{ $skillsEnrollments->count() > 0 ? $skillsEnrollments->count().' enrolled' : 'Not enrolled' }}
+                                </span>
+                            </div>
+                            <h4 class="font-medium text-gray-800 mt-2">Digital Skills</h4>
+                            <p class="text-xs text-gray-500">Presented by IZMA — practical job skills</p>
+                        </a>
+                        @endif
+
                         @if (Auth::user()->nikah_module_enabled)
                         {{-- Nikah --}}
                         <a href="{{ $nikahProfile ? route('nikah.show') : route('nikah.create') }}" class="border-2 rounded-lg p-4 hover:shadow-md hover:-translate-y-0.5 transition-all duration-150 {{ $nikahProfile ? 'border-pink-200 bg-pink-50' : 'border-gray-100 hover:border-pink-200' }}">
@@ -110,7 +124,7 @@
                         </a>
                         @endif
 
-                        @if (Auth::user()->quran_module_enabled)
+                        @if (Auth::user()->quran_module_enabled || Auth::user()->skills_module_enabled)
                         {{-- Certificates --}}
                         <a href="{{ route('certificate.index') }}" class="border-2 rounded-lg p-4 hover:shadow-md hover:-translate-y-0.5 transition-all duration-150 {{ $certificates->count() > 0 ? 'border-yellow-200 bg-yellow-50' : 'border-gray-100 hover:border-yellow-200' }}">
                             <div class="flex justify-between items-start">
@@ -155,15 +169,17 @@
                     @endforelse
                 </div>
 
-                {{-- Course Progress --}}
-                @if (Auth::user()->quran_module_enabled && $enrollments->count() > 0)
+                {{-- Course Progress — both tracks together, since My Learning
+                     itself is shared across Quran and Skills courses. --}}
+                @php $allEnrollments = $enrollments->concat($skillsEnrollments); @endphp
+                @if ((Auth::user()->quran_module_enabled || Auth::user()->skills_module_enabled) && $allEnrollments->count() > 0)
                 <div class="bg-white rounded-lg shadow-sm p-6">
                     <div class="flex justify-between items-center mb-4">
                         <h3 class="font-semibold text-gray-700">My Learning Progress</h3>
                         <a href="{{ route('courses.my-learning') }}" class="text-sm text-teal-600 hover:underline">View all →</a>
                     </div>
                     <div class="space-y-4">
-                        @foreach ($enrollments->take(3) as $item)
+                        @foreach ($allEnrollments->take(3) as $item)
                         <div>
                             <div class="flex justify-between text-sm mb-1">
                                 <span class="text-gray-700 font-medium">{{ $item['course']->title }}</span>
@@ -233,6 +249,11 @@
                             <span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-base">📡</span> My Quran Class
                         </a>
                         @endif
+                        @if (Auth::user()->skills_module_enabled)
+                        <a href="{{ route('skills.index') }}" class="flex items-center gap-3 text-sm font-medium text-gray-600 hover:text-[--teal-dark] hover:bg-[--teal-light] rounded-lg px-2 py-2 -mx-2 transition-colors duration-150">
+                            <span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-base">💻</span> Browse Skills
+                        </a>
+                        @endif
                         @if (Auth::user()->nikah_module_enabled)
                         <a href="{{ route('nikah.browse') }}" class="flex items-center gap-3 text-sm font-medium text-gray-600 hover:text-[--teal-dark] hover:bg-[--teal-light] rounded-lg px-2 py-2 -mx-2 transition-colors duration-150">
                             <span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-base">💍</span> {{ __('db.Check Profiles') }}
@@ -246,7 +267,7 @@
                             <span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-base">🤝</span> Get Family Support
                         </a>
                         @endif
-                        @if (Auth::user()->quran_module_enabled)
+                        @if (Auth::user()->quran_module_enabled || Auth::user()->skills_module_enabled)
                         <a href="{{ route('certificate.index') }}" class="flex items-center gap-3 text-sm font-medium text-gray-600 hover:text-[--teal-dark] hover:bg-[--teal-light] rounded-lg px-2 py-2 -mx-2 transition-colors duration-150">
                             <span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-base">🎓</span> My Certificates
                         </a>

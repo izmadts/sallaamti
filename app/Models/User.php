@@ -24,6 +24,7 @@ class User extends Authenticatable
         'nikah_module_enabled',
         'quran_module_enabled',
         'counseling_module_enabled',
+        'skills_module_enabled',
         'current_streak',
         'longest_streak',
         'last_active_date',
@@ -52,6 +53,7 @@ class User extends Authenticatable
             'nikah_module_enabled' => 'boolean',
             'quran_module_enabled' => 'boolean',
             'counseling_module_enabled' => 'boolean',
+            'skills_module_enabled' => 'boolean',
             'whatsapp_notify_opt_in' => 'boolean',
         ];
     }

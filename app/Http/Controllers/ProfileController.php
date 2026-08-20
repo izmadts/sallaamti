@@ -63,6 +63,7 @@ class ProfileController extends Controller
             'nikah_module_enabled' => $request->boolean('nikah_module_enabled'),
             'quran_module_enabled' => $request->boolean('quran_module_enabled'),
             'counseling_module_enabled' => $request->boolean('counseling_module_enabled'),
+            'skills_module_enabled' => $request->boolean('skills_module_enabled'),
         ]);
 
         return Redirect::route('profile.edit')->with('status', 'modules-updated');

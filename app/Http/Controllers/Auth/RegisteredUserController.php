@@ -73,6 +73,7 @@ class RegisteredUserController extends Controller
             'nikah_module_enabled' => $request->boolean('nikah_module_enabled'),
             'quran_module_enabled' => $request->boolean('quran_module_enabled'),
             'counseling_module_enabled' => $request->boolean('counseling_module_enabled'),
+            'skills_module_enabled' => $request->boolean('skills_module_enabled'),
         ]);
 
         Auth::login($user);
@@ -97,6 +98,7 @@ class RegisteredUserController extends Controller
             'nikah' => $user->nikah_module_enabled,
             'quran' => $user->quran_module_enabled,
             'counseling' => $user->counseling_module_enabled,
+            'skills' => $user->skills_module_enabled,
         ])->filter()->keys();
 
         if ($selected->count() !== 1) {
@@ -107,6 +109,7 @@ class RegisteredUserController extends Controller
             'nikah' => route('nikah.create'),
             'quran' => route('courses.index'),
             'counseling' => route('counseling.book.start'),
+            'skills' => route('skills.index'),
             default => route('dashboard'),
         };
     }

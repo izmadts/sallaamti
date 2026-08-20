@@ -20,6 +20,15 @@
  🏠 {{ __('db.Dashboard') }}
  </x-nav-link>
 
+ {{-- Digital Skills — a single destination page, so a plain link rather
+ than a dropdown with only one item in it. --}}
+ @if (Auth::user()->skills_module_enabled)
+ <x-nav-link :href="route('skills.index')" :active="request()->routeIs('skills.*') || request()->routeIs('courses.*') && request('track') === 'skills'"
+ class="text-white hover:bg-teal-600 px-3 py-2 rounded-md text-sm">
+ 💻 {{ __('db.Skills') }}
+ </x-nav-link>
+ @endif
+
  {{-- Quran Dropdown --}}
  @if (Auth::user()->quran_module_enabled)
  <x-dropdown align="left" width="56">
@@ -204,6 +213,11 @@
  <input type="checkbox" name="counseling_module_enabled" value="1" {{ Auth::user()->counseling_module_enabled ? 'checked' : '' }} class="rounded border-gray-300 text-teal-600 focus:ring-teal-500">
  🤝 {{ __('db.Family Support') }}
  </label>
+ <label class="flex items-center gap-2 text-sm text-gray-700 cursor-pointer"
+ title="{{ __('db.Turn this on and Digital Skills courses show in your menu. Turn it off and it stays hidden until you switch it back on — nothing is deleted either way.') }}">
+ <input type="checkbox" name="skills_module_enabled" value="1" {{ Auth::user()->skills_module_enabled ? 'checked' : '' }} class="rounded border-gray-300 text-teal-600 focus:ring-teal-500">
+ 💻 {{ __('db.Digital Skills') }}
+ </label>
  <button type="submit" class="w-full bg-teal-600 text-white text-xs font-semibold py-1.5 rounded hover:bg-teal-700 transition">
  {{ __('db.Save') }}
  </button>
@@ -230,15 +244,17 @@
  <p class="text-xs text-gray-500">{{ Auth::user()?->email }}</p>
  </div>
  <x-dropdown-link :href="route('profile.edit')">👤 {{ __('db.My Profile') }}</x-dropdown-link>
- @if (Auth::user()->quran_module_enabled)
+ @if (Auth::user()->quran_module_enabled || Auth::user()->skills_module_enabled)
  <x-dropdown-link :href="route('courses.my-learning')">📚 {{ __('db.My Learning') }}</x-dropdown-link>
+ @endif
+ @if (Auth::user()->quran_module_enabled)
  <x-dropdown-link :href="route('quran-live.my-class')">📡 {{ __('db.My Quran Class') }}</x-dropdown-link>
  @endif
  @if (Auth::user()->nikah_module_enabled)
  <x-dropdown-link :href="route('nikah.interests')">💌 {{ __('db.My Interests') }}</x-dropdown-link>
  <x-dropdown-link :href="route('nikah.saved')">★ {{ __('db.Saved Profiles') }}</x-dropdown-link>
  @endif
- @if (Auth::user()->quran_module_enabled)
+ @if (Auth::user()->quran_module_enabled || Auth::user()->skills_module_enabled)
  <x-dropdown-link :href="route('certificate.index')">🎓 {{ __('db.My Certificates') }}</x-dropdown-link>
  @endif
  <x-dropdown-link :href="route('donate.my')">💝 {{ __('db.My Donations') }}</x-dropdown-link>
@@ -358,6 +374,14 @@
  <x-responsive-nav-link :href="route('quran-live.my-progress')" class="text-white">📊 My Progress</x-responsive-nav-link>
  @endif
 
+ @if (Auth::user()->skills_module_enabled)
+ <div class="px-3 py-1 text-xs text-teal-300 font-semibold uppercase tracking-wider mt-2">Digital Skills</div>
+ <x-responsive-nav-link :href="route('skills.index')" class="text-white">💻 Browse Skills</x-responsive-nav-link>
+ @unless (Auth::user()->quran_module_enabled)
+ <x-responsive-nav-link :href="route('courses.my-learning')" class="text-white">📚 My Learning</x-responsive-nav-link>
+ @endunless
+ @endif
+
  <div class="px-3 py-1 text-xs text-teal-300 font-semibold uppercase tracking-wider mt-2">More</div>
  <x-responsive-nav-link :href="route('volunteer.create')" class="text-white">🤝 Volunteer</x-responsive-nav-link>
  <x-responsive-nav-link :href="route('donate.create')" class="text-white">💝 Donate</x-responsive-nav-link>
@@ -444,6 +468,14 @@
  ['route' => 'counseling.bookings.index', 'match' => 'counseling.book.*|counseling.bookings.*', 'icon' => '📅', 'label' => __('db.Bookings')],
  ],
  ],
+ 'skills' => [
+ 'match' => request()->routeIs('skills.*'),
+ 'items' => [
+ ['route' => 'skills.index', 'match' => 'skills.*', 'icon' => '💻', 'label' => __('db.Browse')],
+ ['route' => 'courses.my-learning', 'match' => 'courses.my-learning', 'icon' => '📚', 'label' => __('db.Learning')],
+ ['route' => 'certificate.index', 'match' => 'certificate.*', 'icon' => '🏆', 'label' => __('db.Certificates')],
+ ],
+ ],
  'wall' => [
  'match' => request()->routeIs('wall.*'),
  'items' => [
@@ -457,6 +489,7 @@
  Auth::user()->nikah_module_enabled,
  Auth::user()->counseling_module_enabled,
  Auth::user()->quran_module_enabled,
+ Auth::user()->skills_module_enabled,
  ])->filter()->count());
  $tabBarColsClass = match ($tabCount) {
  2 => 'grid-cols-2', 3 => 'grid-cols-3', 4 => 'grid-cols-4', 5 => 'grid-cols-5', default => 'grid-cols-6',
@@ -492,6 +525,9 @@
  @endif
  @if (Auth::user()->quran_module_enabled)
  {!! $tab(route('courses.index'), '📖', __('db.Quran'), false) !!}
+ @endif
+ @if (Auth::user()->skills_module_enabled)
+ {!! $tab(route('skills.index'), '💻', __('db.Skills'), false) !!}
  @endif
  @endif
 

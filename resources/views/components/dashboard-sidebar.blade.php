@@ -39,6 +39,11 @@
                 <span class="text-lg">🤝</span> {{ __('db.Family Support') }}
             </a>
             @endif
+            @if (Auth::user()->skills_module_enabled)
+            <a href="{{ route('skills.index') }}" class="flex items-center gap-3 px-2 py-2 rounded-lg text-sm text-gray-700 hover:bg-gray-50 transition">
+                <span class="text-lg">💻</span> {{ __('db.Digital Skills') }}
+            </a>
+            @endif
 
             <a href="{{ route('wall.index') }}" class="flex items-center gap-3 px-2 py-2 rounded-lg text-sm text-gray-700 hover:bg-gray-50 transition">
                 <span class="text-lg">🤲</span> {{ __('db.Sallaamti Wall') }}

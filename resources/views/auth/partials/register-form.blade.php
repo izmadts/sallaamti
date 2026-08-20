@@ -62,12 +62,12 @@
          what shows up in this member's menu/dashboard after signup AND which
          page they land on right after registering — changeable anytime from
          the profile page. --}}
-    <div x-data="{ nikah: true, quran: false, counseling: false }">
+    <div x-data="{ nikah: true, quran: false, counseling: false, skills: false }">
         <label class="auth-label">
             {{ __('db.What brings you to Sallaamti?') }}
             <span class="text-gray-400 block text-xs mt-0.5 font-normal">{{ __('db.Pick one or more — we\'ll take you straight there after you sign up.') }}</span>
         </label>
-        <div class="grid grid-cols-3 gap-2 mt-2">
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-2">
             <label class="relative flex flex-col items-center gap-1 py-3 px-1 rounded-xl border-2 cursor-pointer transition text-center"
                 :class="nikah ? 'border-teal-500' : 'border-gray-200 hover:border-gray-300'"
                 :style="nikah ? 'background: #f0fdfa' : ''">
@@ -94,6 +94,15 @@
                 <span class="text-xs font-semibold" style="color: var(--teal)">{{ __('db.Support') }}</span>
                 <span class="text-[10px] text-gray-500 leading-tight">{{ __('db.Family counseling') }}</span>
                 <span x-show="counseling" x-cloak class="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full text-white flex items-center justify-center text-[10px] shadow" style="background: var(--teal)">✓</span>
+            </label>
+            <label class="relative flex flex-col items-center gap-1 py-3 px-1 rounded-xl border-2 cursor-pointer transition text-center"
+                :class="skills ? 'border-teal-500' : 'border-gray-200 hover:border-gray-300'"
+                :style="skills ? 'background: #f0fdfa' : ''">
+                <input type="checkbox" name="skills_module_enabled" value="1" x-model="skills" class="sr-only">
+                <span class="text-2xl" :class="skills ? 'opacity-100' : 'opacity-40'">💻</span>
+                <span class="text-xs font-semibold" style="color: var(--teal)">{{ __('db.Skills') }}</span>
+                <span class="text-[10px] text-gray-500 leading-tight">{{ __('db.Digital training') }}</span>
+                <span x-show="skills" x-cloak class="absolute -top-1.5 -right-1.5 w-5 h-5 rounded-full text-white flex items-center justify-center text-[10px] shadow" style="background: var(--teal)">✓</span>
             </label>
         </div>
         <p class="text-[11px] text-gray-400 mt-2 leading-relaxed">

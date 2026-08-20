@@ -235,6 +235,7 @@
  <a href="{{ route('counseling.book.start') }}" class="py-2 text-sm font-semibold text-[--teal]">🤝 {{ __('db.Get Counseling') }}</a>
  <a href="{{ route('courses.index') }}" class="py-2 text-sm">📖 {{ __('db.Quran Courses') }}</a>
  <a href="{{ route('quran-live.index') }}" class="py-2 text-sm">🎥 {{ __('db.Live Classes') }}</a>
+ <a href="{{ route('skills.index') }}" class="py-2 text-sm">💻 {{ __('db.Digital Skills') }}</a>
  <a href="{{ url('/donate') }}" class="py-2 text-sm font-semibold text-[--teal]">💝 {{ __('db.Donate') }}</a>
  <a href="{{ url('/volunteer') }}" class="py-2 text-sm font-semibold text-[--teal]">🤝 {{ __('db.Volunteer') }}</a>
  <div class="border-t my-2"></div>
@@ -272,7 +273,7 @@
 
  {{-- ===== MOBILE APP-STYLE BOTTOM TAB BAR (guests) ===== --}}
  <div class="sm:hidden fixed bottom-0 inset-x-0 z-40 bg-white border-t border-gray-200 safe-bottom-nav shadow-[0_-2px_8px_rgba(0,0,0,0.06)]">
- <div class="grid grid-cols-5">
+ <div class="grid grid-cols-6">
  <a href="{{ url('/') }}" class="flex flex-col items-center justify-center gap-0.5 py-2 text-[11px] font-medium {{ request()->is('/') ? 'text-[--teal]' : 'text-gray-500' }}">
  <span class="text-lg leading-none">🏠</span>
  {{ __('db.Home') }}
@@ -280,6 +281,10 @@
  <a href="{{ route('courses.index') }}" class="flex flex-col items-center justify-center gap-0.5 py-2 text-[11px] font-medium {{ request()->routeIs('courses.*') || request()->routeIs('quran-live.*') ? 'text-[--teal]' : 'text-gray-500' }}">
  <span class="text-lg leading-none">📖</span>
  {{ __('db.Quran') }}
+ </a>
+ <a href="{{ route('skills.index') }}" class="flex flex-col items-center justify-center gap-0.5 py-2 text-[11px] font-medium {{ request()->routeIs('skills.*') ? 'text-[--teal]' : 'text-gray-500' }}">
+ <span class="text-lg leading-none">💻</span>
+ {{ __('db.Skills') }}
  </a>
  <a href="{{ route('nikah.create') }}" class="flex flex-col items-center justify-center gap-0.5 py-2 text-[11px] font-medium {{ request()->routeIs('nikah.*') ? 'text-[--teal]' : 'text-gray-500' }}">
  <span class="text-lg leading-none">💍</span>
