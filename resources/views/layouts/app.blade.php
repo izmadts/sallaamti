@@ -45,6 +45,7 @@
  @include('layouts.navigation')
  @auth
  @include('components.profile-completion-banner')
+ @include('components.email-binding-reminder')
  @endauth
 
  <!-- Page Heading -->
