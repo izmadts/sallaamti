@@ -37,4 +37,12 @@ class BulkMessageRecipient extends Model
     {
         return $this->belongsTo(Subscriber::class);
     }
+
+    // Subscriber has no name field (just an email captured off the public
+    // /subscribe form), so a subscriber-sourced recipient always falls back
+    // to a generic greeting rather than leaving {{name}} visibly unresolved.
+    public function recipientName(): string
+    {
+        return $this->user?->name ?? 'there';
+    }
 }

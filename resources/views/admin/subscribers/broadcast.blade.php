@@ -7,6 +7,8 @@
         </div>
     </x-slot>
 
+    @include('admin.bulk-messages._email-templates-script')
+
     <div class="py-12">
         <div class="max-w-4xl mx-auto sm:px-6 lg:px-8 space-y-4">
 
@@ -50,27 +52,53 @@
             <form method="POST" action="{{ route('admin.bulk-messages.subscribers.store') }}" x-data="{
                 selected: {{ json_encode($subscribers->pluck('id')->all()) }},
                 toggle(id) { this.selected.includes(id) ? this.selected = this.selected.filter(x => x !== id) : this.selected.push(id) },
+                bodyMode: 'simple',
+                advancedBody: {{ Js::from(old('body', '')) }},
+                emailTemplates: window.sallaamtiEmailTemplates,
             }" class="space-y-4">
                 @csrf
 
                 <div class="bg-white rounded-lg shadow-sm p-4 space-y-3">
                     <div class="text-xs text-teal-800 bg-teal-50 border border-teal-100 rounded-lg px-3 py-2 space-y-1">
                         <p class="font-semibold">Requirements</p>
-                        <p>A Subject and Message are both required — sent through the app's branded template, with each subscriber's own unsubscribe link added automatically at the bottom.</p>
-                        <p class="font-semibold mt-2">Precautions</p>
+                        <p>A Subject and Message are both required — sent through the app's branded template, with each subscriber's own unsubscribe link added automatically at the bottom. Subscribers have no name on file, so a personalized greeting isn't available here — keep the wording generic ("Assalamu Alaikum," not a name).</p>
+                        <p class="font-semibold mt-2">Precautions — avoiding a Gmail block/ban</p>
                         <ul class="list-disc list-inside space-y-0.5">
                             <li>Keep the subject honest and specific — avoid ALL CAPS, excessive "!!!", or "FREE"/"URGENT"-style wording, which spam filters flag heavily.</li>
-                            <li>Stay well under ~500 recipients per campaign and avoid sending more than once a day — Gmail can temporarily restrict an account that suddenly sends like a mailing list.</li>
+                            <li>Don't send back-to-back campaigns the same day — space genuine updates out, ideally no more than once every few days.</li>
+                            <li>If this campaign has more recipients than Gmail's safe daily limit (~500), the system automatically splits sending into daily batches — no action needed, but a very large list will take multiple days to fully deliver.</li>
                             <li>Once sent, a campaign can't be recalled or edited — proofread before hitting Send Now.</li>
                         </ul>
                     </div>
                     <div>
                         <x-input-label for="subject" value="Subject" />
-                        <x-text-input id="subject" name="subject" class="w-full mt-1" placeholder="An update from Sallaamti" required />
+                        <x-text-input id="subject" name="subject" class="w-full mt-1" placeholder="An update from Sallaamti" value="{{ old('subject') }}" required />
                     </div>
                     <div>
-                        <x-input-label for="body" value="Message" />
-                        <textarea id="body" name="body" rows="8" class="w-full mt-1 border-gray-300 rounded-lg text-sm" placeholder="Assalamu Alaikum, ..." required></textarea>
+                        <div class="flex justify-between items-center mb-1">
+                            <x-input-label for="body" value="Message" />
+                            <div class="flex gap-3 text-xs">
+                                <button type="button" @click="bodyMode = 'simple'" :class="bodyMode === 'simple' ? 'text-teal-700 font-semibold' : 'text-gray-400'">✍️ Simple Editor</button>
+                                <button type="button" @click="bodyMode = 'advanced'" :class="bodyMode === 'advanced' ? 'text-teal-700 font-semibold' : 'text-gray-400'">🎨 Advanced HTML</button>
+                            </div>
+                        </div>
+
+                        <div x-show="bodyMode === 'simple'">
+                            <input id="body-trix-content" type="hidden" :name="bodyMode === 'simple' ? 'body' : null" value="{{ old('body') }}">
+                            <trix-editor input="body-trix-content"></trix-editor>
+                        </div>
+
+                        <div x-show="bodyMode === 'advanced'" x-cloak>
+                            <div class="flex gap-2 flex-wrap mb-2">
+                                <span class="text-xs text-gray-400 self-center">Load a starting template:</span>
+                                <button type="button" @click="advancedBody = emailTemplates.simple" class="text-xs px-3 py-1 rounded-full border border-gray-200 hover:border-teal-500 hover:text-teal-700">Simple Update</button>
+                                <button type="button" @click="advancedBody = emailTemplates.announcement" class="text-xs px-3 py-1 rounded-full border border-gray-200 hover:border-teal-500 hover:text-teal-700">Announcement + Button</button>
+                                <button type="button" @click="advancedBody = emailTemplates.digest" class="text-xs px-3 py-1 rounded-full border border-gray-200 hover:border-teal-500 hover:text-teal-700">Newsletter Digest</button>
+                            </div>
+                            <textarea :name="bodyMode === 'advanced' ? 'body' : null" x-model="advancedBody" rows="14"
+                                class="w-full font-mono text-xs border-gray-300 rounded-lg" placeholder="&lt;p&gt;Assalamu Alaikum,&lt;/p&gt;"></textarea>
+                            <p class="text-xs text-gray-400 mt-1">Full HTML with inline CSS — colors, padding, buttons, sections all work. It's sanitized on save (scripts and unsafe tags stripped) but styling is preserved.</p>
+                        </div>
                     </div>
                 </div>
 

@@ -47,8 +47,15 @@ class SendBulkEmailJob implements ShouldQueue
                 ? route('subscriber.unsubscribe', $recipient->subscriber->unsubscribe_token)
                 : URL::signedRoute('newsletter.unsubscribe', ['user' => $recipient->user_id]);
 
+            // {{name}} is a plain runtime string token in the stored campaign
+            // text, not Blade markup — safe to swap in per-recipient here,
+            // no risk of colliding with Blade's own compiler.
+            $name = $recipient->recipientName();
+            $subject = str_replace('{{name}}', $name, $bulkMessage->subject ?? '');
+            $body = str_replace('{{name}}', $name, $bulkMessage->body ?? '');
+
             Mail::to($recipient->channel_address)->send(
-                new AdminNewsletter($bulkMessage->subject ?? '', $bulkMessage->body ?? '', $unsubscribeUrl)
+                new AdminNewsletter($subject, $body, $unsubscribeUrl)
             );
 
             $recipient->update(['status' => 'sent', 'sent_at' => now()]);

@@ -10,6 +10,7 @@ use App\Models\BulkMessageRecipient;
 use App\Models\SocialAccount;
 use App\Models\Subscriber;
 use App\Models\User;
+use App\Support\HtmlSanitizer;
 use App\Support\UserFilter;
 use Illuminate\Http\Request;
 
@@ -19,6 +20,40 @@ class BulkMessageController extends Controller
     // dedicated bulk-mail provider — see the note on the broadcast page.
     // Also keeps the preview list on one page, no pagination needed.
     private const MAX_RECIPIENTS = 500;
+
+    // Gmail's practical safe daily volume for a regular (non-Workspace)
+    // sending account. Shared across every email campaign — Users-targeted
+    // and Subscribers-targeted both send through the same Gmail account, so
+    // the count has to be account-wide, not per-campaign.
+    private const DAILY_EMAIL_LIMIT = 500;
+
+    // How many emails have already been queued today (any campaign) —
+    // counted at dispatch time, not send time, so a campaign started late
+    // in the day can't oversubscribe today's remaining quota before the
+    // queue worker catches up.
+    private function emailsAlreadyQueuedToday(): int
+    {
+        return BulkMessageRecipient::whereHas('bulkMessage', fn ($q) => $q->where('channel', 'email'))
+            ->whereDate('created_at', today())
+            ->count();
+    }
+
+    // Splits a campaign larger than today's remaining Gmail quota into daily
+    // batches instead of trying to send it all at once — the batch beyond
+    // today is delayed to 9am on however many days out it takes to fit
+    // everyone in, continuing automatically as long as the queue worker
+    // keeps running (no extra scheduling step needed).
+    private function emailDispatchDelayFor(int $emailIndex, int $remainingToday): ?\Illuminate\Support\Carbon
+    {
+        if ($emailIndex < $remainingToday) {
+            return null;
+        }
+
+        $overflowIndex = $emailIndex - $remainingToday;
+        $batchDay = intdiv($overflowIndex, self::DAILY_EMAIL_LIMIT) + 1;
+
+        return now()->addDays($batchDay)->setTime(9, 0);
+    }
 
     public function create(Request $request)
     {
@@ -60,7 +95,7 @@ class BulkMessageController extends Controller
             'user_ids' => ['required', 'array', 'min:1'],
             'user_ids.*' => ['integer', 'exists:users,id'],
             'subject' => ['required_if:channel,email', 'nullable', 'string', 'max:255'],
-            'body' => ['required_if:channel,email', 'nullable', 'string', 'max:10000'],
+            'body' => ['required_if:channel,email', 'nullable', 'string', 'max:50000'],
             'whatsapp_template_name' => ['required_if:channel,whatsapp', 'nullable', 'string', 'max:255'],
             'whatsapp_template_params' => ['nullable', 'array'],
             'whatsapp_template_params.*' => ['nullable', 'string', 'max:500'],
@@ -88,13 +123,16 @@ class BulkMessageController extends Controller
             'created_by' => auth()->id(),
             'channel' => $validated['channel'],
             'subject' => $validated['subject'] ?? null,
-            'body' => $validated['body'] ?? null,
+            'body' => HtmlSanitizer::cleanEmailHtml($validated['body'] ?? null),
             'whatsapp_template_name' => $validated['whatsapp_template_name'] ?? null,
             'whatsapp_template_params' => array_values($validated['whatsapp_template_params'] ?? []),
             'filters_snapshot' => $request->except(['channel', 'user_ids', 'subject', 'body', 'whatsapp_template_name', 'whatsapp_template_params', '_token']),
             'status' => 'sending',
             'recipient_count' => $recipients->count(),
         ]);
+
+        $remainingToday = self::DAILY_EMAIL_LIMIT - $this->emailsAlreadyQueuedToday();
+        $emailIndex = 0;
 
         foreach ($recipients as $user) {
             $address = $validated['channel'] === 'email' ? $user->email : $user->phone;
@@ -110,13 +148,21 @@ class BulkMessageController extends Controller
                 'status' => 'pending',
             ]);
 
-            $validated['channel'] === 'email'
-                ? SendBulkEmailJob::dispatch($recipient)
-                : SendBulkWhatsappJob::dispatch($recipient);
+            if ($validated['channel'] === 'email') {
+                $delay = $this->emailDispatchDelayFor($emailIndex, $remainingToday);
+                $delay ? SendBulkEmailJob::dispatch($recipient)->delay($delay) : SendBulkEmailJob::dispatch($recipient);
+                $emailIndex++;
+            } else {
+                SendBulkWhatsappJob::dispatch($recipient);
+            }
         }
 
-        return redirect()->route('admin.bulk-messages.show', $bulkMessage)
-            ->with('status', "Sending to {$bulkMessage->recipient_count} " . ($validated['channel'] === 'email' ? 'email' : 'WhatsApp') . ' recipient(s) — this page updates as deliveries complete.');
+        $status = "Sending to {$bulkMessage->recipient_count} " . ($validated['channel'] === 'email' ? 'email' : 'WhatsApp') . ' recipient(s) — this page updates as deliveries complete.';
+        if ($validated['channel'] === 'email' && $emailIndex > max(0, $remainingToday)) {
+            $status .= ' This list is larger than today\'s remaining Gmail quota, so it\'s split into daily batches automatically — the rest will keep sending over the next few days.';
+        }
+
+        return redirect()->route('admin.bulk-messages.show', $bulkMessage)->with('status', $status);
     }
 
     // Newsletter subscribers (App\Models\Subscriber) are a separate list
@@ -150,7 +196,7 @@ class BulkMessageController extends Controller
             'subscriber_ids' => ['required', 'array', 'min:1'],
             'subscriber_ids.*' => ['integer', 'exists:subscribers,id'],
             'subject' => ['required', 'string', 'max:255'],
-            'body' => ['required', 'string', 'max:10000'],
+            'body' => ['required', 'string', 'max:50000'],
         ]);
 
         // Re-filter server-side rather than trusting the checked ids alone —
@@ -170,11 +216,14 @@ class BulkMessageController extends Controller
             'recipient_type' => 'subscriber',
             'channel' => 'email',
             'subject' => $validated['subject'],
-            'body' => $validated['body'],
+            'body' => HtmlSanitizer::cleanEmailHtml($validated['body']),
             'filters_snapshot' => $request->except(['subscriber_ids', 'subject', 'body', '_token']),
             'status' => 'sending',
             'recipient_count' => $recipients->count(),
         ]);
+
+        $remainingToday = self::DAILY_EMAIL_LIMIT - $this->emailsAlreadyQueuedToday();
+        $emailIndex = 0;
 
         foreach ($recipients as $subscriber) {
             $recipient = BulkMessageRecipient::create([
@@ -184,18 +233,40 @@ class BulkMessageController extends Controller
                 'status' => 'pending',
             ]);
 
-            SendBulkEmailJob::dispatch($recipient);
+            $delay = $this->emailDispatchDelayFor($emailIndex, $remainingToday);
+            $delay ? SendBulkEmailJob::dispatch($recipient)->delay($delay) : SendBulkEmailJob::dispatch($recipient);
+            $emailIndex++;
         }
 
-        return redirect()->route('admin.bulk-messages.show', $bulkMessage)
-            ->with('status', "Sending to {$bulkMessage->recipient_count} subscriber(s) — this page updates as deliveries complete.");
+        $status = "Sending to {$bulkMessage->recipient_count} subscriber(s) — this page updates as deliveries complete.";
+        if ($emailIndex > max(0, $remainingToday)) {
+            $status .= ' This list is larger than today\'s remaining Gmail quota, so it\'s split into daily batches automatically — the rest will keep sending over the next few days.';
+        }
+
+        return redirect()->route('admin.bulk-messages.show', $bulkMessage)->with('status', $status);
     }
 
     public function index()
     {
         $campaigns = BulkMessage::with('createdBy')->latest()->paginate(15);
 
-        return view('admin.bulk-messages.index', compact('campaigns'));
+        $stats = [
+            'total_campaigns' => BulkMessage::count(),
+            'total_recipients' => (int) BulkMessage::sum('recipient_count'),
+            'total_delivered' => (int) BulkMessage::sum('sent_count'),
+            'total_failed' => (int) BulkMessage::sum('failed_count'),
+            'email_queued_today' => $this->emailsAlreadyQueuedToday(),
+            'email_daily_limit' => self::DAILY_EMAIL_LIMIT,
+            // Whether anything is still mid-flight — a multi-day batched
+            // campaign shows as 'sending' the whole time, so this is what
+            // tells the admin "there's more still going out" at a glance.
+            'campaigns_in_progress' => BulkMessage::where('status', 'sending')->count(),
+        ];
+        $stats['delivery_rate'] = ($stats['total_delivered'] + $stats['total_failed']) > 0
+            ? round($stats['total_delivered'] / ($stats['total_delivered'] + $stats['total_failed']) * 100)
+            : null;
+
+        return view('admin.bulk-messages.index', compact('campaigns', 'stats'));
     }
 
     public function show(BulkMessage $bulkMessage)

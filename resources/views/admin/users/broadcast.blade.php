@@ -7,6 +7,8 @@
         </div>
     </x-slot>
 
+    @include('admin.bulk-messages._email-templates-script')
+
     <div class="py-12">
         <div class="max-w-4xl mx-auto sm:px-6 lg:px-8 space-y-4">
 
@@ -50,6 +52,17 @@
                 toggle(id, list) { this[list].includes(id) ? this[list] = this[list].filter(x => x !== id) : this[list].push(id) },
                 selectAll(ids, list) { this[list] = [...ids] },
                 selectNone(list) { this[list] = [] },
+                bodyMode: 'simple',
+                advancedBody: {{ Js::from(old('body', '')) }},
+                emailTemplates: window.sallaamtiEmailTemplates,
+                insertAtCursor(el, text) {
+                    const start = el.selectionStart ?? el.value.length;
+                    const end = el.selectionEnd ?? el.value.length;
+                    el.value = el.value.slice(0, start) + text + el.value.slice(end);
+                    el.dispatchEvent(new Event('input'));
+                    el.focus();
+                    el.selectionStart = el.selectionEnd = start + text.length;
+                },
             }" class="space-y-4">
                 @csrf
                 <input type="hidden" name="channel" x-model="channel">
@@ -76,18 +89,48 @@
                             <p class="font-semibold mt-2">Precautions</p>
                             <ul class="list-disc list-inside space-y-0.5">
                                 <li>Keep the subject honest and specific — avoid ALL CAPS, excessive "!!!", or "FREE"/"URGENT"-style wording, which spam filters flag heavily.</li>
-                                <li>Every recipient sees the same message — don't paste in a personal name expecting it to auto-fill, there's no merge-field support here.</li>
-                                <li>Stay well under ~500 recipients per campaign and avoid sending more than once a day — Gmail can temporarily restrict an account that suddenly sends like a mailing list.</li>
+                                <li>Use the <strong>@{{name}}</strong> button below to personalize the subject or message with each recipient's name — it's swapped in automatically per-recipient when sending.</li>
+                                <li>If this campaign has more recipients than Gmail's safe daily limit (~500), the system automatically splits sending into daily batches — today's share goes out now, the rest follow automatically on the next day(s), no action needed.</li>
                                 <li>Once sent, a campaign can't be recalled or edited — proofread before hitting Send Now.</li>
                             </ul>
                         </div>
                         <div>
-                            <x-input-label for="subject" value="Subject" />
-                            <x-text-input id="subject" name="subject" class="w-full mt-1" placeholder="An update from Sallaamti" />
+                            <div class="flex justify-between items-center">
+                                <x-input-label for="subject" value="Subject" />
+                                <button type="button" @click="insertAtCursor($refs.subjectInput, '@{{name}}')" class="text-xs text-teal-600 hover:underline">+ Insert Name</button>
+                            </div>
+                            <x-text-input id="subject" name="subject" x-ref="subjectInput" class="w-full mt-1" placeholder="An update from Sallaamti" value="{{ old('subject') }}" />
                         </div>
                         <div>
-                            <x-input-label for="body" value="Message" />
-                            <textarea id="body" name="body" rows="8" class="w-full mt-1 border-gray-300 rounded-lg text-sm" placeholder="Assalamu Alaikum, ..."></textarea>
+                            <div class="flex justify-between items-center mb-1">
+                                <x-input-label for="body" value="Message" />
+                                <div class="flex gap-3 text-xs">
+                                    <button type="button" @click="bodyMode = 'simple'" :class="bodyMode === 'simple' ? 'text-teal-700 font-semibold' : 'text-gray-400'">✍️ Simple Editor</button>
+                                    <button type="button" @click="bodyMode = 'advanced'" :class="bodyMode === 'advanced' ? 'text-teal-700 font-semibold' : 'text-gray-400'">🎨 Advanced HTML</button>
+                                </div>
+                            </div>
+
+                            {{-- Simple mode: Trix rich-text editor, same as the Blog Posts editor --}}
+                            <div x-show="bodyMode === 'simple'">
+                                <button type="button" class="text-xs text-teal-600 hover:underline mb-1"
+                                    @click="document.getElementById('body-trix-content').editor.insertString('@{{name}}')">+ Insert Name</button>
+                                <input id="body-trix-content" type="hidden" :name="bodyMode === 'simple' ? 'body' : null" value="{{ old('body') }}">
+                                <trix-editor input="body-trix-content"></trix-editor>
+                            </div>
+
+                            {{-- Advanced mode: raw HTML source, for a newsletter-style template with real colors/buttons/sections that a Simple Editor would flatten --}}
+                            <div x-show="bodyMode === 'advanced'" x-cloak>
+                                <div class="flex gap-2 flex-wrap mb-2">
+                                    <span class="text-xs text-gray-400 self-center">Load a starting template:</span>
+                                    <button type="button" @click="advancedBody = emailTemplates.simple" class="text-xs px-3 py-1 rounded-full border border-gray-200 hover:border-teal-500 hover:text-teal-700">Simple Update</button>
+                                    <button type="button" @click="advancedBody = emailTemplates.announcement" class="text-xs px-3 py-1 rounded-full border border-gray-200 hover:border-teal-500 hover:text-teal-700">Announcement + Button</button>
+                                    <button type="button" @click="advancedBody = emailTemplates.digest" class="text-xs px-3 py-1 rounded-full border border-gray-200 hover:border-teal-500 hover:text-teal-700">Newsletter Digest</button>
+                                    <button type="button" @click="insertAtCursor($refs.advancedBodyInput, '@{{name}}')" class="text-xs px-3 py-1 rounded-full border border-teal-200 text-teal-700 hover:bg-teal-50">+ Insert Name</button>
+                                </div>
+                                <textarea :name="bodyMode === 'advanced' ? 'body' : null" x-ref="advancedBodyInput" x-model="advancedBody" rows="14"
+                                    class="w-full font-mono text-xs border-gray-300 rounded-lg" placeholder="&lt;p&gt;Assalamu Alaikum @{{name}},&lt;/p&gt;"></textarea>
+                                <p class="text-xs text-gray-400 mt-1">Full HTML with inline CSS — colors, padding, buttons, sections all work. It's sanitized on save (scripts and unsafe tags stripped) but styling is preserved.</p>
+                            </div>
                         </div>
                     </div>
 
@@ -109,11 +152,12 @@
                                 <li>Fill in the template's variables in order, top to bottom. Leave a field blank only if that variable is genuinely unused.</li>
                                 <li>Only users who explicitly opted in to WhatsApp notifications can be messaged — {{ $whatsappEligible->count() }} of the {{ $matching->count() }} filtered above qualify; the rest are hidden from this list.</li>
                             </ul>
-                            <p class="font-semibold mt-2">Precautions</p>
+                            <p class="font-semibold mt-2">Precautions — avoiding a WhatsApp number restriction/ban</p>
                             <ul class="list-disc list-inside space-y-0.5">
-                                <li>WhatsApp is for genuine updates, not promotions — Meta can restrict or ban a business number for policy violations or repeated low engagement/blocks.</li>
-                                <li>Space out broadcasts; sending too often is the fastest way to get opted-in users to block the number.</li>
-                                <li>Double-check the template name and variable order in a small test send before a large one — a bad match fails silently per-recipient rather than warning up front.</li>
+                                <li>WhatsApp is for genuine updates, not promotions — Meta actively tracks block rate and low engagement, and can restrict or permanently ban a business number for policy violations.</li>
+                                <li>Space broadcasts out — sending too often, even to opted-in users, is the fastest way to rack up blocks and trip Meta's spam signals.</li>
+                                <li>Send a small test batch first and watch the delivery status on the <a href="{{ route('admin.bulk-messages.index') }}" class="underline">Bulk Messages</a> history page before sending to everyone — a bad template/variable match fails silently per-recipient, not up front.</li>
+                                <li>Never message someone who hasn't explicitly opted in — this list is already filtered to only those users, by design.</li>
                             </ul>
                         </div>
                         <div>

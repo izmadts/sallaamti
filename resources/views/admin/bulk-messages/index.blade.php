@@ -6,6 +6,42 @@
     <div class="py-12">
         <div class="max-w-5xl mx-auto sm:px-6 lg:px-8 space-y-4">
 
+            {{-- Report card --}}
+            <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+                <div class="bg-white rounded-lg shadow-sm p-4">
+                    <p class="text-xs text-gray-400 uppercase tracking-wide">Campaigns</p>
+                    <p class="text-2xl font-bold text-gray-800 mt-1">{{ $stats['total_campaigns'] }}</p>
+                    @if ($stats['campaigns_in_progress'] > 0)
+                    <p class="text-xs text-amber-600 mt-0.5">{{ $stats['campaigns_in_progress'] }} still sending</p>
+                    @endif
+                </div>
+                <div class="bg-white rounded-lg shadow-sm p-4">
+                    <p class="text-xs text-gray-400 uppercase tracking-wide">Recipients Reached</p>
+                    <p class="text-2xl font-bold text-gray-800 mt-1">{{ number_format($stats['total_recipients']) }}</p>
+                </div>
+                <div class="bg-white rounded-lg shadow-sm p-4">
+                    <p class="text-xs text-gray-400 uppercase tracking-wide">Delivered</p>
+                    <p class="text-2xl font-bold text-green-600 mt-1">{{ number_format($stats['total_delivered']) }}</p>
+                </div>
+                <div class="bg-white rounded-lg shadow-sm p-4">
+                    <p class="text-xs text-gray-400 uppercase tracking-wide">Failed</p>
+                    <p class="text-2xl font-bold {{ $stats['total_failed'] > 0 ? 'text-red-500' : 'text-gray-300' }} mt-1">{{ number_format($stats['total_failed']) }}</p>
+                    @if ($stats['delivery_rate'] !== null)
+                    <p class="text-xs text-gray-400 mt-0.5">{{ $stats['delivery_rate'] }}% delivery rate</p>
+                    @endif
+                </div>
+                <div class="bg-white rounded-lg shadow-sm p-4">
+                    <p class="text-xs text-gray-400 uppercase tracking-wide">Today's Gmail Quota</p>
+                    <p class="text-2xl font-bold {{ $stats['email_queued_today'] >= $stats['email_daily_limit'] ? 'text-red-500' : 'text-gray-800' }} mt-1">
+                        {{ $stats['email_queued_today'] }}<span class="text-sm text-gray-400">/{{ $stats['email_daily_limit'] }}</span>
+                    </p>
+                    <div class="w-full bg-gray-100 rounded-full h-1.5 mt-1.5">
+                        <div class="h-1.5 rounded-full {{ $stats['email_queued_today'] >= $stats['email_daily_limit'] ? 'bg-red-500' : 'bg-teal-600' }}"
+                            style="width: {{ min(100, $stats['email_daily_limit'] > 0 ? ($stats['email_queued_today'] / $stats['email_daily_limit'] * 100) : 0) }}%"></div>
+                    </div>
+                </div>
+            </div>
+
             <div class="bg-white rounded-lg shadow-sm overflow-x-auto">
                 <table class="w-full text-sm">
                     <thead class="bg-gray-50 text-gray-500 text-xs uppercase">

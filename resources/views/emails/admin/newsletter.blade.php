@@ -2,7 +2,7 @@
 
 @section('content')
 
-<div style="white-space:pre-line;line-height:1.6;color:#333;">{{ $body }}</div>
+<div style="line-height:1.6;color:#333;">{!! $body !!}</div>
 
 <hr style="margin:30px 0 15px;border:none;border-top:1px solid #eee;">
 

@@ -36,7 +36,7 @@
             @if ($bulkMessage->body)
             <div class="bg-white rounded-lg shadow-sm p-4">
                 <p class="text-xs text-gray-400 mb-1">Message</p>
-                <p class="text-sm text-gray-700 whitespace-pre-line">{{ $bulkMessage->body }}</p>
+                <div class="text-sm text-gray-700 prose prose-sm max-w-none">{!! $bulkMessage->body !!}</div>
             </div>
             @endif
 
