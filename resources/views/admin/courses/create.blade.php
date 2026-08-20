@@ -17,9 +17,18 @@
                 </div>
                 <div class="grid grid-cols-2 gap-4">
                     <div>
-                        <x-input-label value="Category" />
-                        <x-text-input name="category" class="w-full mt-1" placeholder="Naazira / Tarjuma / Seerah" />
+                        <x-input-label value="Track" />
+                        <select name="track" class="border-gray-300 rounded-md w-full mt-1" required>
+                            <option value="quran">Quran & Islamic Learning</option>
+                            <option value="skills">Digital Skills (IZMA)</option>
+                        </select>
                     </div>
+                    <div>
+                        <x-input-label value="Category" />
+                        <x-text-input name="category" class="w-full mt-1" placeholder="Naazira / Tarjuma / Seerah — or Web Development / Digital Marketing for Skills" />
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
                     <div>
                         <x-input-label value="Level" />
                         <x-text-input name="level" class="w-full mt-1" placeholder="Beginner" />

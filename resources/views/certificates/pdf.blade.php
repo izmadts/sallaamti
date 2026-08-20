@@ -236,6 +236,9 @@
                 Issued on {{ $certificate->issued_at->format('d F Y') }} &nbsp;|&nbsp; www.sallaamti.com
             </div>
             <div class="cert-id">Certificate ID: {{ $certificate->certificate_number }}</div>
+            @if ($certificate->course?->track === 'skills')
+            <div class="cert-id" style="color: #555; font-weight: normal;">In partnership with IZMA Digital Technology & Security</div>
+            @endif
 
             @if (file_exists(public_path('images/gold-seal.png')))
             <img src="{{ public_path('images/gold-seal.png') }}" class="seal">

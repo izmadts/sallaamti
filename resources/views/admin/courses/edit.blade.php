@@ -18,9 +18,18 @@
                 </div>
                 <div class="grid grid-cols-2 gap-4">
                     <div>
-                        <x-input-label value="Category" />
-                        <x-text-input name="category" class="w-full mt-1" placeholder="Naazira / Tarjuma / Seerah" value="{{ $course->category }}" />
+                        <x-input-label value="Track" />
+                        <select name="track" class="border-gray-300 rounded-md w-full mt-1" required>
+                            <option value="quran" {{ $course->track === 'quran' ? 'selected' : '' }}>Quran & Islamic Learning</option>
+                            <option value="skills" {{ $course->track === 'skills' ? 'selected' : '' }}>Digital Skills (IZMA)</option>
+                        </select>
                     </div>
+                    <div>
+                        <x-input-label value="Category" />
+                        <x-text-input name="category" class="w-full mt-1" placeholder="Naazira / Tarjuma / Seerah — or Web Development / Digital Marketing for Skills" value="{{ $course->category }}" />
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
                     <div>
                         <x-input-label value="Level" />
                         <x-text-input name="level" class="w-full mt-1" placeholder="Beginner" value="{{ $course->level }}" />

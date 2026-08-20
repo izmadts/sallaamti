@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class Course extends Model
 {
-    protected $fillable = ['title', 'slug', 'description', 'category', 'level', 'min_age', 'max_age', 'thumbnail', 'is_published', 'created_by'];
+    protected $fillable = ['title', 'slug', 'description', 'category', 'track', 'level', 'min_age', 'max_age', 'thumbnail', 'is_published', 'created_by'];
 
     protected function casts(): array
     {

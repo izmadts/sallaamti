@@ -33,6 +33,11 @@ $allLinks = [
         ['route' => 'quran-live.my-progress', 'icon' => '📈', 'label' => __('db.My Progress'), 'auth' => true],
         ['route' => 'certificate.index', 'icon' => '🏆', 'label' => __('db.My Certificates'), 'auth' => true],
     ],
+    'skills' => [
+        ['route' => 'skills.index', 'icon' => '💻', 'label' => __('db.Browse Skills')],
+        ['route' => 'courses.my-learning', 'icon' => '📚', 'label' => __('db.My Learning'), 'auth' => true],
+        ['route' => 'certificate.index', 'icon' => '🏆', 'label' => __('db.My Certificates'), 'auth' => true],
+    ],
     'counseling' => [
         ['route' => 'support.create', 'icon' => '📝', 'label' => __('db.Submit a Query')],
         ['route' => 'support.index', 'icon' => '📋', 'label' => __('db.My Queries')],
@@ -50,6 +55,7 @@ $allLinks = [
 $titles = [
     'nikah' => __('db.Nikah Menu'),
     'quran' => __('db.Quran Menu'),
+    'skills' => __('db.Skills Menu'),
     'counseling' => __('db.Family Support Menu'),
     'wall' => __('db.Explore More'),
 ];

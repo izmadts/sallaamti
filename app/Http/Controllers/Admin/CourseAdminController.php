@@ -77,6 +77,7 @@ class CourseAdminController extends Controller
             'title' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
             'category' => ['nullable', 'string', 'max:100'],
+            'track' => ['required', 'in:quran,skills'],
             'level' => ['nullable', 'string', 'max:50'],
             'min_age' => ['nullable', 'integer', 'min:1', 'max:120'],
             'max_age' => ['nullable', 'integer', 'min:1', 'max:120', 'gte:min_age'],

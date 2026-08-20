@@ -334,21 +334,27 @@
             <div x-show="tab === 'skills'" x-transition x-cloak>
                 <div class="grid lg:grid-cols-2 gap-8 items-center">
                     <div>
-                        <span class="section-eyebrow">Coming Soon</span>
+                        <span class="section-eyebrow">Presented by IZMA Digital Technology & Security</span>
                         <h3 class="text-2xl font-bold mb-4">Skills Training for Dignified Livelihood</h3>
-                        <p class="text-gray-500 mb-6">Empowering every Muslim with practical skills that lead to halal income and independence.</p>
+                        <p class="text-gray-500 mb-6">Empowering every Muslim with practical digital skills that lead to halal income and independence.</p>
                         <div class="flex flex-wrap gap-2 my-6">
-                            @foreach (['💻 Computer Skills', '🎨 Graphic Design', '🌐 Web Development', '📱 Mobile Apps', '📈 Digital Marketing', '✂️ Tailoring', '⚡ Electrician', '🔧 Plumbing'] as $skill)
-                            <span class="text-xs font-medium px-3 py-1.5 rounded-full bg-cream text-gray-600">{{ $skill }}</span>
+                            @foreach ([
+                                ['💻 Computer Skills', 'Computer Skills'],
+                                ['🎨 Graphic Design', 'Graphic Design'],
+                                ['🌐 Web Development', 'Web Development'],
+                                ['📱 Mobile Apps', 'Mobile Apps'],
+                                ['📈 Digital Marketing', 'Digital Marketing'],
+                            ] as [$label, $category])
+                            <a href="{{ route('skills.index', ['category' => $category]) }}" class="text-xs font-medium px-3 py-1.5 rounded-full bg-cream text-gray-600 hover:bg-teal-50 hover:text-teal-700 transition">{{ $label }}</a>
                             @endforeach
                         </div>
                         <a href="{{ route('volunteer.create') }}" class="btn-teal btn-base px-6">Join as Instructor Volunteer</a>
                     </div>
                     <div class="text-center bg-cream rounded-2xl p-8">
-                        <div class="text-5xl mb-3">🚀</div>
-                        <h4 class="font-bold text-gray-800 text-lg">Launching Soon</h4>
-                        <p class="text-gray-500 text-sm mb-4">Register now to be notified when Skills Training launches</p>
-                        <a href="{{ route('register') }}" class="btn-gold btn-base px-6">Get Early Access</a>
+                        <div class="text-5xl mb-3">💻</div>
+                        <h4 class="font-bold text-gray-800 text-lg">Free & Self-Paced</h4>
+                        <p class="text-gray-500 text-sm mb-4">Learn at your own pace and earn a certificate — presented by IZMA Digital Technology & Security</p>
+                        <a href="{{ route('skills.index') }}" class="btn-gold btn-base px-6">Explore Courses</a>
                     </div>
                 </div>
             </div>

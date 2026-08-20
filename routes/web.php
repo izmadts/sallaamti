@@ -109,6 +109,7 @@ Route::get('/terms-of-service', fn() => view('terms-of-service'))->name('terms-o
 // Public module pages (browsable without login)
 Route::get('/courses', [CourseController::class, 'index'])->name('courses.index');
 Route::get('/courses/{course:slug}', [CourseController::class, 'show'])->name('courses.show');
+Route::get('/skills', [\App\Http\Controllers\SkillsController::class, 'index'])->name('skills.index');
 Route::get('/quran-live', [QuranLiveCourseController::class, 'index'])->name('quran-live.index');
 Route::get('/quran-live/{course}', [QuranLiveCourseController::class, 'show'])->name('quran-live.show');
 

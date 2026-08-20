@@ -12,14 +12,14 @@ class CourseController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Course::where('is_published', true)->withCount('lessons');
+        $query = Course::where('is_published', true)->where('track', 'quran')->withCount('lessons');
 
         if ($request->filled('category')) {
             $query->where('category', $request->category);
         }
 
         $courses = $query->latest()->paginate(9)->withQueryString();
-        $categories = Course::where('is_published', true)->whereNotNull('category')->distinct()->pluck('category');
+        $categories = Course::where('is_published', true)->where('track', 'quran')->whereNotNull('category')->distinct()->pluck('category');
 
         return view('courses.index', compact('courses', 'categories'));
     }
