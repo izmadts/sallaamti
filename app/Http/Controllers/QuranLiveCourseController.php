@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Concerns\HasWizardSteps;
 use App\Models\QuranAdmission;
 use App\Models\QuranAssessment;
 use App\Models\QuranGroupStudent;
@@ -15,6 +16,22 @@ use Illuminate\Validation\Rule;
 
 class QuranLiveCourseController extends Controller
 {
+    use HasWizardSteps;
+
+    protected string $wizardKey = 'quran_admission';
+
+    protected array $wizardStepFields = [
+        'parent' => ['guardian_name', 'whatsapp_number', 'country', 'city_state'],
+        'student' => ['student_name', 'student_gender', 'student_age', 'education_grade', 'learned_quran_before'],
+        'preferences' => ['preferred_days', 'preferred_days.*', 'preferred_time', 'timezone', 'teacher_preference', 'selected_level', 'previous_level', 'class_type', 'comments'],
+    ];
+
+    protected array $admissionStepTitles = [
+        'parent' => 'Parent & Contact',
+        'student' => 'About the Student',
+        'preferences' => 'Class Preferences',
+    ];
+
     public function index()
     {
         $courses = QuranLiveCourse::where('is_published', true)->with('teacher')->paginate(9);
@@ -33,17 +50,19 @@ class QuranLiveCourseController extends Controller
         return view('quran-live.show', compact('course', 'admissions'));
     }
 
-    public function admissionForm(QuranLiveCourse $course)
+    // Every wizard method below scopes the session key to this specific
+    // course — a parent can be mid-way through an admission for one course
+    // and separately start one for another without the two colliding, and
+    // (per sibling support) a second child's admission for the SAME course
+    // just starts a fresh session once the first one finalizes and clears.
+    private function scopeAdmissionWizardTo(QuranLiveCourse $course): void
     {
-        // No redirect here even if the account already has an admission for
-        // this course — a parent applying for a second child needs to reach
-        // this same form again.
-        return view('quran-live.admission', compact('course'));
+        $this->wizardKey = "quran_admission_{$course->id}";
     }
 
-    public function storeAdmission(Request $request, QuranLiveCourse $course)
+    private function admissionRules(QuranLiveCourse $course): array
     {
-        $validated = $request->validate([
+        return [
             'guardian_name' => ['required', 'string', 'max:255'],
             'whatsapp_number' => ['required', 'string', 'max:30'],
             'country' => ['required', 'string', 'max:100'],
@@ -59,24 +78,102 @@ class QuranLiveCourseController extends Controller
             'education_grade' => ['nullable', 'string', 'max:100'],
             'learned_quran_before' => ['nullable', 'boolean'],
             'preferred_days' => ['nullable', 'array'],
+            'preferred_days.*' => ['string'],
             'preferred_time' => ['nullable', 'string', 'max:50'],
             'teacher_preference' => ['required', 'in:male,female,no_preference'],
             'comments' => ['nullable', 'string', 'max:1000'],
-            'declaration_accepted' => ['required', 'accepted'],
             'selected_level' => ['nullable', 'string', 'max:255'],
             'previous_level' => ['nullable', 'string', 'max:255'],
             'class_type' => ['nullable', 'in:one_to_one,group'],
             'timezone' => ['nullable', 'string', 'max:100'],
-        ], [
+        ];
+    }
+
+    public function admissionStart(QuranLiveCourse $course)
+    {
+        $this->scopeAdmissionWizardTo($course);
+
+        $step = $this->firstIncompleteWizardStep();
+
+        return $step
+            ? redirect()->route('quran-live.admission.step', [$course, $step])
+            : redirect()->route('quran-live.admission.review', $course);
+    }
+
+    public function admissionShowStep(QuranLiveCourse $course, string $step)
+    {
+        $this->scopeAdmissionWizardTo($course);
+
+        abort_unless(array_key_exists($step, $this->wizardStepFields), 404);
+
+        return view("quran-live.wizard.step-{$step}", [
+            'course' => $course,
+            'step' => $step,
+            'steps' => $this->wizardSteps(),
+            'stepTitles' => $this->admissionStepTitles,
+            'data' => $this->wizardStepData($step),
+        ]);
+    }
+
+    public function admissionSaveStep(Request $request, QuranLiveCourse $course, string $step)
+    {
+        $this->scopeAdmissionWizardTo($course);
+
+        abort_unless(array_key_exists($step, $this->wizardStepFields), 404);
+
+        $rules = collect($this->admissionRules($course))->only($this->wizardStepFields[$step])->toArray();
+        $validated = $request->validate($rules, [
             'student_name.unique' => 'You already have an admission under this name for this course. Use a different name if this is a different child.',
         ]);
 
-        $validated['learned_quran_before'] = $request->has('learned_quran_before');
+        if ($step === 'student') {
+            $validated['learned_quran_before'] = $request->boolean('learned_quran_before');
+        }
+
+        $this->saveWizardStep($step, $validated);
+
+        $steps = $this->wizardSteps();
+        $nextIndex = array_search($step, $steps) + 1;
+
+        return $nextIndex < count($steps)
+            ? redirect()->route('quran-live.admission.step', [$course, $steps[$nextIndex]])
+            : redirect()->route('quran-live.admission.review', $course);
+    }
+
+    public function admissionReview(QuranLiveCourse $course)
+    {
+        $this->scopeAdmissionWizardTo($course);
+
+        if ($incomplete = $this->firstIncompleteWizardStep()) {
+            return redirect()->route('quran-live.admission.step', [$course, $incomplete]);
+        }
+
+        return view('quran-live.wizard.review', [
+            'course' => $course,
+            'steps' => $this->wizardSteps(),
+            'stepTitles' => $this->admissionStepTitles,
+            'data' => $this->wizardAllData(),
+        ]);
+    }
+
+    public function admissionFinalize(Request $request, QuranLiveCourse $course)
+    {
+        $this->scopeAdmissionWizardTo($course);
+
+        if ($this->firstIncompleteWizardStep()) {
+            return redirect()->route('quran-live.admission', $course);
+        }
+
+        $request->validate(['declaration_accepted' => ['required', 'accepted']]);
+
+        $validated = $this->wizardAllData();
         $validated['declaration_accepted'] = true;
         $validated['quran_live_course_id'] = $course->id;
         $validated['user_id'] = Auth::id();
 
         $admission = QuranAdmission::create($validated);
+
+        $this->clearWizardSession();
 
         return redirect()->route('quran-live.subscribe', [$course, $admission])
             ->with('status', "Admission submitted for {$admission->student_name}! Please complete this month's fee to receive their daily class link.");

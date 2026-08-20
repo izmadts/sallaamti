@@ -245,8 +245,13 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
 
     // --- QURAN LIVE CLASSES ---
-    Route::get('/quran-live/{course}/admission', [QuranLiveCourseController::class, 'admissionForm'])->name('quran-live.admission');
-    Route::post('/quran-live/{course}/admission', [QuranLiveCourseController::class, 'storeAdmission'])->name('quran-live.admission.store');
+    // Admission is a wizard (HasWizardSteps, same session-per-step pattern
+    // as the Nikah profile wizard) instead of one long single-page form.
+    Route::get('/quran-live/{course}/admission', [QuranLiveCourseController::class, 'admissionStart'])->name('quran-live.admission');
+    Route::get('/quran-live/{course}/admission/step/{step}', [QuranLiveCourseController::class, 'admissionShowStep'])->name('quran-live.admission.step');
+    Route::post('/quran-live/{course}/admission/step/{step}', [QuranLiveCourseController::class, 'admissionSaveStep'])->name('quran-live.admission.step.save');
+    Route::get('/quran-live/{course}/admission/review', [QuranLiveCourseController::class, 'admissionReview'])->name('quran-live.admission.review');
+    Route::post('/quran-live/{course}/admission/finalize', [QuranLiveCourseController::class, 'admissionFinalize'])->name('quran-live.admission.finalize');
     Route::get('/quran-live/{course}/subscribe/{admission}', [QuranLiveCourseController::class, 'subscribe'])->name('quran-live.subscribe');
     Route::post('/quran-live/{course}/subscribe/{admission}', [QuranLiveCourseController::class, 'storeSubscription'])->name('quran-live.subscribe.store');
     Route::get('/quran-subscriptions/{subscription}/screenshot', [QuranSubscriptionFileController::class, 'show'])->name('quran-subscription.screenshot');
