@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\NikahProfileController;
 use App\Http\Controllers\NikahProfileWizardController;
+use App\Http\Controllers\Admin\NikahProfileWizardController as AdminNikahProfileWizardController;
 use App\Http\Controllers\Admin\NikahVerificationController;
 use App\Http\Controllers\NikahInterestController;
 use App\Http\Controllers\NikahFileController;
@@ -403,8 +404,13 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     // Narrower than nikah.manage below — gated inside the controller via
     // nikah.manage OR nikah.create-profile, so matchmaker can help a walk-in
     // create an account without also unlocking approve/reject/payments/etc.
-    Route::get('/nikah-profiles/create', [NikahVerificationController::class, 'create'])->name('nikah.profiles.create');
-    Route::post('/nikah-profiles', [NikahVerificationController::class, 'store'])->name('nikah.profiles.store');
+    // A step wizard (HasWizardSteps, same session-per-step pattern as the
+    // member-facing Nikah wizard) rather than one long single-page form.
+    Route::get('/nikah-profiles/create', [AdminNikahProfileWizardController::class, 'start'])->name('nikah.profiles.create');
+    Route::get('/nikah-profiles/create/step/{step}', [AdminNikahProfileWizardController::class, 'showStep'])->name('nikah.profiles.create.step');
+    Route::post('/nikah-profiles/create/step/{step}', [AdminNikahProfileWizardController::class, 'saveStep'])->name('nikah.profiles.create.step.save');
+    Route::get('/nikah-profiles/create/review', [AdminNikahProfileWizardController::class, 'review'])->name('nikah.profiles.create.review');
+    Route::post('/nikah-profiles/create/finalize', [AdminNikahProfileWizardController::class, 'finalize'])->name('nikah.profiles.create.finalize');
     Route::middleware('admin.only')->group(function () {
         Route::get('/nikah-contact-requests', [NikahVerificationController::class, 'contactRequests'])->name('nikah.contact-requests');
         Route::post('/nikah-contact-requests/{contactRequest}/approve', [NikahVerificationController::class, 'approveContactRequest'])->name('nikah.contact-requests.approve');

@@ -2,121 +2,17 @@
 
 namespace App\Http\Controllers\Admin;
 
-use App\Http\Controllers\Auth\Concerns\RegistersMinimalUsers;
-use App\Http\Controllers\Concerns\ValidatesNikahProfile;
 use App\Http\Controllers\Controller;
 use App\Models\NikahContactRequest;
 use App\Models\NikahProfile;
-use App\Models\User;
-use App\Rules\ValidPhoneNumber;
-use App\Services\ImageOptimizer;
-use App\Support\CountryStates;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\Validator;
-use Illuminate\Support\Str;
-use Illuminate\Validation\Rule;
 
 class NikahVerificationController extends Controller
 {
-    use ValidatesNikahProfile, RegistersMinimalUsers;
-
-    // Deliberately checked in-controller rather than route middleware —
-    // nikah.create-profile is narrower than nikah.manage (matchmaker has
-    // only the former), and Laravel's `can:` route middleware has no
-    // built-in OR between two separate abilities.
-    private function authorizeProfileCreation(): void
-    {
-        abort_unless(auth()->user()->can('nikah.manage') || auth()->user()->can('nikah.create-profile'), 403);
-    }
-
-    // Admin/matchmaker data-entry for a walk-in registrant who can't create
-    // their own account — creates the User and NikahProfile together in one
-    // step. Held to the exact same validation (incl. required CNIC photos)
-    // as a member creating their own profile — this is in-person, consented
-    // data entry, not the same thing as a matchmaker browsing an existing
-    // member's CNIC/photo without their knowledge (see the Matchmaker
-    // browse controller, which redacts both).
-    public function create()
-    {
-        $this->authorizeProfileCreation();
-
-        return view('admin.nikah.create', [
-            'countries' => CountryStates::countries(),
-            'countryStates' => CountryStates::map(),
-        ]);
-    }
-
-    public function store(Request $request)
-    {
-        $this->authorizeProfileCreation();
-
-        $accountValidated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'identifier' => ['required', 'string', 'max:255'],
-            'gender' => ['required', 'in:male,female'],
-        ]);
-
-        $identifier = trim($request->identifier);
-        $isEmail = (bool) filter_var($identifier, FILTER_VALIDATE_EMAIL);
-        if (!$isEmail) {
-            $identifier = preg_replace('/[\s\-]/', '', $identifier);
-        }
-
-        Validator::make(['identifier' => $identifier], [
-            'identifier' => [
-                $isEmail ? 'email' : new ValidPhoneNumber(),
-                Rule::unique(User::class, $isEmail ? 'email' : 'phone'),
-            ],
-        ])->validate();
-
-        $validated = $this->validateProfile($request);
-        $validated['sect'] = $this->resolveSect($request);
-        $validated['language'] = $this->resolveLanguage($request);
-        $validated['height'] = $this->resolveHeight($request);
-
-        try {
-            if ($request->hasFile('cnic_front_image')) {
-                $validated['cnic_front_image'] = ImageOptimizer::store($request->file('cnic_front_image'), 'nikah/cnic', 'private', maxDimension: 1600, quality: 85);
-            }
-            if ($request->hasFile('cnic_back_image')) {
-                $validated['cnic_back_image'] = ImageOptimizer::store($request->file('cnic_back_image'), 'nikah/cnic', 'private', maxDimension: 1600, quality: 85);
-            }
-            if ($request->hasFile('photo')) {
-                $validated['photo'] = ImageOptimizer::store($request->file('photo'), 'nikah/photos', 'private', maxDimension: 1200);
-            }
-        } catch (\Throwable $e) {
-            report($e);
-            return back()->withInput()->withErrors(['photo' => 'Sorry, we could not save the uploaded photo(s) — please try again in a moment.']);
-        }
-
-        $user = $this->createMinimalUser(
-            $accountValidated['name'],
-            $isEmail ? strtolower($identifier) : null,
-            $isEmail ? null : $identifier,
-        );
-        $user->update(['gender' => $accountValidated['gender'], 'city' => $validated['city'] ?? null]);
-
-        $validated['user_id'] = $user->id;
-        $validated['allow_photo_sharing'] = $request->has('allow_photo_sharing');
-        $validated['open_to_polygamy'] = $request->has('open_to_polygamy');
-        $validated['payment_amount'] = setting('nikah_verification_fee', config('services.nikah.verification_fee'));
-        $validated['public_token'] = Str::random(32);
-
-        $profile = NikahProfile::create($validated);
-
-        $status = "Profile created for {$user->name}.";
-
-        if ($isEmail) {
-            Password::sendResetLink(['email' => $user->email]);
-            $status .= ' A password-setup link was emailed to them so they can log in.';
-        } else {
-            $status .= ' No email was provided, so no login link could be sent — add one to their account later via Users, then use "Send Password Reset Link" there.';
-        }
-
-        return redirect()->route('admin.nikah.show', $profile)->with('status', $status);
-    }
+    // Walk-in profile creation moved to NikahProfileWizardController (step
+    // wizard, same session-per-step pattern as the member-facing Nikah
+    // wizard) — see routes/web.php's admin.nikah.profiles.create.* group.
 
     // Real-admin-only (route middleware is `admin.only`, not a permission a
     // matchmaker could ever hold) — a matchmaker requests, only admin decides.
