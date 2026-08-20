@@ -29,6 +29,7 @@ return Application::configure(basePath: dirname(__DIR__))
         \App\Http\Middleware\SetLocale::class,
         \App\Http\Middleware\MaintenanceMode::class,
         \App\Http\Middleware\EnsureUserIsActive::class,
+        \App\Http\Middleware\TrackIntendedUrlForGuests::class,
     ]);
 })->withExceptions(function (Exceptions $exceptions): void {
     // A logout click on a page left open past the session lifetime is a
