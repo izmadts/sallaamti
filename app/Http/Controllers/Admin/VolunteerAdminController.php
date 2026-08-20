@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Certificate;
 use App\Models\VolunteerApplication;
+use App\Mail\VolunteerApplicationDecision;
 use App\Mail\VolunteerApproved;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -47,6 +48,16 @@ class VolunteerAdminController extends Controller
             } catch (\Throwable $e) {
                 \Log::error('Volunteer ID card generation/email failed: ' . $e->getMessage());
             }
+        } elseif ($volunteer->email) {
+            // QA finding: a guest applicant (no account, so no Certificate/
+            // ID card can be issued) previously got no notification at all
+            // on approval — this at least tells them and points them to
+            // registering to unlock the ID card.
+            try {
+                Mail::to($volunteer->email)->send(new VolunteerApplicationDecision($volunteer, approved: true));
+            } catch (\Throwable $e) {
+                \Log::error('Guest volunteer approval email failed: ' . $e->getMessage());
+            }
         }
 
         return back()->with('status', 'Approved.');
@@ -55,6 +66,17 @@ class VolunteerAdminController extends Controller
     public function reject(VolunteerApplication $volunteer)
     {
         $volunteer->update(['status' => 'rejected']);
+
+        // QA finding: rejections sent no notification to anyone, registered
+        // or guest — an applicant was simply left waiting forever.
+        if ($volunteer->email) {
+            try {
+                Mail::to($volunteer->email)->send(new VolunteerApplicationDecision($volunteer, approved: false));
+            } catch (\Throwable $e) {
+                \Log::error('Volunteer rejection email failed: ' . $e->getMessage());
+            }
+        }
+
         return back()->with('status', 'Rejected.');
     }
 

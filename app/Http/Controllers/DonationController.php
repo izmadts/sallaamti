@@ -46,6 +46,20 @@ class DonationController extends Controller
     $validated['is_anonymous'] = $request->has('is_anonymous');
     $validated['cause']        = $request->input('cause', 'general');
     $validated['payment_reference'] = $request->input('payment_reference', 'pending-admin-verify');
+    // QA finding: this was missing entirely — donation_number has no DB
+    // default, so every submission was throwing a QueryException before
+    // ever reaching the redirect below. Donation::generateNumber() already
+    // existed (used by the old, now-dead commented-out store() above) but
+    // the live rewrite dropped the call.
+    $validated['donation_number'] = Donation::generateNumber();
+    // QA finding: the form fields are donor_email/donor_phone, but the
+    // model's $fillable columns are email/phone — passing the *_email/
+    // *_phone keys straight through silently dropped them on every guest
+    // donation (mass-assignment ignores non-fillable keys rather than
+    // erroring), so guest donors' contact info was never actually saved.
+    $validated['email'] = $validated['donor_email'] ?? null;
+    $validated['phone'] = $validated['donor_phone'] ?? null;
+    unset($validated['donor_email'], $validated['donor_phone']);
 
     if ($request->hasFile('payment_screenshot')) {
         $validated['payment_screenshot'] = ImageOptimizer::store($request->file('payment_screenshot'), 'donations/screenshots', 'private');
@@ -72,7 +86,12 @@ class DonationController extends Controller
         $admin->notify(new \App\Notifications\NewDonationReceived($donation));
     });
 
-    return redirect()->route('donate.thank-you')
+    // The route requires {donation} — omitting it here threw a
+    // UrlGenerationException on every real submission (QA finding: this
+    // was a live 500 on the happy path, not just a redirect nicety).
+    session()->put("donation_thankyou_{$donation->id}", true);
+
+    return redirect()->route('donate.thank-you', $donation)
         ->with('status', 'JazakAllah Khair! Your donation has been submitted. We will verify within 24 hours.');
 }
     // public function store(Request $request)
@@ -113,8 +132,20 @@ class DonationController extends Controller
     //     return redirect()->route('donate.thank-you', $donation);
     // }
 
+    // Security audit finding: this had no ownership check at all — donation
+    // IDs are sequential/enumerable, and while the view currently renders
+    // no donor fields, that's a landmine for the day someone adds one. The
+    // session flag covers the (also-supported) guest-donor case where
+    // there's no account to check ownership against.
     public function thankYou(Donation $donation)
     {
+        // get(), not pull() — a page refresh on the thank-you page is normal
+        // and shouldn't 404 just because the flag was already read once.
+        $justDonated = session()->get("donation_thankyou_{$donation->id}", false);
+        $owns = Auth::check() && (Auth::id() === $donation->user_id || Auth::user()->hasRole('admin'));
+
+        abort_unless($justDonated || $owns, 404);
+
         return view('donate.thank-you', compact('donation'));
     }
 

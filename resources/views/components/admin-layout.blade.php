@@ -93,6 +93,11 @@
                           {{ request()->routeIs('admin.users.roles') ? 'bg-teal-700 text-white' : 'text-teal-100 hover:bg-teal-800' }}">
                     <span class="text-base">🎭</span> Roles Overview
                 </a>
+                <a href="{{ route('admin.bulk-messages.index') }}"
+                    class="flex items-center gap-3 px-3 py-2 rounded-lg transition
+                          {{ request()->routeIs('admin.bulk-messages*') || request()->routeIs('admin.users.broadcast') || request()->routeIs('admin.subscribers.broadcast') ? 'bg-teal-700 text-white' : 'text-teal-100 hover:bg-teal-800' }}">
+                    <span class="text-base">📢</span> Bulk Messages
+                </a>
 
                 {{-- Nikah --}}
                 <p class="text-teal-500 text-xs uppercase tracking-widest px-3 pt-4 pb-1">Nikah</p>
@@ -185,6 +190,24 @@
                     @php $pendingVols = \App\Models\VolunteerApplication::where('status','pending')->count(); @endphp
                     @if ($pendingVols > 0)
                     <span class="bg-blue-400 text-blue-900 text-xs font-bold px-1.5 py-0.5 rounded-full">{{ $pendingVols }}</span>
+                    @endif
+                </a>
+                <a href="{{ route('admin.posts.index') }}"
+                    class="flex items-center justify-between gap-3 px-3 py-2 rounded-lg transition
+                          {{ request()->routeIs('admin.posts*') ? 'bg-teal-700 text-white' : 'text-teal-100 hover:bg-teal-800' }}">
+                    <span class="flex items-center gap-3"><span class="text-base">📝</span> Public Posts</span>
+                    @php $pendingPosts = \App\Models\Post::where('status','pending')->count(); @endphp
+                    @if ($pendingPosts > 0)
+                    <span class="bg-yellow-400 text-yellow-900 text-xs font-bold px-1.5 py-0.5 rounded-full">{{ $pendingPosts }}</span>
+                    @endif
+                </a>
+                <a href="{{ route('admin.support.index') }}"
+                    class="flex items-center justify-between gap-3 px-3 py-2 rounded-lg transition
+                          {{ request()->routeIs('admin.support*') ? 'bg-teal-700 text-white' : 'text-teal-100 hover:bg-teal-800' }}">
+                    <span class="flex items-center gap-3"><span class="text-base">🆘</span> Support Queries</span>
+                    @php $pendingSupport = \App\Models\SupportQuery::where('status','new')->count(); @endphp
+                    @if ($pendingSupport > 0)
+                    <span class="bg-red-400 text-red-900 text-xs font-bold px-1.5 py-0.5 rounded-full">{{ $pendingSupport }}</span>
                     @endif
                 </a>
                 <a href="{{ route('admin.donations.index') }}"

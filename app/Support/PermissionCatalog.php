@@ -21,6 +21,7 @@ use Spatie\Permission\Models\Permission;
 class PermissionCatalog
 {
     public const RESOURCES = [
+        'posts' => 'Public Posts (member/staff submissions, need approval)',
         'community-posts' => 'Community Posts (Wall content admin publishes)',
         'nikah' => 'Nikah Verifications & Moderation',
         'donations' => 'Donations',

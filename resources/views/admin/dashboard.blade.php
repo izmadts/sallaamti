@@ -290,5 +290,25 @@
             </div>
         </section>
 
+        {{-- ===== PUBLIC POSTS ===== --}}
+        <section>
+            <p class="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-2">Public Posts</p>
+            <div class="grid grid-cols-2 xl:grid-cols-4 gap-3">
+                <x-admin-stat
+                    :href="route('admin.posts.index', ['status' => 'pending'])"
+                    value="{{ $stats['pending_posts'] }}"
+                    label="Pending Review"
+                    color="teal"
+                    icon="📝"
+                    :badge="$stats['pending_posts'] > 0" />
+                <x-admin-stat
+                    :href="route('admin.posts.index', ['status' => 'published'])"
+                    value="{{ $stats['published_posts'] }}"
+                    label="Published"
+                    color="teal"
+                    icon="🌐" />
+            </div>
+        </section>
+
     </div>
 </x-admin-layout>

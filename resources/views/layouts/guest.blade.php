@@ -144,6 +144,7 @@
  <a href="{{ url('/') }}" class="px-3 py-2 text-sm font-medium {{ request()->is('/') ? 'text-[--teal]' : 'text-[--text-dark] hover:text-[--teal]' }}">{{ __('db.Home') }}</a>
  <a href="{{ url('/about') }}" class="px-3 py-2 text-sm font-medium {{ request()->is('about') ? 'text-[--teal]' : 'text-[--text-dark] hover:text-[--teal]' }}">{{ __('db.About') }}</a>
  <a href="{{ route('blog.index') }}" class="px-3 py-2 text-sm font-medium {{ request()->routeIs('blog.*') ? 'text-[--teal]' : 'text-[--text-dark] hover:text-[--teal]' }}">{{ __('db.Blog') }}</a>
+ <a href="{{ route('posts.index') }}" class="px-3 py-2 text-sm font-medium {{ request()->routeIs('posts.*') ? 'text-[--teal]' : 'text-[--text-dark] hover:text-[--teal]' }}">Community Posts</a>
  <a href="{{ url('/contact') }}" class="px-3 py-2 text-sm font-medium {{ request()->is('contact') ? 'text-[--teal]' : 'text-[--text-dark] hover:text-[--teal]' }}">{{ __('db.Contact') }}</a>
  <x-wall-nav-badge :dua="$latestApprovedDua ?? null">
  <a href="{{ route('wall.index') }}" class="px-3 py-2 text-sm font-medium inline-flex items-center gap-1 {{ request()->routeIs('wall.*') ? 'text-[--teal]' : 'text-[--text-dark] hover:text-[--teal]' }}">
@@ -222,6 +223,7 @@
  <a href="{{ url('/') }}" class="py-2 text-sm font-medium {{ request()->is('/') ? 'text-[--teal]' : 'text-[--text-dark]' }}">{{ __('db.Home') }}</a>
  <a href="{{ url('/about') }}" class="py-2 text-sm font-medium {{ request()->is('about') ? 'text-[--teal]' : 'text-[--text-dark]' }}">{{ __('db.About') }}</a>
  <a href="{{ route('blog.index') }}" class="py-2 text-sm font-medium {{ request()->routeIs('blog.*') ? 'text-[--teal]' : 'text-[--text-dark]' }}">{{ __('db.Blog') }}</a>
+ <a href="{{ route('posts.index') }}" class="py-2 text-sm font-medium {{ request()->routeIs('posts.*') ? 'text-[--teal]' : 'text-[--text-dark]' }}">Community Posts</a>
  <a href="{{ url('/team') }}" class="py-2 text-sm font-medium {{ request()->is('team') ? 'text-[--teal]' : 'text-[--text-dark]' }}">{{ __('db.Team') }}</a>
  <a href="{{ url('/contact') }}" class="py-2 text-sm font-medium {{ request()->is('contact') ? 'text-[--teal]' : 'text-[--text-dark]' }}">{{ __('db.Contact') }}</a>
  <div class="border-t my-2"></div>

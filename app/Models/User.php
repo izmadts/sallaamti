@@ -13,6 +13,8 @@ class User extends Authenticatable
 
     protected $fillable = [
         'name',
+        'username',
+        'public_bio',
         'email',
         'phone',
         'gender',
@@ -115,6 +117,35 @@ class User extends Authenticatable
     public function donations()
     {
         return $this->hasMany(Donation::class);
+    }
+
+    public function posts()
+    {
+        return $this->hasMany(Post::class);
+    }
+
+    // Posts need a stable, URL-safe handle for the author's public byline
+    // link, but accounts are created without ever choosing one (registration
+    // only asks for name/identifier) — generate it lazily, the first time
+    // it's actually needed (submitting a post), rather than backfilling
+    // every existing account up front for a feature most won't use.
+    public function ensureUsername(): string
+    {
+        if ($this->username) {
+            return $this->username;
+        }
+
+        $base = \Illuminate\Support\Str::slug($this->name) ?: 'member';
+        $candidate = $base;
+        $suffix = 1;
+
+        while (static::where('username', $candidate)->where('id', '!=', $this->id)->exists()) {
+            $candidate = $base . '-' . (++$suffix);
+        }
+
+        $this->forceFill(['username' => $candidate])->save();
+
+        return $candidate;
     }
 
     public function counselingBookings()

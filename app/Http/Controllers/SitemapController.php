@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\BlogPost;
 use App\Models\Course;
 use App\Models\NikahProfile;
+use App\Models\Post;
 use App\Models\QuranLiveCourse;
+use App\Models\User;
 use Illuminate\Support\Str;
 
 class SitemapController extends Controller
@@ -64,6 +66,30 @@ class SitemapController extends Controller
                 'priority' => '0.6',
             ]);
         });
+
+        Post::published()->get(['slug', 'updated_at'])->each(function ($post) use ($urls) {
+            $urls->push([
+                'loc' => url('/posts/' . $post->slug),
+                'lastmod' => $post->updated_at->toDateString(),
+                'changefreq' => 'monthly',
+                'priority' => '0.5',
+            ]);
+        });
+
+        // One public author page per user with at least one published post
+        // — each is a real, distinct indexable URL (name/short bio/their
+        // posts), not a duplicate of the posts themselves.
+        User::whereNotNull('username')
+            ->whereHas('posts', fn ($q) => $q->where('status', 'published'))
+            ->get(['username', 'updated_at'])
+            ->each(function ($user) use ($urls) {
+                $urls->push([
+                    'loc' => url('/posts/author/' . $user->username),
+                    'lastmod' => $user->updated_at->toDateString(),
+                    'changefreq' => 'monthly',
+                    'priority' => '0.3',
+                ]);
+            });
 
         NikahProfile::where('verification_status', 'verified')
             ->where('is_active', true)

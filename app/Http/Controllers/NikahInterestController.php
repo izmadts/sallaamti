@@ -60,6 +60,15 @@ class NikahInterestController extends Controller
     {
         $myProfile = Auth::user()->nikahProfile;
 
+        // QA finding: this is reachable from the dashboard's generic
+        // Notifications card (covers every module's unread notifications,
+        // not just Nikah interests) — a member with no Nikah profile yet
+        // clicking it crashed on receivedInterests() on null. Every sibling
+        // method here already guards this; this one didn't.
+        if (!$myProfile) {
+            return redirect()->route('nikah.create')->with('status', 'Create your Nikah profile to send and receive interests.');
+        }
+
         $received = $myProfile->receivedInterests()->with('sender.user')->latest()->get();
         $sent = $myProfile->sentInterests()->with('receiver.user')->latest()->get();
 

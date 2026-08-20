@@ -8,6 +8,7 @@ use App\Models\Course;
 use App\Models\Enrollment;
 use App\Models\NikahProfile;
 use App\Models\NikahReport;
+use App\Models\Post;
 use App\Models\QuranAdmission;
 use App\Models\QuranClassGroup;
 use App\Models\QuranGroupStudent;
@@ -70,6 +71,10 @@ class AdminDashboardController extends Controller
 
             // Subscribers
             'total_subscribers'         => Subscriber::count(),
+
+            // Public Posts
+            'pending_posts'             => Post::where('status', 'pending')->count(),
+            'published_posts'           => Post::where('status', 'published')->count(),
 
             // Support Queries
             'support_new'         => SupportQuery::where('status', 'new')->count(),

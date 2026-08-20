@@ -42,7 +42,13 @@
                 <div class="text-3xl font-bold text-gray-800">{{ $liveSubscriptions->count() }}</div>
                 <div class="text-sm text-gray-500 mt-1">Live Classes Active</div>
             </a>
-            <a href="{{ route('nikah.interests') }}" class="bg-white rounded-lg shadow-sm p-5 text-center hover:shadow-lg hover:-translate-y-1 transition-all duration-150 border-l-4 border-pink-500">
+            {{-- QA fix: this used to hard-link to Nikah interests even though
+                 $unreadCount covers every module's notifications — a member
+                 with an unread donation/counseling/support notification but
+                 no Nikah profile (or the module disabled) got a crash.
+                 Points at the actual notifications panel further down this
+                 same page instead. --}}
+            <a href="#notifications" class="bg-white rounded-lg shadow-sm p-5 text-center hover:shadow-lg hover:-translate-y-1 transition-all duration-150 border-l-4 border-pink-500">
                 <div class="text-3xl font-bold {{ $unreadCount > 0 ? 'text-red-600' : 'text-gray-800' }}">{{ $unreadCount }}</div>
                 <div class="text-sm text-gray-500 mt-1">Notifications</div>
             </a>
@@ -207,7 +213,7 @@
                 @include('components.daily-content-widget')
 
                 {{-- Notifications --}}
-                <div class="bg-white rounded-lg shadow-sm p-6">
+                <div id="notifications" class="bg-white rounded-lg shadow-sm p-6">
                     <div class="flex justify-between items-center mb-4">
                         <h3 class="font-semibold text-gray-700">Notifications</h3>
                         @if ($unreadCount > 0)
