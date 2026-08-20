@@ -1,8 +1,8 @@
 {{-- resources/views/about.blade.php --}}
-<x-guest-layout title="About Us" description="Learn about Sallaamti's mission to spread Quranic education, halal matrimonial matching, and community support for the Muslim Ummah.">
+<x-guest-layout title="About Us" description="Learn about Sallaamti's mission to spread Quranic education, free Digital Skills training, halal matrimonial matching, and community support for the Muslim Ummah.">
     @section('title', 'About Sallaamti — Our Mission, Vision & Team')
-    @section('description', 'Learn about Sallaamti — an Islamic education platform dedicated to spreading Quranic knowledge, supporting families and building a global Muslim community.')
-    @section('keywords', 'learn quran online pakistan, online quran classes, quran teacher online, islamic matrimonial pakistan, nikah platform')
+    @section('description', 'Learn about Sallaamti — an Islamic education platform dedicated to spreading Quranic knowledge, free Digital Skills training, supporting families and building a global Muslim community.')
+    @section('keywords', 'learn quran online pakistan, online quran classes, quran teacher online, islamic matrimonial pakistan, nikah platform, free digital skills courses')
     @section('canonical', url('/about'))
 
     {{-- ============================================================ --}}
@@ -381,7 +381,7 @@
                 'desc' => 'Structured self-paced Quran courses — Nazrah, Tajweed, Translation and Arabic Grammar — with quizzes and certificates.',
                 'url' => route('courses.index'),
                 'btn' => 'Explore Courses',
-                'badge' => null,
+                'badge' => 'Live',
                 ],
                 [
                 'icon' => 'fa-laptop',
@@ -391,7 +391,7 @@
                 'desc' => 'One-to-one and group live online classes with qualified teachers. Flexible timings for Pakistan and international students.',
                 'url' => route('quran-live.index'),
                 'btn' => 'View Live Classes',
-                'badge' => null,
+                'badge' => 'Live',
                 ],
                 [
                 'icon' => 'fa-laptop-code',
@@ -401,7 +401,7 @@
                 'desc' => 'Free, self-paced skills training — Web Development, Graphic Design, Digital Marketing and more — presented by IZMA Digital Technology & Security.',
                 'url' => route('skills.index'),
                 'btn' => 'Explore Skills',
-                'badge' => null,
+                'badge' => 'Live',
                 ],
                 [
                 'icon' => 'fa-heart',
@@ -411,7 +411,7 @@
                 'desc' => 'A verified, CNIC-checked Islamic matrimonial platform. Guardian-mediated, photo-private and built on Islamic values.',
                 'url' => route('nikah.create'),
                 'btn' => 'Create Profile',
-                'badge' => null,
+                'badge' => 'Live',
                 ],
                 [
                 'icon' => 'fa-hands-helping',
@@ -431,7 +431,7 @@
                 'desc' => 'Fund Quran education for orphans, support needy families and keep Sallaamti free for students worldwide.',
                 'url' => route('donate.create'),
                 'btn' => 'Donate Now',
-                'badge' => null,
+                'badge' => 'Live',
                 ],
                 [
                 'icon' => 'fa-users',
@@ -441,7 +441,17 @@
                 'desc' => 'Join as a Quran teacher, counselor, developer or outreach volunteer. Earn Sadaqah Jariyah while serving the Ummah.',
                 'url' => route('volunteer.create'),
                 'btn' => 'Apply as Volunteer',
-                'badge' => null,
+                'badge' => 'Live',
+                ],
+                [
+                'icon' => 'fa-hand-holding-heart',
+                'color' => 'text-teal',
+                'emoji' => '🤲',
+                'title' => 'Sallaamti Wall',
+                'desc' => 'Share dua requests, celebrate community stories, and post your own reflections — with admin-reviewed content so the feed stays genuine.',
+                'url' => route('wall.index'),
+                'btn' => 'Visit the Wall',
+                'badge' => 'Live',
                 ],
                 ] as $activity)
 

@@ -1,5 +1,5 @@
 {{-- resources/views/privacy-policy.blade.php --}}
-<x-guest-layout title="Privacy Policy" description="How Sallaamti collects, uses, and protects your personal information across our Quran learning, Nikah matchmaking, and family counseling services.">
+<x-guest-layout title="Privacy Policy" description="How Sallaamti collects, uses, and protects your personal information across our Quran learning, Digital Skills, Nikah matchmaking, family counseling, volunteering, and donation services.">
     @section('title', 'Privacy Policy — Sallaamti')
     @section('description', 'How Sallaamti collects, uses, and protects your personal information.')
     @section('canonical', url('/privacy-policy'))
@@ -8,7 +8,7 @@
     <section class="page-hero relative overflow-hidden flex items-center" style="min-height: 220px; background: linear-gradient(135deg, #0d6b6b 0%, #1a1a2e 100%);">
         <div class="max-w-7xl mx-auto px-4 py-14 relative z-10 text-center w-full">
             <h1 class="text-3xl md:text-4xl font-extrabold text-white mb-2">{{ __('db.Privacy Policy') }}</h1>
-            <p class="text-white/60 text-sm">{{ __('db.Last updated') }}: {{ \Illuminate\Support\Carbon::parse('2026-08-15')->format('d F Y') }}</p>
+            <p class="text-white/60 text-sm">{{ __('db.Last updated') }}: {{ \Illuminate\Support\Carbon::parse('2026-08-20')->format('d F Y') }}</p>
             <nav class="flex justify-center gap-2 mt-4 text-sm text-white/50">
                 <a href="{{ url('/') }}" class="hover:text-white">{{ __('db.Home') }}</a>
                 <span>/</span>
@@ -22,15 +22,19 @@
             <div class="prose prose-teal max-w-none prose-headings:font-bold prose-a:text-[--teal]">
 
                 <p>
-                    {{ __('db.Sallaamti ("we", "us", "our") operates sallaamti.com, an Islamic education platform offering Quran courses and live classes, a Nikah (matrimonial) matching service, and family counseling support. This Privacy Policy explains what information we collect, how we use it, and the choices you have.') }}
+                    {{ __('db.Sallaamti ("we", "us", "our") operates sallaamti.com, an Islamic education platform offering Quran courses and live classes, free Digital Skills training, a Nikah (matrimonial) matching service, family counseling support, a community Wall, and volunteering and donation programs. This Privacy Policy explains what information we collect, how we use it, and the choices you have.') }}
                 </p>
 
                 <h2>{{ __('db.1. Information We Collect') }}</h2>
                 <ul>
                     <li><strong>{{ __('db.Account information') }}:</strong> {{ __('db.name, email address and/or WhatsApp number, and a securely hashed password.') }}</li>
-                    <li><strong>{{ __('db.Profile information') }}:</strong> {{ __('db.gender, city, and profile photo, which you can add after registering.') }}</li>
+                    <li><strong>{{ __('db.Profile information') }}:</strong> {{ __('db.gender, city, and profile photo, which you can add after registering. If you publish a Community Post, an optional public username and short bio are shown alongside it.') }}</li>
                     <li><strong>{{ __('db.Nikah profile information') }}:</strong> {{ __('db.family and personal background, religious practice, partner preferences, photos, and identity verification documents (e.g. CNIC) submitted when creating a matrimonial profile.') }}</li>
+                    <li><strong>{{ __('db.Course progress') }}:</strong> {{ __('db.your enrollment, lesson progress, and quiz results for Quran and Digital Skills courses, used to issue completion certificates.') }}</li>
                     <li><strong>{{ __('db.Family counseling information') }}:</strong> {{ __('db.the category and description of your concern, preferred contact method, and any details you share with a counselor while booking or attending a session.') }}</li>
+                    <li><strong>{{ __('db.Volunteer application information') }}:</strong> {{ __('db.your name, email, phone, city, and area of interest when you apply to volunteer — collected even if you apply without an account.') }}</li>
+                    <li><strong>{{ __('db.Donation information') }}:</strong> {{ __('db.the amount, cause, and optional message you submit when donating — collected even if you donate without an account.') }}</li>
+                    <li><strong>{{ __('db.Wall and Community Post content') }}:</strong> {{ __('db.dua requests and posts you submit to the Sallaamti Wall, and any comments or reactions you leave.') }}</li>
                     <li><strong>{{ __('db.Payment information') }}:</strong> {{ __('db.for donations, verification fees, or paid courses, we collect the payment method details you submit (e.g. JazzCash/EasyPaisa transaction reference or bank deposit slip). We do not store full card numbers.') }}</li>
                     <li><strong>{{ __('db.Sign-in via Google or Facebook') }}:</strong> {{ __('db.if you choose to sign in with Google or Facebook, we receive your name, email address, and profile photo from that provider, as permitted by your settings with them.') }}</li>
                     <li><strong>{{ __('db.Usage data') }}:</strong> {{ __('db.pages visited, device and browser type, and similar technical data collected automatically via cookies and analytics tools.') }}</li>
@@ -39,9 +43,10 @@
                 <h2>{{ __('db.2. How We Use Your Information') }}</h2>
                 <ul>
                     <li>{{ __('db.To create and manage your account, and verify your identity for the Nikah platform.') }}</li>
-                    <li>{{ __('db.To operate Quran courses, live classes, Nikah matching, and family counseling bookings.') }}</li>
+                    <li>{{ __('db.To operate Quran courses, live classes, Digital Skills courses, Nikah matching, family counseling bookings, and the Sallaamti Wall.') }}</li>
                     <li>{{ __('db.To send account, verification, and booking-related notifications (by email or, where you provided one, WhatsApp).') }}</li>
-                    <li>{{ __('db.To process donations and payments you initiate.') }}</li>
+                    <li>{{ __('db.To process donations, volunteer applications, and payments you initiate.') }}</li>
+                    <li>{{ __('db.To review member-submitted Community Posts and dua requests before they appear publicly.') }}</li>
                     <li>{{ __('db.To improve our services, prevent fraud and abuse, and comply with legal obligations.') }}</li>
                 </ul>
 

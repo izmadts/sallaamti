@@ -1,5 +1,5 @@
 {{-- resources/views/terms-of-service.blade.php --}}
-<x-guest-layout title="Terms of Service" description="The terms and conditions for using Sallaamti's Quran courses, Nikah matchmaking, and family counseling services.">
+<x-guest-layout title="Terms of Service" description="The terms and conditions for using Sallaamti's Quran courses, Digital Skills training, Nikah matchmaking, and family counseling services.">
     @section('title', 'Terms of Service — Sallaamti')
     @section('description', 'The terms and conditions for using Sallaamti.')
     @section('canonical', url('/terms-of-service'))
@@ -8,7 +8,7 @@
     <section class="page-hero relative overflow-hidden flex items-center" style="min-height: 220px; background: linear-gradient(135deg, #0d6b6b 0%, #1a1a2e 100%);">
         <div class="max-w-7xl mx-auto px-4 py-14 relative z-10 text-center w-full">
             <h1 class="text-3xl md:text-4xl font-extrabold text-white mb-2">{{ __('db.Terms of Service') }}</h1>
-            <p class="text-white/60 text-sm">{{ __('db.Last updated') }}: {{ \Illuminate\Support\Carbon::parse('2026-08-15')->format('d F Y') }}</p>
+            <p class="text-white/60 text-sm">{{ __('db.Last updated') }}: {{ \Illuminate\Support\Carbon::parse('2026-08-20')->format('d F Y') }}</p>
             <nav class="flex justify-center gap-2 mt-4 text-sm text-white/50">
                 <a href="{{ url('/') }}" class="hover:text-white">{{ __('db.Home') }}</a>
                 <span>/</span>
@@ -22,7 +22,7 @@
             <div class="prose prose-teal max-w-none prose-headings:font-bold prose-a:text-[--teal]">
 
                 <p>
-                    {{ __('db.Welcome to Sallaamti. By creating an account or using any part of sallaamti.com — including Quran courses, live classes, the Nikah matchmaking platform, or family counseling — you agree to these Terms of Service. Please read them carefully.') }}
+                    {{ __('db.Welcome to Sallaamti. By creating an account or using any part of sallaamti.com — including Quran courses, live classes, Digital Skills courses, the Nikah matchmaking platform, family counseling, the Sallaamti Wall, or volunteering and donations — you agree to these Terms of Service. Please read them carefully.') }}
                 </p>
 
                 <h2>{{ __('db.1. Eligibility') }}</h2>
@@ -62,9 +62,20 @@
                     <li>{{ __('db.Information you share with a counselor is kept confidential and used only to provide your session, as described in our Privacy Policy.') }}</li>
                 </ul>
 
-                <h2>{{ __('db.6. Quran Courses & Live Classes') }}</h2>
+                <h2>{{ __('db.6. Quran Courses, Digital Skills & Live Classes') }}</h2>
                 <p>
-                    {{ __('db.Course enrollment, live class access, and certificates are provided subject to your continued account standing. Certificates are issued upon meeting the course\'s stated completion requirements.') }}
+                    {{ __('db.Course enrollment, live class access, and certificates — for both Quran courses and Digital Skills courses — are provided subject to your continued account standing. Certificates are issued upon meeting the course\'s stated completion requirements. Digital Skills course content is presented in partnership with IZMA Digital Technology & Security.') }}
+                </p>
+
+                <h2>{{ __('db.6a. Sallaamti Wall & Community Posts') }}</h2>
+                <ul>
+                    <li>{{ __('db.Dua requests and Community Posts you submit are reviewed by our team before appearing publicly, and may be edited or removed if they violate these terms.') }}</li>
+                    <li>{{ __('db.Publishing a Community Post is a public action — your name, an optional public username and bio, and your post content are visible to anyone with the link, including outside Sallaamti if shared.') }}</li>
+                </ul>
+
+                <h2>{{ __('db.6b. Volunteering') }}</h2>
+                <p>
+                    {{ __('db.Volunteer applications are reviewed by our team; approval is at Sallaamti\'s discretion and is not guaranteed. An approved volunteer\'s ID card is issued electronically and remains valid only while your volunteer status is active.') }}
                 </p>
 
                 <h2>{{ __('db.7. Donations & Payments') }}</h2>
@@ -75,7 +86,7 @@
 
                 <h2>{{ __('db.8. Content You Submit') }}</h2>
                 <p>
-                    {{ __('db.You retain ownership of content you submit (such as your Nikah profile details or testimonials), and grant Sallaamti a license to display it on the platform for the purpose of providing our services. You are responsible for ensuring you have the right to share anything you submit.') }}
+                    {{ __('db.You retain ownership of content you submit (such as your Nikah profile details, testimonials, dua requests, or Community Posts), and grant Sallaamti a license to display it on the platform for the purpose of providing our services. You are responsible for ensuring you have the right to share anything you submit.') }}
                 </p>
 
                 <h2>{{ __('db.9. Disclaimers') }}</h2>

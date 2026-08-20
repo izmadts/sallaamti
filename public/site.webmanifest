@@ -1,7 +1,7 @@
 {
     "name": "Sallaamti",
     "short_name": "Sallaamti",
-    "description": "Learn Quran, find your Nikah match, and get family counseling — all in one place.",
+    "description": "Learn Quran, build Digital Skills, find your Nikah match, and get family counseling — all in one place.",
     "start_url": "/",
     "scope": "/",
     "display": "standalone",

@@ -102,6 +102,7 @@
                                 ['general', '💬', 'General Query'],
                                 ['quran', '📖', 'Quran Courses'],
                                 ['live_class', '🎥', 'Live Classes'],
+                                ['skills', '💻', 'Digital Skills'],
                                 ['nikah', '💍', 'Nikah Platform'],
                                 ['volunteer', '🤝', 'Volunteering'],
                                 ['donation', '💝', 'Donation'],

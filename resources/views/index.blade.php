@@ -6,10 +6,10 @@
      moved into resources/views/about.blade.php. --}}
 <x-guest-layout :description="'Quran education, halal matrimonial matching, and community programs for the Muslim Ummah — ' . setting('site_tagline')">
     @section('title', 'Sallaamti — Learn Quran Online | Live Classes | Islamic Matrimonial')
-    @section('description', 'Join Sallaamti to learn Quran online with expert teachers. Self-paced Quran courses, live classes, halal matrimonial platform and family counseling. Free to join.')
-    @section('keywords', 'learn quran online pakistan, online quran classes, quran teacher online, islamic matrimonial pakistan, nikah platform')
+    @section('description', 'Join Sallaamti to learn Quran online with expert teachers. Self-paced Quran courses, live classes, free Digital Skills training, halal matrimonial platform and family counseling. Free to join.')
+    @section('keywords', 'learn quran online pakistan, online quran classes, quran teacher online, islamic matrimonial pakistan, nikah platform, free digital skills courses, web development graphic design digital marketing courses')
     @section('og_title', 'Sallaamti — Learn Quran Online | Live Classes | Islamic Matrimonial')
-    @section('og_description', 'Learn Quran with expert teachers. Join thousands of Muslims worldwide.')
+    @section('og_description', 'Learn Quran with expert teachers, free Digital Skills courses, and a halal matrimonial platform. Join thousands of Muslims worldwide.')
     @section('og_image', asset('img/og-home.jpg'))
 
     @push('schema')
@@ -110,11 +110,11 @@
                         {{ __('db.Learn Quran Online. Find Your Match. Build Community.') }}
                     </h2>
                     <p class="text-white/80 mt-4 leading-relaxed">
-                        {{ __('db.Sallaamti brings self-paced Quran courses, live classes with qualified teachers, a halal Islamic matrimonial platform, and family counseling together in one place — built for Muslims everywhere, free to join.') }}
+                        {{ __('db.Sallaamti brings self-paced Quran courses, live classes with qualified teachers, free Digital Skills training, a halal Islamic matrimonial platform, and family counseling together in one place — built for Muslims everywhere, free to join.') }}
                     </p>
 
                     <div class="flex justify-center lg:justify-start gap-4 flex-wrap mt-6">
-                        @foreach (['Free to Join', 'Quran Courses', 'Nikah Platform', 'Live Classes'] as $t)
+                        @foreach (['Free to Join', 'Quran Courses', 'Digital Skills', 'Nikah Platform', 'Live Classes'] as $t)
                         <span class="text-xs font-medium flex items-center gap-1 text-white/90">
                             <i class="fa fa-check-circle" style="color: var(--gold)"></i> {{ __("db.$t") }}
                         </span>

@@ -36,7 +36,7 @@
             </div>
         </div>
         <div class="border-t border-gray-700"></div>
-        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-8 pt-8">
+        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-8 pt-8">
             <div>
                 <img src="{{ asset('img/logo-w.png')}}" class="max-w-full h-auto">
                 <p class="my-4 text-gray-400">{{ __('db.Sallaamti (سلامتی) is an organization dedicated to spreading peace, knowledge, and compassion through the teachings of the Quran and Hadith.') }}</p>
@@ -89,6 +89,16 @@
                 </div>
             </div>
             <div>
+                <h4 class="text-white font-semibold mb-4">{{ __('db.Our Programs') }}</h4>
+                <div class="flex flex-col items-start">
+                    <a class="text-gray-300 hover:text-white mb-2" href="{{ route('courses.index') }}"><i class="fa fa-check text-[--teal] mr-2"></i>{{ __('db.Quran Courses') }}</a>
+                    <a class="text-gray-300 hover:text-white mb-2" href="{{ route('quran-live.index') }}"><i class="fa fa-check text-[--teal] mr-2"></i>{{ __('db.Live Quran Classes') }}</a>
+                    <a class="text-gray-300 hover:text-white mb-2" href="{{ route('skills.index') }}"><i class="fa fa-check text-[--teal] mr-2"></i>{{ __('db.Digital Skills') }}</a>
+                    <a class="text-gray-300 hover:text-white mb-2" href="{{ route('nikah.create') }}"><i class="fa fa-check text-[--teal] mr-2"></i>{{ __('db.Sallaamti Nikah') }}</a>
+                    <a class="text-gray-300 hover:text-white mb-2" href="{{ auth()->check() ? route('support.create') : route('register') }}"><i class="fa fa-check text-[--teal] mr-2"></i>{{ __('db.Family Support') }}</a>
+                </div>
+            </div>
+            <div>
                 <h5 class="text-white mb-4 font-semibold">{{ __('db.Latest Posts') }}</h5>
 
                 @if (isset($footerPosts) && $footerPosts->isNotEmpty())
@@ -99,8 +109,8 @@
 
                         {{-- Thumbnail --}}
                         <div class="flex-shrink-0 w-16 h-16 rounded-lg overflow-hidden bg-gray-700">
-                            @if ($post->thumbnail)
-                            <img src="{{ Storage::url($post->thumbnail) }}"
+                            @if ($post->cover_image)
+                            <img src="{{ Storage::url($post->cover_image) }}"
                                 class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                                 alt="{{ $post->title }}">
                             @else

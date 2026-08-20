@@ -48,6 +48,7 @@ $allLinks = [
         ['route' => 'dashboard', 'icon' => '🏠', 'label' => __('db.Dashboard')],
         ['route' => 'nikah.browse', 'icon' => '💍', 'label' => __('db.Nikah Matches')],
         ['route' => 'courses.index', 'icon' => '📖', 'label' => __('db.Quran Courses')],
+        ['route' => 'skills.index', 'icon' => '💻', 'label' => __('db.Digital Skills')],
         ['route' => 'support.create', 'icon' => '🤝', 'label' => __('db.Family Support')],
     ],
 ];
