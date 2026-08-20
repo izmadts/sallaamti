@@ -184,6 +184,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
+    // User Guide — tabbed documentation, one tab per role the visitor
+    // actually holds (see UserGuideController).
+    Route::get('/guide', [\App\Http\Controllers\UserGuideController::class, 'index'])->name('guide.index');
+
     // Profile
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');

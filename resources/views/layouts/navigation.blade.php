@@ -244,6 +244,7 @@
  <p class="text-xs text-gray-500">{{ Auth::user()?->email }}</p>
  </div>
  <x-dropdown-link :href="route('profile.edit')">👤 {{ __('db.My Profile') }}</x-dropdown-link>
+ <x-dropdown-link :href="route('guide.index')">📘 User Guide</x-dropdown-link>
  @if (Auth::user()->quran_module_enabled || Auth::user()->skills_module_enabled)
  <x-dropdown-link :href="route('courses.my-learning')">📚 {{ __('db.My Learning') }}</x-dropdown-link>
  @endif
@@ -420,6 +421,7 @@
  </div>
  <div class="space-y-1 px-2">
  <x-responsive-nav-link :href="route('profile.edit')" class="text-white">👤 My Profile</x-responsive-nav-link>
+ <x-responsive-nav-link :href="route('guide.index')" class="text-white">📘 User Guide</x-responsive-nav-link>
  <x-responsive-nav-link :href="route('donate.my')" class="text-white">💝 My Donations</x-responsive-nav-link>
  <form method="POST" action="{{ route('logout') }}">
  @csrf

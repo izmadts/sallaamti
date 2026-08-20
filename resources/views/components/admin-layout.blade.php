@@ -278,6 +278,11 @@
                           {{ request()->routeIs('admin.settings*') ? 'bg-teal-700 text-white' : 'text-teal-100 hover:bg-teal-800' }}">
                     <span class="text-base">⚙️</span> Settings
                 </a>
+                <a href="{{ route('guide.index') }}"
+                    class="flex items-center gap-3 px-3 py-2 rounded-lg transition
+                          {{ request()->routeIs('guide.*') ? 'bg-teal-700 text-white' : 'text-teal-100 hover:bg-teal-800' }}">
+                    <span class="text-base">📘</span> User Guide
+                </a>
                 <a href="{{ route('admin.maintenance.index') }}"
                     class="flex items-center gap-3 px-3 py-2 rounded-lg transition
                           {{ request()->routeIs('admin.maintenance*') ? 'bg-teal-700 text-white' : 'text-teal-100 hover:bg-teal-800' }}">
