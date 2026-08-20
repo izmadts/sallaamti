@@ -4,11 +4,6 @@
 <head>
     <meta charset="utf-8">
     <style>
-        @font-face {
-            font-family: 'NotoNastaliqUrdu';
-            src: url('{{ storage_path(' fonts/NotoNastaliqUrdu-Regular.ttf') }}') format('truetype');
-        }
-
         @page {
             size: A4 landscape;
             margin: 0;
@@ -21,26 +16,18 @@
             width: 297mm;
             height: 210mm;
             font-family: 'DejaVu Sans', sans-serif;
-            background: #fdfaf3;
+            background: #ffffff;
         }
 
+        /* Full-bleed page: border and safe-area padding live on separate
+           inner layers (same DomPDF-safe pattern as the other certificate
+           templates) rather than combined width+height+border+padding on
+           one element. */
         .page {
             width: 297mm;
             height: 210mm;
             position: relative;
             box-sizing: border-box;
-        }
-
-        .pattern-bg {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-image: url('{{ public_path(' images/islamic-pattern-bg.png') }}');
-            background-repeat: repeat;
-            opacity: 0.2;
-            z-index: 0;
         }
 
         .border-frame {
@@ -49,7 +36,17 @@
             left: 10mm;
             right: 10mm;
             bottom: 10mm;
-            border: 3px solid #b8962e;
+            border: 2px solid #cfd4db;
+            z-index: 1;
+        }
+
+        .border-frame-inner {
+            position: absolute;
+            top: 12mm;
+            left: 12mm;
+            right: 12mm;
+            bottom: 12mm;
+            border: 0.5px solid #e5e8ec;
             z-index: 1;
         }
 
@@ -57,78 +54,76 @@
             position: relative;
             z-index: 2;
             text-align: center;
-            padding: 14mm 20mm 8mm;
+            padding: 18mm 20mm 8mm;
         }
 
         .logo {
-            width: 100px;
-            margin-bottom: 6px;
+            width: 90px;
+            margin-bottom: 4px;
         }
 
-        .kicker {
-            font-size: 11px;
-            letter-spacing: 3px;
-            color: #b8962e;
+        .partner-badge {
+            display: inline-block;
+            margin: 8px 0 4px;
+            padding: 4px 16px;
+            background: #f3f5f7;
+            border: 1px solid #cfd4db;
+            border-radius: 20px;
+            font-size: 10px;
+            letter-spacing: 1.5px;
+            color: #5b6b7f;
             text-transform: uppercase;
-        }
-
-        .urdu-title {
-            font-family: 'NotoNastaliqUrdu', 'DejaVu Sans', sans-serif;
-            direction: rtl;
-            unicode-bidi: bidi-override;
-            font-size: 28px;
-            color: #0d6b6b;
-            margin: 8px 0 6px;
         }
 
         .english-title {
-            font-size: 22px;
-            color: #1a3c3c;
+            font-size: 24px;
+            color: #1a2332;
             font-weight: bold;
+            margin-top: 10px;
         }
 
         .divider {
-            color: #b8962e;
-            font-size: 16px;
-            margin: 12px 0;
+            width: 60px;
+            height: 2px;
+            background: #cfd4db;
+            margin: 12px auto;
         }
 
         .presented-to {
-            font-size: 12px;
-            color: #777;
+            font-size: 11px;
+            color: #8a94a3;
             letter-spacing: 2px;
             text-transform: uppercase;
-            margin-top: 6px;
+            margin-top: 10px;
         }
 
         .recipient-name {
-            font-size: 32px;
+            font-size: 30px;
             font-weight: bold;
-            color: #1a3c3c;
+            color: #1a2332;
             margin: 10px 0;
-            border-bottom: 1px solid #d8c48a;
+            border-bottom: 1px solid #cfd4db;
             display: inline-block;
             padding-bottom: 8px;
             min-width: 380px;
         }
 
         .course-line {
-            font-size: 13px;
-            color: #555;
+            font-size: 12px;
+            color: #6b7688;
             margin-top: 14px;
         }
 
         .course-title {
-            font-size: 20px;
+            font-size: 19px;
             font-weight: bold;
-            color: #0d6b6b;
+            color: #3d4a5c;
             margin: 6px 0 16px;
         }
 
-        /* Footer laid out as a table row — reliable in PDF rendering */
         .footer-table {
             width: 100%;
-            margin-top: 10mm;
+            margin-top: 8mm;
         }
 
         .footer-table td {
@@ -138,52 +133,53 @@
         }
 
         .signature-img {
-            height: 36px;
+            height: 34px;
         }
 
         .signature-line {
-            border-top: 1px solid #999;
+            border-top: 1px solid #cfd4db;
             width: 150px;
             margin: 4px auto 0;
             padding-top: 4px;
             font-size: 11px;
-            color: #555;
-        }
-
-        .seal {
-            width: 100px;           
+            color: #6b7688;
         }
 
         .qr img {
-            width: 80px;
+            width: 76px;
         }
 
         .qr-label {
             font-size: 7px;
-            color: #999;
+            color: #a3abb8;
             margin-top: 2px;
         }
 
         .meta-footer {
             margin-top: 8mm;
             font-size: 9px;
-            color: #999;
+            color: #a3abb8;
         }
 
         .cert-id {
             font-size: 9px;
-            color: #b8962e;
+            color: #6b7688;
             margin-top: 2px;
             font-weight: bold;
+        }
+
+        .izma-footer {
+            font-size: 8px;
+            color: #8a94a3;
+            margin-top: 2px;
         }
     </style>
 </head>
 
 <body>
     <div class="page">
-        <div class="pattern-bg"></div>
-        <div class="border-frame">
-        </div>
+        <div class="border-frame"></div>
+        <div class="border-frame-inner"></div>
 
         <div class="content">
 
@@ -191,19 +187,23 @@
             <img src="{{ public_path('images/sallaamti-logo.png') }}" class="logo"><br>
             @endif
 
-            @if ($certificate->type === 'course')
-            <div class="english-title">Certificate of Completion</div>
-            @else
-            <div class="english-title">{{ $certificate->title }}</div>
-            @endif
+            <div class="partner-badge">Presented by IZMA Digital Technology &amp; Security</div>
 
-            <div class="divider">❖ ─────────── ❖</div>
+            <div class="english-title">
+                @if ($certificate->type === 'course')
+                Certificate of Completion
+                @else
+                {{ $certificate->title }}
+                @endif
+            </div>
+
+            <div class="divider"></div>
 
             <div class="presented-to">This certificate is proudly presented to</div>
             <div class="recipient-name">{{ $certificate->user->name }}</div>
 
             @if ($certificate->type === 'course')
-            <div class="course-line">for successfully completing the course</div>
+            <div class="course-line">for successfully completing the digital skills course</div>
             <div class="course-title">{{ $certificate->course?->title }}</div>
             @endif
 
@@ -217,17 +217,10 @@
                     </td>
                     <td class="qr">
                         <img src="{{ $certificate->qrCodeBase64() }}">
-                        <div class="qr-label">Scan to verify</div>
+                        <div class="qr-label">SCAN TO VERIFY</div>
                     </td>
                     <td>
-                        @if ($certificate->type === 'course')
-                        @if (file_exists(public_path('images/signature-instructor.png')))
-                        <img src="{{ public_path('images/signature-instructor.png') }}" class="signature-img"><br>
-                        @endif
-                        <div class="signature-line">Course Instructor</div>
-                        @else
-                        <div class="signature-line">Sallaamti Administration</div>
-                        @endif
+                        <div class="signature-line">Sallaamti &amp; IZMA Digital Technology &amp; Security</div>
                     </td>
                 </tr>
             </table>
@@ -236,10 +229,7 @@
                 Issued on {{ $certificate->issued_at->format('d F Y') }} &nbsp;|&nbsp; www.sallaamti.com
             </div>
             <div class="cert-id">Certificate ID: {{ $certificate->certificate_number }}</div>
-
-            @if (file_exists(public_path('images/gold-seal.png')))
-            <img src="{{ public_path('images/gold-seal.png') }}" class="seal">
-            @endif
+            <div class="izma-footer">In partnership with IZMA Digital Technology &amp; Security &nbsp;|&nbsp; izmadts.com</div>
 
         </div>
     </div>

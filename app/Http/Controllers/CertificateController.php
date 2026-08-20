@@ -42,6 +42,13 @@ class CertificateController extends Controller
             return $pdf->download('Sallaamti-Volunteer-ID-' . $certificate->certificate_number . '.pdf');
         }
 
+        if ($certificate->course?->track === 'skills') {
+            $pdf = Pdf::loadView('certificates.pdf-skills', ['certificate' => $certificate])
+                ->setPaper('a4', 'landscape');
+
+            return $pdf->download('Sallaamti-Certificate-' . $certificate->certificate_number . '.pdf');
+        }
+
         $pdf = Pdf::loadView('certificates.pdf', ['certificate' => $certificate])
             ->setPaper('a4', 'landscape');
 
