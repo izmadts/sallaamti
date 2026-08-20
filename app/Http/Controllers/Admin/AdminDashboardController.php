@@ -36,11 +36,19 @@ class AdminDashboardController extends Controller
             'verified_nikah_profiles'   => NikahProfile::where('verification_status', 'verified')->count(),
             'pending_nikah_reports'     => NikahReport::where('status', 'pending')->count(),
 
-            // Quran Self-Paced Courses
-            'total_courses'             => Course::count(),
-            'published_courses'         => Course::where('is_published', true)->count(),
-            'total_enrollments'         => Enrollment::count(),
-            'total_certificates'        => Certificate::count(),
+            // Quran Self-Paced Courses — track-filtered so these numbers
+            // don't silently blend in Digital Skills courses now that the
+            // two share the same courses/enrollments/certificates tables.
+            'total_courses'             => Course::where('track', 'quran')->count(),
+            'published_courses'         => Course::where('track', 'quran')->where('is_published', true)->count(),
+            'total_enrollments'         => Enrollment::whereHas('course', fn ($q) => $q->where('track', 'quran'))->count(),
+            'total_certificates'        => Certificate::whereHas('course', fn ($q) => $q->where('track', 'quran'))->count(),
+
+            // Digital Skills
+            'total_skills_courses'      => Course::where('track', 'skills')->count(),
+            'published_skills_courses'  => Course::where('track', 'skills')->where('is_published', true)->count(),
+            'total_skills_enrollments'  => Enrollment::whereHas('course', fn ($q) => $q->where('track', 'skills'))->count(),
+            'total_skills_certificates' => Certificate::whereHas('course', fn ($q) => $q->where('track', 'skills'))->count(),
 
             // Quran Live Classes
             'total_live_courses'        => QuranLiveCourse::count(),

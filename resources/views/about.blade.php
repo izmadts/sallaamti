@@ -394,6 +394,16 @@
                 'badge' => null,
                 ],
                 [
+                'icon' => 'fa-laptop-code',
+                'color' => 'text-teal',
+                'emoji' => '💻',
+                'title' => 'Digital Skills',
+                'desc' => 'Free, self-paced skills training — Web Development, Graphic Design, Digital Marketing and more — presented by IZMA Digital Technology & Security.',
+                'url' => route('skills.index'),
+                'btn' => 'Explore Skills',
+                'badge' => null,
+                ],
+                [
                 'icon' => 'fa-heart',
                 'color' => 'text-red-500',
                 'emoji' => '💍',

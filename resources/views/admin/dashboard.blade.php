@@ -82,26 +82,63 @@
             </div>
             <div class="grid grid-cols-2 xl:grid-cols-4 gap-3">
                 <x-admin-stat
-                    :href="route('admin.courses.index')"
+                    :href="route('admin.courses.index', ['track' => 'quran'])"
                     value="{{ $stats['total_courses'] }}"
                     label="Total Courses"
                     color="green"
                     icon="📖" />
                 <x-admin-stat
-                    :href="route('admin.courses.index')"
+                    :href="route('admin.courses.index', ['track' => 'quran'])"
                     value="{{ $stats['published_courses'] }}"
                     label="Published"
                     color="teal"
                     icon="📢" />
                 <x-admin-stat
-                    :href="route('admin.courses.index')"
+                    :href="route('admin.courses.index', ['track' => 'quran'])"
                     value="{{ $stats['total_enrollments'] }}"
                     label="Enrollments"
                     color="teal"
                     icon="🎓" />
                 <x-admin-stat
-                    :href="route('admin.courses.index')"
+                    :href="route('admin.courses.index', ['track' => 'quran'])"
                     value="{{ $stats['total_certificates'] }}"
+                    label="Certificates Issued"
+                    color="teal"
+                    icon="🏅" />
+            </div>
+        </section>
+
+        {{-- ===== DIGITAL SKILLS (presented by IZMA) ===== --}}
+        <section>
+            <div class="flex justify-between items-center mb-2">
+                <p class="text-xs font-semibold text-gray-400 uppercase tracking-widest">Digital Skills</p>
+                <a href="{{ route('admin.courses.create') }}"
+                    class="text-xs bg-gray-700 text-white px-2.5 py-1 rounded hover:bg-gray-600">
+                    + Add Course
+                </a>
+            </div>
+            <div class="grid grid-cols-2 xl:grid-cols-4 gap-3">
+                <x-admin-stat
+                    :href="route('admin.courses.index', ['track' => 'skills'])"
+                    value="{{ $stats['total_skills_courses'] }}"
+                    label="Total Courses"
+                    color="green"
+                    icon="💻" />
+                <x-admin-stat
+                    :href="route('admin.courses.index', ['track' => 'skills'])"
+                    value="{{ $stats['published_skills_courses'] }}"
+                    label="Published"
+                    color="teal"
+                    icon="📢" />
+                <x-admin-stat
+                    :href="route('admin.courses.index', ['track' => 'skills'])"
+                    value="{{ $stats['total_skills_enrollments'] }}"
+                    label="Enrollments"
+                    color="teal"
+                    icon="🎓" />
+                <x-admin-stat
+                    :href="route('admin.courses.index', ['track' => 'skills'])"
+                    value="{{ $stats['total_skills_certificates'] }}"
                     label="Certificates Issued"
                     color="teal"
                     icon="🏅" />

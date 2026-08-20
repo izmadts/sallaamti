@@ -22,6 +22,7 @@ class SitemapController extends Controller
             ['loc' => '/testimonial', 'priority' => '0.5', 'changefreq' => 'monthly'],
             ['loc' => '/contact', 'priority' => '0.6', 'changefreq' => 'yearly'],
             ['loc' => '/courses', 'priority' => '0.9', 'changefreq' => 'weekly'],
+            ['loc' => '/skills', 'priority' => '0.9', 'changefreq' => 'weekly'],
             ['loc' => '/quran-live', 'priority' => '0.8', 'changefreq' => 'weekly'],
             ['loc' => '/blog', 'priority' => '0.8', 'changefreq' => 'weekly'],
             ['loc' => '/donate', 'priority' => '0.7', 'changefreq' => 'monthly'],

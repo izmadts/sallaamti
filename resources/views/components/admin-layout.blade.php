@@ -142,9 +142,9 @@
                 {{-- Quran --}}
                 <p class="text-teal-500 text-xs uppercase tracking-widest px-3 pt-4 pb-1">Quran Learning</p>
                 <a href="{{ route('admin.quran-admissions.index') }}" class="flex items-center gap-3 px-3 py-2 rounded-lg transition">📋 Quran Admissions</a>
-                <a href="{{ route('admin.courses.index') }}"
+                <a href="{{ route('admin.courses.index', ['track' => 'quran']) }}"
                     class="flex items-center gap-3 px-3 py-2 rounded-lg transition
-                          {{ request()->routeIs('admin.courses*') ? 'bg-teal-700 text-white' : 'text-teal-100 hover:bg-teal-800' }}">
+                          {{ request()->routeIs('admin.courses*') && request('track') !== 'skills' ? 'bg-teal-700 text-white' : 'text-teal-100 hover:bg-teal-800' }}">
                     <span class="text-base">📖</span> Courses
                 </a>
                 <a href="{{ route('admin.quran-live-courses.index') }}"
@@ -155,6 +155,14 @@
                     @if ($pendingLiveSubs > 0)
                     <span class="bg-purple-400 text-purple-900 text-xs font-bold px-1.5 py-0.5 rounded-full">{{ $pendingLiveSubs }}</span>
                     @endif
+                </a>
+
+                {{-- Digital Skills (presented by IZMA) --}}
+                <p class="text-teal-500 text-xs uppercase tracking-widest px-3 pt-4 pb-1">Digital Skills</p>
+                <a href="{{ route('admin.courses.index', ['track' => 'skills']) }}"
+                    class="flex items-center gap-3 px-3 py-2 rounded-lg transition
+                          {{ request()->routeIs('admin.courses*') && request('track') === 'skills' ? 'bg-teal-700 text-white' : 'text-teal-100 hover:bg-teal-800' }}">
+                    <span class="text-base">💻</span> Courses
                 </a>
 
                 {{-- Community --}}

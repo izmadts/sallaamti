@@ -13,9 +13,16 @@ use Illuminate\Support\Str;
 
 class CourseAdminController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $courses = Course::withCount('lessons', 'enrollments')->latest()->paginate(10);
+        $query = Course::withCount('lessons', 'enrollments')->latest();
+
+        if ($request->filled('track')) {
+            $query->where('track', $request->track);
+        }
+
+        $courses = $query->paginate(10)->withQueryString();
+
         return view('admin.courses.index', compact('courses'));
     }
 
