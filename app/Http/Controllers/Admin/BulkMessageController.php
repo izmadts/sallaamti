@@ -27,6 +27,11 @@ class BulkMessageController extends Controller
     // the count has to be account-wide, not per-campaign.
     private const DAILY_EMAIL_LIMIT = 500;
 
+    // WhatsApp Business API providers cap/throttle per-account daily sends
+    // too, and an unbounded blast risks getting the number itself banned —
+    // this had no cap at all before (security audit finding), unlike email.
+    private const DAILY_WHATSAPP_LIMIT = 500;
+
     // How many emails have already been queued today (any campaign) —
     // counted at dispatch time, not send time, so a campaign started late
     // in the day can't oversubscribe today's remaining quota before the
@@ -51,6 +56,26 @@ class BulkMessageController extends Controller
 
         $overflowIndex = $emailIndex - $remainingToday;
         $batchDay = intdiv($overflowIndex, self::DAILY_EMAIL_LIMIT) + 1;
+
+        return now()->addDays($batchDay)->setTime(9, 0);
+    }
+
+    private function whatsappsAlreadyQueuedToday(): int
+    {
+        return BulkMessageRecipient::whereHas('bulkMessage', fn ($q) => $q->where('channel', 'whatsapp'))
+            ->whereDate('created_at', today())
+            ->count();
+    }
+
+    // Same daily-batching approach as emailDispatchDelayFor() above.
+    private function whatsappDispatchDelayFor(int $whatsappIndex, int $remainingToday): ?\Illuminate\Support\Carbon
+    {
+        if ($whatsappIndex < $remainingToday) {
+            return null;
+        }
+
+        $overflowIndex = $whatsappIndex - $remainingToday;
+        $batchDay = intdiv($overflowIndex, self::DAILY_WHATSAPP_LIMIT) + 1;
 
         return now()->addDays($batchDay)->setTime(9, 0);
     }
@@ -131,8 +156,10 @@ class BulkMessageController extends Controller
             'recipient_count' => $recipients->count(),
         ]);
 
-        $remainingToday = self::DAILY_EMAIL_LIMIT - $this->emailsAlreadyQueuedToday();
+        $remainingEmailToday = self::DAILY_EMAIL_LIMIT - $this->emailsAlreadyQueuedToday();
+        $remainingWhatsappToday = self::DAILY_WHATSAPP_LIMIT - $this->whatsappsAlreadyQueuedToday();
         $emailIndex = 0;
+        $whatsappIndex = 0;
 
         foreach ($recipients as $user) {
             $address = $validated['channel'] === 'email' ? $user->email : $user->phone;
@@ -149,17 +176,22 @@ class BulkMessageController extends Controller
             ]);
 
             if ($validated['channel'] === 'email') {
-                $delay = $this->emailDispatchDelayFor($emailIndex, $remainingToday);
+                $delay = $this->emailDispatchDelayFor($emailIndex, $remainingEmailToday);
                 $delay ? SendBulkEmailJob::dispatch($recipient)->delay($delay) : SendBulkEmailJob::dispatch($recipient);
                 $emailIndex++;
             } else {
-                SendBulkWhatsappJob::dispatch($recipient);
+                $delay = $this->whatsappDispatchDelayFor($whatsappIndex, $remainingWhatsappToday);
+                $delay ? SendBulkWhatsappJob::dispatch($recipient)->delay($delay) : SendBulkWhatsappJob::dispatch($recipient);
+                $whatsappIndex++;
             }
         }
 
         $status = "Sending to {$bulkMessage->recipient_count} " . ($validated['channel'] === 'email' ? 'email' : 'WhatsApp') . ' recipient(s) — this page updates as deliveries complete.';
-        if ($validated['channel'] === 'email' && $emailIndex > max(0, $remainingToday)) {
+        if ($validated['channel'] === 'email' && $emailIndex > max(0, $remainingEmailToday)) {
             $status .= ' This list is larger than today\'s remaining Gmail quota, so it\'s split into daily batches automatically — the rest will keep sending over the next few days.';
+        }
+        if ($validated['channel'] === 'whatsapp' && $whatsappIndex > max(0, $remainingWhatsappToday)) {
+            $status .= ' This list is larger than today\'s WhatsApp sending limit, so it\'s split into daily batches automatically — the rest will keep sending over the next few days.';
         }
 
         return redirect()->route('admin.bulk-messages.show', $bulkMessage)->with('status', $status);

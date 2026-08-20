@@ -146,6 +146,26 @@ Route::get('/wall', [WallController::class, 'index'])->name('wall.index');
 Route::get('/wall/{duaRequest}/comments', [WallController::class, 'comments'])->name('wall.comments');
 Route::get('/wall/post/{communityPost}/comments', [WallController::class, 'postComments'])->name('wall.post.comments');
 
+// Public Posts — any logged-in member/staff can submit one (admin approval
+// required unless the author already holds posts.manage), and every
+// published post gets its own shareable public URL. Also doubles as a
+// lightweight public "author page" per user (name/avatar/short bio) via
+// /posts/author/{username} — both are real indexable URLs, growing the
+// site's public URL count for SEO/social sharing. Static segments
+// (create/mine) must be registered before the {post:slug} wildcard below,
+// or "create"/"mine" would be swallowed as a slug lookup and 404.
+Route::get('/posts', [\App\Http\Controllers\PostController::class, 'index'])->name('posts.index');
+Route::get('/posts/author/{user:username}', [\App\Http\Controllers\PostController::class, 'byAuthor'])->name('posts.by-author');
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/posts/create', [\App\Http\Controllers\PostController::class, 'create'])->name('posts.create');
+    Route::post('/posts', [\App\Http\Controllers\PostController::class, 'store'])->name('posts.store');
+    Route::get('/posts/mine', [\App\Http\Controllers\PostController::class, 'mine'])->name('posts.mine');
+    Route::get('/posts/{post:slug}/edit', [\App\Http\Controllers\PostController::class, 'edit'])->name('posts.edit');
+    Route::put('/posts/{post:slug}', [\App\Http\Controllers\PostController::class, 'update'])->name('posts.update');
+    Route::delete('/posts/{post:slug}', [\App\Http\Controllers\PostController::class, 'destroy'])->name('posts.destroy');
+});
+Route::get('/posts/{post:slug}', [\App\Http\Controllers\PostController::class, 'show'])->name('posts.show');
+
 // Certificate verification (public — no login needed)
 Route::get('/verify-certificate/{certificateNumber?}', [CertificateController::class, 'verify'])->name('certificate.verify');
 
@@ -383,11 +403,16 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
         });
     });
 
-    // Certificates (admin-issued)
-    Route::get('certificates', [CertificateAdminController::class, 'index'])->name('certificates.index');
-    Route::get('certificates/create', [CertificateAdminController::class, 'create'])->name('certificates.create');
-    Route::post('certificates', [CertificateAdminController::class, 'store'])->name('certificates.store');
-    Route::delete('certificates/{certificate}', [CertificateAdminController::class, 'destroy'])->name('certificates.destroy');
+    // Certificates (admin-issued) — 'admin.only', not in PermissionCatalog;
+    // issuing an arbitrary certificate isn't a "delegate to one narrow
+    // staff role" style action (security audit finding, see the Courses
+    // block above for the same reasoning).
+    Route::middleware('admin.only')->group(function () {
+        Route::get('certificates', [CertificateAdminController::class, 'index'])->name('certificates.index');
+        Route::get('certificates/create', [CertificateAdminController::class, 'create'])->name('certificates.create');
+        Route::post('certificates', [CertificateAdminController::class, 'store'])->name('certificates.store');
+        Route::delete('certificates/{certificate}', [CertificateAdminController::class, 'destroy'])->name('certificates.destroy');
+    });
 
     // Nikah Management — GET routes need nikah.view, mutating POST routes
     // need nikah.manage, the one DELETE needs nikah.delete (see
@@ -434,35 +459,43 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
         Route::post('nikah-reports/{report}/suspend', [NikahSafetyController::class, 'suspendReportedProfile'])->name('nikah.reports.suspend');
     });
 
-    // Quran Courses Management
-    Route::resource('courses', CourseAdminController::class);
-    Route::get('courses/{course}/lessons/create', [CourseAdminController::class, 'createLesson'])->name('courses.lessons.create');
-    Route::post('courses/{course}/lessons', [CourseAdminController::class, 'storeLesson'])->name('courses.lessons.store');
-    Route::get('lessons/{lesson}/edit', [CourseAdminController::class, 'editLesson'])->name('lessons.edit');
-    Route::put('lessons/{lesson}', [CourseAdminController::class, 'updateLesson'])->name('lessons.update');
-    Route::delete('lessons/{lesson}', [CourseAdminController::class, 'destroyLesson'])->name('lessons.destroy');
-    Route::get('courses/{course}/quiz', [QuizAdminController::class, 'edit'])->name('courses.quiz.edit');
-    Route::post('courses/{course}/quiz', [QuizAdminController::class, 'store'])->name('courses.quiz.store');
-    Route::post('quizzes/{quiz}/questions', [QuizAdminController::class, 'storeQuestion'])->name('quiz.questions.store');
-    Route::delete('quiz-questions/{question}', [QuizAdminController::class, 'destroyQuestion'])->name('quiz.questions.destroy');
-    Route::get('lessons/{lesson}/quiz', [QuizAdminController::class, 'editLessonQuiz'])->name('lessons.quiz.edit');
-    Route::post('lessons/{lesson}/quiz', [QuizAdminController::class, 'storeLessonQuiz'])->name('lessons.quiz.store');
+    // Quran Courses Management + Quran Live Classes Management — not in
+    // PermissionCatalog (nothing here is a "delegate to one narrow staff
+    // role" style resource), so — like Users/Settings/Maintenance and
+    // Integrations above — this needs 'admin.only' on top of the general
+    // 'admin' gate. Security audit finding: the general 'admin' middleware
+    // admits anyone holding even one unrelated narrow permission (e.g.
+    // volunteers.view), which without this wrapper could reach course
+    // content management and Quran Live payment confirmation.
+    Route::middleware('admin.only')->group(function () {
+        Route::resource('courses', CourseAdminController::class);
+        Route::get('courses/{course}/lessons/create', [CourseAdminController::class, 'createLesson'])->name('courses.lessons.create');
+        Route::post('courses/{course}/lessons', [CourseAdminController::class, 'storeLesson'])->name('courses.lessons.store');
+        Route::get('lessons/{lesson}/edit', [CourseAdminController::class, 'editLesson'])->name('lessons.edit');
+        Route::put('lessons/{lesson}', [CourseAdminController::class, 'updateLesson'])->name('lessons.update');
+        Route::delete('lessons/{lesson}', [CourseAdminController::class, 'destroyLesson'])->name('lessons.destroy');
+        Route::get('courses/{course}/quiz', [QuizAdminController::class, 'edit'])->name('courses.quiz.edit');
+        Route::post('courses/{course}/quiz', [QuizAdminController::class, 'store'])->name('courses.quiz.store');
+        Route::post('quizzes/{quiz}/questions', [QuizAdminController::class, 'storeQuestion'])->name('quiz.questions.store');
+        Route::delete('quiz-questions/{question}', [QuizAdminController::class, 'destroyQuestion'])->name('quiz.questions.destroy');
+        Route::get('lessons/{lesson}/quiz', [QuizAdminController::class, 'editLessonQuiz'])->name('lessons.quiz.edit');
+        Route::post('lessons/{lesson}/quiz', [QuizAdminController::class, 'storeLessonQuiz'])->name('lessons.quiz.store');
 
-    // Quran Live Classes Management
-    Route::resource('quran-live-courses', QuranLiveCourseAdminController::class);
-    Route::get('quran-live-courses/{quranLiveCourse}/subscriptions', [QuranLiveCourseAdminController::class, 'subscriptions'])->name('quran-live-courses.subscriptions');
-    Route::post('quran-subscriptions/{subscription}/confirm', [QuranLiveCourseAdminController::class, 'confirmPayment'])->name('quran-subscriptions.confirm');
-    Route::post('quran-subscriptions/{subscription}/reject', [QuranLiveCourseAdminController::class, 'rejectPayment'])->name('quran-subscriptions.reject');
-    Route::get('quran-live-courses/{course}/groups', [QuranClassGroupAdminController::class, 'index'])->name('quran-live-courses.groups.index');
-    Route::get('quran-live-courses/{course}/groups/create', [QuranClassGroupAdminController::class, 'create'])->name('quran-live-courses.groups.create');
-    Route::post('quran-live-courses/{course}/groups', [QuranClassGroupAdminController::class, 'store'])->name('quran-live-courses.groups.store');
-    Route::get('quran-class-groups/{group}/edit', [QuranClassGroupAdminController::class, 'edit'])->name('quran-class-groups.edit');
-    Route::put('quran-class-groups/{group}', [QuranClassGroupAdminController::class, 'update'])->name('quran-class-groups.update');
-    Route::delete('quran-class-groups/{group}', [QuranClassGroupAdminController::class, 'destroyGroup'])->name('quran-class-groups.destroy');
-    Route::get('quran-admissions', [QuranClassGroupAdminController::class, 'admissions'])->name('quran-admissions.index');
-    Route::post('quran-admissions/{admission}/assign', [QuranClassGroupAdminController::class, 'assignToGroup'])->name('quran-admissions.assign');
-    Route::post('quran-admissions/{admission}/reject', [QuranClassGroupAdminController::class, 'rejectAdmission'])->name('quran-admissions.reject');
-    Route::post('quran-group-students/{student}/status', [QuranClassGroupAdminController::class, 'updateStudentStatus'])->name('quran-group-students.status');
+        Route::resource('quran-live-courses', QuranLiveCourseAdminController::class);
+        Route::get('quran-live-courses/{quranLiveCourse}/subscriptions', [QuranLiveCourseAdminController::class, 'subscriptions'])->name('quran-live-courses.subscriptions');
+        Route::post('quran-subscriptions/{subscription}/confirm', [QuranLiveCourseAdminController::class, 'confirmPayment'])->name('quran-subscriptions.confirm');
+        Route::post('quran-subscriptions/{subscription}/reject', [QuranLiveCourseAdminController::class, 'rejectPayment'])->name('quran-subscriptions.reject');
+        Route::get('quran-live-courses/{course}/groups', [QuranClassGroupAdminController::class, 'index'])->name('quran-live-courses.groups.index');
+        Route::get('quran-live-courses/{course}/groups/create', [QuranClassGroupAdminController::class, 'create'])->name('quran-live-courses.groups.create');
+        Route::post('quran-live-courses/{course}/groups', [QuranClassGroupAdminController::class, 'store'])->name('quran-live-courses.groups.store');
+        Route::get('quran-class-groups/{group}/edit', [QuranClassGroupAdminController::class, 'edit'])->name('quran-class-groups.edit');
+        Route::put('quran-class-groups/{group}', [QuranClassGroupAdminController::class, 'update'])->name('quran-class-groups.update');
+        Route::delete('quran-class-groups/{group}', [QuranClassGroupAdminController::class, 'destroyGroup'])->name('quran-class-groups.destroy');
+        Route::get('quran-admissions', [QuranClassGroupAdminController::class, 'admissions'])->name('quran-admissions.index');
+        Route::post('quran-admissions/{admission}/assign', [QuranClassGroupAdminController::class, 'assignToGroup'])->name('quran-admissions.assign');
+        Route::post('quran-admissions/{admission}/reject', [QuranClassGroupAdminController::class, 'rejectAdmission'])->name('quran-admissions.reject');
+        Route::post('quran-group-students/{student}/status', [QuranClassGroupAdminController::class, 'updateStudentStatus'])->name('quran-group-students.status');
+    });
     // Volunteer Management (permission-gated, see App\Support\PermissionCatalog)
     Route::get('volunteers', [VolunteerAdminController::class, 'index'])->name('volunteers.index')->middleware('can:volunteers.view');
     Route::post('volunteers/{volunteer}/approve', [VolunteerAdminController::class, 'approve'])->name('volunteers.approve')->middleware('can:volunteers.manage');
@@ -475,6 +508,12 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::post('wall/{duaRequest}/reject', [DuaWallAdminController::class, 'reject'])->name('wall.reject')->middleware('can:wall.manage');
     Route::delete('wall/{duaRequest}', [DuaWallAdminController::class, 'destroy'])->name('wall.destroy')->middleware('can:wall.delete');
 
+    // Public Posts moderation (permission-gated, see App\Support\PermissionCatalog)
+    Route::get('posts', [\App\Http\Controllers\Admin\PostAdminController::class, 'index'])->name('posts.index')->middleware('can:posts.view');
+    Route::post('posts/{post}/approve', [\App\Http\Controllers\Admin\PostAdminController::class, 'approve'])->name('posts.approve')->middleware('can:posts.manage');
+    Route::post('posts/{post}/reject', [\App\Http\Controllers\Admin\PostAdminController::class, 'reject'])->name('posts.reject')->middleware('can:posts.manage');
+    Route::delete('posts/{post}', [\App\Http\Controllers\Admin\PostAdminController::class, 'destroy'])->name('posts.destroy')->middleware('can:posts.delete');
+
     // Donation Management (permission-gated)
     Route::get('donations', [DonationAdminController::class, 'index'])->name('donations.index')->middleware('can:donations.view');
     Route::post('donations/{donation}/confirm', [DonationAdminController::class, 'confirm'])->name('donations.confirm')->middleware('can:donations.manage');
@@ -482,9 +521,13 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('donation-screenshot/{donation}', [DonationAdminController::class, 'screenshot'])->name('admin.donation.screenshot')->middleware('can:donations.view');
     Route::delete('donations/{donation}', [DonationAdminController::class, 'destroy'])->name('donations.destroy')->middleware('can:donations.delete');
 
-    // Subscribers
-    Route::get('/subscribers', [SubscriberAdminController::class, 'index'])->name('subscribers.index');
-    Route::delete('/subscribers/{subscriber}', [SubscriberAdminController::class, 'destroy'])->name('subscribers.destroy');
+    // Subscribers — 'admin.only'; this is a raw contact-info export/delete
+    // surface (email/phone PII), not a delegatable moderation resource
+    // (security audit finding).
+    Route::middleware('admin.only')->group(function () {
+        Route::get('/subscribers', [SubscriberAdminController::class, 'index'])->name('subscribers.index');
+        Route::delete('/subscribers/{subscriber}', [SubscriberAdminController::class, 'destroy'])->name('subscribers.destroy');
+    });
 
     // Family Support queries (permission-gated)
     Route::get('support', [SupportQueryAdminController::class, 'index'])->name('support.index')->middleware('can:support.view');
@@ -494,18 +537,21 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::post('support/{query}/reply', [SupportQueryAdminController::class, 'reply'])->name('support.reply')->middleware('can:support.manage');
     Route::delete('support/{query}', [SupportQueryAdminController::class, 'destroy'])->name('support.destroy')->middleware('can:support.delete');
 
-    // Localization
-    Route::get('languages', [LanguageController::class, 'index'])->name('languages.index');
-    Route::post('languages', [LanguageController::class, 'store'])->name('languages.store');
-    Route::put('languages/{language}', [LanguageController::class, 'update'])->name('languages.update');
-    Route::delete('languages/{language}', [LanguageController::class, 'destroy'])->name('languages.destroy');
-    Route::post('languages/{language}/set-default', [LanguageController::class, 'setDefault'])->name('languages.set-default');
+    // Localization — 'admin.only'; site-wide config, same category as
+    // Settings above, not a delegatable resource (security audit finding).
+    Route::middleware('admin.only')->group(function () {
+        Route::get('languages', [LanguageController::class, 'index'])->name('languages.index');
+        Route::post('languages', [LanguageController::class, 'store'])->name('languages.store');
+        Route::put('languages/{language}', [LanguageController::class, 'update'])->name('languages.update');
+        Route::delete('languages/{language}', [LanguageController::class, 'destroy'])->name('languages.destroy');
+        Route::post('languages/{language}/set-default', [LanguageController::class, 'setDefault'])->name('languages.set-default');
 
-    Route::get('translations', [TranslationController::class, 'index'])->name('translations.index');
-    Route::get('translations/fetch/{locale}', [TranslationController::class, 'fetchByLocale'])->name('translations.fetch');
-    Route::post('translations', [TranslationController::class, 'store'])->name('translations.store');
-    Route::put('translations/{translation}', [TranslationController::class, 'update'])->name('translations.update');
-    Route::delete('translations/{translation}', [TranslationController::class, 'destroy'])->name('translations.destroy');
+        Route::get('translations', [TranslationController::class, 'index'])->name('translations.index');
+        Route::get('translations/fetch/{locale}', [TranslationController::class, 'fetchByLocale'])->name('translations.fetch');
+        Route::post('translations', [TranslationController::class, 'store'])->name('translations.store');
+        Route::put('translations/{translation}', [TranslationController::class, 'update'])->name('translations.update');
+        Route::delete('translations/{translation}', [TranslationController::class, 'destroy'])->name('translations.destroy');
+    });
 
     // Counseling Bookings
     // Counseling Bookings (permission-gated, see App\Support\PermissionCatalog)

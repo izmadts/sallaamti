@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Auth\Concerns\RegistersMinimalUsers;
 use App\Http\Controllers\Controller;
+use App\Mail\SocialProviderLinked;
 use App\Models\Setting;
 use App\Models\User;
 use Illuminate\Http\RedirectResponse;
@@ -11,6 +12,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Laravel\Socialite\Facades\Socialite;
 
@@ -157,6 +159,17 @@ class SocialAuthController extends Controller
 
             if ($user) {
                 $user->update(['provider' => $provider, 'provider_id' => $providerId]);
+
+                // Security audit finding: matching-by-email links to an
+                // existing account silently — this is the only signal the
+                // real owner gets if that link wasn't actually them.
+                if ($user->email) {
+                    try {
+                        Mail::to($user->email)->send(new SocialProviderLinked($user, $provider));
+                    } catch (\Throwable $e) {
+                        \Log::error('SocialProviderLinked email failed: ' . $e->getMessage());
+                    }
+                }
             }
         }
 
