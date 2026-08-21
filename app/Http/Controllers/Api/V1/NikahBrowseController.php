@@ -17,13 +17,13 @@ class NikahBrowseController extends Controller
     private function browsingBlockedResponse(?NikahProfile $myProfile): ?JsonResponse
     {
         if (!$myProfile) {
-            return response()->json(['code' => 'no_profile', 'message' => 'Create your Nikah profile first to explore matches.'], 409);
+            return response()->json(['code' => 'no_profile', 'message' => __('db.Create your Nikah profile first to explore matches.')], 409);
         }
         if ($myProfile->payment_status !== 'confirmed') {
-            return response()->json(['code' => 'payment_required', 'message' => 'Please complete your verification fee payment before you can explore other profiles.'], 402);
+            return response()->json(['code' => 'payment_required', 'message' => __('db.Please complete your verification fee payment before you can explore other profiles.')], 402);
         }
         if ($myProfile->verification_status !== 'verified') {
-            return response()->json(['code' => 'pending_verification', 'message' => "Your profile is still awaiting verification by our team."], 403);
+            return response()->json(['code' => 'pending_verification', 'message' => __('db.Your profile is still awaiting verification by our team.')], 403);
         }
         return null;
     }
@@ -33,7 +33,7 @@ class NikahBrowseController extends Controller
         $user = $request->user();
 
         if (!$user->gender) {
-            return response()->json(['code' => 'gender_required', 'message' => 'Please select your gender on your profile first.'], 409);
+            return response()->json(['code' => 'gender_required', 'message' => __('db.Please select your gender on your profile first.')], 409);
         }
 
         $myProfile = $user->nikahProfile;

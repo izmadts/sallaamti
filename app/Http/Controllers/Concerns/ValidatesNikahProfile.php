@@ -64,7 +64,7 @@ trait ValidatesNikahProfile
     protected function nikahProfileMessages(): array
     {
         return [
-            'cnic_number.unique' => 'This CNIC number is already registered to another profile.',
+            'cnic_number.unique' => __('db.This CNIC number is already registered to another profile.'),
         ];
     }
 

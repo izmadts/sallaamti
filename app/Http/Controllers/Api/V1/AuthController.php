@@ -38,7 +38,7 @@ class AuthController extends Controller
         ]);
 
         if (blank($validated['email'] ?? null) && blank($validated['phone'] ?? null)) {
-            throw ValidationException::withMessages(['email' => 'An email address or phone number is required.']);
+            throw ValidationException::withMessages(['email' => __('db.An email address or phone number is required.')]);
         }
 
         $user = User::create([
@@ -65,7 +65,7 @@ class AuthController extends Controller
         $user = User::where($field, $validated['login'])->first();
 
         if (!$user || !$user->password || !Hash::check($validated['password'], $user->password)) {
-            throw ValidationException::withMessages(['login' => 'Those credentials do not match an account.']);
+            throw ValidationException::withMessages(['login' => __('db.Those credentials do not match an account.')]);
         }
 
         if ($user->isDeactivated()) {
@@ -106,12 +106,12 @@ class AuthController extends Controller
         $purpose = $user ? 'login' : 'registration';
 
         if (!OtpCode::verify($validated['phone'], $validated['code'], $purpose)) {
-            throw ValidationException::withMessages(['code' => 'That code is invalid or has expired.']);
+            throw ValidationException::withMessages(['code' => __('db.That code is invalid or has expired.')]);
         }
 
         if (!$user) {
             if (blank($validated['name'] ?? null)) {
-                throw ValidationException::withMessages(['name' => 'Your name is required to finish registering.']);
+                throw ValidationException::withMessages(['name' => __('db.Your name is required to finish registering.')]);
             }
             $user = $this->createMinimalUser($validated['name'], $validated['email'], $validated['phone'], provider: 'whatsapp');
         }
@@ -140,7 +140,7 @@ class AuthController extends Controller
         $allowedAudiences = config('services.google.mobile_client_ids', []);
 
         if (!$info || !isset($info['sub']) || (!empty($allowedAudiences) && !in_array($info['aud'] ?? null, $allowedAudiences, true))) {
-            throw ValidationException::withMessages(['id_token' => 'Could not verify this Google sign-in.']);
+            throw ValidationException::withMessages(['id_token' => __('db.Could not verify this Google sign-in.')]);
         }
 
         $user = $this->resolveSocialUser('google', $info['sub'], $info['name'] ?? 'Sallaamti User', $info['email'] ?? null);
@@ -158,7 +158,7 @@ class AuthController extends Controller
         ])->json();
 
         if (!$info || !isset($info['id'])) {
-            throw ValidationException::withMessages(['access_token' => 'Could not verify this Facebook sign-in.']);
+            throw ValidationException::withMessages(['access_token' => __('db.Could not verify this Facebook sign-in.')]);
         }
 
         $user = $this->resolveSocialUser('facebook', $info['id'], $info['name'] ?? 'Sallaamti User', $info['email'] ?? null);
@@ -170,7 +170,7 @@ class AuthController extends Controller
     {
         $request->user()->currentAccessToken()->delete();
 
-        return response()->json(['message' => 'Logged out.']);
+        return response()->json(['message' => __('db.Logged out.')]);
     }
 
     public function me(Request $request): JsonResponse

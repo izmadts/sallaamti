@@ -31,7 +31,7 @@ class NikahInterestController extends Controller
         $myProfile = $request->user()->nikahProfile;
 
         if (!$myProfile) {
-            return response()->json(['code' => 'no_profile', 'message' => 'Create your Nikah profile first.'], 409);
+            return response()->json(['code' => 'no_profile', 'message' => __('db.Create your Nikah profile first.')], 409);
         }
 
         $this->guardAgainstBruteForce('nikah-interest-send:' . $request->user()->id);
@@ -44,7 +44,7 @@ class NikahInterestController extends Controller
             ->exists();
 
         if ($wasDeclined) {
-            return response()->json(['message' => "This person already declined your interest — you can't resend it."], 409);
+            return response()->json(['message' => __('db.This person already declined your interest — you can\'t resend it.')], 409);
         }
 
         $interest = NikahInterest::firstOrCreate([
@@ -62,7 +62,7 @@ class NikahInterestController extends Controller
             Log::error('NikahInterestReceived notification failed: ' . $e->getMessage());
         }
 
-        return response()->json(['message' => 'Interest sent! You will be notified if accepted.', 'status' => $interest->status]);
+        return response()->json(['message' => __('db.Interest sent! You will be notified if accepted.'), 'status' => $interest->status]);
     }
 
     public function index(Request $request): JsonResponse
@@ -70,7 +70,7 @@ class NikahInterestController extends Controller
         $myProfile = $request->user()->nikahProfile;
 
         if (!$myProfile) {
-            return response()->json(['code' => 'no_profile', 'message' => 'Create your Nikah profile first.'], 409);
+            return response()->json(['code' => 'no_profile', 'message' => __('db.Create your Nikah profile first.')], 409);
         }
 
         $received = $myProfile->receivedInterests()->with('sender.user')->latest()->get();
@@ -95,7 +95,7 @@ class NikahInterestController extends Controller
             Log::error('NikahInterestAccepted notification failed: ' . $e->getMessage());
         }
 
-        return response()->json(['message' => 'Interest accepted! Contact details are now visible to both sides.', 'status' => 'accepted']);
+        return response()->json(['message' => __('db.Interest accepted! Contact details are now visible to both sides.'), 'status' => 'accepted']);
     }
 
     public function decline(Request $request, NikahInterest $interest): JsonResponse
@@ -111,7 +111,7 @@ class NikahInterestController extends Controller
             Log::error('NikahInterestDeclined notification failed: ' . $e->getMessage());
         }
 
-        return response()->json(['message' => 'Interest declined.', 'status' => 'declined']);
+        return response()->json(['message' => __('db.Interest declined.'), 'status' => 'declined']);
     }
 
     private function interestPayload(NikahInterest $interest, NikahProfile $otherProfile): array

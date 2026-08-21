@@ -18,7 +18,7 @@ class NikahPaymentController extends Controller
         abort_unless($profile, 404);
 
         if ($profile->payment_status === 'confirmed') {
-            return response()->json(['message' => 'Payment already confirmed.', 'payment_status' => 'confirmed']);
+            return response()->json(['message' => __('db.Payment already confirmed.'), 'payment_status' => 'confirmed']);
         }
 
         $validated = $request->validate([
@@ -42,6 +42,6 @@ class NikahPaymentController extends Controller
             }
         });
 
-        return response()->json(['message' => 'Payment proof submitted! Our team will confirm it shortly.', 'payment_status' => 'submitted']);
+        return response()->json(['message' => __('db.Payment proof submitted! Our team will confirm it shortly.'), 'payment_status' => 'submitted']);
     }
 }

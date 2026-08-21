@@ -26,6 +26,30 @@ class NikahProfileController extends Controller
     // must collect all four together before the very first store() call.
     private const CREATION_REQUIRED = ['age', 'city', 'guardian_name', 'guardian_contact'];
 
+    // Human labels for field-name-interpolated messages below — translated
+    // via __('db.') same as the message templates themselves, so e.g. a
+    // Urdu speaker sees "شہر" rather than the raw column name "city".
+    // Casing matters: the `translations` table's lookup is case-insensitive
+    // on write (MySQL's default collation), so e.g. seeding a lowercase
+    // 'age' silently updated a pre-existing 'Age' row from the website's
+    // own forms rather than creating a separate one — these values must
+    // match that existing casing exactly, or the __('db.') lookup (which
+    // *is* case-sensitive, a plain PHP array key match) misses it.
+    private const FIELD_LABELS = [
+        'age' => 'Age',
+        'city' => 'City',
+        'guardian_name' => 'Guardian Name',
+        'guardian_contact' => 'Guardian Contact Number',
+        'cnic_number' => 'CNIC Number',
+        'cnic_front_image' => 'CNIC front image',
+        'cnic_back_image' => 'CNIC back image',
+    ];
+
+    private function fieldLabel(string $field): string
+    {
+        return __('db.' . (self::FIELD_LABELS[$field] ?? $field));
+    }
+
     public function show(Request $request): JsonResponse
     {
         $profile = $request->user()->nikahProfile;
@@ -46,7 +70,7 @@ class NikahProfileController extends Controller
             $missing = array_diff(self::CREATION_REQUIRED, array_keys(array_filter($request->all())));
             if ($missing) {
                 throw ValidationException::withMessages(
-                    collect($missing)->mapWithKeys(fn ($f) => [$f => "The {$f} field is required to create your profile."])->toArray()
+                    collect($missing)->mapWithKeys(fn ($f) => [$f => __('db.The :field field is required to create your profile.', ['field' => $this->fieldLabel($f)])])->toArray()
                 );
             }
         }
@@ -115,7 +139,7 @@ class NikahProfileController extends Controller
             }
         } catch (\Throwable $e) {
             report($e);
-            throw ValidationException::withMessages(['photo' => 'Sorry, we could not save your uploaded photo(s) — please try again in a moment.']);
+            throw ValidationException::withMessages(['photo' => __('db.Sorry, we could not save your uploaded photo(s) — please try again in a moment.')]);
         }
 
         if (!$profile) {
@@ -142,7 +166,7 @@ class NikahProfileController extends Controller
         $profile = $request->user()->nikahProfile;
 
         if (!$profile) {
-            throw ValidationException::withMessages(['profile' => 'Create your profile first.']);
+            throw ValidationException::withMessages(['profile' => __('db.Create your profile first.')]);
         }
 
         $missing = collect(['cnic_number', 'cnic_front_image', 'cnic_back_image'])
@@ -150,12 +174,12 @@ class NikahProfileController extends Controller
 
         if ($missing->isNotEmpty()) {
             throw ValidationException::withMessages(
-                $missing->mapWithKeys(fn ($f) => [$f => "Please provide your {$f} before submitting."])->toArray()
+                $missing->mapWithKeys(fn ($f) => [$f => __('db.Please provide your :field before submitting.', ['field' => $this->fieldLabel($f)])])->toArray()
             );
         }
 
         return response()->json([
-            'message' => 'Profile submitted for verification.',
+            'message' => __('db.Profile submitted for verification.'),
             'profile' => $this->profilePayload($profile),
         ]);
     }
