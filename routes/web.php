@@ -543,6 +543,14 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::post('support/{query}/reply', [SupportQueryAdminController::class, 'reply'])->name('support.reply')->middleware('can:support.manage');
     Route::delete('support/{query}', [SupportQueryAdminController::class, 'destroy'])->name('support.destroy')->middleware('can:support.delete');
 
+    // API Console — 'admin.only'; a test call impersonates any chosen
+    // member via a real access token, so this is the same privilege
+    // category as Subscribers/Localization above.
+    Route::middleware('admin.only')->group(function () {
+        Route::get('api-console', [\App\Http\Controllers\Admin\ApiConsoleController::class, 'index'])->name('api-console.index');
+        Route::post('api-console/test', [\App\Http\Controllers\Admin\ApiConsoleController::class, 'test'])->name('api-console.test');
+    });
+
     // Localization — 'admin.only'; site-wide config, same category as
     // Settings above, not a delegatable resource (security audit finding).
     Route::middleware('admin.only')->group(function () {

@@ -48,6 +48,15 @@ return [
         'client_id' => env('GOOGLE_CLIENT_ID'),
         'client_secret' => env('GOOGLE_CLIENT_SECRET'),
         'redirect' => env('GOOGLE_REDIRECT_URI'),
+        // The Flutter app authenticates with its own OAuth client(s) —
+        // separate, SHA-1-fingerprinted Android/iOS client IDs from the
+        // website's — registered in the Google Cloud Console specifically
+        // for the mobile app. Api\V1\AuthController checks the ID token's
+        // `aud` claim against every id listed here (comma-separated), so
+        // both Android and iOS client IDs can be accepted at once. Empty
+        // until the user provides these; social login on mobile will fail
+        // validation (not silently succeed) until this is set.
+        'mobile_client_ids' => array_filter(explode(',', env('GOOGLE_MOBILE_CLIENT_IDS', ''))),
     ],
 
     'facebook' => [

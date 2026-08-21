@@ -293,6 +293,11 @@
                           {{ request()->routeIs('admin.maintenance*') ? 'bg-teal-700 text-white' : 'text-teal-100 hover:bg-teal-800' }}">
                     <span class="text-base">🛠️</span> Maintenance
                 </a>
+                <a href="{{ route('admin.api-console.index') }}"
+                    class="flex items-center gap-3 px-3 py-2 rounded-lg transition
+                          {{ request()->routeIs('admin.api-console*') ? 'bg-teal-700 text-white' : 'text-teal-100 hover:bg-teal-800' }}">
+                    <span class="text-base">🧪</span> API Console
+                </a>
                 <a href="{{ route('admin.languages.index') }}"
                     class="flex items-center gap-3 px-3 py-2 rounded-lg transition
                           {{ request()->routeIs('admin.languages*') ? 'bg-teal-700 text-white' : 'text-teal-100 hover:bg-teal-800' }}">

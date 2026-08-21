@@ -2,23 +2,20 @@
 
 namespace App\Http\Controllers\Auth;
 
-use App\Http\Controllers\Auth\Concerns\RegistersMinimalUsers;
+use App\Http\Controllers\Auth\Concerns\ResolvesSocialLogin;
 use App\Http\Controllers\Controller;
-use App\Mail\SocialProviderLinked;
 use App\Models\Setting;
-use App\Models\User;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Http;
-use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
 use Laravel\Socialite\Facades\Socialite;
 
 class SocialAuthController extends Controller
 {
-    use RegistersMinimalUsers;
+    use ResolvesSocialLogin;
 
     // TikTok has no Socialite driver, so it can't go through the generic
     // {provider}_client_id-driven path below — it gets its own dedicated
@@ -150,45 +147,17 @@ class SocialAuthController extends Controller
     // Shared by every provider (Socialite-based or manual) — find an
     // existing account by provider+id, fall back to matching by email if
     // one was provided, otherwise create a new minimal account, then log in.
+    // The account-linking/notification logic itself lives in
+    // ResolvesSocialLogin so the mobile API controller shares it exactly.
     private function loginOrRegister(string $provider, string $providerId, string $name, ?string $email): RedirectResponse
     {
-        $user = User::where('provider', $provider)->where('provider_id', $providerId)->first();
-
-        if (!$user && $email) {
-            $user = User::where('email', $email)->first();
-
-            if ($user) {
-                $user->update(['provider' => $provider, 'provider_id' => $providerId]);
-
-                // Security audit finding: matching-by-email links to an
-                // existing account silently — this is the only signal the
-                // real owner gets if that link wasn't actually them.
-                if ($user->email) {
-                    try {
-                        Mail::to($user->email)->send(new SocialProviderLinked($user, $provider));
-                    } catch (\Throwable $e) {
-                        \Log::error('SocialProviderLinked email failed: ' . $e->getMessage());
-                    }
-                }
-            }
-        }
-
-        if (!$user) {
-            $user = $this->createMinimalUser($name, $email, null, provider: $provider);
-            $user->update(['provider_id' => $providerId]);
-        }
-
-        if (!$user->email_verified_at && $email) {
-            $user->email_verified_at = now();
-            $user->save();
-        }
-
-        if ($user->isDeactivated()) {
-            $user->reactivate();
-            session()->flash('status', 'Welcome back! Your account has been reactivated.');
-        }
+        $user = $this->resolveSocialUser($provider, $providerId, $name, $email);
 
         Auth::login($user);
+
+        if ($this->socialLoginWasReactivated) {
+            session()->flash('status', 'Welcome back! Your account has been reactivated.');
+        }
 
         session()->flash('conversion_event', 'user_login');
 
