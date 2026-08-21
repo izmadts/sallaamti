@@ -365,6 +365,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::resource('team-members', TeamMemberController::class)->except(['show']);
     Route::post('team-members/{team_member}/toggle', [TeamMemberController::class, 'toggle'])->name('team-members.toggle');
 
+    Route::resource('faqs', \App\Http\Controllers\Admin\FaqAdminController::class)->except(['show']);
+
     Route::resource('daily-content', DailyContentController::class)->except(['show']);
     Route::post('daily-content/{daily_content}/toggle', [DailyContentController::class, 'toggle'])->name('daily-content.toggle');
     // First-wave granular-permission resource (see App\Support\PermissionCatalog)

@@ -315,4 +315,5 @@
         }
     </style>
 
+    <x-faq-section module="skills" />
 </x-guest-layout>

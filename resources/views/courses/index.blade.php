@@ -320,4 +320,5 @@
         }
     </style>
 
+    <x-faq-section module="quran" />
 </x-guest-layout>

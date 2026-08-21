@@ -32,6 +32,7 @@ class DatabaseSeeder extends Seeder
             TestimonialSeeder::class,
             LanguageSeeder::class,
             TranslationSeeder::class,
+            FaqSeeder::class,
         ]);
     }    
 }

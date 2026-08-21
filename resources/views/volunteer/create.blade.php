@@ -261,4 +261,5 @@
         }
     </style>
 
+    <x-faq-section module="volunteer" />
 </x-guest-layout>

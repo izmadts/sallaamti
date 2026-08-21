@@ -231,4 +231,6 @@
             observer.observe(sentinel);
         })();
     </script>
+
+    <x-faq-section module="nikah" />
 </x-app-layout>

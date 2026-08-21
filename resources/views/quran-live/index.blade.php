@@ -158,4 +158,5 @@
         }
     </style>
 
+    <x-faq-section module="quran_live" />
 </x-guest-layout>

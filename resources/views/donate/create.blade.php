@@ -417,4 +417,5 @@
         });
     </script>
 
+    <x-faq-section module="donation" />
 </x-guest-layout>

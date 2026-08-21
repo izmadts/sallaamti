@@ -41,4 +41,6 @@
         </div>
         </div>
     </div>
+
+    <x-faq-section module="counseling" />
 </x-app-layout>

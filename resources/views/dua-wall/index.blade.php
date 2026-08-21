@@ -121,4 +121,6 @@
     </div>
 
     @include('dua-wall.partials.wall-scripts', ['feedUrl' => route('wall.index'), 'paginated' => $paginated])
+
+    <x-faq-section module="wall" />
 </x-dynamic-component>
