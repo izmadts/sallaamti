@@ -11,17 +11,15 @@
 
                 <x-wizard-progress :steps="$steps" :titles="$stepTitles" :current="$step" />
 
-                @if ($errors->any())
-                <div class="mb-4 p-4 bg-red-50 text-red-700 rounded">
+                <div id="verification-errors" class="mb-4 p-4 bg-red-50 text-red-700 rounded {{ $errors->any() ? '' : 'hidden' }}">
                     <ul class="list-disc list-inside text-sm">
                         @foreach ($errors->all() as $error)
                         <li>{{ $error }}</li>
                         @endforeach
                     </ul>
                 </div>
-                @endif
 
-                <form method="POST" action="{{ route('nikah.create.step.save', 'verification') }}" enctype="multipart/form-data" class="space-y-6">
+                <form id="verification-form" method="POST" action="{{ route('nikah.create.step.save', 'verification') }}" enctype="multipart/form-data" class="space-y-6">
                     @csrf
 
                     <x-nikah-section :title="__('db.Verification (Required)')" icon="🪪" color="rose" :description="__('db.Your CNIC will only be used for verification and is never shown publicly.')">
@@ -74,11 +72,81 @@
 
                     <div class="flex justify-between">
                         <a href="{{ route('nikah.create.step', 'about') }}" class="btn-base text-gray-600 border border-gray-300 px-4 py-2 rounded-md hover:bg-gray-50">← {{ __('db.Back') }}</a>
-                        <x-primary-button>{{ __('db.Review My Profile') }} →</x-primary-button>
+                        <x-primary-button id="verification-submit">{{ __('db.Review My Profile') }} →</x-primary-button>
                     </div>
                 </form>
 
             </div>
         </div>
     </div>
+
+    {{-- Submits via fetch() instead of a plain page-navigation POST
+         specifically so a browser-level upload failure — most notably
+         Chrome's ERR_UPLOAD_FILE_CHANGED, thrown when a selected file was
+         touched by something like OneDrive sync between selection and
+         submit — surfaces as this page's own friendly message instead of
+         replacing the whole page with Chrome's network-error screen.
+         Falls back to a normal form submission if JS fails to attach
+         (progressive enhancement, not a hard dependency on this script). --}}
+    <script>
+        (function () {
+            const form = document.getElementById('verification-form');
+            const errorsBox = document.getElementById('verification-errors');
+            const submitBtn = document.getElementById('verification-submit');
+            if (!form || !errorsBox || !submitBtn) return;
+
+            const uploadChangedMessage = @json(__("db.We couldn't upload your file. This can happen if a selected photo was moved, renamed, or changed since you picked it — for example, by OneDrive or another sync tool. Please choose your CNIC/photo files again and submit."));
+            const uploadingLabel = @json(__('db.Uploading…'));
+            const originalLabel = submitBtn.innerHTML;
+
+            function showErrors(html) {
+                errorsBox.innerHTML = html;
+                errorsBox.classList.remove('hidden');
+                errorsBox.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+
+            form.addEventListener('submit', async function (e) {
+                e.preventDefault();
+
+                errorsBox.classList.add('hidden');
+                errorsBox.innerHTML = '';
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = uploadingLabel;
+
+                try {
+                    const response = await fetch(form.action, {
+                        method: 'POST',
+                        body: new FormData(form),
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Accept': 'application/json',
+                        },
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        window.location.href = data.redirect;
+                        return; // keep the button disabled while the browser navigates away
+                    }
+
+                    if (response.status === 422) {
+                        const data = await response.json();
+                        const messages = Object.values(data.errors || {}).flat();
+                        showErrors('<ul class="list-disc list-inside text-sm">' +
+                            messages.map((m) => '<li>' + m + '</li>').join('') + '</ul>');
+                    } else {
+                        throw new Error('Unexpected response status ' + response.status);
+                    }
+                } catch (err) {
+                    // fetch() rejects (rather than resolving with a bad status)
+                    // for the underlying network/file-read failure this whole
+                    // script exists to handle gracefully.
+                    showErrors('<p>' + uploadChangedMessage + '</p>');
+                } finally {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalLabel;
+                }
+            });
+        })();
+    </script>
 </x-app-layout>

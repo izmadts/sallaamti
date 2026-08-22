@@ -10,11 +10,16 @@
         @change="fileName = $event.target.files[0]?.name || ''"
         {{ $attributes->merge(['class' => 'sr-only']) }} {{ $required ? 'required' : '' }}>
     <div class="flex flex-col sm:flex-row gap-2">
-        <button type="button" @click="$refs.fileInput.removeAttribute('capture'); $refs.fileInput.click()"
+        {{-- Clearing .value before toggling `capture` and reopening the
+             picker (rather than mutating the attribute on an input that
+             may already hold a selected file) avoids leaving a stale
+             FileList behind — one contributor to Chrome's
+             ERR_UPLOAD_FILE_CHANGED at submit time. --}}
+        <button type="button" @click="$refs.fileInput.value = ''; $refs.fileInput.removeAttribute('capture'); $refs.fileInput.click()"
             class="flex-1 inline-flex items-center justify-center gap-2 border border-gray-300 rounded-md px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition">
             📁 {{ __('db.Upload from Gallery') }}
         </button>
-        <button type="button" @click="$refs.fileInput.setAttribute('capture', 'environment'); $refs.fileInput.click()"
+        <button type="button" @click="$refs.fileInput.value = ''; $refs.fileInput.setAttribute('capture', 'environment'); $refs.fileInput.click()"
             class="flex-1 inline-flex items-center justify-center gap-2 border border-gray-300 rounded-md px-3 py-2 text-sm text-gray-700 hover:bg-gray-50 transition">
             📷 {{ __('db.Take a Photo') }}
         </button>

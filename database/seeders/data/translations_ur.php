@@ -599,4 +599,8 @@ return [
     'Payment already confirmed.' => 'ادائیگی پہلے ہی تصدیق شدہ ہے۔',
     'Payment proof submitted! Our team will confirm it shortly.' => 'ادائیگی کا ثبوت جمع کروا دیا گیا! ہماری ٹیم جلد اس کی تصدیق کرے گی۔',
     'This CNIC number is already registered to another profile.' => 'یہ شناختی کارڈ نمبر پہلے ہی کسی اور پروفائل میں رجسٹرڈ ہے۔',
+
+    // ---- Nikah verification step (AJAX upload error handling) ----
+    "We couldn't upload your file. This can happen if a selected photo was moved, renamed, or changed since you picked it — for example, by OneDrive or another sync tool. Please choose your CNIC/photo files again and submit." => 'ہم آپ کی فائل اپ لوڈ نہیں کر سکے۔ ایسا اس وقت ہو سکتا ہے جب منتخب کردہ تصویر آپ کے چننے کے بعد منتقل، نام تبدیل یا تبدیل ہو گئی ہو — مثال کے طور پر ون ڈرائیو یا کسی اور سنک ٹول کی وجہ سے۔ براہ کرم اپنی شناختی کارڈ/تصویر کی فائلیں دوبارہ منتخب کر کے جمع کروائیں۔',
+    'Uploading…' => 'اپ لوڈ ہو رہا ہے…',
 ];

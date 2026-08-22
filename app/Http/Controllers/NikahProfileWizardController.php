@@ -146,9 +146,23 @@ class NikahProfileWizardController extends Controller
         $steps = $this->wizardSteps();
         $nextIndex = array_search($step, $steps) + 1;
 
-        return $nextIndex < count($steps)
-            ? redirect()->route('nikah.create.step', $steps[$nextIndex])
-            : redirect()->route('nikah.create.review');
+        $redirectUrl = $nextIndex < count($steps)
+            ? route('nikah.create.step', $steps[$nextIndex])
+            : route('nikah.create.review');
+
+        // The verification step submits via fetch() (see step-verification's
+        // script) specifically so a browser-level upload failure — e.g.
+        // Chrome's ERR_UPLOAD_FILE_CHANGED, thrown when a selected file was
+        // touched by something like OneDrive sync between selection and
+        // submit — surfaces as a friendly in-page message instead of
+        // replacing the whole page with Chrome's own network-error screen.
+        // A JSON response is what makes that possible; the plain redirect
+        // stays the fallback for non-JS/JS-disabled submissions.
+        if ($request->wantsJson()) {
+            return response()->json(['redirect' => $redirectUrl]);
+        }
+
+        return redirect($redirectUrl);
     }
 
     public function review()
