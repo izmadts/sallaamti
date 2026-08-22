@@ -21,6 +21,7 @@
 
 <h3>💍 Nikah Management</h3>
 <ul>
+    <li><strong>Leads</strong> — the matchmaker CRM: capture a WhatsApp/Facebook/Instagram contact before they're a real account, track status/follow-ups/notes, "Convert to Client" to hand off into the same walk-in wizard below with their name/contact pre-filled, build a shortlist of candidates for them, and track a simple matchmaking package + price. Full admins see every matchmaker's leads; a matchmaker sees only their own.</li>
     <li><strong>All Profiles</strong> / <strong>Verifications</strong> — review new profiles (CNIC number + front/back photos), Approve or Reject with a reason. Bulk-approve is available for straightforward cases. Send a reminder to profiles stuck incomplete.</li>
     <li><strong>Payments</strong> — confirm or reject the one-time verification fee before a profile can go live; you can also record an offline payment manually.</li>
     <li><strong>Reports</strong> — safety reports members file against each other; view the conversation history attached to a report (if any) and suspend a profile if warranted. Dismiss reports that don't need action.</li>
@@ -106,6 +107,7 @@
 
 <h3>💍 نکاح کا انتظام</h3>
 <ul>
+    <li><strong>لیڈز</strong> — میچ میکر سی آر ایم: کسی واٹس ایپ/فیس بک/انسٹاگرام رابطے کو حقیقی اکاؤنٹ بننے سے پہلے ہی درج کریں، حیثیت/فالو اپ/نوٹس ٹریک کریں، "کلائنٹ میں تبدیل کریں" کے ذریعے نیچے دیے گئے واک اِن عمل میں ان کا نام/رابطہ پہلے سے بھرا ہوا منتقل کریں، ان کے لیے امیدواروں کی شارٹ لسٹ بنائیں، اور ایک سادہ میچ میکنگ پیکج + قیمت ٹریک کریں۔ مکمل ایڈمن ہر میچ میکر کی لیڈز دیکھتے ہیں؛ ایک میچ میکر صرف اپنی لیڈز دیکھتا ہے۔</li>
     <li><strong>تمام پروفائلز</strong> / <strong>تصدیقات</strong> — نئی پروفائلز (شناختی کارڈ نمبر + آگے/پیچھے کی تصاویر) کا جائزہ لیں، ایک وجہ کے ساتھ منظور یا مسترد کریں۔ سیدھے معاملات کے لیے اجتماعی منظوری دستیاب ہے۔ نامکمل رہ جانے والی پروفائلز کو یاد دہانی بھیجیں۔</li>
     <li><strong>ادائیگیاں</strong> — پروفائل لائیو ہونے سے پہلے یک بارگی تصدیقی فیس کی تصدیق یا مسترد کریں؛ آپ دستی طور پر آف لائن ادائیگی بھی درج کر سکتے ہیں۔</li>
     <li><strong>رپورٹس</strong> — وہ حفاظتی رپورٹس جو ممبران ایک دوسرے کے خلاف جمع کرواتے ہیں؛ رپورٹ سے منسلک گفتگو کی تاریخ (اگر کوئی ہو) دیکھیں اور اگر جائز ہو تو پروفائل کو معطل کریں۔ ان رپورٹس کو خارج کریں جن پر کارروائی کی ضرورت نہیں۔</li>
