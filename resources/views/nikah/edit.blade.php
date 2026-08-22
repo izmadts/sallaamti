@@ -373,6 +373,17 @@
          into this page's own friendly message instead of Chrome's
          network-error screen. Falls back to a normal form submission if
          this script fails to attach. --}}
+    @php
+        // Assigned to plain PHP vars before @json() — Blade's built-in @json
+        // directive splits its raw argument text on EVERY comma (regardless
+        // of quoting/nesting) to pull out optional $options/$depth params;
+        // a comma-containing translated string passed directly gets silently
+        // truncated/corrupted at compile time, crashing the whole page with
+        // a PHP ParseError. A bare variable has no comma, so it's safe.
+        $uploadChangedMessageText = __("db.We couldn't upload your file. This can happen if a selected photo was moved, renamed, or changed since you picked it — for example, by OneDrive or another sync tool. Please choose your CNIC/photo files again and submit.");
+        $uploadingLabelText = __('db.Uploading…');
+        $errorHeadingText = __('db.Please fix the following before saving:');
+    @endphp
     <script>
         (function () {
             const form = document.getElementById('verification-form');
@@ -380,9 +391,9 @@
             const submitBtn = document.getElementById('verification-submit');
             if (!form || !errorsBox || !submitBtn) return;
 
-            const uploadChangedMessage = @json(__("db.We couldn't upload your file. This can happen if a selected photo was moved, renamed, or changed since you picked it — for example, by OneDrive or another sync tool. Please choose your CNIC/photo files again and submit."));
-            const uploadingLabel = @json(__('db.Uploading…'));
-            const errorHeading = @json(__('db.Please fix the following before saving:'));
+            const uploadChangedMessage = @json($uploadChangedMessageText);
+            const uploadingLabel = @json($uploadingLabelText);
+            const errorHeading = @json($errorHeadingText);
             const originalLabel = submitBtn.innerHTML;
 
             function showErrors(html) {
