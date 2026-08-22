@@ -106,9 +106,9 @@
                         <div class="w-20 h-20 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400 text-xs">No Photo</div>
                         @endif
                         <div>
-                            <h3 class="font-semibold text-lg">{{ $profile->user->name }}</h3>
-                            <p class="text-sm text-gray-500">{{ $profile->user->email }}</p>
-                            <p class="text-sm text-gray-500">{{ $profile->age }} yrs, {{ ucfirst($profile->user->gender) }}, {{ $profile->city }}</p>
+                            <h3 class="font-semibold text-lg">{{ $profile->user?->name ?? 'Deleted account' }}</h3>
+                            <p class="text-sm text-gray-500">{{ $profile->user?->email }}</p>
+                            <p class="text-sm text-gray-500">{{ $profile->age }} yrs, {{ ucfirst($profile->user?->gender ?? '—') }}, {{ $profile->city }}</p>
                             <p class="text-sm text-gray-500">CNIC: {{ $profile->cnic_number }}</p>
                             <p class="text-sm text-gray-500">
                                 Guardian: {{ $profile->guardian_name }} ({{ $profile->guardian_contact }})
@@ -227,7 +227,7 @@
                     <div class="mt-2 space-y-2">
                         @foreach ($profile->moderationNotes as $note)
                         <div class="bg-gray-50 rounded p-2 text-xs text-gray-600">
-                            <span class="font-semibold">{{ $note->admin->name }}</span>
+                            <span class="font-semibold">{{ $note->admin?->name ?? 'Deleted admin' }}</span>
                             <span class="text-gray-400">{{ $note->created_at->format('d M Y, h:i A') }}</span>
                             <p class="mt-0.5">{{ $note->note }}</p>
                         </div>

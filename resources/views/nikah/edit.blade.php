@@ -33,7 +33,7 @@
                             </div>
                             <div>
                                 <x-input-label for="gender" :value="__('db.Gender')" />
-                                @php $genderVal = old('gender', $profile->user->gender); @endphp
+                                @php $genderVal = old('gender', $profile->user?->gender); @endphp
                                 <select id="gender" name="gender" required class="border-gray-300 rounded-md shadow-sm w-full mt-1"
                                     title="{{ __('db.Matching is opposite-gender, so this decides whose profiles you\'ll see.') }}">
                                     <option value="">{{ __('db.Select') }}</option>

@@ -3,7 +3,7 @@
         <div class="flex items-center gap-2 text-sm">
             <a href="{{ route('admin.nikah.verifications') }}" class="text-gray-400 hover:text-gray-600">Nikah Profiles</a>
             <span class="text-gray-300">›</span>
-            <span class="text-gray-700 font-semibold">{{ $profile->user->name }}</span>
+            <span class="text-gray-700 font-semibold">{{ $profile->user?->name ?? 'Deleted account' }}</span>
         </div>
     </x-slot>
 
@@ -19,10 +19,10 @@
                     <div class="w-24 h-24 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400 text-xs">No Photo</div>
                     @endif
                     <div>
-                        <h2 class="text-xl font-bold text-gray-800">{{ $profile->user->name }}</h2>
-                        <p class="text-sm text-gray-500">{{ $profile->user->email ?: '— no email —' }} · {{ $profile->user->phone ?: '— no phone —' }}</p>
-                        <p class="text-sm text-gray-500">{{ $profile->age }} yrs, {{ ucfirst($profile->user->gender ?? '—') }}, {{ $profile->city }}, {{ $profile->country }}</p>
-                        <p class="text-xs text-gray-400 mt-1">Profile created {{ $profile->created_at->format('d M Y') }} · Account created {{ $profile->user->created_at->format('d M Y') }}</p>
+                        <h2 class="text-xl font-bold text-gray-800">{{ $profile->user?->name ?? 'Deleted account' }}</h2>
+                        <p class="text-sm text-gray-500">{{ $profile->user?->email ?: '— no email —' }} · {{ $profile->user?->phone ?: '— no phone —' }}</p>
+                        <p class="text-sm text-gray-500">{{ $profile->age }} yrs, {{ ucfirst($profile->user?->gender ?? '—') }}, {{ $profile->city }}, {{ $profile->country }}</p>
+                        <p class="text-xs text-gray-400 mt-1">Profile created {{ $profile->created_at->format('d M Y') }} @if ($profile->user) · Account created {{ $profile->user->created_at->format('d M Y') }} @endif</p>
                     </div>
                 </div>
                 <div class="flex flex-col items-end gap-2">
@@ -265,7 +265,7 @@
                                 <input type="text" name="payment_reference" placeholder="Reference / note (optional)" class="w-full border-gray-300 rounded text-xs px-2 py-1.5">
                                 <input type="file" name="payment_screenshot" accept="image/*" class="w-full text-xs" title="Optional — attach the screenshot they sent you, if you have one.">
                                 <button class="w-full bg-teal-600 text-white text-xs px-3 py-1.5 rounded hover:bg-teal-700"
-                                    onclick="return confirm('Confirm this payment was received and mark verification fee as paid for {{ $profile->user->name }}?')">
+                                    onclick="return confirm('Confirm this payment was received and mark verification fee as paid for {{ $profile->user?->name ?? 'this profile' }}?')">
                                     ✅ Confirm Payment Received
                                 </button>
                             </form>
@@ -279,7 +279,7 @@
                         <div class="space-y-2 mb-3">
                             @forelse ($profile->moderationNotes as $note)
                             <div class="bg-gray-50 rounded p-2 text-xs text-gray-600">
-                                <span class="font-semibold">{{ $note->admin->name }}</span>
+                                <span class="font-semibold">{{ $note->admin?->name ?? 'Deleted admin' }}</span>
                                 <span class="text-gray-400">{{ $note->created_at->format('d M Y, h:i A') }}</span>
                                 <p class="mt-0.5">{{ $note->note }}</p>
                             </div>
@@ -305,7 +305,7 @@
                     The member's account itself is not affected; they can start a fresh Nikah profile afterward. This cannot be undone.
                 </p>
                 <form method="POST" action="{{ route('admin.nikah.destroy', $profile) }}"
-                    onsubmit="return confirm('Permanently delete the Nikah profile and ALL associated data for {{ $profile->user->name }}? This cannot be undone.')">
+                    onsubmit="return confirm('Permanently delete the Nikah profile and ALL associated data for {{ $profile->user?->name ?? 'this profile' }}? This cannot be undone.')">
                     @csrf
                     @method('DELETE')
                     <button class="bg-red-600 text-white text-sm px-4 py-2 rounded hover:bg-red-700">

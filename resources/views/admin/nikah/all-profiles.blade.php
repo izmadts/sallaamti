@@ -88,10 +88,10 @@
                         @forelse ($profiles as $profile)
                         <tr class="hover:bg-gray-50">
                             <td class="px-4 py-3">
-                                <p class="font-medium text-gray-800">{{ $profile->user->name }}</p>
-                                <p class="text-xs text-gray-400">{{ $profile->user->email ?: $profile->user->phone }}</p>
+                                <p class="font-medium text-gray-800">{{ $profile->user?->name ?? 'Deleted account' }}</p>
+                                <p class="text-xs text-gray-400">{{ $profile->user?->email ?: $profile->user?->phone }}</p>
                             </td>
-                            <td class="px-4 py-3 text-gray-600">{{ $profile->age }} / {{ ucfirst($profile->user->gender ?? '—') }}</td>
+                            <td class="px-4 py-3 text-gray-600">{{ $profile->age }} / {{ ucfirst($profile->user?->gender ?? '—') }}</td>
                             <td class="px-4 py-3 text-gray-600">{{ $profile->city ?: '—' }}</td>
                             <td class="px-4 py-3">
                                 <span class="text-xs px-2 py-1 rounded-full

@@ -21,7 +21,7 @@
                     <div class="flex gap-3">
                         <input type="checkbox" name="profile_ids[]" value="{{ $profile->id }}" form="bulkConfirmForm" class="mt-1 rounded" title="Select for bulk confirmation">
                         <div>
-                            <h3 class="font-semibold">{{ $profile->user->name }} ({{ $profile->user->email }})</h3>
+                            <h3 class="font-semibold">{{ $profile->user?->name ?? 'Deleted account' }} ({{ $profile->user?->email ?? '—' }})</h3>
                             <p class="text-sm text-gray-500">Amount: Rs. {{ number_format($profile->payment_amount) }} via {{ ucfirst(str_replace('_', ' ', $profile->payment_method)) }}</p>
                             @if ($profile->payment_reference)
                             <p class="text-sm text-gray-500">Reference: {{ $profile->payment_reference }}</p>

@@ -3,7 +3,7 @@
         <div class="flex items-center gap-2 text-sm">
             <a href="{{ route('matchmaker.nikah.index') }}" class="text-gray-400 hover:text-gray-600">Nikah Profiles</a>
             <span class="text-gray-300">›</span>
-            <span class="text-gray-700 font-semibold">{{ $profile->age }} yrs, {{ ucfirst($profile->user->gender ?? '—') }}</span>
+            <span class="text-gray-700 font-semibold">{{ $profile->age }} yrs, {{ ucfirst($profile->user?->gender ?? '—') }}</span>
         </div>
     </x-slot>
 
@@ -20,7 +20,7 @@
             <div class="bg-white rounded-xl shadow-sm p-6">
                 <div class="flex justify-between items-start mb-4">
                     <div>
-                        <h2 class="text-xl font-bold text-gray-800">{{ $profile->age }} yrs, {{ ucfirst($profile->user->gender ?? '—') }}</h2>
+                        <h2 class="text-xl font-bold text-gray-800">{{ $profile->age }} yrs, {{ ucfirst($profile->user?->gender ?? '—') }}</h2>
                         <p class="text-sm text-gray-500">{{ $profile->city }}{{ $profile->country ? ', ' . $profile->country : '' }}</p>
                     </div>
                     <span class="text-xs px-3 py-1 rounded-full font-semibold {{ $profile->verification_status === 'verified' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800' }}">

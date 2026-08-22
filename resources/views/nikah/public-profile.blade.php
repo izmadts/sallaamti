@@ -4,9 +4,9 @@
         <div class="max-w-2xl mx-auto sm:px-6 lg:px-8 space-y-6">
 
             <div class="bg-white rounded-xl shadow-sm overflow-hidden">
-                <div class="h-40 bg-gradient-to-br {{ $profile->user->gender === 'female' ? 'from-pink-100 to-rose-200' : 'from-blue-100 to-indigo-200' }} relative flex items-center justify-center">
+                <div class="h-40 bg-gradient-to-br {{ $profile->user?->gender === 'female' ? 'from-pink-100 to-rose-200' : 'from-blue-100 to-indigo-200' }} relative flex items-center justify-center">
                     <div class="w-28 h-28 rounded-full bg-white shadow-lg flex items-center justify-center text-4xl border-4 border-white">
-                        {{ $profile->user->gender === 'female' ? '👩' : '👨' }}
+                        {{ $profile->user?->gender === 'female' ? '👩' : '👨' }}
                     </div>
                     <div class="absolute top-2 left-1">
                         <span class="flex items-center gap-1 bg-green-500 text-white text-xs font-semibold px-3 py-1.5 rounded-full shadow">

@@ -14,14 +14,14 @@
             <div class="bg-white rounded-xl shadow-sm overflow-hidden">
 
                 {{-- Photo Banner --}}
-                <div class="h-48 bg-gradient-to-br {{ $profile->user->gender === 'female' ? 'from-pink-100 to-rose-200' : 'from-blue-100 to-indigo-200' }} relative flex items-center justify-center">
+                <div class="h-48 bg-gradient-to-br {{ $profile->user?->gender === 'female' ? 'from-pink-100 to-rose-200' : 'from-blue-100 to-indigo-200' }} relative flex items-center justify-center">
                     @if ($hasAcceptedInterest && $profile->photos->isNotEmpty())
                     <img src="{{ route('nikah.photos.show', $profile->photos->first()) }}"
                         alt="{{ $profile->age }} yrs, {{ $profile->city }}"
                         class="w-32 h-32 rounded-full object-cover border-4 border-white shadow-lg">
                     @else
                     <div class="w-32 h-32 rounded-full bg-white shadow-lg flex items-center justify-center text-5xl border-4 border-white">
-                        {{ $profile->user->gender === 'female' ? '👩' : '👨' }}
+                        {{ $profile->user?->gender === 'female' ? '👩' : '👨' }}
                     </div>
                     @if ($profile->photos->isNotEmpty())
                     <div class="absolute bottom-3 left-1/2 -translate-x-1/2">

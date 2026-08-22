@@ -12,7 +12,7 @@
                 <div class="flex justify-between items-start">
                     <div>
                         <h3 class="font-semibold">
-                            {{ $report->reporter->user->name }} reported {{ $report->reported->user->name }}
+                            {{ $report->reporter?->user?->name ?? 'Deleted profile' }} reported {{ $report->reported?->user?->name ?? 'deleted profile' }}
                             @php $totalReports = $reportCounts[$report->reported_profile_id] ?? 1; @endphp
                             @if ($totalReports > 1)
                             <span class="ml-1 text-xs bg-red-100 text-red-700 px-2 py-0.5 rounded-full align-middle">⚠ {{ $totalReports }} reports total — repeat offender</span>
@@ -33,7 +33,7 @@
                     <a href="{{ route('admin.nikah.reports.conversation', $report) }}" class="text-sm text-blue-600 hover:underline">View Conversation</a>
                     @endif
                     <form method="POST" action="{{ route('admin.nikah.reports.suspend', $report) }}"
-                        onsubmit="return confirm('Suspend {{ $report->reported->user->name }}\'s profile? It will be hidden from search immediately.')">
+                        onsubmit="return confirm('Suspend {{ $report->reported?->user?->name ?? 'this' }}\'s profile? It will be hidden from search immediately.')">
                         @csrf
                         <button class="bg-red-600 text-white text-sm px-4 py-2 rounded hover:bg-red-700">Suspend Profile</button>
                     </form>

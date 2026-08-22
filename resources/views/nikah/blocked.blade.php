@@ -9,7 +9,7 @@
             @forelse ($blocks as $block)
             <div class="bg-white shadow-sm rounded-lg p-4 flex items-center justify-between">
                 <div>
-                    <p class="font-semibold text-gray-800">{{ $block->blocked->user->name ?? 'Deleted profile' }}</p>
+                    <p class="font-semibold text-gray-800">{{ $block->blocked?->user?->name ?? 'Deleted profile' }}</p>
                     <p class="text-xs text-gray-400">Blocked {{ $block->created_at->diffForHumans() }}</p>
                 </div>
                 <form method="POST" action="{{ route('nikah.unblock', $block) }}"

@@ -58,7 +58,7 @@
                 @forelse ($profiles as $profile)
                 <a href="{{ route('matchmaker.nikah.show', $profile) }}" class="block bg-white rounded-xl shadow-sm p-5 hover:shadow-md transition-shadow">
                     <div class="flex justify-between items-start mb-2">
-                        <h4 class="font-semibold text-gray-800">{{ $profile->age }} yrs, {{ ucfirst($profile->user->gender ?? '—') }}</h4>
+                        <h4 class="font-semibold text-gray-800">{{ $profile->age }} yrs, {{ ucfirst($profile->user?->gender ?? '—') }}</h4>
                         <span class="text-xs px-2 py-0.5 rounded-full {{ $profile->verification_status === 'verified' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700' }}">
                             {{ ucfirst($profile->verification_status) }}
                         </span>
