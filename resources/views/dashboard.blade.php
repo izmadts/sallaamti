@@ -269,7 +269,7 @@
                         </a>
                         @endif
                         @if (Auth::user()->counseling_module_enabled)
-                        <a href="{{ route('support.create') }}" class="flex items-center gap-3 text-sm font-medium text-gray-600 hover:text-[--teal-dark] hover:bg-[--teal-light] rounded-lg px-2 py-2 -mx-2 transition-colors duration-150">
+                        <a href="{{ route('counseling.book.start') }}" class="flex items-center gap-3 text-sm font-medium text-gray-600 hover:text-[--teal-dark] hover:bg-[--teal-light] rounded-lg px-2 py-2 -mx-2 transition-colors duration-150">
                             <span class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center text-base">🤝</span> Get Family Support
                         </a>
                         @endif

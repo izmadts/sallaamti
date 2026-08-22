@@ -105,7 +105,6 @@
  <x-slot name="content">
  <x-dropdown-link :href="route('counseling.book.start')">📅 {{ __('db.Book Counseling Session') }}</x-dropdown-link>
  <x-dropdown-link :href="route('counseling.bookings.index')">🗓️ {{ __('db.My Bookings') }}</x-dropdown-link>
- <x-dropdown-link :href="route('support.index')">💬 {{ __('db.Support Queries') }}</x-dropdown-link>
  </x-slot>
  </x-dropdown>
  @endif
@@ -280,7 +279,7 @@
  @endif
  <x-dropdown-link :href="route('donate.my')">💝 {{ __('db.My Donations') }}</x-dropdown-link>
  @if (Auth::user()->counseling_module_enabled)
- <x-dropdown-link :href="route('support.index')">🤝 {{ __('db.My Support Queries') }}</x-dropdown-link>
+ <x-dropdown-link :href="route('counseling.bookings.index')">🤝 {{ __('db.My Bookings') }}</x-dropdown-link>
  @endif
  <div class="border-t border-gray-100 my-1"></div>
  <form method="POST" action="{{ route('logout') }}">
@@ -375,7 +374,6 @@
  </div>
  <x-responsive-nav-link :href="route('counseling.book.start')" class="text-white">📅 {{ __('db.Book Counseling Session') }}</x-responsive-nav-link>
  <x-responsive-nav-link :href="route('counseling.bookings.index')" class="text-white">🗓️ {{ __('db.My Bookings') }}</x-responsive-nav-link>
- <x-responsive-nav-link :href="route('support.index')" class="text-white">💬 {{ __('db.Support Queries') }}</x-responsive-nav-link>
  </div>
  @endif
 

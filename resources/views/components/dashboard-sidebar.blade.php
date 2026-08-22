@@ -35,7 +35,7 @@
             </a>
             @endif
             @if (Auth::user()->counseling_module_enabled)
-            <a href="{{ route('support.create') }}" class="flex items-center gap-3 px-2 py-2 rounded-lg text-sm text-gray-700 hover:bg-gray-50 transition">
+            <a href="{{ route('counseling.book.start') }}" class="flex items-center gap-3 px-2 py-2 rounded-lg text-sm text-gray-700 hover:bg-gray-50 transition">
                 <span class="text-lg">🤝</span> {{ __('db.Family Support') }}
             </a>
             @endif

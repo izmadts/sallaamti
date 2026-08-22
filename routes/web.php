@@ -53,8 +53,6 @@ use App\Http\Controllers\Admin\EditorImageController;
 use App\Http\Controllers\Admin\TeamMemberController;
 use App\Http\Controllers\Admin\DailyContentController;
 use App\Http\Controllers\Admin\CertificateAdminController;
-use App\Http\Controllers\SupportQueryController;
-use App\Http\Controllers\Admin\SupportQueryAdminController;
 use App\Http\Controllers\LanguageSwitchController;
 use App\Http\Controllers\Admin\LanguageController;
 use App\Http\Controllers\Admin\TranslationController;
@@ -309,13 +307,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/donation-screenshot/{donation}', [DonationController::class, 'screenshot'])->name('donation.screenshot');
     Route::get('/thank-you', fn() => view('thank-you'))->name('thank-you');
 
-    Route::get('/support', [SupportQueryController::class, 'index'])->name('support.index');
-    Route::get('/support/create', [SupportQueryController::class, 'create'])->name('support.create');
-    Route::post('/support', [SupportQueryController::class, 'store'])->name('support.store');
-
     // --- FAMILY COUNSELING BOOKING ---
-    // Must be registered before the /support/{query} wildcard below, or that
-    // route's implicit model binding would swallow these literal paths first.
     Route::get('/support/book', [CounselingBookingController::class, 'start'])->name('counseling.book.start');
     Route::get('/support/book/step/{step}', [CounselingBookingController::class, 'showStep'])->name('counseling.book.step');
     Route::post('/support/book/step/{step}', [CounselingBookingController::class, 'saveStep'])->name('counseling.book.step.save');
@@ -326,9 +318,6 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/support/bookings/{booking}/cancel', [CounselingBookingController::class, 'cancel'])->name('counseling.bookings.cancel');
     Route::post('/support/bookings/{booking}/reply', [CounselingBookingController::class, 'reply'])->name('counseling.bookings.reply');
     Route::post('/support/bookings/{booking}/rate', [CounselingBookingController::class, 'rate'])->name('counseling.bookings.rate');
-
-    Route::get('/support/{query}', [SupportQueryController::class, 'show'])->name('support.show');
-    Route::post('/support/{query}/reply', [SupportQueryController::class, 'reply'])->name('support.reply');
 });
 
 // ============================================================
@@ -569,14 +558,6 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
         Route::get('/subscribers', [SubscriberAdminController::class, 'index'])->name('subscribers.index');
         Route::delete('/subscribers/{subscriber}', [SubscriberAdminController::class, 'destroy'])->name('subscribers.destroy');
     });
-
-    // Family Support queries (permission-gated)
-    Route::get('support', [SupportQueryAdminController::class, 'index'])->name('support.index')->middleware('can:support.view');
-    Route::get('support/{query}', [SupportQueryAdminController::class, 'show'])->name('support.show')->middleware('can:support.view');
-    Route::post('support/{query}/assign', [SupportQueryAdminController::class, 'assign'])->name('support.assign')->middleware('can:support.manage');
-    Route::post('support/{query}/status', [SupportQueryAdminController::class, 'updateStatus'])->name('support.status')->middleware('can:support.manage');
-    Route::post('support/{query}/reply', [SupportQueryAdminController::class, 'reply'])->name('support.reply')->middleware('can:support.manage');
-    Route::delete('support/{query}', [SupportQueryAdminController::class, 'destroy'])->name('support.destroy')->middleware('can:support.delete');
 
     // API Console — 'admin.only'; a test call impersonates any chosen
     // member via a real access token, so this is the same privilege

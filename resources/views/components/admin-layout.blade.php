@@ -210,15 +210,6 @@
                     <span class="bg-yellow-400 text-yellow-900 text-xs font-bold px-1.5 py-0.5 rounded-full">{{ $pendingPosts }}</span>
                     @endif
                 </a>
-                <a href="{{ route('admin.support.index') }}"
-                    class="flex items-center justify-between gap-3 px-3 py-2 rounded-lg transition
-                          {{ request()->routeIs('admin.support*') ? 'bg-teal-700 text-white' : 'text-teal-100 hover:bg-teal-800' }}">
-                    <span class="flex items-center gap-3"><span class="text-base">🆘</span> Support Queries</span>
-                    @php $pendingSupport = \App\Models\SupportQuery::where('status','new')->count(); @endphp
-                    @if ($pendingSupport > 0)
-                    <span class="bg-red-400 text-red-900 text-xs font-bold px-1.5 py-0.5 rounded-full">{{ $pendingSupport }}</span>
-                    @endif
-                </a>
                 <a href="{{ route('admin.donations.index') }}"
                     class="flex items-center gap-3 px-3 py-2 rounded-lg transition
                           {{ request()->routeIs('admin.donations*') ? 'bg-teal-700 text-white' : 'text-teal-100 hover:bg-teal-800' }}">
@@ -229,6 +220,9 @@
                           {{ request()->routeIs('admin.subscribers*') ? 'bg-teal-700 text-white' : 'text-teal-100 hover:bg-teal-800' }}">
                     <span class="text-base">📧</span> Newsletter
                 </a>
+
+                {{-- Family Support --}}
+                <p class="text-teal-500 text-xs uppercase tracking-widest px-3 pt-4 pb-1">Family Support</p>
                 <a href="{{ route('admin.counseling-bookings.index') }}"
                     class="flex items-center justify-between gap-3 px-3 py-2 rounded-lg transition
                           {{ request()->routeIs('admin.counseling-bookings*') ? 'bg-teal-700 text-white' : 'text-teal-100 hover:bg-teal-800' }}">
@@ -238,6 +232,7 @@
                     <span class="bg-yellow-400 text-yellow-900 text-xs font-bold px-1.5 py-0.5 rounded-full">{{ $pendingBookings }}</span>
                     @endif
                 </a>
+
                 <p class="text-teal-500 text-xs uppercase tracking-widest px-3 pt-4 pb-1">FrontEnd</p>
                 <a href="{{ route('admin.banners.index') }}"
                     class="flex items-center gap-3 px-3 py-2 rounded-lg transition

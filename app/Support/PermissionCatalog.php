@@ -26,7 +26,6 @@ class PermissionCatalog
         'nikah' => 'Nikah Verifications & Moderation',
         'donations' => 'Donations',
         'volunteers' => 'Volunteer Applications',
-        'support' => 'Family Support Queries',
         'wall' => 'Wall Moderation (member-submitted duas)',
         'counseling' => 'Family Counseling Bookings',
     ];

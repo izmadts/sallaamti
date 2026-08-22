@@ -8,6 +8,7 @@ use App\Models\Course;
 use App\Models\Enrollment;
 use App\Models\NikahProfile;
 use App\Models\NikahReport;
+use App\Models\CounselingBooking;
 use App\Models\Post;
 use App\Models\QuranAdmission;
 use App\Models\QuranClassGroup;
@@ -18,7 +19,6 @@ use App\Models\Subscriber;
 use App\Models\Donation;
 use App\Models\User;
 use App\Models\VolunteerApplication;
-use App\Models\SupportQuery;
 
 class AdminDashboardController extends Controller
 {
@@ -76,11 +76,11 @@ class AdminDashboardController extends Controller
             'pending_posts'             => Post::where('status', 'pending')->count(),
             'published_posts'           => Post::where('status', 'published')->count(),
 
-            // Support Queries
-            'support_new'         => SupportQuery::where('status', 'new')->count(),
-            'support_in_progress' => SupportQuery::where('status', 'in_progress')->count(),
-            'support_resolved'    => SupportQuery::where('status', 'resolved')->count(),
-            'support_closed'      => SupportQuery::where('status', 'closed')->count(),
+            // Family Support (Counseling Bookings)
+            'counseling_requested' => CounselingBooking::where('status', 'requested')->count(),
+            'counseling_confirmed' => CounselingBooking::where('status', 'confirmed')->count(),
+            'counseling_completed' => CounselingBooking::where('status', 'completed')->count(),
+            'counseling_cancelled' => CounselingBooking::whereIn('status', ['cancelled', 'no_show'])->count(),
         ];
 
         return view('admin.dashboard', compact('stats'));
