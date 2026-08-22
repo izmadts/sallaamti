@@ -442,6 +442,17 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::post('/nikah-profiles/create/step/{step}', [AdminNikahProfileWizardController::class, 'saveStep'])->name('nikah.profiles.create.step.save');
     Route::get('/nikah-profiles/create/review', [AdminNikahProfileWizardController::class, 'review'])->name('nikah.profiles.create.review');
     Route::post('/nikah-profiles/create/finalize', [AdminNikahProfileWizardController::class, 'finalize'])->name('nikah.profiles.create.finalize');
+
+    // Lean matchmaker-assist CRM — see LeadController's class docblock for
+    // scope. Gated inside the controller the same way as the walk-in
+    // wizard above (nikah.manage OR nikah.create-profile), not admin.only,
+    // so a matchmaker can run their own leads without the full admin role.
+    Route::resource('leads', \App\Http\Controllers\Admin\LeadController::class)->except(['edit']);
+    Route::post('/leads/{lead}/convert', [\App\Http\Controllers\Admin\LeadController::class, 'convert'])->name('leads.convert');
+    Route::post('/leads/{lead}/link-profile', [\App\Http\Controllers\Admin\LeadController::class, 'linkProfile'])->name('leads.link-profile');
+    Route::post('/leads/{lead}/shortlist', [\App\Http\Controllers\Admin\LeadController::class, 'addToShortlist'])->name('leads.shortlist.add');
+    Route::post('/leads/{lead}/shortlist/{item}/sent', [\App\Http\Controllers\Admin\LeadController::class, 'markShortlistSent'])->name('leads.shortlist.sent');
+    Route::delete('/leads/{lead}/shortlist/{item}', [\App\Http\Controllers\Admin\LeadController::class, 'removeFromShortlist'])->name('leads.shortlist.remove');
     Route::middleware('admin.only')->group(function () {
         Route::get('/nikah-contact-requests', [NikahVerificationController::class, 'contactRequests'])->name('nikah.contact-requests');
         Route::post('/nikah-contact-requests/{contactRequest}/approve', [NikahVerificationController::class, 'approveContactRequest'])->name('nikah.contact-requests.approve');

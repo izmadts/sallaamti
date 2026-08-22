@@ -164,11 +164,15 @@ class NikahBrowseController extends Controller
             'city' => $profile->city,
             'country' => $profile->country,
             'about' => $profile->about,
+            'ethnicity' => $profile->ethnicity,
+            'gender' => $profile->user?->gender,
             'trust_badges' => $profile->trustBadges(),
             'match_percentage' => $profile->match_percentage ?? 0,
             'has_sent_interest' => in_array($profile->id, $sentInterestIds),
             'is_saved' => in_array($profile->id, $savedProfileIds),
             'photo_url' => $profile->photo ? route('api.v1.nikah.file', [$profile, 'photo']) : null,
+            'created_at' => $profile->created_at?->toIso8601String(),
+            'last_active_at' => $profile->last_active_at?->toIso8601String(),
         ];
 
         if ($detailed) {
