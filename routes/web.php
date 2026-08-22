@@ -89,7 +89,7 @@ Route::get('/newsletter/unsubscribe/{user}', [NewsletterUnsubscribeController::c
 // Static pages
 Route::get('/about', function () {
     $teamMembers = \App\Models\TeamMember::active()->orderBy('order')->get();
-    $testimonials = \App\Models\Testimonial::where('is_active', true)->orderBy('order')->get();
+    $testimonials = \App\Models\Testimonial::published()->orderBy('order')->get();
     $previewCourses = \App\Models\Course::where('is_published', true)->take(4)->get();
     return view('about', compact('teamMembers', 'testimonials', 'previewCourses'));
 });
@@ -165,6 +165,20 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/posts/{post:slug}', [\App\Http\Controllers\PostController::class, 'destroy'])->name('posts.destroy');
 });
 Route::get('/posts/{post:slug}', [\App\Http\Controllers\PostController::class, 'show'])->name('posts.show');
+
+// Member Testimonials — any logged-in member can submit one; it appears on
+// the public /testimonial page once an admin approves it (see
+// Admin\TestimonialController::approve/reject). Static segments (create/
+// mine) must come before the {testimonial} wildcard, same reasoning as
+// the Posts block above.
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/testimonials/create', [\App\Http\Controllers\TestimonialController::class, 'create'])->name('testimonials.create');
+    Route::post('/testimonials', [\App\Http\Controllers\TestimonialController::class, 'store'])->name('testimonials.store');
+    Route::get('/testimonials/mine', [\App\Http\Controllers\TestimonialController::class, 'mine'])->name('testimonials.mine');
+    Route::get('/testimonials/{testimonial}/edit', [\App\Http\Controllers\TestimonialController::class, 'edit'])->name('testimonials.edit');
+    Route::put('/testimonials/{testimonial}', [\App\Http\Controllers\TestimonialController::class, 'update'])->name('testimonials.update');
+    Route::delete('/testimonials/{testimonial}', [\App\Http\Controllers\TestimonialController::class, 'destroy'])->name('testimonials.destroy');
+});
 
 // Certificate verification (public — no login needed)
 Route::get('/verify-certificate/{certificateNumber?}', [CertificateController::class, 'verify'])->name('certificate.verify');
@@ -370,6 +384,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::resource('banners', BannerController::class);
     Route::resource('testimonials', TestimonialController::class);
     Route::post('testimonials/{testimonial}/toggle', [TestimonialController::class, 'toggle'])->name('testimonials.toggle');
+    Route::post('testimonials/{testimonial}/approve', [TestimonialController::class, 'approve'])->name('testimonials.approve');
+    Route::post('testimonials/{testimonial}/reject', [TestimonialController::class, 'reject'])->name('testimonials.reject');
     Route::resource('team-members', TeamMemberController::class)->except(['show']);
     Route::post('team-members/{team_member}/toggle', [TeamMemberController::class, 'toggle'])->name('team-members.toggle');
 

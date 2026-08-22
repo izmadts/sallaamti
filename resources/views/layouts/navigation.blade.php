@@ -385,6 +385,7 @@
  <x-responsive-nav-link :href="route('blog.index')" class="text-white">📰 Blog</x-responsive-nav-link>
  <x-responsive-nav-link :href="route('posts.index')" class="text-white">📝 Community Posts</x-responsive-nav-link>
  <x-responsive-nav-link :href="route('posts.mine')" class="text-white">✍️ My Posts</x-responsive-nav-link>
+ <x-responsive-nav-link :href="route('testimonials.mine')" class="text-white">⭐ My Testimonials</x-responsive-nav-link>
  <x-responsive-nav-link :href="url('/team')" class="text-white">👥 Our Team</x-responsive-nav-link>
  <x-responsive-nav-link :href="url('/contact')" class="text-white">✉️ Contact</x-responsive-nav-link>
 

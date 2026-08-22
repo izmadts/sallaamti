@@ -11,7 +11,13 @@ class TestimonialController extends Controller
 {
     public function index()
     {
-        $testimonials = Testimonial::orderBy('order')->get();
+        // Pending submissions need attention first, then everything else in
+        // its normal display order.
+        $testimonials = Testimonial::with('user')
+            ->orderByRaw("status = 'pending' desc")
+            ->orderBy('order')
+            ->get();
+
         return view('admin.testimonials.index', compact('testimonials'));
     }
 
@@ -80,5 +86,25 @@ class TestimonialController extends Controller
     {
         $testimonial->update(['is_active' => !$testimonial->is_active]);
         return back()->with('status', 'Updated.');
+    }
+
+    public function approve(Testimonial $testimonial)
+    {
+        $testimonial->update(['status' => 'approved', 'is_active' => true, 'rejection_reason' => null]);
+
+        return back()->with('status', 'Testimonial approved and published.');
+    }
+
+    public function reject(Request $request, Testimonial $testimonial)
+    {
+        $validated = $request->validate(['rejection_reason' => ['nullable', 'string', 'max:500']]);
+
+        $testimonial->update([
+            'status' => 'rejected',
+            'is_active' => false,
+            'rejection_reason' => $validated['rejection_reason'] ?? null,
+        ]);
+
+        return back()->with('status', 'Testimonial rejected.');
     }
 }

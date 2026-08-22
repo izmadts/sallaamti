@@ -13,7 +13,16 @@
 
     <section class="py-20 bg-cream">
         <div class="max-w-7xl mx-auto px-4">
-            @php $testimonials = \App\Models\Testimonial::where('is_active', true)->orderBy('order')->get(); @endphp
+            @php $testimonials = \App\Models\Testimonial::published()->orderBy('order')->get(); @endphp
+
+            <div class="text-center mb-10">
+                @auth
+                <a href="{{ route('testimonials.create') }}" class="btn-base btn-gold px-6 py-3 font-semibold inline-block">⭐ Share Your Story</a>
+                <a href="{{ route('testimonials.mine') }}" class="text-sm text-gray-500 hover:text-[--teal] block mt-2">View your submissions →</a>
+                @else
+                <a href="{{ route('login') }}" class="btn-base btn-gold px-6 py-3 font-semibold inline-block">⭐ Log In to Share Your Story</a>
+                @endauth
+            </div>
 
             @if ($testimonials->count() > 0)
             <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
