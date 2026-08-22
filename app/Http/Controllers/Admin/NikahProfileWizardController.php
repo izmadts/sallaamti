@@ -155,7 +155,13 @@ class NikahProfileWizardController extends Controller
                 }
             } catch (\Throwable $e) {
                 report($e);
-                return back()->withInput()->withErrors(['photo' => 'Sorry, we could not save the uploaded photo(s) — please try again in a moment.']);
+                $message = 'Sorry, we could not save the uploaded photo(s) — please try again in a moment.';
+
+                if ($request->wantsJson()) {
+                    throw \Illuminate\Validation\ValidationException::withMessages(['photo' => $message]);
+                }
+
+                return back()->withInput()->withErrors(['photo' => $message]);
             }
 
             $validated['allow_photo_sharing'] = $request->boolean('allow_photo_sharing');
@@ -163,17 +169,30 @@ class NikahProfileWizardController extends Controller
 
         $this->saveWizardStep($step, $validated);
 
-        return $this->nextStepRedirect($step);
+        return $this->nextStepRedirect($step, $request);
     }
 
-    private function nextStepRedirect(string $step)
+    // Accepts the request so the verification step's fetch()-based submit
+    // (see admin/nikah/wizard/step-verification's script) gets a JSON
+    // redirect instead of a real 302 — turns a browser-level upload
+    // failure (e.g. Chrome's ERR_UPLOAD_FILE_CHANGED) into this page's own
+    // friendly in-place error instead of Chrome's network-error screen.
+    // Every other step still gets the plain redirect since only that
+    // view's form actually sends the AJAX headers.
+    private function nextStepRedirect(string $step, ?Request $request = null)
     {
         $steps = $this->wizardSteps();
         $nextIndex = array_search($step, $steps) + 1;
 
-        return $nextIndex < count($steps)
-            ? redirect()->route('admin.nikah.profiles.create.step', $steps[$nextIndex])
-            : redirect()->route('admin.nikah.profiles.create.review');
+        $redirectUrl = $nextIndex < count($steps)
+            ? route('admin.nikah.profiles.create.step', $steps[$nextIndex])
+            : route('admin.nikah.profiles.create.review');
+
+        if ($request?->wantsJson()) {
+            return response()->json(['redirect' => $redirectUrl]);
+        }
+
+        return redirect($redirectUrl);
     }
 
     public function review()

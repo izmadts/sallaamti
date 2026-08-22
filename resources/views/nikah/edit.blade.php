@@ -11,8 +11,7 @@
 
                 <p class="text-sm text-gray-500 mb-6">{{ __('db.Keep your profile up to date — a complete, honest profile gets better matches.') }}</p>
 
-                @if ($errors->any())
-                <div class="mb-4 p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg">
+                <div id="verification-errors" class="mb-4 p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg {{ $errors->any() ? '' : 'hidden' }}">
                     <p class="font-medium text-sm mb-1">{{ __('db.Please fix the following before saving:') }}</p>
                     <ul class="list-disc list-inside text-sm">
                         @foreach ($errors->all() as $error)
@@ -20,9 +19,8 @@
                         @endforeach
                     </ul>
                 </div>
-                @endif
 
-                <form method="POST" action="{{ route('nikah.update') }}" enctype="multipart/form-data" class="space-y-6">
+                <form id="verification-form" method="POST" action="{{ route('nikah.update') }}" enctype="multipart/form-data" class="space-y-6">
                     @csrf
                     @method('PUT')
 
@@ -345,7 +343,7 @@
 
                     <div class="flex justify-end gap-3 pt-2">
                         <a href="{{ route('nikah.show') }}" class="px-4 py-2 text-sm text-gray-600">Cancel</a>
-                        <x-primary-button>{{ __('db.Save My Profile') }}</x-primary-button>
+                        <x-primary-button id="verification-submit">{{ __('db.Save My Profile') }}</x-primary-button>
                     </div>
                 </form>
 
@@ -367,5 +365,71 @@
             if (typeof target.focus === 'function') target.focus({ preventScroll: true });
             setTimeout(() => target.classList.remove('ring-2', 'ring-amber-400', 'ring-offset-2'), 2500);
         });
+    </script>
+
+    {{-- Submits via fetch() instead of a plain page-navigation POST — see
+         nikah/wizard/step-verification's script for why: turns a
+         browser-level upload failure (Chrome's ERR_UPLOAD_FILE_CHANGED)
+         into this page's own friendly message instead of Chrome's
+         network-error screen. Falls back to a normal form submission if
+         this script fails to attach. --}}
+    <script>
+        (function () {
+            const form = document.getElementById('verification-form');
+            const errorsBox = document.getElementById('verification-errors');
+            const submitBtn = document.getElementById('verification-submit');
+            if (!form || !errorsBox || !submitBtn) return;
+
+            const uploadChangedMessage = @json(__("db.We couldn't upload your file. This can happen if a selected photo was moved, renamed, or changed since you picked it — for example, by OneDrive or another sync tool. Please choose your CNIC/photo files again and submit."));
+            const uploadingLabel = @json(__('db.Uploading…'));
+            const errorHeading = @json(__('db.Please fix the following before saving:'));
+            const originalLabel = submitBtn.innerHTML;
+
+            function showErrors(html) {
+                errorsBox.innerHTML = '<p class="font-medium text-sm mb-1">' + errorHeading + '</p>' + html;
+                errorsBox.classList.remove('hidden');
+                errorsBox.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+
+            form.addEventListener('submit', async function (e) {
+                e.preventDefault();
+
+                errorsBox.classList.add('hidden');
+                errorsBox.innerHTML = '';
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = uploadingLabel;
+
+                try {
+                    const response = await fetch(form.action, {
+                        method: 'POST',
+                        body: new FormData(form),
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Accept': 'application/json',
+                        },
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        window.location.href = data.redirect;
+                        return;
+                    }
+
+                    if (response.status === 422) {
+                        const data = await response.json();
+                        const messages = Object.values(data.errors || {}).flat();
+                        showErrors('<ul class="list-disc list-inside text-sm">' +
+                            messages.map((m) => '<li>' + m + '</li>').join('') + '</ul>');
+                    } else {
+                        throw new Error('Unexpected response status ' + response.status);
+                    }
+                } catch (err) {
+                    showErrors('<p>' + uploadChangedMessage + '</p>');
+                } finally {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalLabel;
+                }
+            });
+        })();
     </script>
 </x-app-layout>

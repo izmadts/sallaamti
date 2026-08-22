@@ -119,7 +119,13 @@ class NikahProfileController extends Controller
             }
         } catch (\Throwable $e) {
             report($e);
-            return back()->withInput()->withErrors(['photo' => 'Sorry, we could not save your uploaded photo(s) — please try again in a moment. If this keeps happening, contact support.']);
+            $message = 'Sorry, we could not save your uploaded photo(s) — please try again in a moment. If this keeps happening, contact support.';
+
+            if ($request->wantsJson()) {
+                throw \Illuminate\Validation\ValidationException::withMessages(['photo' => $message]);
+            }
+
+            return back()->withInput()->withErrors(['photo' => $message]);
         }
 
         $profile->update($validated);
@@ -128,7 +134,17 @@ class NikahProfileController extends Controller
             Auth::user()->update(['city' => $validated['city']]);
         }
 
-        return redirect()->route('nikah.show')->with('status', 'Profile updated successfully.');
+        session()->flash('status', 'Profile updated successfully.');
+
+        // See nikah/edit.blade.php's script for why this form submits via
+        // fetch(): so a browser-level upload failure (e.g. Chrome's
+        // ERR_UPLOAD_FILE_CHANGED) surfaces as this page's own friendly
+        // in-place error instead of Chrome's network-error screen.
+        if ($request->wantsJson()) {
+            return response()->json(['redirect' => route('nikah.show')]);
+        }
+
+        return redirect()->route('nikah.show');
     }
 
     // A profile that hasn't paid its verification fee or hasn't been approved
