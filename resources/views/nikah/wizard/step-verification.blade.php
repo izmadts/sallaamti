@@ -88,6 +88,16 @@
          replacing the whole page with Chrome's network-error screen.
          Falls back to a normal form submission if JS fails to attach
          (progressive enhancement, not a hard dependency on this script). --}}
+    @php
+        // Assigned to plain PHP vars before @json() — Blade's directive-argument
+        // parser was found to truncate mid-string on this particular long,
+        // punctuation-heavy translated string when passed directly to
+        // @json(__(...)), silently corrupting the compiled JS (and crashing
+        // the whole page with a PHP ParseError). Passing a simple variable
+        // to @json() sidesteps that parser edge case.
+        $uploadChangedMessageText = __("db.We couldn't upload your file. This can happen if a selected photo was moved, renamed, or changed since you picked it — for example, by OneDrive or another sync tool. Please choose your CNIC/photo files again and submit.");
+        $uploadingLabelText = __('db.Uploading…');
+    @endphp
     <script>
         (function () {
             const form = document.getElementById('verification-form');
@@ -95,8 +105,8 @@
             const submitBtn = document.getElementById('verification-submit');
             if (!form || !errorsBox || !submitBtn) return;
 
-            const uploadChangedMessage = @json(__("db.We couldn't upload your file. This can happen if a selected photo was moved, renamed, or changed since you picked it — for example, by OneDrive or another sync tool. Please choose your CNIC/photo files again and submit."));
-            const uploadingLabel = @json(__('db.Uploading…'));
+            const uploadChangedMessage = @json($uploadChangedMessageText);
+            const uploadingLabel = @json($uploadingLabelText);
             const originalLabel = submitBtn.innerHTML;
 
             function showErrors(html) {
