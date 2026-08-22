@@ -532,43 +532,60 @@
                 <p class="section-subtitle">Dedicated volunteers and professionals committed to serving the Ummah.</p>
             </div>
 
+            @php
+            $founder = $teamMembers->firstWhere('is_founder', true);
+            $otherMembers = $teamMembers->reject(fn ($m) => $m->is_founder);
+            @endphp
+
             {{-- Featured Leader --}}
+            @if ($founder)
             <div class="grid lg:grid-cols-12 gap-8 mb-12 items-center">
                 <div class="lg:col-span-4 xl:col-span-4 wow zoomIn" data-wow-delay="0.1s">
                     <div class="relative">
-                        <img src="{{ asset('img/team-1.jpg') }}" loading="lazy" class="w-full rounded-2xl shadow-lg" alt="Sallaamti Founder">
+                        <div class="w-full aspect-square rounded-2xl shadow-lg overflow-hidden bg-white flex items-center justify-center">
+                            @if ($founder->photo)
+                            <img src="{{ Storage::url($founder->photo) }}" loading="lazy" class="w-full h-full object-contain" alt="{{ $founder->name }}">
+                            @else
+                            <div class="text-6xl">👤</div>
+                            @endif
+                        </div>
                         <div class="absolute -bottom-4 -right-4 w-20 h-20 rounded-2xl flex items-center justify-center text-3xl shadow-lg" style="background: var(--gold)">🕌</div>
                     </div>
                 </div>
                 <div class="lg:col-span-8 xl:col-span-8 wow fadeIn" data-wow-delay="0.2s">
-                    <span class="section-eyebrow">Founder & Director</span>
-                    <h2 class="text-3xl font-extrabold text-gray-800 mb-1">Mubashar Ahmed</h2>
-                    <p class="italic mb-4" style="color: var(--teal)">Founder, Sallaamti</p>
-                    <p class="text-gray-600 mb-6 leading-relaxed">
-                        With a deep passion for Islamic education and community service, Mubashar founded Sallaamti with the vision of creating a platform where every Muslim — regardless of age, location or background — can access quality Quranic education, find a halal spouse, and build a life aligned with the Quran and Sunnah.
-                    </p>
-                    <p class="text-gray-600 mb-6 leading-relaxed">
-                        "Our goal is not just to teach the Quran — it is to help Muslims live it. اقرأ، افهم، وطبّق — Read, Understand, and Implement."
-                    </p>
+                    <span class="section-eyebrow">{{ $founder->role }}</span>
+                    <h2 class="text-3xl font-extrabold text-gray-800 mb-1">{{ $founder->name }}</h2>
+                    @if ($founder->bio)
+                    <div class="prose prose-sm max-w-none text-gray-600 mb-6 leading-relaxed">{!! $founder->bio !!}</div>
+                    @endif
                     <div class="flex gap-3">
-                        <a href="{{ setting('social_facebook', '#') }}" class="social-btn" target="_blank"><i class="fab fa-facebook-f"></i></a>
-                        <a href="{{ setting('social_instagram', '#') }}" class="social-btn" target="_blank"><i class="fab fa-instagram"></i></a>
-                        <a href="{{ setting('social_tiktok', '#') }}" class="social-btn" target="_blank"><i class="fab fa-tiktok"></i></a>
-                        <a href="https://wa.me/{{ setting('social_whatsapp') }}" class="social-btn" target="_blank"><i class="fab fa-whatsapp"></i></a>
+                        @if ($founder->facebook_url)
+                        <a href="{{ $founder->facebook_url }}" class="social-btn" target="_blank"><i class="fab fa-facebook-f"></i></a>
+                        @endif
+                        @if ($founder->instagram_url)
+                        <a href="{{ $founder->instagram_url }}" class="social-btn" target="_blank"><i class="fab fa-instagram"></i></a>
+                        @endif
+                        @if ($founder->tiktok_url)
+                        <a href="{{ $founder->tiktok_url }}" class="social-btn" target="_blank"><i class="fab fa-tiktok"></i></a>
+                        @endif
+                        @if ($founder->whatsapp_number)
+                        <a href="https://wa.me/{{ $founder->whatsapp_number }}" class="social-btn" target="_blank"><i class="fab fa-whatsapp"></i></a>
+                        @endif
                     </div>
                 </div>
             </div>
+            @endif
 
             {{-- Team Grid --}}
-            @if ($teamMembers->isNotEmpty())
+            @if ($otherMembers->isNotEmpty())
             <div class="grid sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                @foreach ($teamMembers as $member)
+                @foreach ($otherMembers as $member)
                 <div class="team-card bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300 wow zoomIn" data-wow-delay="0.1s">
-                    <div class="relative overflow-hidden">
+                    <div class="w-full aspect-square bg-gray-50 flex items-center justify-center overflow-hidden">
                         @if ($member->photo)
-                        <img src="{{ Storage::url($member->photo) }}" loading="lazy" class="w-full h-52 object-cover" alt="{{ $member->name }}">
+                        <img src="{{ Storage::url($member->photo) }}" loading="lazy" class="w-full h-full object-contain" alt="{{ $member->name }}">
                         @else
-                        <div class="w-full h-52 flex items-center justify-center text-4xl" style="background: var(--teal-light)">👤</div>
+                        <div class="text-4xl">👤</div>
                         @endif
                     </div>
                     <div class="p-4 text-center">
@@ -577,6 +594,20 @@
                         @if ($member->bio)
                         <div class="prose prose-sm max-w-none text-gray-500">{!! $member->bio !!}</div>
                         @endif
+                        <div class="flex justify-center gap-2 mt-2">
+                            @if ($member->facebook_url)
+                            <a href="{{ $member->facebook_url }}" target="_blank" class="social-btn social-btn-sm"><i class="fab fa-facebook-f"></i></a>
+                            @endif
+                            @if ($member->instagram_url)
+                            <a href="{{ $member->instagram_url }}" target="_blank" class="social-btn social-btn-sm"><i class="fab fa-instagram"></i></a>
+                            @endif
+                            @if ($member->tiktok_url)
+                            <a href="{{ $member->tiktok_url }}" target="_blank" class="social-btn social-btn-sm"><i class="fab fa-tiktok"></i></a>
+                            @endif
+                            @if ($member->whatsapp_number)
+                            <a href="https://wa.me/{{ $member->whatsapp_number }}" target="_blank" class="social-btn social-btn-sm"><i class="fab fa-whatsapp"></i></a>
+                            @endif
+                        </div>
                     </div>
                 </div>
                 @endforeach

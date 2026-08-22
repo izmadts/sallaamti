@@ -24,7 +24,12 @@
                     @endif
                 </div>
                 <div class="flex-1">
-                    <p class="font-medium text-gray-800">{{ $member->name }} <span class="text-gray-400 text-xs font-normal">— {{ $member->role }}</span></p>
+                    <p class="font-medium text-gray-800">
+                        {{ $member->name }} <span class="text-gray-400 text-xs font-normal">— {{ $member->role }}</span>
+                        @if ($member->is_founder)
+                        <span class="text-xs px-2 py-0.5 rounded-full bg-amber-100 text-amber-700 ml-1">Founder</span>
+                        @endif
+                    </p>
                     @if ($member->bio)
                     <p class="text-sm text-gray-600 line-clamp-2">{{ $member->bio }}</p>
                     @endif

@@ -13,6 +13,8 @@ return [
     'About Us' => 'ہمارے بارے میں',
     'Courses' => 'کورسز',
     'Contact' => 'رابطہ',
+    'Team' => 'ٹیم',
+    'Wall' => 'وال',
     'Contact us' => 'ہم سے رابطہ کریں',
     'Log In' => 'لاگ ان',
     'Log Out' => 'لاگ آؤٹ',

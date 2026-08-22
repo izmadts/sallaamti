@@ -144,14 +144,16 @@
  <a href="{{ url('/') }}" class="px-3 py-2 text-sm font-medium {{ request()->is('/') ? 'text-[--teal]' : 'text-[--text-dark] hover:text-[--teal]' }}">{{ __('db.Home') }}</a>
  <a href="{{ url('/about') }}" class="px-3 py-2 text-sm font-medium {{ request()->is('about') ? 'text-[--teal]' : 'text-[--text-dark] hover:text-[--teal]' }}">{{ __('db.About') }}</a>
  <a href="{{ route('blog.index') }}" class="px-3 py-2 text-sm font-medium {{ request()->routeIs('blog.*') ? 'text-[--teal]' : 'text-[--text-dark] hover:text-[--teal]' }}">{{ __('db.Blog') }}</a>
- <a href="{{ route('posts.index') }}" class="px-3 py-2 text-sm font-medium {{ request()->routeIs('posts.*') ? 'text-[--teal]' : 'text-[--text-dark] hover:text-[--teal]' }}">Community Posts</a>
+ <a href="{{ url('/team') }}" class="px-3 py-2 text-sm font-medium {{ request()->is('team') ? 'text-[--teal]' : 'text-[--text-dark] hover:text-[--teal]' }}">{{ __('db.Team') }}</a>
  <a href="{{ url('/contact') }}" class="px-3 py-2 text-sm font-medium {{ request()->is('contact') ? 'text-[--teal]' : 'text-[--text-dark] hover:text-[--teal]' }}">{{ __('db.Contact') }}</a>
+ @if (!auth()->check() || !auth()->user()->hasAnyRole(['admin', 'teacher', 'counselor', 'matchmaker', 'manager', 'blogger']))
  <x-wall-nav-badge :dua="$latestApprovedDua ?? null">
  <a href="{{ route('wall.index') }}" class="px-3 py-2 text-sm font-medium inline-flex items-center gap-1 {{ request()->routeIs('wall.*') ? 'text-[--teal]' : 'text-[--text-dark] hover:text-[--teal]' }}">
  🤲 {{ __('db.Wall') }}
  <span class="w-1.5 h-1.5 rounded-full animate-pulse" style="background: var(--gold)"></span>
  </a>
  </x-wall-nav-badge>
+ @endif
  </div>
 
  {{-- Spacer pushes the right-side block to the edge --}}
@@ -223,9 +225,9 @@
  <a href="{{ url('/') }}" class="py-2 text-sm font-medium {{ request()->is('/') ? 'text-[--teal]' : 'text-[--text-dark]' }}">{{ __('db.Home') }}</a>
  <a href="{{ url('/about') }}" class="py-2 text-sm font-medium {{ request()->is('about') ? 'text-[--teal]' : 'text-[--text-dark]' }}">{{ __('db.About') }}</a>
  <a href="{{ route('blog.index') }}" class="py-2 text-sm font-medium {{ request()->routeIs('blog.*') ? 'text-[--teal]' : 'text-[--text-dark]' }}">{{ __('db.Blog') }}</a>
- <a href="{{ route('posts.index') }}" class="py-2 text-sm font-medium {{ request()->routeIs('posts.*') ? 'text-[--teal]' : 'text-[--text-dark]' }}">Community Posts</a>
  <a href="{{ url('/team') }}" class="py-2 text-sm font-medium {{ request()->is('team') ? 'text-[--teal]' : 'text-[--text-dark]' }}">{{ __('db.Team') }}</a>
  <a href="{{ url('/contact') }}" class="py-2 text-sm font-medium {{ request()->is('contact') ? 'text-[--teal]' : 'text-[--text-dark]' }}">{{ __('db.Contact') }}</a>
+ @if (!auth()->check() || !auth()->user()->hasAnyRole(['admin', 'teacher', 'counselor', 'matchmaker', 'manager', 'blogger']))
  <div class="border-t my-2"></div>
  <a href="{{ route('wall.index') }}" class="py-2 text-sm font-semibold flex items-center gap-1.5" style="color: var(--teal)">
  🤲 {{ __('db.Sallaamti Wall') }}
@@ -233,6 +235,7 @@
  <span class="w-1.5 h-1.5 rounded-full animate-pulse inline-block" style="background: var(--gold)"></span>
  @endif
  </a>
+ @endif
  <a href="{{ route('nikah.create') }}" class="py-2 text-sm font-semibold" style="color: #b8962e">💍 {{ __('db.Find a Match') }}</a>
  <a href="{{ route('counseling.book.start') }}" class="py-2 text-sm font-semibold text-[--teal]">🤝 {{ __('db.Get Counseling') }}</a>
  <a href="{{ route('courses.index') }}" class="py-2 text-sm">📖 {{ __('db.Quran Courses') }}</a>

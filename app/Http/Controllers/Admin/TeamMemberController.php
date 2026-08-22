@@ -24,15 +24,26 @@ class TeamMemberController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name'  => ['required', 'string', 'max:100'],
-            'role'  => ['required', 'string', 'max:100'],
-            'bio'   => ['nullable', 'string'],
-            'photo' => ['nullable', 'image', 'max:2048'],
+            'name'            => ['required', 'string', 'max:100'],
+            'role'            => ['required', 'string', 'max:100'],
+            'bio'             => ['nullable', 'string'],
+            'photo'           => ['nullable', 'image', 'max:2048'],
+            'facebook_url'    => ['nullable', 'url', 'max:255'],
+            'instagram_url'   => ['nullable', 'url', 'max:255'],
+            'tiktok_url'      => ['nullable', 'url', 'max:255'],
+            'whatsapp_number' => ['nullable', 'string', 'max:20'],
         ]);
 
         $validated['bio'] = HtmlSanitizer::clean($validated['bio'] ?? null);
         $validated['is_active'] = $request->has('is_active');
         $validated['order'] = TeamMember::max('order') + 1;
+
+        // Only one founder shown at a time — making a new member the
+        // founder demotes whoever held it before.
+        if ($request->has('is_founder')) {
+            TeamMember::where('is_founder', true)->update(['is_founder' => false]);
+        }
+        $validated['is_founder'] = $request->has('is_founder');
 
         if ($request->hasFile('photo')) {
             $validated['photo'] = $request->file('photo')->store('team-members', 'public');
@@ -51,14 +62,23 @@ class TeamMemberController extends Controller
     public function update(Request $request, TeamMember $team_member)
     {
         $validated = $request->validate([
-            'name'  => ['required', 'string', 'max:100'],
-            'role'  => ['required', 'string', 'max:100'],
-            'bio'   => ['nullable', 'string'],
-            'photo' => ['nullable', 'image', 'max:2048'],
+            'name'            => ['required', 'string', 'max:100'],
+            'role'            => ['required', 'string', 'max:100'],
+            'bio'             => ['nullable', 'string'],
+            'photo'           => ['nullable', 'image', 'max:2048'],
+            'facebook_url'    => ['nullable', 'url', 'max:255'],
+            'instagram_url'   => ['nullable', 'url', 'max:255'],
+            'tiktok_url'      => ['nullable', 'url', 'max:255'],
+            'whatsapp_number' => ['nullable', 'string', 'max:20'],
         ]);
 
         $validated['bio'] = HtmlSanitizer::clean($validated['bio'] ?? null);
         $validated['is_active'] = $request->has('is_active');
+
+        if ($request->has('is_founder')) {
+            TeamMember::where('id', '!=', $team_member->id)->where('is_founder', true)->update(['is_founder' => false]);
+        }
+        $validated['is_founder'] = $request->has('is_founder');
 
         if ($request->hasFile('photo')) {
             if ($team_member->photo) Storage::disk('public')->delete($team_member->photo);

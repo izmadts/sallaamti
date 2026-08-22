@@ -36,6 +36,22 @@
             <div>
                 <x-input-label value="Photo (optional)" />
                 <input type="file" name="photo" accept="image/*" class="w-full mt-1">
+                <p class="text-xs text-gray-400 mt-1">Shown in a square frame — a centered headshot works best.</p>
+            </div>
+
+            <div class="border-t pt-4">
+                <x-input-label value="Social Links (optional)" />
+                <div class="grid grid-cols-2 gap-3 mt-1">
+                    <x-text-input name="facebook_url" class="w-full" value="{{ old('facebook_url') }}" placeholder="Facebook URL" />
+                    <x-text-input name="instagram_url" class="w-full" value="{{ old('instagram_url') }}" placeholder="Instagram URL" />
+                    <x-text-input name="tiktok_url" class="w-full" value="{{ old('tiktok_url') }}" placeholder="TikTok URL" />
+                    <x-text-input name="whatsapp_number" class="w-full" value="{{ old('whatsapp_number') }}" placeholder="WhatsApp number (e.g. 92300...)" />
+                </div>
+            </div>
+
+            <div class="flex items-center gap-2">
+                <input type="checkbox" name="is_founder" value="1" id="is_founder">
+                <label for="is_founder" class="text-sm text-gray-700">Feature as Founder (shown large at the top of the team page — only one at a time)</label>
             </div>
             <div class="flex items-center gap-2">
                 <input type="checkbox" name="is_active" value="1" id="is_active" checked>
