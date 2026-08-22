@@ -35,15 +35,30 @@ class DashboardController extends Controller
     {
         $requests = \App\Models\NikahContactRequest::where('requested_by', $authUser->id)->get();
 
+        $myLeads = \App\Models\Lead::where('assigned_to', $authUser->id);
+
         $stats = [
             'total_profiles' => \App\Models\NikahProfile::where('is_active', true)->whereNull('suspended_at')->count(),
             'pending_requests' => $requests->where('status', 'pending')->count(),
             'approved_requests' => $requests->where('status', 'approved')->count(),
+            'new_leads' => (clone $myLeads)->where('status', 'new')->count(),
+            'follow_ups_due' => (clone $myLeads)->whereDate('next_follow_up_at', '<=', now())->whereNotIn('status', ['registered', 'not_interested', 'closed'])->count(),
+            'registered_leads' => (clone $myLeads)->where('status', 'registered')->count(),
         ];
+
+        $followUps = (clone $myLeads)->whereDate('next_follow_up_at', '<=', now())
+            ->whereNotIn('status', ['registered', 'not_interested', 'closed'])
+            ->orderBy('next_follow_up_at')
+            ->take(5)
+            ->get();
+
+        $recentLeads = (clone $myLeads)->latest()->take(5)->get();
 
         return view('dashboard.matchmaker', [
             'user' => $authUser,
             'stats' => $stats,
+            'followUps' => $followUps,
+            'recentLeads' => $recentLeads,
         ]);
     }
 

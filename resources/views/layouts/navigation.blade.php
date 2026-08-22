@@ -135,6 +135,26 @@
  </x-dropdown>
  @endrole
 
+ @role('matchmaker')
+ <x-dropdown align="left" width="48">
+ <x-slot name="trigger">
+ <button class="inline-flex items-center px-3 py-2 rounded-md text-sm font-medium text-white hover:bg-teal-600 focus:outline-none transition
+ {{ request()->routeIs('admin.leads*') || request()->routeIs('matchmaker.*') ? 'bg-teal-800' : '' }}">
+ 💍 {{ __('db.Matchmaking') }}
+ <svg class="ms-1 h-4 w-4 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
+ <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
+ </svg>
+ </button>
+ </x-slot>
+ <x-slot name="content">
+ <x-dropdown-link :href="route('dashboard')">🏠 {{ __('db.My Dashboard') }}</x-dropdown-link>
+ <x-dropdown-link :href="route('admin.leads.index')">📞 {{ __('db.My Leads') }}</x-dropdown-link>
+ <x-dropdown-link :href="route('matchmaker.nikah.index')">🔍 {{ __('db.Browse Profiles') }}</x-dropdown-link>
+ <x-dropdown-link :href="route('matchmaker.nikah.requests')">🤝 {{ __('db.My Contact Requests') }}</x-dropdown-link>
+ </x-slot>
+ </x-dropdown>
+ @endrole
+
  @hasanyrole(['manager', 'blogger'])
  <x-nav-link :href="route('admin.blog-posts.index')" :active="request()->routeIs('admin.blog-posts*')"
  class="text-white hover:bg-teal-600 px-3 py-2 rounded-md text-sm">
@@ -400,6 +420,13 @@
  <div class="px-3 py-1 text-xs text-teal-300 font-semibold uppercase tracking-wider mt-2">Teacher</div>
  <x-responsive-nav-link :href="route('teacher.courses.index')" class="text-white">📚 My Courses</x-responsive-nav-link>
  <x-responsive-nav-link :href="route('teacher.groups.index')" class="text-white">👥 My Class Groups</x-responsive-nav-link>
+ @endrole
+
+ @role('matchmaker')
+ <div class="px-3 py-1 text-xs text-teal-300 font-semibold uppercase tracking-wider mt-2">Matchmaking</div>
+ <x-responsive-nav-link :href="route('admin.leads.index')" class="text-white">📞 My Leads</x-responsive-nav-link>
+ <x-responsive-nav-link :href="route('matchmaker.nikah.index')" class="text-white">🔍 Browse Profiles</x-responsive-nav-link>
+ <x-responsive-nav-link :href="route('matchmaker.nikah.requests')" class="text-white">🤝 My Contact Requests</x-responsive-nav-link>
  @endrole
 
  @hasanyrole(['manager', 'blogger'])

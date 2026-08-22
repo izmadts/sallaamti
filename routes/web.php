@@ -648,6 +648,7 @@ Route::middleware(['auth', 'counselor'])->prefix('counselor')->name('counselor.'
 
 Route::middleware(['auth', 'matchmaker'])->prefix('matchmaker')->name('matchmaker.')->group(function () {
     Route::get('/nikah-profiles', [\App\Http\Controllers\Matchmaker\NikahBrowseController::class, 'index'])->name('nikah.index');
+    Route::get('/nikah-requests', [\App\Http\Controllers\Matchmaker\NikahBrowseController::class, 'myRequests'])->name('nikah.requests');
     Route::get('/nikah-profiles/{profile}', [\App\Http\Controllers\Matchmaker\NikahBrowseController::class, 'show'])->name('nikah.show');
     Route::post('/nikah-profiles/{profile}/request-contact', [\App\Http\Controllers\Matchmaker\NikahBrowseController::class, 'requestContact'])->name('nikah.request-contact');
 });

@@ -43,6 +43,20 @@ class NikahBrowseController extends Controller
         return view('matchmaker.nikah.index', compact('profiles'));
     }
 
+    // A matchmaker previously had no way to see their own request history
+    // in one place — only a per-profile status on show() above, or the
+    // three-number summary on their dashboard. This is the "My Requests"
+    // list that summary was missing a link to.
+    public function myRequests()
+    {
+        $requests = NikahContactRequest::with('profile.user')
+            ->where('requested_by', Auth::id())
+            ->latest()
+            ->paginate(20);
+
+        return view('matchmaker.nikah.requests', compact('requests'));
+    }
+
     public function show(NikahProfile $profile)
     {
         $existingRequest = NikahContactRequest::where('nikah_profile_id', $profile->id)
