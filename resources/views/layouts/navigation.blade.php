@@ -147,7 +147,7 @@
  </button>
  </x-slot>
  <x-slot name="content">
- <x-dropdown-link :href="route('dashboard')">🏠 {{ __('db.My Dashboard') }}</x-dropdown-link>
+ <x-dropdown-link :href="route('dashboard.matchmaker')">🏠 {{ __('db.Matchmaker Dashboard') }}</x-dropdown-link>
  <x-dropdown-link :href="route('admin.leads.index')">📞 {{ __('db.My Leads') }}</x-dropdown-link>
  <x-dropdown-link :href="route('matchmaker.nikah.index')">🔍 {{ __('db.Browse Profiles') }}</x-dropdown-link>
  <x-dropdown-link :href="route('matchmaker.nikah.requests')">🤝 {{ __('db.My Contact Requests') }}</x-dropdown-link>
@@ -424,6 +424,7 @@
 
  @role('matchmaker')
  <div class="px-3 py-1 text-xs text-teal-300 font-semibold uppercase tracking-wider mt-2">Matchmaking</div>
+ <x-responsive-nav-link :href="route('dashboard.matchmaker')" class="text-white">🏠 Matchmaker Dashboard</x-responsive-nav-link>
  <x-responsive-nav-link :href="route('admin.leads.index')" class="text-white">📞 My Leads</x-responsive-nav-link>
  <x-responsive-nav-link :href="route('matchmaker.nikah.index')" class="text-white">🔍 Browse Profiles</x-responsive-nav-link>
  <x-responsive-nav-link :href="route('matchmaker.nikah.requests')" class="text-white">🤝 My Contact Requests</x-responsive-nav-link>

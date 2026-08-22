@@ -34,6 +34,7 @@ return [
     'Your Interests' => 'آپ کی دلچسپیاں',
     'Choose which parts of Sallaamti you want to see in your menu and dashboard. You can change this anytime — nothing you\'ve already set up is affected.' => 'منتخب کریں کہ آپ سلامتی کے کن حصوں کو اپنے مینو اور ڈیش بورڈ میں دیکھنا چاہتے ہیں۔ آپ اسے کسی بھی وقت تبدیل کر سکتے ہیں — جو کچھ آپ نے پہلے سے ترتیب دیا ہے اس پر کوئی اثر نہیں پڑتا۔',
     'Matchmaking profiles, browsing, and interests.' => 'رشتہ پروفائلز، براؤزنگ، اور دلچسپیاں۔',
+    'Matchmaker Dashboard' => 'میچ میکر ڈیش بورڈ',
     'Courses, live classes, and certificates.' => 'کورسز، لائیو کلاسز، اور سرٹیفکیٹس۔',
     'Counseling session booking and your support queries.' => 'مشاورتی سیشن کی بکنگ اور آپ کی معاونتی درخواستیں۔',
     'My Profile' => 'میری پروفائل',

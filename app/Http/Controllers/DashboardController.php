@@ -31,6 +31,18 @@ class DashboardController extends Controller
         return $this->memberDashboard($authUser);
     }
 
+    // Direct link target for the Matchmaking nav dropdown's "Matchmaker
+    // Dashboard" link, so an account that holds another role too (e.g.
+    // counselor) doesn't get bounced to that other role's panel — unlike
+    // index() above, this never falls through to a different dashboard.
+    public function matchmaker()
+    {
+        $authUser = Auth::user();
+        abort_unless($authUser->hasRole('matchmaker'), 403);
+
+        return $this->matchmakerDashboard($authUser);
+    }
+
     private function matchmakerDashboard($authUser)
     {
         $requests = \App\Models\NikahContactRequest::where('requested_by', $authUser->id)->get();

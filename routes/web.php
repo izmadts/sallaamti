@@ -184,6 +184,14 @@ Route::middleware(['auth', 'verified'])->group(function () {
     // Dashboard
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
+    // A user can hold more than one staff role at once (e.g. counselor +
+    // matchmaker). The generic /dashboard above always resolves to a single
+    // role's panel by priority order, so it can't be the target of a
+    // role-specific "My Dashboard" nav link — this gives the Matchmaking
+    // dropdown a link that always lands on the matchmaker panel regardless
+    // of what other roles the account has.
+    Route::get('/dashboard/matchmaker', [DashboardController::class, 'matchmaker'])->name('dashboard.matchmaker');
+
     // User Guide — tabbed documentation, one tab per role the visitor
     // actually holds (see UserGuideController).
     Route::get('/guide', [\App\Http\Controllers\UserGuideController::class, 'index'])->name('guide.index');
