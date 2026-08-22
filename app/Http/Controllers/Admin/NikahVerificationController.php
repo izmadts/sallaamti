@@ -179,7 +179,7 @@ class NikahVerificationController extends Controller
             Storage::disk('private')->delete($galleryPhoto->path);
         }
 
-        $memberName = $profile->user->name;
+        $memberName = $profile->user?->name ?? 'this profile';
         $profile->delete();
 
         return redirect()->route('admin.nikah.profiles')
@@ -189,6 +189,10 @@ class NikahVerificationController extends Controller
     public function contact(Request $request, NikahProfile $profile)
     {
         $request->validate(['message' => ['required', 'string', 'max:2000']]);
+
+        if (!$profile->user) {
+            return back()->with('error', 'This profile\'s linked account no longer exists — nothing to message.');
+        }
 
         try {
             $profile->user->notify(new \App\Notifications\NikahAdminMessage($request->message));
@@ -223,7 +227,7 @@ class NikahVerificationController extends Controller
             return back()->with('status', 'Could not send reminder — check the mail log.');
         }
 
-        return back()->with('status', 'Reminder email sent to ' . $profile->user->name . '.');
+        return back()->with('status', 'Reminder email sent to ' . ($profile->user?->name ?? 'the member') . '.');
     }
 
     public function bulkRemind(Request $request)

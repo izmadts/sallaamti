@@ -136,7 +136,7 @@ class NikahPaymentAdminController extends Controller
             });
         }
 
-        return back()->with('status', 'Payment recorded and confirmed for ' . $profile->user->name . '.');
+        return back()->with('status', 'Payment recorded and confirmed for ' . ($profile->user?->name ?? 'the member') . '.');
     }
 
     public function reject(Request $request, NikahProfile $profile)

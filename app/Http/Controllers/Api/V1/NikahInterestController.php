@@ -122,7 +122,7 @@ class NikahInterestController extends Controller
             'created_at' => $interest->created_at->toIso8601String(),
             'profile' => [
                 'id' => $otherProfile->id,
-                'name' => $interest->status === 'accepted' ? $otherProfile->user->name : null,
+                'name' => $interest->status === 'accepted' ? $otherProfile->user?->name : null,
                 'age' => $otherProfile->age,
                 'city' => $otherProfile->city,
                 'profession' => $otherProfile->profession,

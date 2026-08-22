@@ -27,7 +27,7 @@ class VolunteerAdminController extends Controller
 
         $volunteer->update(['status' => 'approved']);
 
-        if ($volunteer->user_id && !$volunteer->user->hasRole('volunteer')) {
+        if ($volunteer->user && !$volunteer->user->hasRole('volunteer')) {
             $volunteer->user->assignRole('volunteer');
         }
 
