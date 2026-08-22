@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\DashboardController;
 use App\Http\Controllers\Api\V1\FaqController;
+use App\Http\Controllers\Api\V1\MetaController;
 use App\Http\Controllers\Api\V1\NikahBrowseController;
 use App\Http\Controllers\Api\V1\NikahFileController;
 use App\Http\Controllers\Api\V1\NikahInterestController;
@@ -34,6 +35,7 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
     });
 
     Route::get('faqs', [FaqController::class, 'index'])->name('faqs.index');
+    Route::get('meta/country-states', [MetaController::class, 'countryStates'])->name('meta.country-states');
 
     Route::middleware('auth:sanctum')->group(function () {
         Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard.index');

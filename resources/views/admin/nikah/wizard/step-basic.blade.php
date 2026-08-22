@@ -30,8 +30,10 @@
                     <x-nikah-section title="Basic Information" icon="🧍" color="blue">
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
-                                <x-input-label for="age" value="Age" />
-                                <x-text-input id="age" name="age" type="number" class="w-full mt-1" :value="old('age', $data['age'] ?? '')" required />
+                                <x-input-label for="date_of_birth" value="Date of Birth" />
+                                <x-text-input id="date_of_birth" name="date_of_birth" type="date" class="w-full mt-1"
+                                    :value="old('date_of_birth', $data['date_of_birth'] ?? '')" required
+                                    max="{{ now()->subYears(18)->toDateString() }}" min="{{ now()->subYears(100)->toDateString() }}" />
                             </div>
                             @php
                                 $heightOptions = [];

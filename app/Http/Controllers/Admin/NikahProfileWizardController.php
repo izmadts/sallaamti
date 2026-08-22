@@ -34,7 +34,7 @@ class NikahProfileWizardController extends Controller
 
     protected array $wizardStepFields = [
         'account' => ['name', 'identifier', 'gender'],
-        'basic' => ['age', 'height', 'height_other', 'marital_status', 'education', 'profession', 'city', 'state', 'country'],
+        'basic' => ['date_of_birth', 'height', 'height_other', 'marital_status', 'education', 'profession', 'city', 'state', 'country'],
         'family' => ['caste', 'family_type', 'guardian_name', 'guardian_contact', 'guardian_relation', 'ethnicity'],
         'deen' => ['sect', 'sect_other', 'prayer_frequency', 'hijab_or_beard', 'smokes', 'diet', 'open_to_polygamy'],
         'about' => ['about', 'expectations'],

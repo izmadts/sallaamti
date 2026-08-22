@@ -5,7 +5,7 @@
      than retype it by hand. --}}
 <button type="button"
     x-data="{ copied: false }"
-    @click="navigator.clipboard.writeText(@js($value)); copied = true; setTimeout(() => copied = false, 1500)"
+    @click="navigator.clipboard.writeText(@js($value).replace(/-/g, '')); copied = true; setTimeout(() => copied = false, 1500)"
     class="inline-flex items-center justify-center w-6 h-6 rounded text-gray-400 hover:text-gray-700 hover:bg-gray-200 transition"
     :title="copied ? '{{ __('db.Copied!') }}' : '{{ __('db.Copy') }}'">
     <svg x-show="!copied" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

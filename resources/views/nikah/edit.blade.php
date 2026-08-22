@@ -27,9 +27,11 @@
                     <x-nikah-section :title="__('db.Basic Information')" icon="🧍" color="blue">
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
-                                <x-input-label for="age" value="Age" />
-                                <x-text-input id="age" name="age" type="number" class="w-full mt-1" :value="old('age', $profile->age)" required
-                                    placeholder="{{ __('db.e.g. 27') }}" title="{{ __('db.Your current age in years — must be 18 or older.') }}" />
+                                <x-input-label for="date_of_birth" :value="__('db.Date of Birth')" />
+                                <x-text-input id="date_of_birth" name="date_of_birth" type="date" class="w-full mt-1"
+                                    :value="old('date_of_birth', $profile->date_of_birth?->toDateString())" required
+                                    max="{{ now()->subYears(18)->toDateString() }}" min="{{ now()->subYears(100)->toDateString() }}"
+                                    title="{{ __('db.You must be at least 18 years old to create a Nikah profile.') }}" />
                             </div>
                             <div>
                                 <x-input-label for="gender" :value="__('db.Gender')" />

@@ -14,7 +14,15 @@ trait ValidatesNikahProfile
     protected function nikahProfileRules(?NikahProfile $profile = null): array
     {
         return [
-            'age' => ['required', 'integer', 'min:18', 'max:70'],
+            // Verifiable birth date, not a self-reported age number — Nikah
+            // profiles are adults-only, so this is the actual 18+ gate;
+            // `age` gets derived from it automatically (see NikahProfile::booted()).
+            'date_of_birth' => [
+                'required',
+                'date',
+                'before_or_equal:' . now()->subYears(18)->toDateString(),
+                'after:' . now()->subYears(100)->toDateString(),
+            ],
             'height' => ['nullable', 'string', 'max:20'],
             'height_other' => ['nullable', 'required_if:height,Other', 'string', 'max:30'],
             'marital_status' => ['required', 'string', 'in:never_married,divorced,widowed,married,separated'],
@@ -65,6 +73,8 @@ trait ValidatesNikahProfile
     {
         return [
             'cnic_number.unique' => __('db.This CNIC number is already registered to another profile.'),
+            'date_of_birth.before_or_equal' => __('db.You must be at least 18 years old to create a Nikah profile.'),
+            'date_of_birth.after' => __('db.Please enter a valid date of birth.'),
         ];
     }
 

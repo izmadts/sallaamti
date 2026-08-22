@@ -607,4 +607,10 @@ return [
     // ---- Copy-to-clipboard button (payment account numbers) ----
     'Copy' => 'کاپی کریں',
     'Copied!' => 'کاپی ہو گیا!',
+
+    // ---- Interest send/accept verification gate ----
+    'Your profile must be fully verified and paid before you can send interest to others.' => 'دوسروں کو دلچسپی بھیجنے سے پہلے آپ کی پروفائل کی مکمل تصدیق اور ادائیگی ضروری ہے۔',
+    'Your profile must be fully verified and paid before you can accept interests.' => 'دلچسپی قبول کرنے سے پہلے آپ کی پروفائل کی مکمل تصدیق اور ادائیگی ضروری ہے۔',
+    'You must be at least 18 years old to create a Nikah profile.' => 'نکاح پروفائل بنانے کے لیے آپ کی عمر کم از کم 18 سال ہونی چاہیے۔',
+    'Please enter a valid date of birth.' => 'براہ کرم اپنی تاریخ پیدائش درست درج کریں۔',
 ];

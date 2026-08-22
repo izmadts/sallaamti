@@ -34,6 +34,10 @@ class NikahInterestController extends Controller
             return response()->json(['code' => 'no_profile', 'message' => __('db.Create your Nikah profile first.')], 409);
         }
 
+        if (!$myProfile->canInteract()) {
+            return response()->json(['code' => 'not_verified', 'message' => __('db.Your profile must be fully verified and paid before you can send interest to others.')], 403);
+        }
+
         $this->guardAgainstBruteForce('nikah-interest-send:' . $request->user()->id);
 
         abort_if(NikahBlock::existsBetween($myProfile->id, $profile->id), 403);
@@ -86,6 +90,10 @@ class NikahInterestController extends Controller
     {
         $myProfile = $request->user()->nikahProfile;
         abort_unless($myProfile && $interest->receiver_profile_id === $myProfile->id, 403);
+
+        if (!$myProfile->canInteract()) {
+            return response()->json(['code' => 'not_verified', 'message' => __('db.Your profile must be fully verified and paid before you can accept interests.')], 403);
+        }
 
         $interest->update(['status' => 'accepted', 'responded_at' => now()]);
 

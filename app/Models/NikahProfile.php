@@ -13,6 +13,7 @@ class NikahProfile extends Model
         'user_id',
         'public_token',
         'age',
+        'date_of_birth',
         'height',
         'marital_status',
         'open_to_polygamy',
@@ -68,6 +69,7 @@ class NikahProfile extends Model
     {
         return [
             'user_id' => 'integer',
+            'date_of_birth' => 'date',
             'open_to_polygamy' => 'boolean',
             'allow_photo_sharing' => 'boolean',
             'is_active' => 'boolean',
@@ -77,6 +79,20 @@ class NikahProfile extends Model
             'last_active_at' => 'datetime',
             'payment_confirmed_at' => 'datetime',
         ];
+    }
+
+    // `age` (an integer column) stays the source browse/search filtering
+    // queries directly against — recomputing it here whenever
+    // date_of_birth changes means every existing age-based query keeps
+    // working untouched while the actual input becomes a real, verifiable
+    // birth date instead of a self-reported number.
+    protected static function booted(): void
+    {
+        static::saving(function (NikahProfile $profile) {
+            if ($profile->isDirty('date_of_birth') && $profile->date_of_birth) {
+                $profile->age = $profile->date_of_birth->age;
+            }
+        });
     }
 
     public function user()
@@ -108,6 +124,17 @@ class NikahProfile extends Model
     public function isSuspended(): bool
     {
         return $this->suspended_at !== null;
+    }
+
+    // Same gate Browse already enforces before letting a member view other
+    // profiles at all — sending/accepting/declining an interest is a
+    // further step than viewing, so it needs at least the same bar. Without
+    // this, an unverified/unpaid profile could act on interests via a
+    // direct API call even though the browse/view screens block them from
+    // ever reaching that profile through the normal UI flow.
+    public function canInteract(): bool
+    {
+        return $this->payment_status === 'confirmed' && $this->verification_status === 'verified';
     }
 
     public function isPaymentConfirmed(): bool

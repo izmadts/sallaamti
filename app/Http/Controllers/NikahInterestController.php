@@ -29,6 +29,10 @@ class NikahInterestController extends Controller
             return redirect()->route('nikah.create');
         }
 
+        if (!$myProfile->canInteract()) {
+            return back()->with('error', 'Your profile must be fully verified and paid before you can send interest to others.');
+        }
+
         $this->guardAgainstBruteForce('nikah-interest-send:' . Auth::id());
 
         abort_if(NikahBlock::existsBetween($myProfile->id, $profile->id), 403);
@@ -79,6 +83,10 @@ class NikahInterestController extends Controller
     {
         $myProfile = Auth::user()->nikahProfile;
         abort_unless($myProfile && $interest->receiver_profile_id === $myProfile->id, 403);
+
+        if (!$myProfile->canInteract()) {
+            return back()->with('error', 'Your profile must be fully verified and paid before you can accept interests.');
+        }
 
         $interest->update(['status' => 'accepted', 'responded_at' => now()]);
 

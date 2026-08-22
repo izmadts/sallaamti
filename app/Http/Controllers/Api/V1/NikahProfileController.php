@@ -24,7 +24,7 @@ class NikahProfileController extends Controller
     // The DB columns with no ->nullable()/->default() — a row literally
     // cannot be INSERTed without these, so the app's first wizard screen
     // must collect all four together before the very first store() call.
-    private const CREATION_REQUIRED = ['age', 'city', 'guardian_name', 'guardian_contact'];
+    private const CREATION_REQUIRED = ['date_of_birth', 'city', 'guardian_name', 'guardian_contact'];
 
     // Human labels for field-name-interpolated messages below — translated
     // via __('db.') same as the message templates themselves, so e.g. a
@@ -36,7 +36,7 @@ class NikahProfileController extends Controller
     // match that existing casing exactly, or the __('db.') lookup (which
     // *is* case-sensitive, a plain PHP array key match) misses it.
     private const FIELD_LABELS = [
-        'age' => 'Age',
+        'date_of_birth' => 'Date of Birth',
         'city' => 'City',
         'guardian_name' => 'Guardian Name',
         'guardian_contact' => 'Guardian Contact Number',
