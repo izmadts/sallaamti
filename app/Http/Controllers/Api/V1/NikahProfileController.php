@@ -222,7 +222,17 @@ class NikahProfileController extends Controller
             'visibility' => $profile->visibility,
             'is_active' => $profile->is_active,
             'payment_status' => $profile->payment_status,
-            'payment_amount' => $profile->payment_amount,
+            'payment_amount' => $profile->payment_status === 'confirmed'
+                ? $profile->payment_amount
+                : setting('nikah_verification_fee', config('services.nikah.verification_fee')),
+            'payment_instructions' => [
+                'jazzcash_number' => setting('jazzcash_number'),
+                'jazzcash_account_title' => setting('jazzcash_account_title'),
+                'bank_name' => setting('bank_name'),
+                'bank_account_title' => setting('bank_account_title'),
+                'bank_account_number' => setting('bank_account_number'),
+                'bank_account_iban' => setting('bank_account_iban'),
+            ],
             'pref_min_age' => $profile->pref_min_age,
             'pref_max_age' => $profile->pref_max_age,
             'pref_city' => $profile->pref_city,

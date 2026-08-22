@@ -603,4 +603,8 @@ return [
     // ---- Nikah verification step (AJAX upload error handling) ----
     "We couldn't upload your file. This can happen if a selected photo was moved, renamed, or changed since you picked it — for example, by OneDrive or another sync tool. Please choose your CNIC/photo files again and submit." => 'ہم آپ کی فائل اپ لوڈ نہیں کر سکے۔ ایسا اس وقت ہو سکتا ہے جب منتخب کردہ تصویر آپ کے چننے کے بعد منتقل، نام تبدیل یا تبدیل ہو گئی ہو — مثال کے طور پر ون ڈرائیو یا کسی اور سنک ٹول کی وجہ سے۔ براہ کرم اپنی شناختی کارڈ/تصویر کی فائلیں دوبارہ منتخب کر کے جمع کروائیں۔',
     'Uploading…' => 'اپ لوڈ ہو رہا ہے…',
+
+    // ---- Copy-to-clipboard button (payment account numbers) ----
+    'Copy' => 'کاپی کریں',
+    'Copied!' => 'کاپی ہو گیا!',
 ];

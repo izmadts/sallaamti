@@ -52,7 +52,10 @@
                     <div>
                         <p class="font-bold mb-1" style="color: var(--gold)">📱 {{ __('db.JazzCash') }}</p>
                         <img src="{{ asset('images/jazzcash.png') }}" alt="JazzCash" class="h-8 w-auto mb-1">
-                        <p class="text-gray-600 mb-0">{{ setting('jazzcash_number') }}</p>
+                        <p class="text-gray-600 mb-0 flex items-center gap-1">
+                            {{ setting('jazzcash_number') }}
+                            <x-copy-button :value="setting('jazzcash_number')" />
+                        </p>
                         <p class="font-semibold text-gray-700 mb-0">{{ setting('jazzcash_account_title') }}</p>
                     </div>
                     @endif
@@ -62,8 +65,14 @@
                         <img src="{{ asset('images/meezan.png') }}" alt="Bank" class="h-16 w-auto mb-1">
                         <p class="text-gray-600 text-sm mb-0">{{ __('db.Bank:') }} {{ setting('bank_name') }}</p>
                         <p class="text-gray-600 text-sm mb-0">{{ __('db.Account Title:') }} {{ setting('bank_account_title') }}</p>
-                        <p class="text-gray-600 text-sm mb-0">{{ __('db.Account No:') }} {{ setting('bank_account_number') }}</p>
-                        <p class="text-gray-600 text-sm mb-0">{{ __('db.IBAN:') }} {{ setting('bank_account_iban') }}</p>
+                        <p class="text-gray-600 text-sm mb-0 flex items-center gap-1">
+                            {{ __('db.Account No:') }} {{ setting('bank_account_number') }}
+                            <x-copy-button :value="setting('bank_account_number')" />
+                        </p>
+                        <p class="text-gray-600 text-sm mb-0 flex items-center gap-1">
+                            {{ __('db.IBAN:') }} {{ setting('bank_account_iban') }}
+                            <x-copy-button :value="setting('bank_account_iban')" />
+                        </p>
                     </div>
                     @endif
                     @if (!setting('jazzcash_number') && !setting('bank_name'))
