@@ -1,7 +1,7 @@
 <x-admin-layout>
     <x-slot name="header">
         <div class="flex items-center gap-2 text-sm">
-            <a href="{{ route('admin.nikah.verifications') }}" class="text-gray-400 hover:text-gray-600">Nikah Profiles</a>
+            <a href="{{ route($routePrefix === 'matchmaker' ? 'matchmaker.nikah.index' : 'admin.nikah.verifications') }}" class="text-gray-400 hover:text-gray-600">Nikah Profiles</a>
             <span class="text-gray-300">›</span>
             <span class="text-gray-700 font-semibold">Create Profile</span>
         </div>
@@ -24,7 +24,7 @@
                 </div>
                 @endif
 
-                <form method="POST" action="{{ route('admin.nikah.profiles.create.step.save', 'basic') }}" class="space-y-6">
+                <form method="POST" action="{{ route($routePrefix . '.nikah.profiles.create.step.save', 'basic') }}" class="space-y-6">
                     @csrf
 
                     @php
@@ -110,7 +110,7 @@
                     </x-nikah-section>
 
                     <div class="flex justify-between pt-2">
-                        <a href="{{ route('admin.nikah.profiles.create.step', 'account') }}" class="btn-base text-gray-600 border border-gray-300 px-4 py-2 rounded-md hover:bg-gray-50">← Back</a>
+                        <a href="{{ route($routePrefix . '.nikah.profiles.create.step', 'account') }}" class="btn-base text-gray-600 border border-gray-300 px-4 py-2 rounded-md hover:bg-gray-50">← Back</a>
                         <x-primary-button>Next: Family & Guardian →</x-primary-button>
                     </div>
                 </form>

@@ -59,15 +59,28 @@ class NikahProfileWizardController extends Controller
         abort_unless(auth()->user()->can('nikah.manage') || auth()->user()->can('nikah.create-profile'), 403);
     }
 
+    // This one controller is reached through two separate route families —
+    // admin.nikah.profiles.create.* (/admin/...) and
+    // matchmaker.nikah.profiles.create.* (/matchmaker/...), same
+    // authorization either way (see authorizeProfileCreation() above).
+    // Every internal redirect/link needs to stay on whichever family the
+    // request actually came in on, or a matchmaker using their own branded
+    // URL would get bounced into /admin/... mid-wizard.
+    private function routeNamePrefix(): string
+    {
+        return str_starts_with(request()->route()->getName(), 'matchmaker.') ? 'matchmaker' : 'admin';
+    }
+
     public function start()
     {
         $this->authorizeProfileCreation();
 
         $step = $this->firstIncompleteWizardStep();
+        $prefix = $this->routeNamePrefix();
 
         return $step
-            ? redirect()->route('admin.nikah.profiles.create.step', $step)
-            : redirect()->route('admin.nikah.profiles.create.review');
+            ? redirect()->route("{$prefix}.nikah.profiles.create.step", $step)
+            : redirect()->route("{$prefix}.nikah.profiles.create.review");
     }
 
     public function showStep(string $step)
@@ -83,6 +96,7 @@ class NikahProfileWizardController extends Controller
             'data' => $this->wizardStepData($step),
             'countries' => $step === 'basic' ? CountryStates::countries() : [],
             'countryStates' => $step === 'basic' ? CountryStates::map() : [],
+            'routePrefix' => $this->routeNamePrefix(),
         ]);
     }
 
@@ -183,10 +197,11 @@ class NikahProfileWizardController extends Controller
     {
         $steps = $this->wizardSteps();
         $nextIndex = array_search($step, $steps) + 1;
+        $prefix = $this->routeNamePrefix();
 
         $redirectUrl = $nextIndex < count($steps)
-            ? route('admin.nikah.profiles.create.step', $steps[$nextIndex])
-            : route('admin.nikah.profiles.create.review');
+            ? route("{$prefix}.nikah.profiles.create.step", $steps[$nextIndex])
+            : route("{$prefix}.nikah.profiles.create.review");
 
         if ($request?->wantsJson()) {
             return response()->json(['redirect' => $redirectUrl]);
@@ -198,15 +213,17 @@ class NikahProfileWizardController extends Controller
     public function review()
     {
         $this->authorizeProfileCreation();
+        $prefix = $this->routeNamePrefix();
 
         if ($incomplete = $this->firstIncompleteWizardStep()) {
-            return redirect()->route('admin.nikah.profiles.create.step', $incomplete);
+            return redirect()->route("{$prefix}.nikah.profiles.create.step", $incomplete);
         }
 
         return view('admin.nikah.wizard.review', [
             'steps' => $this->wizardSteps(),
             'stepTitles' => $this->stepTitles,
             'data' => $this->wizardAllData(),
+            'routePrefix' => $prefix,
         ]);
     }
 
@@ -215,7 +232,7 @@ class NikahProfileWizardController extends Controller
         $this->authorizeProfileCreation();
 
         if ($this->firstIncompleteWizardStep()) {
-            return redirect()->route('admin.nikah.profiles.create');
+            return redirect()->route("{$this->routeNamePrefix()}.nikah.profiles.create");
         }
 
         $data = $this->wizardAllData();

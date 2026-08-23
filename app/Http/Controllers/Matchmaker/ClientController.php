@@ -232,7 +232,7 @@ class ClientController extends Controller
 
         MatchmakingTimelineEvent::log($lead, null, 'registration_started', 'Matchmaker started assisted registration.');
 
-        return redirect()->route('admin.nikah.profiles.create.step', 'account')
+        return redirect()->route('matchmaker.nikah.profiles.create.step', 'account')
             ->with('status', "Continue registering {$lead->name} below — their details are pre-filled. Come back to this client afterward to link the finished profile.");
     }
 

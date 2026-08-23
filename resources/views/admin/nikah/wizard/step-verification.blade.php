@@ -1,7 +1,7 @@
 <x-admin-layout>
     <x-slot name="header">
         <div class="flex items-center gap-2 text-sm">
-            <a href="{{ route('admin.nikah.verifications') }}" class="text-gray-400 hover:text-gray-600">Nikah Profiles</a>
+            <a href="{{ route($routePrefix === 'matchmaker' ? 'matchmaker.nikah.index' : 'admin.nikah.verifications') }}" class="text-gray-400 hover:text-gray-600">Nikah Profiles</a>
             <span class="text-gray-300">›</span>
             <span class="text-gray-700 font-semibold">Create Profile</span>
         </div>
@@ -22,7 +22,7 @@
                     </ul>
                 </div>
 
-                <form id="verification-form" method="POST" action="{{ route('admin.nikah.profiles.create.step.save', 'verification') }}" enctype="multipart/form-data" class="space-y-6">
+                <form id="verification-form" method="POST" action="{{ route($routePrefix . '.nikah.profiles.create.step.save', 'verification') }}" enctype="multipart/form-data" class="space-y-6">
                     @csrf
 
                     <x-nikah-section title="Verification" icon="🪪" color="rose" description="Required — held to the same bar as a self-created profile.">
@@ -71,7 +71,7 @@
                     </x-nikah-section>
 
                     <div class="flex justify-between pt-2">
-                        <a href="{{ route('admin.nikah.profiles.create.step', 'about') }}" class="btn-base text-gray-600 border border-gray-300 px-4 py-2 rounded-md hover:bg-gray-50">← Back</a>
+                        <a href="{{ route($routePrefix . '.nikah.profiles.create.step', 'about') }}" class="btn-base text-gray-600 border border-gray-300 px-4 py-2 rounded-md hover:bg-gray-50">← Back</a>
                         <x-primary-button id="verification-submit">Next: Review & Confirm →</x-primary-button>
                     </div>
                 </form>

@@ -663,6 +663,20 @@ Route::middleware(['auth', 'counselor'])->prefix('counselor')->name('counselor.'
 Route::middleware(['auth', 'matchmaker'])->prefix('matchmaker')->name('matchmaker.')->group(function () {
     Route::get('/nikah-profiles', [\App\Http\Controllers\Matchmaker\NikahBrowseController::class, 'index'])->name('nikah.index');
     Route::get('/nikah-requests', [\App\Http\Controllers\Matchmaker\NikahBrowseController::class, 'myRequests'])->name('nikah.requests');
+
+    // Same walk-in wizard as admin's (App\Http\Controllers\Admin\
+    // NikahProfileWizardController — its own authorizeProfileCreation()
+    // already requires nikah.manage OR nikah.create-profile regardless of
+    // which of these two route families was used to reach it), just under
+    // a matchmaker-branded URL instead of /admin/... . Must stay registered
+    // BEFORE the {profile} wildcard route below, or "create"/"review" would
+    // themselves be swallowed as a {profile} id and 404.
+    Route::get('/nikah-profiles/create', [\App\Http\Controllers\Admin\NikahProfileWizardController::class, 'start'])->name('nikah.profiles.create');
+    Route::get('/nikah-profiles/create/step/{step}', [\App\Http\Controllers\Admin\NikahProfileWizardController::class, 'showStep'])->name('nikah.profiles.create.step');
+    Route::post('/nikah-profiles/create/step/{step}', [\App\Http\Controllers\Admin\NikahProfileWizardController::class, 'saveStep'])->name('nikah.profiles.create.step.save');
+    Route::get('/nikah-profiles/create/review', [\App\Http\Controllers\Admin\NikahProfileWizardController::class, 'review'])->name('nikah.profiles.create.review');
+    Route::post('/nikah-profiles/create/finalize', [\App\Http\Controllers\Admin\NikahProfileWizardController::class, 'finalize'])->name('nikah.profiles.create.finalize');
+
     Route::get('/nikah-profiles/{profile}', [\App\Http\Controllers\Matchmaker\NikahBrowseController::class, 'show'])->name('nikah.show');
     Route::post('/nikah-profiles/{profile}/request-contact', [\App\Http\Controllers\Matchmaker\NikahBrowseController::class, 'requestContact'])->name('nikah.request-contact');
 

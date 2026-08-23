@@ -1,7 +1,7 @@
 <x-admin-layout>
     <x-slot name="header">
         <div class="flex items-center gap-2 text-sm">
-            <a href="{{ route('admin.nikah.verifications') }}" class="text-gray-400 hover:text-gray-600">Nikah Profiles</a>
+            <a href="{{ route($routePrefix === 'matchmaker' ? 'matchmaker.nikah.index' : 'admin.nikah.verifications') }}" class="text-gray-400 hover:text-gray-600">Nikah Profiles</a>
             <span class="text-gray-300">›</span>
             <span class="text-gray-700 font-semibold">Create Profile</span>
         </div>
@@ -33,7 +33,7 @@
                             <p class="text-sm text-gray-800 font-medium">{{ $data['name'] }} — {{ ucfirst($data['gender']) }}</p>
                             <p class="text-sm text-gray-600">{{ $data['identifier'] }}</p>
                         </div>
-                        <a href="{{ route('admin.nikah.profiles.create.step', 'account') }}" class="text-xs text-teal-700 hover:underline">Edit</a>
+                        <a href="{{ route($routePrefix . '.nikah.profiles.create.step', 'account') }}" class="text-xs text-teal-700 hover:underline">Edit</a>
                     </div>
 
                     <div class="border rounded-lg p-4 flex justify-between items-start">
@@ -46,7 +46,7 @@
                             @endif
                             <p class="text-sm text-gray-600">{{ $data['city'] ?? '' }}, {{ !empty($data['state']) ? $data['state'] . ', ' : '' }}{{ $data['country'] ?? '' }}</p>
                         </div>
-                        <a href="{{ route('admin.nikah.profiles.create.step', 'basic') }}" class="text-xs text-teal-700 hover:underline">Edit</a>
+                        <a href="{{ route($routePrefix . '.nikah.profiles.create.step', 'basic') }}" class="text-xs text-teal-700 hover:underline">Edit</a>
                     </div>
 
                     <div class="border rounded-lg p-4 flex justify-between items-start">
@@ -60,7 +60,7 @@
                             <p class="text-sm text-gray-600">{{ collect([$data['family_type'] ?? null, $data['caste'] ?? null, $data['ethnicity'] ?? null])->filter()->implode(' · ') }}</p>
                             @endif
                         </div>
-                        <a href="{{ route('admin.nikah.profiles.create.step', 'family') }}" class="text-xs text-teal-700 hover:underline">Edit</a>
+                        <a href="{{ route($routePrefix . '.nikah.profiles.create.step', 'family') }}" class="text-xs text-teal-700 hover:underline">Edit</a>
                     </div>
 
                     <div class="border rounded-lg p-4 flex justify-between items-start">
@@ -75,7 +75,7 @@
                             ])->filter()->implode(' · ') }}</p>
                             <p class="text-sm text-gray-600">{{ !empty($data['open_to_polygamy']) ? 'Open to polygamous marriage' : '' }}</p>
                         </div>
-                        <a href="{{ route('admin.nikah.profiles.create.step', 'deen') }}" class="text-xs text-teal-700 hover:underline">Edit</a>
+                        <a href="{{ route($routePrefix . '.nikah.profiles.create.step', 'deen') }}" class="text-xs text-teal-700 hover:underline">Edit</a>
                     </div>
 
                     <div class="border rounded-lg p-4 flex justify-between items-start">
@@ -86,7 +86,7 @@
                             <p class="text-sm text-gray-600 mt-1">Looking for: {{ $data['expectations'] }}</p>
                             @endif
                         </div>
-                        <a href="{{ route('admin.nikah.profiles.create.step', 'about') }}" class="text-xs text-teal-700 hover:underline">Edit</a>
+                        <a href="{{ route($routePrefix . '.nikah.profiles.create.step', 'about') }}" class="text-xs text-teal-700 hover:underline">Edit</a>
                     </div>
 
                     <div class="border rounded-lg p-4 flex justify-between items-start">
@@ -102,14 +102,14 @@
                                 default => '—',
                             } }}</p>
                         </div>
-                        <a href="{{ route('admin.nikah.profiles.create.step', 'verification') }}" class="text-xs text-teal-700 hover:underline">Edit</a>
+                        <a href="{{ route($routePrefix . '.nikah.profiles.create.step', 'verification') }}" class="text-xs text-teal-700 hover:underline">Edit</a>
                     </div>
                 </div>
 
-                <form method="POST" action="{{ route('admin.nikah.profiles.create.finalize') }}" class="mt-6">
+                <form method="POST" action="{{ route($routePrefix . '.nikah.profiles.create.finalize') }}" class="mt-6">
                     @csrf
                     <div class="flex justify-between">
-                        <a href="{{ route('admin.nikah.profiles.create.step', 'verification') }}" class="btn-base text-gray-600 border border-gray-300 px-4 py-2 rounded-md hover:bg-gray-50">← Back</a>
+                        <a href="{{ route($routePrefix . '.nikah.profiles.create.step', 'verification') }}" class="btn-base text-gray-600 border border-gray-300 px-4 py-2 rounded-md hover:bg-gray-50">← Back</a>
                         <x-primary-button>Create Profile & Account</x-primary-button>
                     </div>
                 </form>

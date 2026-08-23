@@ -1,7 +1,7 @@
 <x-admin-layout>
     <x-slot name="header">
         <div class="flex items-center gap-2 text-sm">
-            <a href="{{ route('admin.nikah.verifications') }}" class="text-gray-400 hover:text-gray-600">Nikah Profiles</a>
+            <a href="{{ route($routePrefix === 'matchmaker' ? 'matchmaker.nikah.index' : 'admin.nikah.verifications') }}" class="text-gray-400 hover:text-gray-600">Nikah Profiles</a>
             <span class="text-gray-300">›</span>
             <span class="text-gray-700 font-semibold">Create Profile</span>
         </div>
@@ -29,7 +29,7 @@
                 </div>
                 @endif
 
-                <form method="POST" action="{{ route('admin.nikah.profiles.create.step.save', 'account') }}" class="space-y-6">
+                <form method="POST" action="{{ route($routePrefix . '.nikah.profiles.create.step.save', 'account') }}" class="space-y-6">
                     @csrf
 
                     <x-nikah-section title="Login Account" icon="🔑" color="blue" description="An account is created for them — if you give an email, a password-setup link is sent right away.">

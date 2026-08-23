@@ -95,6 +95,13 @@
                           {{ request()->routeIs('matchmaker.nikah.requests') ? 'bg-teal-700 text-white' : 'text-teal-100 hover:bg-teal-800' }}">
                     <span class="text-base">📨</span> My Contact Requests
                 </a>
+                @if (auth()->user()->can('nikah.create-profile') || auth()->user()->can('nikah.manage'))
+                <a href="{{ route('matchmaker.nikah.profiles.create') }}"
+                    class="flex items-center gap-3 px-3 py-2 rounded-lg transition
+                          {{ request()->routeIs('matchmaker.nikah.profiles.create*') ? 'bg-teal-700 text-white' : 'text-teal-100 hover:bg-teal-800' }}">
+                    <span class="text-base">🚶</span> Register Walk-in Client
+                </a>
+                @endif
                 <a href="{{ route('nikah.packages') }}" target="_blank"
                     class="flex items-center gap-3 px-3 py-2 rounded-lg transition text-teal-100 hover:bg-teal-800">
                     <span class="text-base">💳</span> Nikah Packages
