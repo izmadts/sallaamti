@@ -63,8 +63,10 @@
                     <x-nikah-section title="Profile Visibility" icon="👁️" color="teal">
                         @php $vis = old('visibility', $data['visibility'] ?? 'public'); @endphp
                         <select id="visibility" name="visibility" required class="border-gray-300 rounded-md shadow-sm w-full">
-                            <option value="public" {{ $vis === 'public' ? 'selected' : '' }}>Public (others can browse to it)</option>
-                            <option value="private" {{ $vis === 'private' ? 'selected' : '' }}>Private (hidden from search — only via share link)</option>
+                            <option value="public" {{ $vis === 'public' ? 'selected' : '' }}>Public (shows in browse + Google)</option>
+                            <option value="members_only" {{ $vis === 'members_only' ? 'selected' : '' }}>Members Only (shows in browse, not Google)</option>
+                            <option value="matchmaker_assisted" {{ $vis === 'matchmaker_assisted' ? 'selected' : '' }}>Matchmaker-Assisted Only (hidden from member browse, matchmakers can still find it)</option>
+                            <option value="confidential" {{ $vis === 'confidential' ? 'selected' : '' }}>Confidential (hidden from all search/browse — ID-only access)</option>
                         </select>
                     </x-nikah-section>
 

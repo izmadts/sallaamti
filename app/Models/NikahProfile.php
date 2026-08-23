@@ -161,15 +161,57 @@ class NikahProfile extends Model
         return $this->hasMany(NikahInterest::class, 'receiver_profile_id');
     }
 
-    // Helper: is this profile visible in search/browse? Verification status
-    // is deliberately not part of this — Browse shows pending profiles too
-    // (see NikahProfileController::browse()), so a profile that appears in
-    // the list must also be reachable when clicked, or it's a 404 trap.
+    // Four visibility tiers (see the migration that introduced them for the
+    // reasoning): 'public' (browse + Google), 'members_only' (browse, not
+    // Google), 'matchmaker_assisted' (hidden from member browse, still
+    // findable by a matchmaker), 'confidential' (hidden from every browse/
+    // search path — a matchmaker can only act on it if they already have
+    // the exact profile, e.g. an existing linked client). The public
+    // share-link teaser page (NikahProfileController::publicView) is a
+    // deliberate, separate exception to all of this — see its own comment.
+
+    // Is this profile visible in ORDINARY MEMBER search/browse? Verification
+    // status is deliberately not part of this — Browse shows pending
+    // profiles too (see NikahProfileController::browse()), so a profile
+    // that appears in the list must also be reachable when clicked, or
+    // it's a 404 trap.
     public function isSearchable(): bool
     {
         return $this->is_active
             && !$this->isSuspended()
-            && $this->visibility === 'public';
+            && in_array($this->visibility, ['public', 'members_only'], true);
+    }
+
+    // Is this profile visible when a MATCHMAKER searches/browses (their own
+    // Browse Profiles page, shortlist search, or compatibility suggestions)?
+    // Everything except 'confidential' — a matchmaker can still be handed a
+    // confidential profile directly (e.g. it's already linked to their
+    // client), just never find it by searching.
+    public function isVisibleToMatchmakers(): bool
+    {
+        return $this->is_active
+            && !$this->isSuspended()
+            && $this->visibility !== 'confidential';
+    }
+
+    public function isConfidential(): bool
+    {
+        return $this->visibility === 'confidential';
+    }
+
+    // Query-level equivalents of the two helpers above, so every browse/
+    // search entry point applies the same rule instead of each hand-rolling
+    // its own where() (which is exactly how member-browse, matchmaker
+    // shortlist-search, and matchmaker Browse Profiles drifted out of sync
+    // with each other before these tiers existed).
+    public function scopeMemberSearchable($query)
+    {
+        return $query->where('is_active', true)->whereNull('suspended_at')->whereIn('visibility', ['public', 'members_only']);
+    }
+
+    public function scopeMatchmakerVisible($query)
+    {
+        return $query->where('is_active', true)->whereNull('suspended_at')->where('visibility', '!=', 'confidential');
     }
 
     public function isSuspended(): bool

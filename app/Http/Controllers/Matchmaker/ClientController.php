@@ -136,9 +136,7 @@ class ClientController extends Controller
         $searchResults = collect();
         if (request()->filled('search_city') || request()->filled('search_gender') || request()->filled('search_sect')) {
             $query = NikahProfile::with('user')
-                ->where('is_active', true)
-                ->whereNull('suspended_at')
-                ->where('visibility', 'public')
+                ->matchmakerVisible()
                 ->whereNotIn('id', $lead->shortlistItems->pluck('nikah_profile_id'));
 
             if (request()->filled('search_gender')) {
@@ -160,9 +158,7 @@ class ClientController extends Controller
 
             if ($targetGender) {
                 $pool = NikahProfile::with('user')
-                    ->where('is_active', true)
-                    ->whereNull('suspended_at')
-                    ->where('visibility', 'public')
+                    ->matchmakerVisible()
                     ->whereHas('user', fn ($q) => $q->where('gender', $targetGender))
                     ->whereNotIn('id', $lead->shortlistItems->pluck('nikah_profile_id'))
                     ->latest('created_at')

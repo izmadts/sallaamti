@@ -94,7 +94,13 @@
                             <p class="text-xs text-gray-400">Verification & Visibility</p>
                             <p class="text-sm text-gray-800">CNIC: {{ $data['cnic_number'] }}</p>
                             <p class="text-sm text-gray-600">{{ !empty($data['cnic_front_image']) && !empty($data['cnic_back_image']) ? '✓ Front & back photos uploaded' : 'Missing CNIC photo(s)' }}</p>
-                            <p class="text-sm text-gray-600">Visibility: {{ ucfirst($data['visibility']) }}</p>
+                            <p class="text-sm text-gray-600">Visibility: {{ match($data['visibility'] ?? null) {
+                                'public' => 'Public',
+                                'members_only' => 'Members Only',
+                                'matchmaker_assisted' => 'Matchmaker-Assisted Only',
+                                'confidential' => 'Confidential',
+                                default => '—',
+                            } }}</p>
                         </div>
                         <a href="{{ route('admin.nikah.profiles.create.step', 'verification') }}" class="text-xs text-teal-700 hover:underline">Edit</a>
                     </div>

@@ -17,7 +17,7 @@ class NikahBrowseController extends Controller
 {
     public function index(Request $request)
     {
-        $query = NikahProfile::with('user')->whereNull('suspended_at')->where('is_active', true);
+        $query = NikahProfile::with('user')->matchmakerVisible();
 
         if ($request->filled('gender')) {
             $query->whereHas('user', fn ($q) => $q->where('gender', $request->gender));

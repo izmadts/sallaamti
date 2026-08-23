@@ -24,14 +24,15 @@
     <li><strong>Family & Background</strong> — caste, family type, guardian name/contact/relation, ethnicity, languages spoken.</li>
     <li><strong>Deen & Lifestyle</strong> — sect, prayer regularity, hijab/beard, smoking, diet, openness to polygamy.</li>
     <li><strong>About & Preferences</strong> — about you, what you're looking for, and preferences for a match (age range, city, sect, education, marital status).</li>
-    <li><strong>Photos & Verification</strong> — CNIC number + front/back photos (required), an optional profile photo, whether to allow your photo to be shared after mutual interest, and profile visibility (Public or Private).</li>
+    <li><strong>Photos & Verification</strong> — CNIC number + front/back photos (required), an optional profile photo, whether to allow your photo to be shared after mutual interest, and profile visibility (four levels — see below).</li>
 </ol>
 <ul>
     <li><strong>Verification is mandatory</strong> — your profile isn't visible to anyone until an admin verifies your CNIC and your one-time verification fee payment is confirmed (submit via JazzCash/Easypaisa/bank transfer + screenshot).</li>
-    <li><strong>Browse</strong> shows only opposite-gender, verified, active, Public-visibility profiles matching your filters. <strong>Saved Profiles</strong> lets you bookmark ones to revisit.</li>
+    <li><strong>Profile Visibility — four levels, your choice</strong>: <em>Anyone can find me</em> (shows in Browse and in Google search results); <em>Sallaamti members only</em> (shows in Browse, but not on Google); <em>Only my matchmaker can find me</em> (hidden from everyone browsing — a matchmaker assisting you can still find and suggest you); <em>Nobody can find me by searching</em> (fully hidden from all search/browse — only someone who already has your exact profile, like a matchmaker you've spoken to directly, can work with it). You can change this anytime from your profile's Edit page.</li>
+    <li><strong>Browse</strong> shows opposite-gender, verified, active profiles set to "Anyone can find me" or "Sallaamti members only" that match your filters. <strong>Saved Profiles</strong> lets you bookmark ones to revisit.</li>
     <li><strong>Interest</strong>: send interest to start things off; the other person can Accept or Decline. Once accepted, a guardian-to-guardian messaging thread opens up for the two families to talk directly and safely.</li>
     <li><strong>Safety</strong>: Block or Report any profile from their page, anytime. A blocked profile can never see or contact you again. You can also deactivate your own profile temporarily.</li>
-    <li><strong>Sharing your profile</strong>: every verified profile has a safe public preview link (no photos, no guardian contact shown) you can share on WhatsApp — this works even if your visibility is set to Private, since it's the only way anyone can view a Private profile.</li>
+    <li><strong>Sharing your profile</strong>: every verified profile has a safe public preview link (no photos, no guardian contact shown) you can share on WhatsApp — this always works no matter which visibility level you've chosen, since it's the only way anyone can view a profile that isn't set to "Anyone can find me."</li>
 </ul>
 
 <h3>📖 Quran Courses (Self-Paced)</h3>
@@ -116,14 +117,15 @@
     <li><strong>خاندان اور پس منظر</strong> — ذات، خاندانی نظام، سرپرست کا نام/رابطہ/رشتہ، نسل، بولی جانے والی زبانیں۔</li>
     <li><strong>دین اور طرزِ زندگی</strong> — مسلک، نماز کی پابندی، حجاب/داڑھی، سگریٹ نوشی، خوراک، تعدد ازدواج کے بارے میں رویہ۔</li>
     <li><strong>تعارف اور ترجیحات</strong> — اپنے بارے میں، آپ کیا تلاش کر رہے ہیں، اور رشتے کے لیے ترجیحات (عمر کی حد، شہر، مسلک، تعلیم، ازدواجی حیثیت)۔</li>
-    <li><strong>تصاویر اور تصدیق</strong> — شناختی کارڈ نمبر + آگے/پیچھے کی تصاویر (لازمی)، ایک اختیاری پروفائل تصویر، باہمی رضامندی کے بعد تصویر شیئر کرنے کی اجازت، اور پروفائل کی نمائش (عوامی یا نجی)۔</li>
+    <li><strong>تصاویر اور تصدیق</strong> — شناختی کارڈ نمبر + آگے/پیچھے کی تصاویر (لازمی)، ایک اختیاری پروفائل تصویر، باہمی رضامندی کے بعد تصویر شیئر کرنے کی اجازت، اور پروفائل کی نمائش (چار سطحیں — نیچے دیکھیں)۔</li>
 </ol>
 <ul>
     <li><strong>تصدیق لازمی ہے</strong> — جب تک ایڈمن آپ کا شناختی کارڈ تصدیق نہ کرے اور آپ کی یک بارگی تصدیقی فیس کی ادائیگی کنفرم نہ ہو جائے، آپ کی پروفائل کسی کو نظر نہیں آتی (جیز کیش/ایزی پیسہ/بینک ٹرانسفر + اسکرین شاٹ کے ذریعے جمع کروائیں)۔</li>
-    <li><strong>براؤز</strong> صرف مخالف جنس، تصدیق شدہ، فعال، اور عوامی نمائش والی پروفائلز دکھاتا ہے جو آپ کی فلٹرز سے میل کھاتی ہوں۔ <strong>محفوظ شدہ پروفائلز</strong> سے آپ بعد میں دوبارہ دیکھنے کے لیے پروفائلز محفوظ کر سکتے ہیں۔</li>
+    <li><strong>پروفائل کی نمائش — چار سطحیں، آپ کی اپنی مرضی</strong>: <em>کوئی بھی مجھے تلاش کر سکتا ہے</em> (براؤز اور گوگل سرچ نتائج میں دکھائی دیتا ہے)؛ <em>صرف سلامتی ممبرز</em> (براؤز میں دکھائی دیتا ہے، لیکن گوگل پر نہیں)؛ <em>صرف میرا میچ میکر مجھے تلاش کر سکے</em> (براؤز کرنے والے سب سے پوشیدہ — مدد کرنے والا میچ میکر پھر بھی مجھے تلاش کر کے تجویز کر سکتا ہے)؛ <em>کوئی بھی مجھے تلاش کر کے نہیں پا سکتا</em> (تمام تلاش/براؤز سے مکمل پوشیدہ — صرف وہی شخص جس کے پاس پہلے سے میری اصل پروفائل ہو، جیسے وہ میچ میکر جس سے آپ نے براہ راست بات کی ہو، اس پر کام کر سکتا ہے)۔ آپ اسے اپنی پروفائل کے ترمیم صفحے سے کسی بھی وقت تبدیل کر سکتے ہیں۔</li>
+    <li><strong>براؤز</strong> مخالف جنس، تصدیق شدہ، فعال پروفائلز دکھاتا ہے جو "کوئی بھی مجھے تلاش کر سکتا ہے" یا "صرف سلامتی ممبرز" پر سیٹ ہوں اور آپ کی فلٹرز سے میل کھاتی ہوں۔ <strong>محفوظ شدہ پروفائلز</strong> سے آپ بعد میں دوبارہ دیکھنے کے لیے پروفائلز محفوظ کر سکتے ہیں۔</li>
     <li><strong>دلچسپی</strong>: بات چیت شروع کرنے کے لیے دلچسپی بھیجیں؛ دوسرا فریق قبول یا مسترد کر سکتا ہے۔ قبول ہونے کے بعد، دونوں خاندانوں کے سرپرستوں کے درمیان براہ راست اور محفوظ گفتگو کے لیے ایک پیغام رسانی کا سلسلہ کھل جاتا ہے۔</li>
     <li><strong>حفاظت</strong>: کسی بھی وقت کسی بھی پروفائل کو اس کے صفحے سے بلاک یا رپورٹ کریں۔ بلاک شدہ پروفائل آپ کو کبھی نہ دیکھ سکتی ہے نہ رابطہ کر سکتی ہے۔ آپ اپنی پروفائل کو عارضی طور پر غیر فعال بھی کر سکتے ہیں۔</li>
-    <li><strong>اپنی پروفائل شیئر کرنا</strong>: ہر تصدیق شدہ پروفائل کا ایک محفوظ عوامی پیش نظارہ لنک ہوتا ہے (کوئی تصویر یا سرپرست رابطہ نہیں دکھایا جاتا) جسے آپ واٹس ایپ پر شیئر کر سکتے ہیں — یہ اس وقت بھی کام کرتا ہے جب آپ کی نمائش "نجی" پر سیٹ ہو، کیونکہ یہی واحد طریقہ ہے کہ کوئی نجی پروفائل دیکھ سکے۔</li>
+    <li><strong>اپنی پروفائل شیئر کرنا</strong>: ہر تصدیق شدہ پروفائل کا ایک محفوظ عوامی پیش نظارہ لنک ہوتا ہے (کوئی تصویر یا سرپرست رابطہ نہیں دکھایا جاتا) جسے آپ واٹس ایپ پر شیئر کر سکتے ہیں — یہ ہمیشہ کام کرتا ہے چاہے آپ نے کوئی بھی نمائش کی سطح منتخب کی ہو، کیونکہ یہی واحد طریقہ ہے کہ کوئی ایسی پروفائل دیکھ سکے جو "کوئی بھی مجھے تلاش کر سکتا ہے" پر سیٹ نہ ہو۔</li>
 </ul>
 
 <h3>📖 قرآن کورسز (خود رفتار)</h3>

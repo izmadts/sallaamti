@@ -328,11 +328,15 @@
                     </x-nikah-section>
 
                     <x-nikah-section :title="__('db.Profile Visibility')" icon="👁️" color="teal">
+                        @php $vis = old('visibility', $profile->visibility); @endphp
                         <select id="visibility" name="visibility" required class="border-gray-300 rounded-md shadow-sm w-full"
                             title="{{ __('db.You can change this anytime.') }}">
-                            <option value="public" {{ old('visibility', $profile->visibility) === 'public' ? 'selected' : '' }}>{{ __('db.Public (others can check your profile)') }}</option>
-                            <option value="private" {{ old('visibility', $profile->visibility) === 'private' ? 'selected' : '' }}>Private (hidden from search — only visible via your share link)</option>
+                            <option value="public" {{ $vis === 'public' ? 'selected' : '' }}>{{ __('db.Anyone can find me (shows in search, and in Google results)') }}</option>
+                            <option value="members_only" {{ $vis === 'members_only' ? 'selected' : '' }}>{{ __('db.Sallaamti members only (shows in search, but not on Google)') }}</option>
+                            <option value="matchmaker_assisted" {{ $vis === 'matchmaker_assisted' ? 'selected' : '' }}>{{ __('db.Only my matchmaker can find me (hidden from everyone browsing, a matchmaker can still suggest me)') }}</option>
+                            <option value="confidential" {{ $vis === 'confidential' ? 'selected' : '' }}>{{ __('db.Nobody can find me by searching (fully hidden — only someone who already knows my exact profile, like a matchmaker you\'ve spoken to, can work with it)') }}</option>
                         </select>
+                        <p class="text-xs text-gray-400 mt-1">{{ __('db.Whatever you choose, a link you personally share always shows your profile to whoever opens it.') }}</p>
                     </x-nikah-section>
 
                     <x-nikah-section :title="__('db.Match Preferences')" icon="🎯" color="sky" :description="__('db.Sharing these improves your match %.')">

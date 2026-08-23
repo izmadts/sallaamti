@@ -53,6 +53,14 @@
                                         {{ collect($data['languages'] ?? [])->push($data['language_other'] ?? null)->filter()->implode(', ') ?: '—' }}
                                     @elseif ($key === 'open_to_polygamy')
                                         {{ !empty($data[$key]) ? __('db.Yes') : __('db.No') }}
+                                    @elseif ($key === 'visibility')
+                                        {{ match($data['visibility'] ?? null) {
+                                            'public' => __('db.Public'),
+                                            'members_only' => __('db.Members Only'),
+                                            'matchmaker_assisted' => __('db.Matchmaker-Assisted Only'),
+                                            'confidential' => __('db.Confidential'),
+                                            default => '—',
+                                        } }}
                                     @else
                                         {{ $data[$key] ?? '—' }}
                                     @endif

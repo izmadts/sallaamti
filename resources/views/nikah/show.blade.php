@@ -194,7 +194,13 @@
                         <dl class="text-sm space-y-1">
                             <div class="flex justify-between">
                                 <dt class="text-gray-500">Status</dt>
-                                <dd>{{ ucfirst($profile->visibility) }}</dd>
+                                <dd>{{ match($profile->visibility) {
+                                    'public' => 'Public',
+                                    'members_only' => 'Members Only',
+                                    'matchmaker_assisted' => 'Matchmaker-Assisted Only',
+                                    'confidential' => 'Confidential',
+                                    default => ucfirst($profile->visibility),
+                                } }}</dd>
                             </div>
                             <div class="flex justify-between">
                                 <dt class="text-gray-500">Active</dt>
@@ -281,7 +287,7 @@
                 @if ($profile->verification_status === 'verified' && $profile->is_active && !$profile->isSuspended())
                 <div class="mt-6 bg-teal-50 border border-teal-100 rounded-lg p-5">
                     <h3 class="font-semibold text-gray-700 mb-1">📤 Share My Profile</h3>
-                    <p class="text-xs text-gray-500 mb-3">A safe preview link (no photos, no guardian contact) — share it on WhatsApp or anywhere else to invite people to view your profile on Sallaamti. This link works even if your visibility is set to Private below — it's the only way people can view a Private profile.</p>
+                    <p class="text-xs text-gray-500 mb-3">A safe preview link (no photos, no guardian contact) — share it on WhatsApp or anywhere else to invite people to view your profile on Sallaamti. This link always works, no matter which visibility option you've chosen above — it's the only way people can view a profile that isn't set to "Anyone can find me."</p>
                     @php $shareUrl = route('nikah.public-view', $profile->public_token); @endphp
                     <div class="flex gap-2 items-center mb-3">
                         <input type="text" readonly value="{{ $shareUrl }}" id="nikah-share-link" class="flex-1 border-gray-300 rounded-md text-xs bg-white">

@@ -62,7 +62,7 @@ trait ValidatesNikahProfile
             'cnic_back_image' => [$profile?->cnic_back_image ? 'nullable' : 'required', 'image', 'max:4096'],
             'photo' => ['nullable', 'image', 'max:4096'],
             'allow_photo_sharing' => ['nullable', 'boolean'],
-            'visibility' => ['required', 'in:public,private'],
+            'visibility' => ['required', 'in:public,members_only,matchmaker_assisted,confidential'],
             'pref_min_age' => ['nullable', 'integer', 'min:18'],
             'pref_max_age' => ['nullable', 'integer', 'min:18'],
             'pref_city' => ['nullable', 'string', 'max:100'],

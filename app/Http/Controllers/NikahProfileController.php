@@ -202,9 +202,7 @@ class NikahProfileController extends Controller
         // otherwise the vast majority of real profiles are invisible until
         // an admin gets to them. is_active/suspended/public are different,
         // genuine safety/privacy concerns and stay enforced.
-        $query = NikahProfile::where('is_active', true)
-            ->whereNull('suspended_at')
-            ->where('visibility', 'public')
+        $query = NikahProfile::memberSearchable()
             ->where('user_id', '!=', Auth::id())
             ->whereNotIn('id', $blockedIds) // ← correct position: inside the query
             ->whereHas('user', function ($q) {

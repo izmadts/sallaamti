@@ -44,9 +44,7 @@ class NikahBrowseController extends Controller
 
         $blockedIds = $myProfile->blockedProfiles()->pluck('blocked_profile_id')->toArray();
 
-        $query = NikahProfile::where('is_active', true)
-            ->whereNull('suspended_at')
-            ->where('visibility', 'public')
+        $query = NikahProfile::memberSearchable()
             ->where('user_id', '!=', $user->id)
             ->whereNotIn('id', $blockedIds)
             ->whereHas('user', fn ($q) => $q->where('gender', '!=', $user->gender))

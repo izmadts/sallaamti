@@ -12,6 +12,7 @@
     <li><strong>Regenerate a link if anything feels off.</strong> Sent it to the wrong number, think it leaked, or the client lost it and asks for a fresh one — press <strong>Regenerate</strong>. The old copy stops working immediately, wherever it ended up.</li>
     <li><strong>Never contact a family directly outside the system.</strong> Even once you know a name or a candidate's general area, don't reach out yourself — that's what <strong>Request Contact</strong> and admin approval exist for.</li>
     <li><strong>Requirements notes are working notes, not private chat.</strong> Keep the language plain and respectful — describe what someone is looking for, not judgments about people.</li>
+    <li><strong>Some profiles won't show up when you search — that's intentional.</strong> Members choose their own visibility: most are findable normally, but "Confidential" profiles are hidden from search/browse entirely, even from you. You can only work with one if it's already linked to a client you're handling (e.g. it's their own profile) — never assume a missing search result means the profile doesn't exist.</li>
 </ul>
 
 <h3>Your Dashboard, Explained</h3>
@@ -88,6 +89,7 @@
     <li><strong>اگر کچھ غلط محسوس ہو تو لنک دوبارہ بنائیں۔</strong> غلط نمبر پر بھیج دیا، لیک ہونے کا شبہ ہے، یا کلائنٹ نے لنک کھو دیا اور نیا مانگا — <strong>دوبارہ بنائیں</strong> دبائیں۔ پرانی کاپی فوراً کام کرنا بند کر دیتی ہے، چاہے وہ کہیں بھی پہنچ چکی ہو۔</li>
     <li><strong>نظام سے باہر کبھی کسی خاندان سے براہ راست رابطہ نہ کریں۔</strong> نام یا کسی امیدوار کے عمومی علاقے کا علم ہونے کے باوجود بھی خود رابطہ نہ کریں — اسی لیے <strong>رابطے کی درخواست</strong> اور ایڈمن کی منظوری کا نظام موجود ہے۔</li>
     <li><strong>ضروریات کے نوٹس کام کے نوٹس ہیں، نجی چیٹ نہیں۔</strong> زبان سادہ اور باوقار رکھیں — یہ بیان کریں کہ کوئی کیا تلاش کر رہا ہے، لوگوں کے بارے میں فیصلے نہیں۔</li>
+    <li><strong>کچھ پروفائلز تلاش میں نظر نہیں آئیں گی — یہ جان بوجھ کر ہے۔</strong> ممبرز اپنی نمائش خود چنتے ہیں: زیادہ تر عام طور پر تلاش کی جا سکتی ہیں، لیکن "خفیہ" پروفائلز تلاش/براؤز سے مکمل پوشیدہ ہوتی ہیں، یہاں تک کہ آپ سے بھی۔ آپ صرف اسی صورت میں کسی خفیہ پروفائل پر کام کر سکتے ہیں جب وہ پہلے سے آپ کے سنبھالے ہوئے کسی کلائنٹ سے منسلک ہو (مثلاً یہ خود ان کی اپنی پروفائل ہو) — کبھی یہ نہ سمجھیں کہ تلاش کا نتیجہ نہ ملنا اس بات کا ثبوت ہے کہ پروفائل موجود نہیں۔</li>
 </ul>
 
 <h3>آپ کا ڈیش بورڈ سمجھیں</h3>

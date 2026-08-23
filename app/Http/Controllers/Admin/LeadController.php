@@ -124,9 +124,7 @@ class LeadController extends Controller
         $searchResults = collect();
         if (request()->filled('search_city') || request()->filled('search_gender') || request()->filled('search_sect')) {
             $query = NikahProfile::with('user')
-                ->where('is_active', true)
-                ->whereNull('suspended_at')
-                ->where('visibility', 'public')
+                ->matchmakerVisible()
                 ->whereNotIn('id', $lead->shortlistItems->pluck('nikah_profile_id'));
 
             if (request()->filled('search_gender')) {
