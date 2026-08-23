@@ -206,6 +206,41 @@
 
             {{-- === SHORTLIST === --}}
             <div x-show="tab === 'shortlist'" class="p-6">
+
+                {{-- Suggested matches — ranked against the saved Requirements, see App\Services\Matchmaking\CompatibilityScorer --}}
+                <div class="mb-6">
+                    <h4 class="text-sm font-semibold text-gray-700 mb-2">🎯 Suggested Matches</h4>
+                    @if (!$lead->requirement || $lead->requirement->items->isEmpty())
+                    <p class="text-sm text-gray-400">Save <a href="#" @click.prevent="tab = 'requirements'" class="hover:underline" style="color: var(--mm-plum);">Requirements</a> first — suggestions are ranked against what's saved there.</p>
+                    @elseif ($suggestions->isEmpty())
+                    <p class="text-sm text-gray-400">No strong matches against the saved requirements right now — try widening them, or search manually below.</p>
+                    @else
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                        @foreach ($suggestions as $row)
+                        @php $profile = $row['profile']; $result = $row['result']; @endphp
+                        <div class="border border-gray-100 rounded-lg p-3">
+                            <div class="flex items-center justify-between gap-2">
+                                <p class="text-sm font-medium text-gray-800">{{ $profile->user?->name ?? 'Deleted account' }}</p>
+                                <span class="text-xs font-semibold px-2 py-0.5 rounded-full shrink-0
+                                    {{ $result['score'] >= 70 ? 'bg-green-100 text-green-800' : ($result['score'] >= 40 ? 'bg-amber-100 text-amber-800' : 'bg-gray-100 text-gray-600') }}">
+                                    {{ $result['score'] }}% match
+                                </span>
+                            </div>
+                            <p class="text-xs text-gray-500">{{ $profile->age }} yrs, {{ $profile->city }} @if($profile->sect) · {{ $profile->sect }} @endif</p>
+                            @if ($result['matched']->isNotEmpty())
+                            <p class="text-xs text-green-700 mt-1">✓ Matches: {{ $result['matched']->pluck('requirement_type')->map(fn($t) => \App\Models\MatchmakingRequirementItem::TYPES[$t] ?? $t)->implode(', ') }}</p>
+                            @endif
+                            <form method="POST" action="{{ route('matchmaker.clients.shortlist.add', $lead) }}" class="mt-2">
+                                @csrf
+                                <input type="hidden" name="nikah_profile_id" value="{{ $profile->id }}">
+                                <button class="text-xs text-white px-2 py-1 rounded" style="background: var(--mm-plum);">+ Add to Shortlist</button>
+                            </form>
+                        </div>
+                        @endforeach
+                    </div>
+                    @endif
+                </div>
+
                 @if ($lead->shortlistItems->isEmpty())
                 <p class="text-sm text-gray-400 mb-4">Nothing shortlisted yet — search below to add candidates.</p>
                 @else

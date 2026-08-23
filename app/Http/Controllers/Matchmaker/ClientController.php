@@ -12,6 +12,7 @@ use App\Models\MatchProposal;
 use App\Models\NikahProfile;
 use App\Models\ProposalBatch;
 use App\Models\User;
+use App\Services\Matchmaking\CompatibilityScorer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
@@ -126,7 +127,26 @@ class ClientController extends Controller
             $searchResults = $query->orderByDesc('created_at')->limit(20)->get();
         }
 
-        return view('matchmaker.clients.show', compact('lead', 'searchResults'));
+        $suggestions = collect();
+        if ($lead->requirement && $lead->requirement->items->isNotEmpty()) {
+            $targetGender = $lead->gender === 'male' ? 'female' : ($lead->gender === 'female' ? 'male' : null);
+
+            if ($targetGender) {
+                $pool = NikahProfile::with('user')
+                    ->where('is_active', true)
+                    ->whereNull('suspended_at')
+                    ->where('visibility', 'public')
+                    ->whereHas('user', fn ($q) => $q->where('gender', $targetGender))
+                    ->whereNotIn('id', $lead->shortlistItems->pluck('nikah_profile_id'))
+                    ->latest('created_at')
+                    ->limit(200) // bound the scoring pool; not a full-catalog scan
+                    ->get();
+
+                $suggestions = app(CompatibilityScorer::class)->rank($lead->requirement, $pool)->take(10);
+            }
+        }
+
+        return view('matchmaker.clients.show', compact('lead', 'searchResults', 'suggestions'));
     }
 
     public function update(Request $request, Lead $lead)
