@@ -2,9 +2,13 @@
 
 namespace App\Http\Controllers\Matchmaker;
 
+use App\Http\Controllers\Concerns\SubmitsNikahPayment;
 use App\Http\Controllers\Controller;
+use App\Models\Lead;
+use App\Models\MatchmakingTimelineEvent;
 use App\Models\NikahContactRequest;
 use App\Models\NikahProfile;
+use App\Services\ImageOptimizer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -15,6 +19,9 @@ use Illuminate\Support\Facades\Auth;
 // rather than directly involved with both parties.
 class NikahBrowseController extends Controller
 {
+    use SubmitsNikahPayment;
+
+
     public function index(Request $request)
     {
         $query = NikahProfile::with('user')->matchmakerVisible();
@@ -64,7 +71,11 @@ class NikahBrowseController extends Controller
             ->latest()
             ->first();
 
-        return view('matchmaker.nikah.show', compact('profile', 'existingRequest'));
+        $canSubmitPayment = Auth::user()->hasRole('admin')
+            || $profile->created_by === Auth::id()
+            || Lead::where('nikah_profile_id', $profile->id)->where('assigned_to', Auth::id())->exists();
+
+        return view('matchmaker.nikah.show', compact('profile', 'existingRequest', 'canSubmitPayment'));
     }
 
     public function requestContact(NikahProfile $profile)
@@ -85,5 +96,53 @@ class NikahBrowseController extends Controller
         ]);
 
         return back()->with('status', 'Contact request sent to admin for review.');
+    }
+
+    // Lets a matchmaker relay a client's payment receipt directly — same
+    // outcome as the client submitting it themselves (status → 'submitted',
+    // straight into Admin\NikahPaymentAdminController's normal review
+    // queue, never auto-confirmed). Reachable from this profile's own page
+    // and from the client's page in the Match Maker Desk (both point here).
+    public function submitPayment(Request $request, NikahProfile $profile)
+    {
+        $this->authorizePaymentSubmission($profile);
+
+        abort_if($profile->payment_status === 'confirmed', 422, 'Payment is already confirmed for this profile.');
+
+        $fee = $profile->applicableVerificationFee();
+        abort_if($fee <= 0, 422, 'No verification fee applies to this profile — nothing to submit.');
+
+        $validated = $request->validate([
+            'payment_method' => ['required', 'in:jazzcash,bank_transfer'],
+            'payment_reference' => ['nullable', 'string', 'max:100'],
+            'payment_screenshot' => ['required', 'image', 'max:4096'],
+        ]);
+
+        $screenshotPath = ImageOptimizer::store($request->file('payment_screenshot'), 'nikah/payments', 'private');
+
+        $this->recordNikahPaymentSubmission($profile, $validated['payment_method'], $validated['payment_reference'] ?? null, $screenshotPath);
+
+        $lead = Lead::where('nikah_profile_id', $profile->id)->first();
+        if ($lead) {
+            MatchmakingTimelineEvent::log($lead, $profile, 'payment_submitted', 'Payment proof submitted for admin review.');
+        }
+
+        return back()->with('status', 'Payment proof submitted — our team will confirm it shortly.');
+    }
+
+    // Only a matchmaker who actually walked this person in, or who is the
+    // assigned matchmaker for a client this profile is linked to, can
+    // submit a payment claim on their behalf — not any matchmaker for any
+    // profile in the system.
+    private function authorizePaymentSubmission(NikahProfile $profile): void
+    {
+        if (auth()->user()->hasRole('admin')) {
+            return;
+        }
+
+        $isCreator = $profile->created_by === auth()->id();
+        $isAssignedViaLead = Lead::where('nikah_profile_id', $profile->id)->where('assigned_to', auth()->id())->exists();
+
+        abort_unless($isCreator || $isAssignedViaLead, 403, 'You can only submit payment for clients you registered or are assigned to.');
     }
 }

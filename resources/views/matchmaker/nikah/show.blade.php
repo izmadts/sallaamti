@@ -50,6 +50,12 @@
                 </dl>
             </div>
 
+            @if ($canSubmitPayment)
+            <div class="bg-white rounded-xl shadow-sm p-6">
+                @include('matchmaker.nikah._payment-form')
+            </div>
+            @endif
+
             <div class="bg-white rounded-xl shadow-sm p-6">
                 <h4 class="font-semibold text-gray-700 mb-2 border-b pb-2">About</h4>
                 <p class="text-sm text-gray-600 leading-relaxed">{{ $profile->about ?: '— not filled in —' }}</p>

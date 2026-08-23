@@ -679,6 +679,7 @@ Route::middleware(['auth', 'matchmaker'])->prefix('matchmaker')->name('matchmake
 
     Route::get('/nikah-profiles/{profile}', [\App\Http\Controllers\Matchmaker\NikahBrowseController::class, 'show'])->name('nikah.show');
     Route::post('/nikah-profiles/{profile}/request-contact', [\App\Http\Controllers\Matchmaker\NikahBrowseController::class, 'requestContact'])->name('nikah.request-contact');
+    Route::post('/nikah-profiles/{profile}/payment', [\App\Http\Controllers\Matchmaker\NikahBrowseController::class, 'submitPayment'])->name('nikah.payment.submit');
 
     // The matchmaker's own themed workspace — separate from /admin/leads
     // (which stays as admin's global oversight view), built on the exact

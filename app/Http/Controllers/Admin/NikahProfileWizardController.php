@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Auth\Concerns\RegistersMinimalUsers;
 use App\Http\Controllers\Concerns\HasWizardSteps;
+use App\Http\Controllers\Concerns\SubmitsNikahPayment;
 use App\Http\Controllers\Concerns\ValidatesNikahProfile;
 use App\Http\Controllers\Controller;
 use App\Models\NikahProfile;
@@ -28,7 +29,7 @@ use Illuminate\Validation\Rule;
 // Matchmaker browse controller, which redacts both).
 class NikahProfileWizardController extends Controller
 {
-    use HasWizardSteps, ValidatesNikahProfile, RegistersMinimalUsers;
+    use HasWizardSteps, ValidatesNikahProfile, RegistersMinimalUsers, SubmitsNikahPayment;
 
     protected string $wizardKey = 'admin_nikah_profile';
 
@@ -39,6 +40,13 @@ class NikahProfileWizardController extends Controller
         'deen' => ['sect', 'sect_other', 'prayer_frequency', 'hijab_or_beard', 'smokes', 'diet', 'open_to_polygamy'],
         'about' => ['about', 'expectations'],
         'verification' => ['cnic_number', 'cnic_front_image', 'cnic_back_image', 'photo', 'allow_photo_sharing', 'visibility'],
+        // Optional — a matchmaker collecting payment on the spot can submit
+        // it right here so the whole document set (CNIC + payment) is
+        // reviewed by admin together; skippable if the client isn't paying
+        // today (they can pay later themselves, or it can be submitted
+        // afterward from the profile page — see Matchmaker\
+        // NikahBrowseController::submitPayment()).
+        'payment' => ['payment_method', 'payment_reference', 'payment_screenshot'],
     ];
 
     protected array $stepTitles = [
@@ -48,6 +56,7 @@ class NikahProfileWizardController extends Controller
         'deen' => 'Deen & Lifestyle',
         'about' => 'About',
         'verification' => 'Verification & Visibility',
+        'payment' => 'Payment',
     ];
 
     // Deliberately checked in-controller rather than route middleware —
@@ -97,6 +106,7 @@ class NikahProfileWizardController extends Controller
             'countries' => $step === 'basic' ? CountryStates::countries() : [],
             'countryStates' => $step === 'basic' ? CountryStates::map() : [],
             'routePrefix' => $this->routeNamePrefix(),
+            'expectedFee' => $step === 'payment' ? NikahProfile::feeForMaritalStatus($this->wizardStepData('basic')['marital_status'] ?? null) : null,
         ]);
     }
 
@@ -105,6 +115,24 @@ class NikahProfileWizardController extends Controller
         $this->authorizeProfileCreation();
 
         abort_unless(array_key_exists($step, $this->wizardStepFields), 404);
+
+        if ($step === 'payment') {
+            $validated = $request->validate([
+                'payment_method' => ['nullable', 'required_with:payment_screenshot', 'in:jazzcash,bank_transfer'],
+                'payment_reference' => ['nullable', 'string', 'max:100'],
+                'payment_screenshot' => ['nullable', 'image', 'max:4096'],
+            ]);
+
+            if ($request->hasFile('payment_screenshot')) {
+                $validated['payment_screenshot'] = ImageOptimizer::store($request->file('payment_screenshot'), 'nikah/payments', 'private');
+            } else {
+                $validated['payment_screenshot'] = $this->wizardStepData('payment')['payment_screenshot'] ?? null;
+            }
+
+            $this->saveWizardStep('payment', $validated);
+
+            return $this->nextStepRedirect('payment');
+        }
 
         if ($step === 'account') {
             $validated = $request->validate([
@@ -237,7 +265,12 @@ class NikahProfileWizardController extends Controller
 
         $data = $this->wizardAllData();
         $accountData = collect($data)->only(['name', 'identifier', 'gender'])->toArray();
-        $profileData = collect($data)->except(['name', 'identifier', 'gender'])->toArray();
+        $paymentData = collect($data)->only(['payment_method', 'payment_reference', 'payment_screenshot'])->toArray();
+        // Payment fields are handled separately below via
+        // recordNikahPaymentSubmission() (sets payment_status/amount
+        // together, not left to mass-assignment) — excluded here so
+        // create() doesn't half-apply them without a status.
+        $profileData = collect($data)->except(['name', 'identifier', 'gender', 'payment_method', 'payment_reference', 'payment_screenshot'])->toArray();
 
         $identifier = $accountData['identifier'];
         $isEmail = (bool) filter_var($identifier, FILTER_VALIDATE_EMAIL);
@@ -268,9 +301,15 @@ class NikahProfileWizardController extends Controller
         }
 
         $fee = $profile->applicableVerificationFee();
-        $status .= $fee > 0
-            ? " A Rs. {$fee} verification fee is due before this profile can be verified — the client will be asked to pay it themselves next time they log in, or an admin can confirm payment manually from the Nikah Payments page."
-            : ' No verification fee applies — it can be reviewed and verified as-is.';
+
+        if ($fee > 0 && !empty($paymentData['payment_screenshot'])) {
+            $this->recordNikahPaymentSubmission($profile, $paymentData['payment_method'], $paymentData['payment_reference'] ?? null, $paymentData['payment_screenshot']);
+            $status .= ' Their payment proof was submitted along with the profile and is now awaiting confirmation.';
+        } elseif ($fee > 0) {
+            $status .= " A Rs. {$fee} verification fee is due before this profile can be verified — submit their payment proof from this profile's page once collected, or the client can pay it themselves next time they log in.";
+        } else {
+            $status .= ' No verification fee applies — it can be reviewed and verified as-is.';
+        }
 
         $this->clearWizardSession();
 

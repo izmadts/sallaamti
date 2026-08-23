@@ -104,12 +104,28 @@
                         </div>
                         <a href="{{ route($routePrefix . '.nikah.profiles.create.step', 'verification') }}" class="text-xs text-teal-700 hover:underline">Edit</a>
                     </div>
+
+                    <div class="border rounded-lg p-4 flex justify-between items-start">
+                        <div>
+                            <p class="text-xs text-gray-400">Payment</p>
+                            @if (!empty($data['payment_screenshot']))
+                            <p class="text-sm text-gray-800">✓ Receipt uploaded — {{ $data['payment_method'] === 'jazzcash' ? 'JazzCash' : 'Bank Transfer' }}</p>
+                            @if (!empty($data['payment_reference']))
+                            <p class="text-sm text-gray-600">Reference: {{ $data['payment_reference'] }}</p>
+                            @endif
+                            <p class="text-xs text-gray-500 mt-1">Will be submitted for admin review along with the profile.</p>
+                            @else
+                            <p class="text-sm text-gray-600">Not collected yet — the client can pay later, or submit it from this profile's page afterward.</p>
+                            @endif
+                        </div>
+                        <a href="{{ route($routePrefix . '.nikah.profiles.create.step', 'payment') }}" class="text-xs text-teal-700 hover:underline">Edit</a>
+                    </div>
                 </div>
 
                 <form method="POST" action="{{ route($routePrefix . '.nikah.profiles.create.finalize') }}" class="mt-6">
                     @csrf
                     <div class="flex justify-between">
-                        <a href="{{ route($routePrefix . '.nikah.profiles.create.step', 'verification') }}" class="btn-base text-gray-600 border border-gray-300 px-4 py-2 rounded-md hover:bg-gray-50">← Back</a>
+                        <a href="{{ route($routePrefix . '.nikah.profiles.create.step', 'payment') }}" class="btn-base text-gray-600 border border-gray-300 px-4 py-2 rounded-md hover:bg-gray-50">← Back</a>
                         <x-primary-button>Create Profile & Account</x-primary-button>
                     </div>
                 </form>

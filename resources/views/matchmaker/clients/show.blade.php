@@ -43,7 +43,7 @@
             </div>
             <div class="flex gap-2">
                 @if ($lead->isConverted())
-                <a href="{{ route('admin.nikah.show', $lead->nikah_profile_id) }}" class="text-sm font-semibold px-3 py-2 rounded-lg text-white hover:opacity-90" style="background: var(--mm-plum);">View Nikah Profile →</a>
+                <a href="{{ route(auth()->user()->can('nikah.view') ? 'admin.nikah.show' : 'matchmaker.nikah.show', $lead->nikah_profile_id) }}" class="text-sm font-semibold px-3 py-2 rounded-lg text-white hover:opacity-90" style="background: var(--mm-plum);">View Nikah Profile →</a>
                 @else
                 <form method="POST" action="{{ route('matchmaker.clients.convert', $lead) }}">
                     @csrf
@@ -147,6 +147,12 @@
                         <button class="text-white text-sm font-semibold px-5 py-2.5 rounded-lg hover:opacity-90 hover:-translate-y-0.5 transition shadow-sm" style="background: var(--mm-plum);">Save Changes</button>
                     </div>
                 </form>
+
+                @if ($lead->nikah_profile_id)
+                <div class="mt-6 pt-6 border-t">
+                    @include('matchmaker.nikah._payment-form', ['profile' => $lead->nikahProfile])
+                </div>
+                @endif
 
                 {{-- Progress page link — a standing link the client can revisit to see their own status/timeline/proposals, gated by their WhatsApp number's last 7 digits each visit --}}
                 <div class="mt-6 pt-6 border-t">
