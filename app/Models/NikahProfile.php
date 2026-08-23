@@ -16,6 +16,9 @@ class NikahProfile extends Model
         'date_of_birth',
         'height',
         'marital_status',
+        'has_children',
+        'children_count',
+        'living_situation',
         'open_to_polygamy',
         'sect',
         'caste',
@@ -70,6 +73,7 @@ class NikahProfile extends Model
         return [
             'user_id' => 'integer',
             'date_of_birth' => 'date',
+            'has_children' => 'boolean',
             'open_to_polygamy' => 'boolean',
             'allow_photo_sharing' => 'boolean',
             'is_active' => 'boolean',

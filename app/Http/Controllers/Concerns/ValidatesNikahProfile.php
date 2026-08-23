@@ -26,6 +26,9 @@ trait ValidatesNikahProfile
             'height' => ['nullable', 'string', 'max:20'],
             'height_other' => ['nullable', 'required_if:height,Other', 'string', 'max:30'],
             'marital_status' => ['required', 'string', 'in:never_married,divorced,widowed,married,separated'],
+            'has_children' => ['required_if:marital_status,divorced,widowed,separated', 'nullable', 'boolean'],
+            'children_count' => ['nullable', 'integer', 'min:1', 'max:20'],
+            'living_situation' => ['required_if:marital_status,divorced,widowed,separated', 'nullable', 'string', 'in:alone,with_parents,with_children,with_family,other'],
             'open_to_polygamy' => ['nullable', 'boolean'],
             'sect' => ['nullable', 'string', 'in:Sunni,Shia,Ahle Hadith,Deobandi,Other'],
             'sect_other' => ['nullable', 'required_if:sect,Other', 'string', 'max:100'],
@@ -75,6 +78,8 @@ trait ValidatesNikahProfile
             'cnic_number.unique' => __('db.This CNIC number is already registered to another profile.'),
             'date_of_birth.before_or_equal' => __('db.You must be at least 18 years old to create a Nikah profile.'),
             'date_of_birth.after' => __('db.Please enter a valid date of birth.'),
+            'has_children.required_if' => __('db.Please let us know if you have children.'),
+            'living_situation.required_if' => __('db.Please let us know who you currently live with.'),
         ];
     }
 

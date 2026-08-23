@@ -27,8 +27,14 @@
                 <form method="POST" action="{{ route('admin.nikah.profiles.create.step.save', 'basic') }}" class="space-y-6">
                     @csrf
 
+                    @php
+                        $ms = old('marital_status', $data['marital_status'] ?? '');
+                        $hasKidsRaw = old('has_children', $data['has_children'] ?? null);
+                        $hasKids = $hasKidsRaw === null || $hasKidsRaw === '' ? '' : ($hasKidsRaw ? '1' : '0');
+                        $livingVal = old('living_situation', $data['living_situation'] ?? '');
+                    @endphp
                     <x-nikah-section title="Basic Information" icon="🧍" color="blue">
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" x-data="{ maritalStatus: '{{ $ms }}', hasChildren: '{{ $hasKids }}' }">
                             <div>
                                 <x-input-label for="date_of_birth" value="Date of Birth" />
                                 <x-text-input id="date_of_birth" name="date_of_birth" type="date" class="w-full mt-1"
@@ -50,12 +56,35 @@
                             </div>
                             <div>
                                 <x-input-label for="marital_status" value="Marital Status" />
-                                @php $ms = old('marital_status', $data['marital_status'] ?? ''); @endphp
-                                <select id="marital_status" name="marital_status" required class="border-gray-300 rounded-md shadow-sm w-full mt-1">
+                                <select id="marital_status" name="marital_status" required x-model="maritalStatus" class="border-gray-300 rounded-md shadow-sm w-full mt-1">
                                     <option value="">Select</option>
                                     @foreach (['never_married' => 'Never Married', 'divorced' => 'Divorced', 'widowed' => 'Widowed', 'separated' => 'Separated', 'married' => 'Married (Second Wife)'] as $val => $label)
                                     <option value="{{ $val }}" {{ $ms === $val ? 'selected' : '' }}>{{ $label }}</option>
                                     @endforeach
+                                </select>
+                            </div>
+                            <div x-show="['divorced','widowed','separated'].includes(maritalStatus)" x-cloak>
+                                <x-input-label for="has_children" value="Do They Have Children?" />
+                                <select id="has_children" name="has_children" x-model="hasChildren" x-bind:required="['divorced','widowed','separated'].includes(maritalStatus)" class="border-gray-300 rounded-md shadow-sm w-full mt-1">
+                                    <option value="">Select</option>
+                                    <option value="1" {{ $hasKids === '1' ? 'selected' : '' }}>Yes</option>
+                                    <option value="0" {{ $hasKids === '0' ? 'selected' : '' }}>No</option>
+                                </select>
+                            </div>
+                            <div x-show="['divorced','widowed','separated'].includes(maritalStatus) && hasChildren === '1'" x-cloak>
+                                <x-input-label for="children_count" value="Number of Children" />
+                                <x-text-input id="children_count" name="children_count" type="number" min="1" max="20" class="w-full mt-1"
+                                    :value="old('children_count', $data['children_count'] ?? '')" />
+                            </div>
+                            <div x-show="['divorced','widowed','separated'].includes(maritalStatus)" x-cloak>
+                                <x-input-label for="living_situation" value="Who Do They Currently Live With?" />
+                                <select id="living_situation" name="living_situation" x-bind:required="['divorced','widowed','separated'].includes(maritalStatus)" class="border-gray-300 rounded-md shadow-sm w-full mt-1">
+                                    <option value="">Select</option>
+                                    <option value="alone" {{ $livingVal === 'alone' ? 'selected' : '' }}>Alone</option>
+                                    <option value="with_parents" {{ $livingVal === 'with_parents' ? 'selected' : '' }}>With Parents</option>
+                                    <option value="with_children" {{ $livingVal === 'with_children' ? 'selected' : '' }}>With Their Children</option>
+                                    <option value="with_family" {{ $livingVal === 'with_family' ? 'selected' : '' }}>With Extended Family</option>
+                                    <option value="other" {{ $livingVal === 'other' ? 'selected' : '' }}>Other</option>
                                 </select>
                             </div>
                             @php $educationLevels = ['Matric / O-Levels', 'Intermediate / A-Levels', "Bachelor's", "Master's", 'MPhil / MS', 'PhD', 'Madrassah / Islamic Education']; @endphp

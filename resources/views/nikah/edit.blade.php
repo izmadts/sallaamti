@@ -24,8 +24,14 @@
                     @csrf
                     @method('PUT')
 
+                    @php
+                        $ms = old('marital_status', $profile->marital_status);
+                        $hasKidsRaw = old('has_children', $profile->has_children);
+                        $hasKids = $hasKidsRaw === null || $hasKidsRaw === '' ? '' : ($hasKidsRaw ? '1' : '0');
+                        $livingVal = old('living_situation', $profile->living_situation);
+                    @endphp
                     <x-nikah-section :title="__('db.Basic Information')" icon="🧍" color="blue">
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" x-data="{ maritalStatus: '{{ $ms }}', hasChildren: '{{ $hasKids }}' }">
                             <div>
                                 <x-input-label for="date_of_birth" :value="__('db.Date of Birth')" />
                                 <x-text-input id="date_of_birth" name="date_of_birth" type="date" class="w-full mt-1"
@@ -60,11 +66,35 @@
                             </div>
                             <div>
                                 <x-input-label for="marital_status" value="Marital Status" />
-                                <select id="marital_status" name="marital_status" required class="border-gray-300 rounded-md shadow-sm w-full mt-1"
+                                <select id="marital_status" name="marital_status" required x-model="maritalStatus" class="border-gray-300 rounded-md shadow-sm w-full mt-1"
                                     title="{{ __('db.Please be honest — this matters for compatibility and is checked against your CNIC where relevant.') }}">
                                     @foreach (['never_married' => 'Never Married', 'divorced' => 'Divorced', 'widowed' => 'Widowed', 'separated' => 'Separated', 'married' => 'Married (Second Wife)'] as $val => $label)
-                                    <option value="{{ $val }}" {{ old('marital_status', $profile->marital_status) === $val ? 'selected' : '' }}>{{ $label }}</option>
+                                    <option value="{{ $val }}" {{ $ms === $val ? 'selected' : '' }}>{{ $label }}</option>
                                     @endforeach
+                                </select>
+                            </div>
+                            <div x-show="['divorced','widowed','separated'].includes(maritalStatus)" x-cloak>
+                                <x-input-label for="has_children" :value="__('db.Do You Have Children?')" />
+                                <select id="has_children" name="has_children" x-model="hasChildren" x-bind:required="['divorced','widowed','separated'].includes(maritalStatus)" class="border-gray-300 rounded-md shadow-sm w-full mt-1">
+                                    <option value="">{{ __('db.Select') }}</option>
+                                    <option value="1" {{ $hasKids === '1' ? 'selected' : '' }}>{{ __('db.Yes') }}</option>
+                                    <option value="0" {{ $hasKids === '0' ? 'selected' : '' }}>{{ __('db.No') }}</option>
+                                </select>
+                            </div>
+                            <div x-show="['divorced','widowed','separated'].includes(maritalStatus) && hasChildren === '1'" x-cloak>
+                                <x-input-label for="children_count" :value="__('db.Number of Children')" />
+                                <x-text-input id="children_count" name="children_count" type="number" min="1" max="20" class="w-full mt-1"
+                                    :value="old('children_count', $profile->children_count)" />
+                            </div>
+                            <div x-show="['divorced','widowed','separated'].includes(maritalStatus)" x-cloak>
+                                <x-input-label for="living_situation" :value="__('db.Who Do You Currently Live With?')" />
+                                <select id="living_situation" name="living_situation" x-bind:required="['divorced','widowed','separated'].includes(maritalStatus)" class="border-gray-300 rounded-md shadow-sm w-full mt-1">
+                                    <option value="">{{ __('db.Select') }}</option>
+                                    <option value="alone" {{ $livingVal === 'alone' ? 'selected' : '' }}>{{ __('db.Alone') }}</option>
+                                    <option value="with_parents" {{ $livingVal === 'with_parents' ? 'selected' : '' }}>{{ __('db.With Parents') }}</option>
+                                    <option value="with_children" {{ $livingVal === 'with_children' ? 'selected' : '' }}>{{ __('db.With My Children') }}</option>
+                                    <option value="with_family" {{ $livingVal === 'with_family' ? 'selected' : '' }}>{{ __('db.With Extended Family') }}</option>
+                                    <option value="other" {{ $livingVal === 'other' ? 'selected' : '' }}>{{ __('db.Other') }}</option>
                                 </select>
                             </div>
                             @php

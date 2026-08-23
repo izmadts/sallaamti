@@ -125,6 +125,10 @@
                         <dl class="grid grid-cols-2 gap-x-6 gap-y-2 text-sm">
                             <div><dt class="text-gray-400">Height</dt><dd>{{ $profile->height ?: '—' }}</dd></div>
                             <div><dt class="text-gray-400">Marital Status</dt><dd>{{ ucfirst(str_replace('_', ' ', $profile->marital_status ?? '—')) }}</dd></div>
+                            @if (in_array($profile->marital_status, ['divorced', 'widowed', 'separated']))
+                            <div><dt class="text-gray-400">Children</dt><dd>{{ is_null($profile->has_children) ? '—' : ($profile->has_children ? 'Yes' . ($profile->children_count ? " ({$profile->children_count})" : '') : 'No') }}</dd></div>
+                            <div><dt class="text-gray-400">Lives With</dt><dd>{{ $profile->living_situation ? (['alone' => 'Alone', 'with_parents' => 'Parents', 'with_children' => 'Their Children', 'with_family' => 'Extended Family', 'other' => 'Other'][$profile->living_situation] ?? ucfirst(str_replace('_', ' ', $profile->living_situation))) : '—' }}</dd></div>
+                            @endif
                             <div><dt class="text-gray-400">Sect</dt><dd>{{ $profile->sect ?: '—' }}</dd></div>
                             <div><dt class="text-gray-400">Caste</dt><dd>{{ $profile->caste ?: '—' }}</dd></div>
                             <div><dt class="text-gray-400">Education</dt><dd>{{ $profile->education ?: '—' }}</dd></div>
