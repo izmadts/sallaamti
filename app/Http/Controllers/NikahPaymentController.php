@@ -32,7 +32,7 @@ class NikahPaymentController extends Controller
                 'fee_waived_reason' => !setting('nikah_payment_required', true) ? 'Payment disabled site-wide' : 'Marital status discount (100%)',
             ]);
 
-            return redirect()->route('nikah.show')->with('status', __('db.No verification fee is required right now — your profile is ready.'));
+            return redirect()->route('dashboard')->with('status', __('db.No verification fee is required right now — your profile is ready.'));
         }
 
         return view('nikah.payment', compact('profile'));
@@ -69,6 +69,6 @@ class NikahPaymentController extends Controller
             }
         });
 
-        return redirect()->route('nikah.show')->with('status', 'Payment proof submitted! Our team will confirm it shortly.');
+        return redirect()->route('dashboard')->with('status', 'Payment proof submitted! Our team will confirm it shortly.');
     }
 }

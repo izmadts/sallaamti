@@ -22,6 +22,47 @@
 
     <div class="py-8">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+
+        {{-- Nikah verification status banner — shown once payment has been
+             dealt with (paid, submitted for review, or waived), so this
+             isn't shown to someone who hasn't even started the payment
+             step yet (the small module card below already covers that
+             state). Reappears on every dashboard visit until admin
+             approves — x-data isn't persisted anywhere, so a client-side
+             close only lasts for the current page view, not permanently. --}}
+        @if ($nikahProfile && in_array($nikahProfile->payment_status, ['submitted', 'confirmed']) && $nikahProfile->verification_status !== 'rejected')
+        <div x-data="{ show: true }" x-show="show" x-cloak class="mb-6">
+            @if ($nikahProfile->verification_status === 'verified')
+            <div class="relative bg-green-50 border border-green-200 rounded-xl p-5 flex items-center justify-between gap-4 flex-wrap">
+                <div class="flex items-center gap-3">
+                    <span class="text-3xl">✅</span>
+                    <div>
+                        <p class="font-semibold text-green-800">{{ __('db.Your Nikah profile has been approved!') }}</p>
+                        <p class="text-sm text-green-700">{{ __('db.Start browsing verified matches now.') }}</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <a href="{{ route('nikah.browse') }}" class="bg-green-600 text-white text-sm font-semibold px-4 py-2 rounded-lg hover:bg-green-700 transition">
+                        {{ __('db.Check Profiles Now') }} →
+                    </a>
+                    <button type="button" @click="show = false" class="text-green-600 hover:text-green-800 text-2xl leading-none flex-shrink-0" aria-label="Dismiss">&times;</button>
+                </div>
+            </div>
+            @else
+            <div class="relative bg-yellow-50 border border-yellow-200 rounded-xl p-5 flex items-center justify-between gap-4 flex-wrap">
+                <div class="flex items-center gap-3">
+                    <span class="text-3xl">⏳</span>
+                    <div>
+                        <p class="font-semibold text-yellow-800">{{ __('db.Your Nikah profile is under review') }}</p>
+                        <p class="text-sm text-yellow-700">{{ __('db.Our team is verifying your details — we\'ll notify you once approved.') }}</p>
+                    </div>
+                </div>
+                <button type="button" @click="show = false" class="text-yellow-600 hover:text-yellow-800 text-2xl leading-none flex-shrink-0" aria-label="Dismiss">&times;</button>
+            </div>
+            @endif
+        </div>
+        @endif
+
         <div class="flex gap-6 items-start">
 
         <x-dashboard-sidebar :nikahProfile="$nikahProfile" />
