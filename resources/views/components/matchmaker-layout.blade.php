@@ -1,10 +1,12 @@
 {{-- resources/views/components/matchmaker-layout.blade.php --}}
-{{-- Matches the admin panel's own teal-900 chrome intentionally — the
-     matchmaker workflow routinely hands off into admin-styled pages (the
-     walk-in Nikah wizard, admin.nikah.show), so a different palette here
-     just meant a jarring color flip mid-task with no real benefit. Kept as
-     its own component (distinct nav items, "Match Maker Desk" label) but
-     visually it's the same shell as x-admin-layout. --}}
+{{-- Dark pink sidebar, distinct from admin's teal-900 — safe to do now that
+     every page the matchmaker workflow hands off into (the walk-in Nikah
+     wizard, in particular) dynamically renders THIS layout or x-admin-layout
+     based on which route family served the request, rather than always
+     rendering admin's. Before that fix, a matchmaker mid-task would get
+     bounced into an admin-styled page regardless of this component's own
+     colors — a distinct palette just meant a jarring flip with no benefit.
+     See Admin\NikahProfileWizardController::routeNamePrefix(). --}}
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" dir="{{ ($isRtl ?? false) ? 'rtl' : 'ltr' }}">
 
@@ -19,18 +21,18 @@
         :root {
             /* Kept the --mm-* names so every matchmaker view that already
                references them (dashboard, clients index/create/show) picks
-               up the admin palette automatically without needing every
-               inline style="" touched individually. */
-            --mm-plum: #0f766e;
-            /* Tailwind teal-700 — matches admin's bg-teal-700 active nav state */
-            --mm-plum-dark: #134e4a;
-            /* Tailwind teal-900 — matches admin's bg-teal-900 sidebar */
-            --mm-plum-light: #0d9488;
-            /* Tailwind teal-600 */
-            --mm-gold: #0d9488;
-            /* Tailwind teal-600 — was a gold accent, now teal to match admin */
-            --mm-gold-light: #2dd4bf;
-            /* Tailwind teal-400 — matches admin's muted sidebar text */
+               up this palette automatically without needing every inline
+               style="" touched individually. */
+            --mm-plum: #be185d;
+            /* Tailwind pink-700 — active nav state, primary buttons */
+            --mm-plum-dark: #831843;
+            /* Tailwind pink-900 — sidebar background */
+            --mm-plum-light: #db2777;
+            /* Tailwind pink-600 */
+            --mm-gold: #ec4899;
+            /* Tailwind pink-500 — secondary accent buttons */
+            --mm-gold-light: #f9a8d4;
+            /* Tailwind pink-300 */
         }
     </style>
 </head>
@@ -44,20 +46,20 @@
 
         {{-- ===== SIDEBAR ===== --}}
         <aside
-            class="fixed inset-y-0 left-0 z-30 w-64 bg-teal-900 text-white flex flex-col transform transition-transform duration-200 ease-in-out
+            class="fixed inset-y-0 left-0 z-30 w-64 bg-pink-900 text-white flex flex-col transform transition-transform duration-200 ease-in-out
                    lg:static lg:translate-x-0"
             :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'">
 
             {{-- Logo --}}
-            <div class="flex items-center gap-3 px-5 py-5 border-b border-teal-700">
+            <div class="flex items-center gap-3 px-5 py-5 border-b border-pink-700">
                 @if (file_exists(public_path('images/sallaamti-logo.png')))
                 <img src="{{ asset('images/sallaamti-logo.png') }}" class="w-8 h-8 object-contain">
                 @else
-                <div class="w-8 h-8 bg-teal-600 rounded-full flex items-center justify-center text-xs font-bold">S</div>
+                <div class="w-8 h-8 bg-pink-600 rounded-full flex items-center justify-center text-xs font-bold">S</div>
                 @endif
                 <div>
                     <p class="font-bold text-white leading-none">Sallaamti</p>
-                    <p class="text-teal-400 text-xs">Match Maker Desk</p>
+                    <p class="text-pink-300 text-xs">Match Maker Desk</p>
                 </div>
             </div>
 
@@ -66,64 +68,64 @@
 
                 <a href="{{ route('dashboard.matchmaker') }}"
                     class="flex items-center gap-3 px-3 py-2 rounded-lg transition
-                          {{ request()->routeIs('dashboard.matchmaker') ? 'bg-teal-700 text-white' : 'text-teal-100 hover:bg-teal-800' }}">
+                          {{ request()->routeIs('dashboard.matchmaker') ? 'bg-pink-700 text-white' : 'text-pink-100 hover:bg-pink-800' }}">
                     <span class="text-base">🏠</span> Dashboard
                 </a>
 
-                <p class="text-teal-500 text-xs uppercase tracking-widest px-3 pt-4 pb-1">Clients</p>
+                <p class="text-pink-400 text-xs uppercase tracking-widest px-3 pt-4 pb-1">Clients</p>
 
                 <a href="{{ route('matchmaker.clients.index') }}"
                     class="flex items-center gap-3 px-3 py-2 rounded-lg transition
-                          {{ request()->routeIs('matchmaker.clients.*') ? 'bg-teal-700 text-white' : 'text-teal-100 hover:bg-teal-800' }}">
+                          {{ request()->routeIs('matchmaker.clients.*') ? 'bg-pink-700 text-white' : 'text-pink-100 hover:bg-pink-800' }}">
                     <span class="text-base">🗂️</span> My Clients
                 </a>
                 <a href="{{ route('matchmaker.clients.create') }}"
                     class="flex items-center gap-3 px-3 py-2 rounded-lg transition
-                          {{ request()->routeIs('matchmaker.clients.create') ? 'bg-teal-700 text-white' : 'text-teal-100 hover:bg-teal-800' }}">
+                          {{ request()->routeIs('matchmaker.clients.create') ? 'bg-pink-700 text-white' : 'text-pink-100 hover:bg-pink-800' }}">
                     <span class="text-base">➕</span> Add Client
                 </a>
 
-                <p class="text-teal-500 text-xs uppercase tracking-widest px-3 pt-4 pb-1">Nikah Profiles</p>
+                <p class="text-pink-400 text-xs uppercase tracking-widest px-3 pt-4 pb-1">Nikah Profiles</p>
 
                 <a href="{{ route('matchmaker.nikah.index') }}"
                     class="flex items-center gap-3 px-3 py-2 rounded-lg transition
-                          {{ request()->routeIs('matchmaker.nikah.index') || request()->routeIs('matchmaker.nikah.show') ? 'bg-teal-700 text-white' : 'text-teal-100 hover:bg-teal-800' }}">
+                          {{ request()->routeIs('matchmaker.nikah.index') || request()->routeIs('matchmaker.nikah.show') ? 'bg-pink-700 text-white' : 'text-pink-100 hover:bg-pink-800' }}">
                     <span class="text-base">🔎</span> Browse Profiles
                 </a>
                 <a href="{{ route('matchmaker.nikah.requests') }}"
                     class="flex items-center gap-3 px-3 py-2 rounded-lg transition
-                          {{ request()->routeIs('matchmaker.nikah.requests') ? 'bg-teal-700 text-white' : 'text-teal-100 hover:bg-teal-800' }}">
+                          {{ request()->routeIs('matchmaker.nikah.requests') ? 'bg-pink-700 text-white' : 'text-pink-100 hover:bg-pink-800' }}">
                     <span class="text-base">📨</span> My Contact Requests
                 </a>
                 @if (auth()->user()->can('nikah.create-profile') || auth()->user()->can('nikah.manage'))
                 <a href="{{ route('matchmaker.nikah.profiles.create') }}"
                     class="flex items-center gap-3 px-3 py-2 rounded-lg transition
-                          {{ request()->routeIs('matchmaker.nikah.profiles.create*') ? 'bg-teal-700 text-white' : 'text-teal-100 hover:bg-teal-800' }}">
+                          {{ request()->routeIs('matchmaker.nikah.profiles.create*') ? 'bg-pink-700 text-white' : 'text-pink-100 hover:bg-pink-800' }}">
                     <span class="text-base">🚶</span> Register Walk-in Client
                 </a>
                 @endif
                 <a href="{{ route('nikah.packages') }}" target="_blank"
-                    class="flex items-center gap-3 px-3 py-2 rounded-lg transition text-teal-100 hover:bg-teal-800">
+                    class="flex items-center gap-3 px-3 py-2 rounded-lg transition text-pink-100 hover:bg-pink-800">
                     <span class="text-base">💳</span> Nikah Packages
                 </a>
 
-                <p class="text-teal-500 text-xs uppercase tracking-widest px-3 pt-4 pb-1">Help</p>
+                <p class="text-pink-400 text-xs uppercase tracking-widest px-3 pt-4 pb-1">Help</p>
                 <a href="{{ route('guide.index') }}"
                     class="flex items-center gap-3 px-3 py-2 rounded-lg transition
-                          {{ request()->routeIs('guide.*') ? 'bg-teal-700 text-white' : 'text-teal-100 hover:bg-teal-800' }}">
+                          {{ request()->routeIs('guide.*') ? 'bg-pink-700 text-white' : 'text-pink-100 hover:bg-pink-800' }}">
                     <span class="text-base">📘</span> Match Maker Guide
                 </a>
             </nav>
 
             {{-- Bottom: Back to site --}}
-            <div class="px-3 py-4 border-t border-teal-700 space-y-1">
+            <div class="px-3 py-4 border-t border-pink-700 space-y-1">
                 <a href="{{ route('dashboard') }}"
-                    class="flex items-center gap-3 px-3 py-2 rounded-lg text-teal-300 hover:bg-teal-800 text-sm transition">
+                    class="flex items-center gap-3 px-3 py-2 rounded-lg text-pink-300 hover:bg-pink-800 text-sm transition">
                     <span class="text-base">↩️</span> Back to Site
                 </a>
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
-                    <button class="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-teal-300 hover:bg-teal-800 text-sm transition text-left">
+                    <button class="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-pink-300 hover:bg-pink-800 text-sm transition text-left">
                         <span class="text-base">🚪</span> Logout
                     </button>
                 </form>

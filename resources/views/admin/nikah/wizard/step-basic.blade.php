@@ -1,4 +1,4 @@
-<x-admin-layout>
+<x-dynamic-component :component="$routePrefix === 'matchmaker' ? 'matchmaker-layout' : 'admin-layout'">
     <x-slot name="header">
         <div class="flex items-center gap-2 text-sm">
             <a href="{{ route($routePrefix === 'matchmaker' ? 'matchmaker.nikah.index' : 'admin.nikah.verifications') }}" class="text-gray-400 hover:text-gray-600">Nikah Profiles</a>
@@ -118,4 +118,4 @@
             </div>
         </div>
     </div>
-</x-admin-layout>
+</x-dynamic-component>
