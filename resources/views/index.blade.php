@@ -74,21 +74,28 @@
             </div>
 
             @php
+            // requiresAuth: only true for the two modules actually gated
+            // behind auth middleware (nikah.create, counseling.book.start —
+            // see routes/web.php). Quran Courses, Live Classes, Digital
+            // Skills, Donate, Volunteer, and Wall are public routes by
+            // original design (Donate/Volunteer explicitly support guest
+            // submissions from the very first commit) — those cards go
+            // straight to the real page, no forced registration.
             $modules = [
-            ['key' => 'nikah', 'emoji' => '💍', 'color' => '#B8455A', 'title' => __('db.Nikah'), 'tagline' => __('db.Find a halal match')],
-            ['key' => 'quran', 'emoji' => '📖', 'color' => '#0D6B6B', 'title' => __('db.Quran Courses'), 'tagline' => __('db.Nazrah to Tajweed')],
-            ['key' => 'quran_live', 'emoji' => '🎥', 'color' => '#1D5FB8', 'title' => __('db.Live Classes'), 'tagline' => __('db.1-to-1 with a teacher')],
-            ['key' => 'skills', 'emoji' => '💻', 'color' => '#6D4AAE', 'title' => __('db.Digital Skills'), 'tagline' => __('db.Free, self-paced')],
-            ['key' => 'counseling', 'emoji' => '💑', 'color' => '#2E8B8B', 'title' => __('db.Family Support'), 'tagline' => __('db.Confidential counseling')],
-            ['key' => 'donation', 'emoji' => '💝', 'color' => '#B8962E', 'title' => __('db.Donate'), 'tagline' => __('db.Fund a student')],
-            ['key' => 'volunteer', 'emoji' => '🤝', 'color' => '#D2691E', 'title' => __('db.Volunteer'), 'tagline' => __('db.Give your skills')],
-            ['key' => 'wall', 'emoji' => '🤲', 'color' => '#0D6B6B', 'title' => __('db.Sallaamti Wall'), 'tagline' => __('db.Duas & community')],
+            ['key' => 'nikah', 'emoji' => '💍', 'color' => '#B8455A', 'title' => __('db.Nikah'), 'tagline' => __('db.Find a halal match'), 'requiresAuth' => true],
+            ['key' => 'quran', 'emoji' => '📖', 'color' => '#0D6B6B', 'title' => __('db.Quran Courses'), 'tagline' => __('db.Nazrah to Tajweed'), 'requiresAuth' => false],
+            ['key' => 'quran_live', 'emoji' => '🎥', 'color' => '#1D5FB8', 'title' => __('db.Live Classes'), 'tagline' => __('db.1-to-1 with a teacher'), 'requiresAuth' => false],
+            ['key' => 'skills', 'emoji' => '💻', 'color' => '#6D4AAE', 'title' => __('db.Digital Skills'), 'tagline' => __('db.Free, self-paced'), 'requiresAuth' => false],
+            ['key' => 'counseling', 'emoji' => '💑', 'color' => '#2E8B8B', 'title' => __('db.Family Support'), 'tagline' => __('db.Confidential counseling'), 'requiresAuth' => true],
+            ['key' => 'donation', 'emoji' => '💝', 'color' => '#B8962E', 'title' => __('db.Donate'), 'tagline' => __('db.Fund a student'), 'requiresAuth' => false],
+            ['key' => 'volunteer', 'emoji' => '🤝', 'color' => '#D2691E', 'title' => __('db.Volunteer'), 'tagline' => __('db.Give your skills'), 'requiresAuth' => false],
+            ['key' => 'wall', 'emoji' => '🤲', 'color' => '#0D6B6B', 'title' => __('db.Sallaamti Wall'), 'tagline' => __('db.Duas & community'), 'requiresAuth' => false],
             ];
             @endphp
 
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-5 mt-10">
                 @foreach ($modules as $m)
-                <a href="{{ auth()->check() ? (\App\Support\ModuleRedirects::resolve($m['key']) ?? route('dashboard')) : route('register', ['module' => $m['key']]) }}"
+                <a href="{{ (!$m['requiresAuth'] || auth()->check()) ? (\App\Support\ModuleRedirects::resolve($m['key']) ?? route('dashboard')) : route('register', ['module' => $m['key']]) }}"
                     class="group relative flex flex-col items-center text-center rounded-2xl p-5 sm:p-6 transition-all duration-200 hover:-translate-y-1 hover:shadow-xl"
                     style="background: rgba(255,255,255,0.92); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 2px solid {{ $m['color'] }}">
                     <span class="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl mb-3 transition-transform duration-200 group-hover:scale-110"
