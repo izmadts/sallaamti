@@ -58,6 +58,21 @@ class Lead extends Model
         return $this->hasMany(LeadShortlistItem::class);
     }
 
+    public function timelineEvents()
+    {
+        return $this->hasMany(MatchmakingTimelineEvent::class)->latest('created_at');
+    }
+
+    public function requirement()
+    {
+        return $this->hasOne(MatchmakingRequirement::class);
+    }
+
+    public function proposalBatches()
+    {
+        return $this->hasMany(ProposalBatch::class)->latest('id');
+    }
+
     public function isConverted(): bool
     {
         return $this->nikah_profile_id !== null;

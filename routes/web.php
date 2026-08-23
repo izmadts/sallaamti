@@ -656,6 +656,29 @@ Route::middleware(['auth', 'matchmaker'])->prefix('matchmaker')->name('matchmake
     Route::get('/nikah-requests', [\App\Http\Controllers\Matchmaker\NikahBrowseController::class, 'myRequests'])->name('nikah.requests');
     Route::get('/nikah-profiles/{profile}', [\App\Http\Controllers\Matchmaker\NikahBrowseController::class, 'show'])->name('nikah.show');
     Route::post('/nikah-profiles/{profile}/request-contact', [\App\Http\Controllers\Matchmaker\NikahBrowseController::class, 'requestContact'])->name('nikah.request-contact');
+
+    // The matchmaker's own themed workspace — separate from /admin/leads
+    // (which stays as admin's global oversight view), built on the exact
+    // same Lead/LeadShortlistItem models. See Matchmaker\ClientController.
+    Route::resource('clients', \App\Http\Controllers\Matchmaker\ClientController::class)->except(['edit', 'destroy'])->parameters(['clients' => 'lead']);
+    Route::post('/clients/{lead}/convert', [\App\Http\Controllers\Matchmaker\ClientController::class, 'convert'])->name('clients.convert');
+    Route::post('/clients/{lead}/link-profile', [\App\Http\Controllers\Matchmaker\ClientController::class, 'linkProfile'])->name('clients.link-profile');
+    Route::post('/clients/{lead}/shortlist', [\App\Http\Controllers\Matchmaker\ClientController::class, 'addToShortlist'])->name('clients.shortlist.add');
+    Route::delete('/clients/{lead}/shortlist/{item}', [\App\Http\Controllers\Matchmaker\ClientController::class, 'removeFromShortlist'])->name('clients.shortlist.remove');
+    Route::post('/clients/{lead}/requirements', [\App\Http\Controllers\Matchmaker\ClientController::class, 'saveRequirement'])->name('clients.requirements.save');
+    Route::post('/clients/{lead}/proposal-batches', [\App\Http\Controllers\Matchmaker\ClientController::class, 'createBatch'])->name('clients.batches.create');
+    Route::post('/clients/{lead}/proposal-batches/{batch}/proposals', [\App\Http\Controllers\Matchmaker\ClientController::class, 'addProposal'])->name('clients.batches.proposals.add');
+    Route::delete('/clients/{lead}/proposal-batches/{batch}/proposals/{proposal}', [\App\Http\Controllers\Matchmaker\ClientController::class, 'removeProposal'])->name('clients.batches.proposals.remove');
+    Route::post('/clients/{lead}/proposal-batches/{batch}/send', [\App\Http\Controllers\Matchmaker\ClientController::class, 'sendBatch'])->name('clients.batches.send');
+});
+
+// Public, no-login signed-link actions — reachable only via a link a
+// matchmaker sends the client directly (WhatsApp/SMS/read aloud), not
+// through the website's normal navigation. See
+// Public\MatchmakingActionController's class docblock.
+Route::middleware('signed')->prefix('m')->name('public.matchmaking.')->group(function () {
+    Route::get('/proposal/{proposal}', [\App\Http\Controllers\Public\MatchmakingActionController::class, 'showProposal'])->name('proposal.show');
+    Route::post('/proposal/{proposal}/respond', [\App\Http\Controllers\Public\MatchmakingActionController::class, 'respondProposal'])->name('proposal.respond');
 });
 
 require __DIR__ . '/auth.php';

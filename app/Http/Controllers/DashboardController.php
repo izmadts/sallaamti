@@ -49,6 +49,8 @@ class DashboardController extends Controller
 
         $myLeads = \App\Models\Lead::where('assigned_to', $authUser->id);
 
+        $myBatches = \App\Models\ProposalBatch::where('matchmaker_id', $authUser->id);
+
         $stats = [
             'total_profiles' => \App\Models\NikahProfile::where('is_active', true)->whereNull('suspended_at')->count(),
             'pending_requests' => $requests->where('status', 'pending')->count(),
@@ -56,6 +58,9 @@ class DashboardController extends Controller
             'new_leads' => (clone $myLeads)->where('status', 'new')->count(),
             'follow_ups_due' => (clone $myLeads)->whereDate('next_follow_up_at', '<=', now())->whereNotIn('status', ['registered', 'not_interested', 'closed'])->count(),
             'registered_leads' => (clone $myLeads)->where('status', 'registered')->count(),
+            'active_batches' => (clone $myBatches)->whereIn('status', ['sent', 'partially_responded'])->count(),
+            'awaiting_response' => \App\Models\MatchProposal::whereHas('batch', fn($q) => $q->where('matchmaker_id', $authUser->id))->where('status', 'sent')->count(),
+            'interested_this_week' => \App\Models\MatchProposal::whereHas('batch', fn($q) => $q->where('matchmaker_id', $authUser->id))->where('response', 'interested')->where('responded_at', '>=', now()->subDays(7))->count(),
         ];
 
         $followUps = (clone $myLeads)->whereDate('next_follow_up_at', '<=', now())
@@ -66,11 +71,17 @@ class DashboardController extends Controller
 
         $recentLeads = (clone $myLeads)->latest()->take(5)->get();
 
+        $recentActivity = \App\Models\MatchmakingTimelineEvent::whereHas('lead', fn($q) => $q->where('assigned_to', $authUser->id))
+            ->latest('created_at')
+            ->take(6)
+            ->get();
+
         return view('dashboard.matchmaker', [
             'user' => $authUser,
             'stats' => $stats,
             'followUps' => $followUps,
             'recentLeads' => $recentLeads,
+            'recentActivity' => $recentActivity,
         ]);
     }
 
