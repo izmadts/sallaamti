@@ -243,6 +243,29 @@
                 </details>
             </div>
 
+            {{-- Timeline --}}
+            <div class="bg-white rounded-xl shadow-sm p-6">
+                <h3 class="font-semibold text-gray-700 mb-3 border-b pb-2">🕓 Activity Timeline ({{ $lead->timelineEvents->count() }})</h3>
+                @forelse ($lead->timelineEvents as $event)
+                <div class="flex gap-3 py-2.5 border-b last:border-0">
+                    <span class="text-lg leading-none">{{ match(true) {
+                        str_contains($event->event_type, 'proposal') => '💌',
+                        str_contains($event->event_type, 'shortlist') || str_contains($event->event_type, 'shared') => '⭐',
+                        str_contains($event->event_type, 'requirement') => '📋',
+                        str_contains($event->event_type, 'registration') || str_contains($event->event_type, 'profile') => '📝',
+                        str_contains($event->event_type, 'status') => '🔄',
+                        default => '🕓',
+                    } }}</span>
+                    <div>
+                        <p class="text-sm text-gray-800">{{ $event->description }}</p>
+                        <p class="text-xs text-gray-400 mt-0.5">{{ $event->created_at->format('d M Y, g:i A') }} @if($event->matchmaker) · {{ $event->matchmaker->name }} @endif</p>
+                    </div>
+                </div>
+                @empty
+                <p class="text-sm text-gray-400">No activity logged yet.</p>
+                @endforelse
+            </div>
+
         </div>
     </div>
 </x-admin-layout>

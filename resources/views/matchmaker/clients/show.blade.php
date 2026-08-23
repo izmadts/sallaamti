@@ -368,7 +368,7 @@
                 <div class="flex gap-3 py-3 border-b last:border-0">
                     <span class="text-lg leading-none">{{ match(true) {
                         str_contains($event->event_type, 'proposal') => '💌',
-                        str_contains($event->event_type, 'shortlist') => '⭐',
+                        str_contains($event->event_type, 'shortlist') || str_contains($event->event_type, 'shared') => '⭐',
                         str_contains($event->event_type, 'requirement') => '📋',
                         str_contains($event->event_type, 'registration') || str_contains($event->event_type, 'profile') => '📝',
                         str_contains($event->event_type, 'status') => '🔄',

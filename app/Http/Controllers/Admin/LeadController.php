@@ -6,6 +6,7 @@ use App\Http\Controllers\Concerns\HasWizardSteps;
 use App\Http\Controllers\Controller;
 use App\Models\Lead;
 use App\Models\LeadShortlistItem;
+use App\Models\MatchmakingTimelineEvent;
 use App\Models\NikahProfile;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -105,6 +106,8 @@ class LeadController extends Controller
 
         $lead = Lead::create($validated);
 
+        MatchmakingTimelineEvent::log($lead, null, 'lead_received', "Lead received from {$lead->source}.");
+
         return redirect()->route('admin.leads.show', $lead)->with('status', 'Lead added.');
     }
 
@@ -112,7 +115,7 @@ class LeadController extends Controller
     {
         $this->authorize_();
 
-        $lead->load(['assignedTo', 'createdBy', 'nikahProfile.user', 'shortlistItems.nikahProfile.user', 'shortlistItems.createdBy']);
+        $lead->load(['assignedTo', 'createdBy', 'nikahProfile.user', 'shortlistItems.nikahProfile.user', 'shortlistItems.createdBy', 'timelineEvents.matchmaker']);
         $matchmakers = User::role(['admin', 'matchmaker'])->orderBy('name')->get();
 
         $searchResults = collect();
@@ -160,7 +163,12 @@ class LeadController extends Controller
             'package_expires_at' => ['nullable', 'date'],
         ]);
 
+        $statusChanged = $lead->status !== $validated['status'];
         $lead->update($validated);
+
+        if ($statusChanged) {
+            MatchmakingTimelineEvent::log($lead, $lead->nikahProfile, 'status_changed', 'Status changed to ' . ucfirst(str_replace('_', ' ', $validated['status'])) . '.');
+        }
 
         return back()->with('status', 'Lead updated.');
     }
@@ -188,6 +196,8 @@ class LeadController extends Controller
 
         $lead->update(['status' => 'registered']);
 
+        MatchmakingTimelineEvent::log($lead, null, 'registration_started', 'Admin started assisted registration.');
+
         return redirect()->route('admin.nikah.profiles.create.step', 'account')
             ->with('status', "Continue registering {$lead->name} below — their details are pre-filled. Come back to this lead afterward to link the finished profile.");
     }
@@ -203,6 +213,8 @@ class LeadController extends Controller
 
         $lead->update(['nikah_profile_id' => $validated['nikah_profile_id'], 'status' => 'registered']);
 
+        MatchmakingTimelineEvent::log($lead, $lead->nikahProfile, 'profile_linked', 'Sallaamti Nikah profile linked to this lead.');
+
         return back()->with('status', 'Lead linked to the Nikah profile.');
     }
 
@@ -215,10 +227,15 @@ class LeadController extends Controller
             'note' => ['nullable', 'string', 'max:1000'],
         ]);
 
-        LeadShortlistItem::firstOrCreate(
+        $item = LeadShortlistItem::firstOrCreate(
             ['lead_id' => $lead->id, 'nikah_profile_id' => $validated['nikah_profile_id']],
             ['note' => $validated['note'] ?? null, 'created_by' => auth()->id()]
         );
+
+        if ($item->wasRecentlyCreated) {
+            $candidate = NikahProfile::find($validated['nikah_profile_id']);
+            MatchmakingTimelineEvent::log($lead, $lead->nikahProfile, 'candidate_shortlisted', "Candidate {$candidate?->public_token} shortlisted.");
+        }
 
         return back()->with('status', 'Added to shortlist.');
     }
@@ -229,6 +246,8 @@ class LeadController extends Controller
         abort_unless($item->lead_id === $lead->id, 404);
 
         $item->update(['sent_at' => now()]);
+
+        MatchmakingTimelineEvent::log($lead, $lead->nikahProfile, 'candidate_shared', 'Shortlisted candidate marked as shared with the lead.');
 
         return back()->with('status', 'Marked as shared.');
     }
