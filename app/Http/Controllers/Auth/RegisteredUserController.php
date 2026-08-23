@@ -81,15 +81,22 @@ class RegisteredUserController extends Controller
 
         session()->flash('conversion_event', 'user_registered');
 
-        // `intended()` wins first — e.g. someone who registered from a
-        // shared Nikah profile link must land back on that exact page. Next,
-        // an explicit ?module= from a homepage card click (stronger signal
-        // than the interest checkboxes, since it's literally which card they
-        // tapped). The checkbox heuristic is the last-resort default for
-        // anyone who landed on /register directly.
-        return redirect()->intended(
-            ModuleRedirects::resolve($request->input('module')) ?? $this->postRegistrationRoute($user)
-        );
+        // An explicit ?module= from a homepage card click wins outright —
+        // it's the deliberate thing they just tapped, and redirect()->
+        // intended() checks session('url.intended') BEFORE even looking at
+        // its fallback argument, so a stale intended URL left over from
+        // some earlier unrelated page visit (e.g. hitting /dashboard while
+        // logged out at some point) would otherwise silently override it.
+        // Only when there's no module param do we fall back to intended()
+        // — e.g. someone who registered from a shared Nikah profile link
+        // should still land back on that exact page — then the checkbox
+        // heuristic as the last resort for anyone who landed on /register
+        // directly.
+        $moduleTarget = ModuleRedirects::resolve($request->input('module'));
+
+        return $moduleTarget
+            ? redirect($moduleTarget)
+            : redirect()->intended($this->postRegistrationRoute($user));
     }
 
     // A single interest picked at signup is a strong enough signal to skip
