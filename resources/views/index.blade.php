@@ -132,40 +132,64 @@
     </section>
 
     {{-- ============================================================ --}}
-    {{-- CONVERSION — a real preview of the Sallaamti Wall community,   --}}
-    {{-- so a guest sees genuine content (not a locked teaser) before   --}}
-    {{-- the ask to register.                                          --}}
+    {{-- MODULE LAUNCHER — tap a card, start that module's journey.     --}}
+    {{-- App-style tiles mirroring the Flutter home screen (icon-       --}}
+    {{-- forward, per-module color, whole card is the tap target)       --}}
+    {{-- rather than the paragraph+button "activity-card" style         --}}
+    {{-- about.blade.php uses — this page is the fast on-ramp, About    --}}
+    {{-- is the detailed pitch.                                        --}}
     {{-- ============================================================ --}}
-    @if ($latestDuas->isNotEmpty())
-    <section class="py-14" style="background: #fbfaf7">
-        <div class="max-w-2xl mx-auto px-4">
-            <div class="text-center mb-8">
-                <span class="text-3xl">🤲</span>
-                <h2 class="text-2xl font-bold text-gray-800 mt-2">{{ __('db.Join a community that prays for each other') }}</h2>
-                <p class="text-gray-500 text-sm mt-1">{{ __('db.A glimpse of the Sallaamti Wall — real duas from real members.') }}</p>
+    <section class="py-16 sm:py-20 bg-white">
+        <div class="max-w-6xl mx-auto px-4">
+            <div class="text-center mb-10">
+                <span class="section-eyebrow">{{ __('db.Get Started') }}</span>
+                <h2 class="section-title">{{ __('db.Start Your Journey') }}</h2>
+                <p class="section-subtitle">{{ __('db.Tap a card below — each one walks you through what you need, step by step.') }}</p>
             </div>
 
-            <div class="space-y-4">
-                @foreach ($latestDuas as $dua)
-                @include('dua-wall.partials.dua-card', ['dua' => $dua])
-                @endforeach
-            </div>
+            @php
+            $modules = [
+            ['emoji' => '💍', 'color' => '#B8455A', 'title' => __('db.Nikah'), 'tagline' => __('db.Find a halal match'), 'url' => route('nikah.create')],
+            ['emoji' => '📖', 'color' => '#0D6B6B', 'title' => __('db.Quran Courses'), 'tagline' => __('db.Nazrah to Tajweed'), 'url' => route('courses.index')],
+            ['emoji' => '🎥', 'color' => '#1D5FB8', 'title' => __('db.Live Classes'), 'tagline' => __('db.1-to-1 with a teacher'), 'url' => route('quran-live.index')],
+            ['emoji' => '💻', 'color' => '#6D4AAE', 'title' => __('db.Digital Skills'), 'tagline' => __('db.Free, self-paced'), 'url' => route('skills.index')],
+            ['emoji' => '💑', 'color' => '#2E8B8B', 'title' => __('db.Family Support'), 'tagline' => __('db.Confidential counseling'), 'url' => auth()->check() ? route('counseling.book.start') : route('register')],
+            ['emoji' => '💝', 'color' => '#B8962E', 'title' => __('db.Donate'), 'tagline' => __('db.Fund a student'), 'url' => route('donate.create')],
+            ['emoji' => '🤝', 'color' => '#D2691E', 'title' => __('db.Volunteer'), 'tagline' => __('db.Give your skills'), 'url' => route('volunteer.create')],
+            ['emoji' => '🤲', 'color' => '#0D6B6B', 'title' => __('db.Sallaamti Wall'), 'tagline' => __('db.Duas & community'), 'url' => route('wall.index')],
+            ];
+            @endphp
 
-            <div class="text-center mt-8">
-                <a href="{{ route('register') }}" class="btn-base btn-teal inline-flex items-center px-6 py-3 text-base font-semibold">
-                    {{ __('db.Join Free & Share Your Own Dua') }} <i class="fa fa-arrow-right ms-2"></i>
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-5">
+                @foreach ($modules as $m)
+                <a href="{{ $m['url'] }}"
+                    class="group relative flex flex-col items-center text-center rounded-2xl p-5 sm:p-6 transition-all duration-200 hover:-translate-y-1 hover:shadow-lg"
+                    style="background: color-mix(in srgb, {{ $m['color'] }} 12%, white); border: 1px solid color-mix(in srgb, {{ $m['color'] }} 20%, white)">
+                    <span class="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl mb-3 transition-transform duration-200 group-hover:scale-110"
+                        style="background: {{ $m['color'] }}">
+                        {{ $m['emoji'] }}
+                    </span>
+                    <span class="font-bold text-sm sm:text-base" style="color: color-mix(in srgb, {{ $m['color'] }} 85%, black)">{{ $m['title'] }}</span>
+                    <span class="text-xs text-gray-500 mt-0.5">{{ $m['tagline'] }}</span>
                 </a>
-                <p class="text-xs text-gray-400 mt-3">
-                    <a href="{{ route('wall.index') }}" class="underline" style="color: var(--teal)">{{ __('db.See the full Sallaamti Wall') }} →</a>
-                </p>
+                @endforeach
             </div>
         </div>
     </section>
-    @endif
 
-    <section class="py-10 bg-cream">
-        <div class="max-w-2xl mx-auto px-4">
-            @include('components.daily-content-widget')
+    {{-- ============================================================ --}}
+    {{-- SHORT ABOUT — a quick pitch, admin-editable via Settings >     --}}
+    {{-- About, with a link out to the full story.                     --}}
+    {{-- ============================================================ --}}
+    <section class="py-16 sm:py-20" style="background: var(--teal-light)">
+        <div class="max-w-3xl mx-auto px-4 text-center">
+            <span class="section-eyebrow">{{ setting('about_heading') ?: __('db.About Sallaamti') }}</span>
+            <p class="text-gray-700 text-base sm:text-lg leading-relaxed mt-3">
+                {{ setting('about_text') ?: __('db.Sallaamti brings Quran education, a halal matrimonial platform, family counseling, and community giving together in one trusted place — built for Muslims everywhere, and free to join.') }}
+            </p>
+            <a href="{{ url('/about') }}" class="btn-base btn-teal inline-flex items-center px-6 py-3 text-sm font-semibold mt-6">
+                {{ __('db.Read Our Full Story') }} <i class="fa fa-arrow-right ms-2"></i>
+            </a>
         </div>
     </section>
 </x-guest-layout>

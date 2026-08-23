@@ -75,9 +75,8 @@ Route::get('/', function () {
     }
 
     $banners = \App\Models\Banner::active()->get();
-    $latestDuas = \App\Models\DuaRequest::where('status', 'approved')->latest()->take(3)->get();
 
-    return view('index', compact('banners', 'latestDuas'));
+    return view('index', compact('banners'));
 })->name('index');
 
 Route::get('/newsletter/unsubscribe/{user}', [NewsletterUnsubscribeController::class, 'unsubscribe'])
