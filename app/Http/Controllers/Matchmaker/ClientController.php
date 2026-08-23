@@ -432,6 +432,16 @@ class ClientController extends Controller
             return back()->with('error', 'Add at least one candidate before sending.');
         }
 
+        if ($lead->nikah_package_id && $lead->packageExpired()) {
+            return back()->with('error', "This client's {$lead->nikahPackage->name} package expired on {$lead->package_expires_at->format('d M Y')} — renew it (in the admin lead page) before sending more proposals.");
+        }
+
+        $remaining = $lead->remainingProposalAllowance();
+        if ($remaining !== null && $batch->proposals()->count() > $remaining) {
+            $word = $remaining === 1 ? 'proposal' : 'proposals';
+            return back()->with('error', "This client's {$lead->nikahPackage->name} package only has {$remaining} {$word} remaining, but this batch has {$batch->proposals()->count()}. Remove some candidates, or ask an admin to upgrade/renew the package.");
+        }
+
         $now = now();
         foreach ($batch->proposals as $proposal) {
             $proposal->update(['status' => 'sent', 'sent_at' => $now, 'link_token' => $proposal->link_token ?? Str::random(40)]);

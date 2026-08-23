@@ -7,9 +7,11 @@ use App\Http\Controllers\Controller;
 use App\Models\Lead;
 use App\Models\LeadShortlistItem;
 use App\Models\MatchmakingTimelineEvent;
+use App\Models\NikahPackage;
 use App\Models\NikahProfile;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 
 // Lean matchmaker-assist CRM — MVP slice of a much larger spec. Deliberately
 // does NOT build the full leads/requirements/compatibility-scoring/
@@ -44,7 +46,7 @@ class LeadController extends Controller
     {
         $this->authorize_();
 
-        $query = Lead::with(['assignedTo', 'nikahProfile.user']);
+        $query = Lead::with(['assignedTo', 'nikahProfile.user', 'nikahPackage']);
 
         if ($request->filled('status')) {
             $query->where('status', $request->status);
@@ -115,8 +117,9 @@ class LeadController extends Controller
     {
         $this->authorize_();
 
-        $lead->load(['assignedTo', 'createdBy', 'nikahProfile.user', 'shortlistItems.nikahProfile.user', 'shortlistItems.createdBy', 'timelineEvents.matchmaker']);
+        $lead->load(['assignedTo', 'createdBy', 'nikahProfile.user', 'nikahPackage', 'shortlistItems.nikahProfile.user', 'shortlistItems.createdBy', 'timelineEvents.matchmaker']);
         $matchmakers = User::role(['admin', 'matchmaker'])->orderBy('name')->get();
+        $packages = NikahPackage::active()->ordered()->get();
 
         $searchResults = collect();
         if (request()->filled('search_city') || request()->filled('search_gender') || request()->filled('search_sect')) {
@@ -139,7 +142,7 @@ class LeadController extends Controller
             $searchResults = $query->orderByDesc('created_at')->limit(20)->get();
         }
 
-        return view('admin.leads.show', compact('lead', 'matchmakers', 'searchResults'));
+        return view('admin.leads.show', compact('lead', 'matchmakers', 'packages', 'searchResults'));
     }
 
     public function update(Request $request, Lead $lead)
@@ -157,14 +160,37 @@ class LeadController extends Controller
             'assigned_to' => ['nullable', 'exists:users,id'],
             'notes' => ['nullable', 'string', 'max:2000'],
             'next_follow_up_at' => ['nullable', 'date'],
-            'package' => ['required', 'in:none,verified_profile,assisted,premium,vip'],
+            'nikah_package_id' => ['nullable', 'exists:nikah_packages,id'],
             'package_price' => ['nullable', 'numeric', 'min:0'],
             'package_started_at' => ['nullable', 'date'],
-            'package_expires_at' => ['nullable', 'date'],
         ]);
+
+        $packageChanged = ($validated['nikah_package_id'] ?? null) != $lead->nikah_package_id;
+
+        // Price/dates are derived from the chosen package by default (an
+        // admin can still override the price for a negotiated discount) —
+        // duration_days on the package drives expiry, not a manually-typed
+        // date, so it can't drift out of sync with what the package
+        // actually promises.
+        if (!empty($validated['nikah_package_id'])) {
+            $package = NikahPackage::findOrFail($validated['nikah_package_id']);
+            $validated['package_price'] = $validated['package_price'] ?? $package->price;
+            $validated['package_started_at'] = $validated['package_started_at'] ?? ($packageChanged ? now()->toDateString() : $lead->package_started_at);
+            $validated['package_expires_at'] = $package->duration_days
+                ? Carbon::parse($validated['package_started_at'])->addDays($package->duration_days)
+                : null;
+        } else {
+            $validated['package_price'] = null;
+            $validated['package_started_at'] = null;
+            $validated['package_expires_at'] = null;
+        }
 
         $statusChanged = $lead->status !== $validated['status'];
         $lead->update($validated);
+
+        if ($packageChanged) {
+            MatchmakingTimelineEvent::log($lead, $lead->nikahProfile, 'package_changed', 'Package changed to ' . ($lead->fresh()->nikahPackage?->name ?? 'None') . '.');
+        }
 
         if ($statusChanged) {
             MatchmakingTimelineEvent::log($lead, $lead->nikahProfile, 'status_changed', 'Status changed to ' . ucfirst(str_replace('_', ' ', $validated['status'])) . '.');

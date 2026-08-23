@@ -99,7 +99,7 @@
                             <td class="px-4 py-3 text-xs {{ $lead->next_follow_up_at && $lead->next_follow_up_at->isPast() ? 'text-red-600 font-semibold' : 'text-gray-400' }}">
                                 {{ $lead->next_follow_up_at?->format('d M Y') ?? '—' }}
                             </td>
-                            <td class="px-4 py-3 text-xs text-gray-500 capitalize">{{ str_replace('_', ' ', $lead->package) }}</td>
+                            <td class="px-4 py-3 text-xs text-gray-500">{{ $lead->nikahPackage?->name ?? '—' }}</td>
                         </tr>
                         @empty
                         <tr>

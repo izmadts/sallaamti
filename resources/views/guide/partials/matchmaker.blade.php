@@ -40,6 +40,7 @@
 
 <h3>Step 5 — Create &amp; Send a Proposal Batch</h3>
 <p>In the <strong>Proposal Batches</strong> tab, start a new batch (your client needs a linked Nikah profile and an active consent first — see Steps 4 and 7) and add up to <strong>5 candidates</strong> from your shortlist, each with an optional "why this match" note. When you're ready, press <strong>Mark as Sent</strong> — this generates one link per candidate, ready to copy.</p>
+<p>If the client is on a paid package (Assisted / Premium), this tab shows how many proposals they have left and when the package expires. Sending is blocked once their proposal limit is used up or the package has expired — an admin can assign/renew their package from the admin Leads page (<code>/admin/leads</code>).</p>
 
 <h3>Step 6 — Send the Links (Copy, Don't Open)</h3>
 <p>Each candidate now has a <strong>Copy Link</strong> button. Copy it and send it to your client over WhatsApp, SMS, or read it out on a call — whatever actually reaches them, no login required on their end. If a link ever needs replacing, press <strong>Regenerate</strong> next to it (see the security note above).</p>
@@ -115,6 +116,7 @@
 
 <h3>مرحلہ 5 — تجویز بیچ بنائیں اور بھیجیں</h3>
 <p><strong>تجویز بیچز</strong> ٹیب میں، ایک نیا بیچ شروع کریں (آپ کے کلائنٹ کے پاس پہلے سے ایک منسلک نکاح پروفائل اور فعال رضامندی ہونی چاہیے — مراحل 4 اور 7 دیکھیں) اور اپنی شارٹ لسٹ سے <strong>5 امیدواروں تک</strong> شامل کریں، ہر ایک کے ساتھ اختیاری "یہ میچ کیوں" نوٹ۔ تیار ہونے پر <strong>بھیجا گیا نشان زد کریں</strong> دبائیں — اس سے ہر امیدوار کے لیے ایک لنک بنتا ہے، کاپی کرنے کے لیے تیار۔</p>
+<p>اگر کلائنٹ کسی ادائیگی والے پیکج پر ہے (اسسٹڈ / پریمیم)، تو یہ ٹیب دکھاتا ہے کہ ان کے پاس کتنی تجاویز باقی ہیں اور پیکج کب ختم ہوگا۔ ان کی تجویز کی حد ختم ہونے یا پیکج کی میعاد گزرنے پر بھیجنا روک دیا جاتا ہے — ایک ایڈمن ان کا پیکج ایڈمن لیڈز صفحہ (<code>/admin/leads</code>) سے تفویض/تجدید کر سکتا ہے۔</p>
 
 <h3>مرحلہ 6 — لنکس بھیجیں (کاپی کریں، کھولیں نہیں)</h3>
 <p>ہر امیدوار کے پاس اب ایک <strong>لنک کاپی کریں</strong> بٹن ہے۔ اسے کاپی کریں اور اپنے کلائنٹ کو واٹس ایپ، ایس ایم ایس پر بھیجیں، یا کال پر پڑھ کر سنا دیں — جو بھی طریقہ واقعی ان تک پہنچے، ان کی طرف سے لاگ اِن کی ضرورت نہیں۔ اگر کبھی لنک بدلنے کی ضرورت پڑے تو اس کے ساتھ <strong>دوبارہ بنائیں</strong> دبائیں (اوپر سیکیورٹی نوٹ دیکھیں)۔</p>

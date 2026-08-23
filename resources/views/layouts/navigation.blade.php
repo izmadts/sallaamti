@@ -87,6 +87,7 @@
  <x-dropdown-link :href="route('nikah.interests')">💌 {{ __('db.My Interests') }}</x-dropdown-link>
  <x-dropdown-link :href="route('nikah.saved')">★ {{ __('db.Saved Profiles') }}</x-dropdown-link>
  <x-dropdown-link :href="route('nikah.blocked')">🚫 {{ __('db.Blocked Profiles') }}</x-dropdown-link>
+ <x-dropdown-link :href="route('nikah.packages')">💳 {{ __('db.Matchmaking Packages') }}</x-dropdown-link>
  </x-slot>
  </x-dropdown>
  @endif

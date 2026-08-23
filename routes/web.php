@@ -105,6 +105,11 @@ Route::get('/privacy-policy', fn() => view('privacy-policy'))->name('privacy-pol
 Route::get('/terms-of-service', fn() => view('terms-of-service'))->name('terms-of-service');
 
 // Public module pages (browsable without login)
+Route::get('/nikah/packages', function () {
+    $packages = \App\Models\NikahPackage::public()->ordered()->get();
+
+    return view('nikah.packages', compact('packages'));
+})->name('nikah.packages');
 Route::get('/courses', [CourseController::class, 'index'])->name('courses.index');
 Route::get('/courses/{course:slug}', [CourseController::class, 'show'])->name('courses.show');
 Route::get('/skills', [\App\Http\Controllers\SkillsController::class, 'index'])->name('skills.index');
@@ -469,6 +474,10 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
         Route::get('/nikah-contact-requests', [NikahVerificationController::class, 'contactRequests'])->name('nikah.contact-requests');
         Route::post('/nikah-contact-requests/{contactRequest}/approve', [NikahVerificationController::class, 'approveContactRequest'])->name('nikah.contact-requests.approve');
         Route::post('/nikah-contact-requests/{contactRequest}/deny', [NikahVerificationController::class, 'denyContactRequest'])->name('nikah.contact-requests.deny');
+
+        // Package pricing/limits are business policy, not staff moderation —
+        // kept admin-only rather than PermissionCatalog-gated.
+        Route::resource('nikah-packages', \App\Http\Controllers\Admin\NikahPackageController::class)->except(['show']);
     });
     Route::middleware('can:nikah.manage')->group(function () {
         Route::post('/nikah-verifications/{profile}/contact', [NikahVerificationController::class, 'contact'])->name('nikah.contact');

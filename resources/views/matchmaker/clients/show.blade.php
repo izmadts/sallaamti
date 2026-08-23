@@ -375,6 +375,20 @@
 
             {{-- === PROPOSAL BATCHES === --}}
             <div x-show="tab === 'batches'" class="p-6 space-y-6">
+                @if ($lead->nikah_package_id)
+                <div class="text-xs px-3 py-2 rounded-lg {{ $lead->packageExpired() ? 'bg-red-50 text-red-700' : 'bg-gray-50 text-gray-600' }}">
+                    📦 {{ $lead->nikahPackage->name }}
+                    @if ($lead->packageExpired())
+                    — <strong>expired</strong> {{ $lead->package_expires_at->format('d M Y') }}
+                    @elseif ($lead->package_expires_at)
+                    — active until {{ $lead->package_expires_at->format('d M Y') }}
+                    @endif
+                    @if ($lead->nikahPackage->proposal_limit)
+                    · {{ $lead->remainingProposalAllowance() }} of {{ $lead->nikahPackage->proposal_limit }} proposals remaining
+                    @endif
+                </div>
+                @endif
+
                 @unless ($lead->nikah_profile_id)
                 <p class="text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded-lg p-3">Link or register this client's Nikah profile before you can send them a proposal batch.</p>
                 @elseif (!$lead->hasActiveConsent('matchmaking_participation'))
@@ -498,6 +512,7 @@
                         str_contains($event->event_type, 'shortlist') || str_contains($event->event_type, 'shared') => '⭐',
                         str_contains($event->event_type, 'requirement') => '📋',
                         str_contains($event->event_type, 'consent') => '✅',
+                        str_contains($event->event_type, 'package') => '💳',
                         str_contains($event->event_type, 'registration') || str_contains($event->event_type, 'profile') => '📝',
                         str_contains($event->event_type, 'status') || str_contains($event->event_type, 'reassigned') => '🔄',
                         default => '🕓',

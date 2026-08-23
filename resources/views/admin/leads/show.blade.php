@@ -126,22 +126,32 @@
                             <p class="text-xs font-semibold text-gray-500 uppercase mb-2">Matchmaking Package</p>
                             <div class="grid grid-cols-4 gap-4">
                                 <div class="col-span-2">
-                                    <x-input-label for="package" value="Package" />
-                                    <select id="package" name="package" required class="border-gray-300 rounded-md shadow-sm w-full mt-1">
-                                        @foreach (['none' => 'None', 'verified_profile' => 'Verified Profile', 'assisted' => 'Assisted Matchmaking', 'premium' => 'Premium Matchmaking', 'vip' => 'VIP / Overseas'] as $value => $label)
-                                        <option value="{{ $value }}" {{ $lead->package === $value ? 'selected' : '' }}>{{ $label }}</option>
+                                    <x-input-label for="nikah_package_id" value="Package" />
+                                    <select id="nikah_package_id" name="nikah_package_id" class="border-gray-300 rounded-md shadow-sm w-full mt-1">
+                                        <option value="">None</option>
+                                        @foreach ($packages as $p)
+                                        <option value="{{ $p->id }}" {{ $lead->nikah_package_id === $p->id ? 'selected' : '' }}>{{ $p->name }} (Rs. {{ number_format($p->price) }}{{ $p->duration_days ? ' / ' . $p->duration_days . 'd' : '' }})</option>
                                         @endforeach
                                     </select>
                                 </div>
                                 <div>
                                     <x-input-label for="package_price" value="Price (Rs.)" />
-                                    <x-text-input id="package_price" name="package_price" type="number" step="0.01" class="w-full mt-1" :value="$lead->package_price" />
+                                    <x-text-input id="package_price" name="package_price" type="number" step="0.01" class="w-full mt-1" :value="$lead->package_price" placeholder="Defaults to package price" />
                                 </div>
                                 <div>
-                                    <x-input-label for="package_expires_at" value="Expires" />
-                                    <x-text-input id="package_expires_at" name="package_expires_at" type="date" class="w-full mt-1" :value="$lead->package_expires_at?->toDateString()" />
+                                    <x-input-label for="package_started_at" value="Started" />
+                                    <x-text-input id="package_started_at" name="package_started_at" type="date" class="w-full mt-1" :value="$lead->package_started_at?->toDateString()" placeholder="Defaults to today" />
                                 </div>
                             </div>
+                            @if ($lead->nikah_package_id)
+                            <p class="text-xs text-gray-500 mt-2">
+                                Expires: {{ $lead->package_expires_at?->format('d M Y') ?? 'Never (one-time package)' }}
+                                @if ($lead->packageExpired()) <span class="text-red-600 font-semibold">— expired</span> @endif
+                                @if ($lead->nikahPackage?->proposal_limit)
+                                · {{ $lead->remainingProposalAllowance() }} of {{ $lead->nikahPackage->proposal_limit }} proposals remaining
+                                @endif
+                            </p>
+                            @endif
                         </div>
 
                         <div class="flex justify-end pt-2">
@@ -253,6 +263,7 @@
                         str_contains($event->event_type, 'shortlist') || str_contains($event->event_type, 'shared') => '⭐',
                         str_contains($event->event_type, 'requirement') => '📋',
                         str_contains($event->event_type, 'consent') => '✅',
+                        str_contains($event->event_type, 'package') => '💳',
                         str_contains($event->event_type, 'registration') || str_contains($event->event_type, 'profile') => '📝',
                         str_contains($event->event_type, 'status') || str_contains($event->event_type, 'reassigned') => '🔄',
                         default => '🕓',

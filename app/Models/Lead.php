@@ -22,6 +22,7 @@ class Lead extends Model
         'next_follow_up_at',
         'nikah_profile_id',
         'progress_link_token',
+        'nikah_package_id',
         'package',
         'package_price',
         'package_started_at',
@@ -54,6 +55,11 @@ class Lead extends Model
         return $this->belongsTo(NikahProfile::class);
     }
 
+    public function nikahPackage()
+    {
+        return $this->belongsTo(NikahPackage::class);
+    }
+
     public function shortlistItems()
     {
         return $this->hasMany(LeadShortlistItem::class);
@@ -82,6 +88,33 @@ class Lead extends Model
     public function hasActiveConsent(string $type): bool
     {
         return $this->consents()->active()->where('consent_type', $type)->exists();
+    }
+
+    // Only proposals that actually went out count against the package's
+    // cap — a matchmaker can freely draft and swap candidates before
+    // sending without burning allowance.
+    public function proposalsSentCount(): int
+    {
+        return MatchProposal::whereHas('batch', fn ($q) => $q->where('lead_id', $this->id))
+            ->whereNotNull('sent_at')
+            ->count();
+    }
+
+    // Null means "no cap" — either no package assigned, or the package
+    // itself has no proposal_limit (e.g. Verified, which isn't a
+    // matchmaking package at all).
+    public function remainingProposalAllowance(): ?int
+    {
+        if (!$this->nikah_package_id || !$this->nikahPackage || $this->nikahPackage->proposal_limit === null) {
+            return null;
+        }
+
+        return max(0, $this->nikahPackage->proposal_limit - $this->proposalsSentCount());
+    }
+
+    public function packageExpired(): bool
+    {
+        return $this->package_expires_at !== null && $this->package_expires_at->isPast();
     }
 
     public function isConverted(): bool
