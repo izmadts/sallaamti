@@ -465,6 +465,7 @@ return [
     'Prefer not to fill this form? Send your receipt on WhatsApp instead' => 'یہ فارم بھرنا مشکل لگ رہا ہے؟ اپنی رسید واٹس ایپ پر بھیج دیں',
     'Tap here, send us the payment screenshot, and our team will confirm it manually — just as valid as submitting online.' => 'یہاں ٹیپ کریں، ہمیں ادائیگی کا اسکرین شاٹ بھیجیں، ہماری ٹیم اسے دستی طور پر تصدیق کر دے گی — یہ آن لائن جمع کروانے جتنا ہی معتبر ہے۔',
     'Your payment proof has been submitted and is awaiting confirmation by our team.' => 'آپ کی ادائیگی کا ثبوت جمع ہو چکا ہے اور ہماری ٹیم کی تصدیق کا منتظر ہے۔',
+    'No verification fee is required right now — your profile is ready.' => 'ابھی کوئی تصدیقی فیس درکار نہیں ہے — آپ کا پروفائل تیار ہے۔',
     'Payment confirmed. Your profile will now proceed to CNIC verification.' => 'ادائیگی کی تصدیق ہو گئی۔ اب آپ کی پروفائل شناختی کارڈ کی تصدیق کے مرحلے میں جائے گی۔',
     'Your previous payment proof was rejected. Reason:' => 'آپ کی پچھلی ادائیگی کا ثبوت مسترد کر دیا گیا۔ وجہ:',
     'Please resubmit below.' => 'براہِ کرم نیچے دوبارہ جمع کروائیں۔',

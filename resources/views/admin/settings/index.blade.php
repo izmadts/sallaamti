@@ -125,6 +125,15 @@
                         <x-text-input name="nikah_verification_fee" type="number" class="w-full mt-1" :value="($settings['nikah_verification_fee'] ?? '') ?: '500'" />
                     </div>
                 </div>
+                <div class="flex items-center gap-3 pt-2">
+                    <input type="checkbox" name="nikah_payment_required" id="nikah_payment_required" value="1"
+                        {{ ($settings['nikah_payment_required'] ?? '1') === '1' ? 'checked' : '' }}
+                        class="rounded border-gray-300 text-teal-600">
+                    <label for="nikah_payment_required" class="text-sm text-gray-700">
+                        <span class="font-medium">Require the verification fee</span>
+                        — uncheck to make Nikah profile verification free for everyone (skips the payment step for every new and existing pending profile). Waive it for one person instead from that profile's admin page.
+                    </label>
+                </div>
             </div>
 
             {{-- Social --}}

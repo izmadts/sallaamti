@@ -485,6 +485,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
         Route::post('/nikah-payments/{profile}/confirm', [NikahPaymentAdminController::class, 'confirm'])->name('nikah.payments.confirm');
         Route::post('/nikah-payments/{profile}/record-offline', [NikahPaymentAdminController::class, 'recordOffline'])->name('nikah.payments.record-offline');
         Route::post('/nikah-payments/{profile}/reject', [NikahPaymentAdminController::class, 'reject'])->name('nikah.payments.reject');
+        Route::post('/nikah-payments/{profile}/waive', [NikahPaymentAdminController::class, 'waive'])->name('nikah.payments.waive');
         Route::post('nikah-reports/{report}/dismiss', [NikahSafetyController::class, 'dismissReport'])->name('nikah.reports.dismiss');
         Route::post('nikah-reports/{report}/suspend', [NikahSafetyController::class, 'suspendReportedProfile'])->name('nikah.reports.suspend');
     });

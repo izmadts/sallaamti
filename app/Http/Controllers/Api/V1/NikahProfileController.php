@@ -58,6 +58,20 @@ class NikahProfileController extends Controller
             return response()->json(['has_profile' => false]);
         }
 
+        // Same lazy waiver the web NikahPaymentController::show() applies —
+        // see that method for why this isn't a bulk migration.
+        if ($profile->payment_status !== 'confirmed' && !setting('nikah_payment_required', true)) {
+            $profile->update([
+                'payment_status' => 'confirmed',
+                'payment_amount' => 0,
+                'payment_method' => 'waived',
+                'payment_confirmed_at' => now(),
+                'payment_rejection_reason' => null,
+                'fee_waived' => true,
+                'fee_waived_reason' => 'Payment disabled site-wide',
+            ]);
+        }
+
         return response()->json(['has_profile' => true, 'profile' => $this->profilePayload($profile)]);
     }
 
@@ -225,6 +239,7 @@ class NikahProfileController extends Controller
             'visibility' => $profile->visibility,
             'is_active' => $profile->is_active,
             'payment_status' => $profile->payment_status,
+            'fee_waived' => $profile->fee_waived,
             'payment_amount' => $profile->payment_status === 'confirmed'
                 ? $profile->payment_amount
                 : setting('nikah_verification_fee', config('services.nikah.verification_fee')),

@@ -235,10 +235,21 @@
                     <div class="bg-white rounded-xl shadow-sm p-6">
                         <h4 class="font-semibold text-gray-700 mb-3 border-b pb-2">Verification Fee Payment</h4>
                         <dl class="text-sm space-y-2">
-                            <div class="flex justify-between"><dt class="text-gray-400">Status</dt><dd class="font-medium">{{ ucfirst($profile->payment_status ?? 'unpaid') }}</dd></div>
+                            <div class="flex justify-between">
+                                <dt class="text-gray-400">Status</dt>
+                                <dd class="font-medium">
+                                    {{ ucfirst($profile->payment_status ?? 'unpaid') }}
+                                    @if ($profile->fee_waived)
+                                    <span class="text-xs px-1.5 py-0.5 rounded bg-purple-100 text-purple-700 ml-1">Waived{{ $profile->feeWaivedBy ? ' by ' . $profile->feeWaivedBy->name : '' }}</span>
+                                    @endif
+                                </dd>
+                            </div>
                             <div class="flex justify-between"><dt class="text-gray-400">Amount</dt><dd>{{ $profile->payment_amount ? 'Rs. ' . number_format($profile->payment_amount) : '—' }}</dd></div>
                             <div class="flex justify-between"><dt class="text-gray-400">Method</dt><dd>{{ $profile->payment_method ?: '—' }}</dd></div>
                             <div class="flex justify-between"><dt class="text-gray-400">Reference</dt><dd>{{ $profile->payment_reference ?: '—' }}</dd></div>
+                            @if ($profile->fee_waived && $profile->fee_waived_reason)
+                            <div class="flex justify-between"><dt class="text-gray-400">Waiver Reason</dt><dd>{{ $profile->fee_waived_reason }}</dd></div>
+                            @endif
                         </dl>
                         @if ($profile->payment_screenshot)
                         <a href="{{ route('nikah.file', [$profile, 'payment_screenshot']) }}" target="_blank" class="block mt-3">
@@ -271,6 +282,19 @@
                                 <button class="w-full bg-teal-600 text-white text-xs px-3 py-1.5 rounded hover:bg-teal-700"
                                     onclick="return confirm('Confirm this payment was received and mark verification fee as paid for {{ $profile->user?->name ?? 'this profile' }}?')">
                                     ✅ Confirm Payment Received
+                                </button>
+                            </form>
+
+                            <p class="text-xs font-semibold text-gray-500 mt-4 mb-1">🕊️ Waive the Fee Entirely</p>
+                            <p class="text-[11px] text-gray-400 mb-2">
+                                For hardship cases (e.g. a widow or divorcee) — makes verification free for this one profile, no payment needed.
+                            </p>
+                            <form method="POST" action="{{ route('admin.nikah.payments.waive', $profile) }}" class="space-y-2">
+                                @csrf
+                                <input type="text" name="fee_waived_reason" placeholder="Reason (optional, e.g. Widow — hardship)" class="w-full border-gray-300 rounded text-xs px-2 py-1.5">
+                                <button class="w-full bg-purple-600 text-white text-xs px-3 py-1.5 rounded hover:bg-purple-700"
+                                    onclick="return confirm('Waive the verification fee entirely for {{ $profile->user?->name ?? 'this profile' }}? They will not need to pay anything.')">
+                                    🕊️ Waive Fee
                                 </button>
                             </form>
                         </div>

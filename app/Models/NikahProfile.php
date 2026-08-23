@@ -60,6 +60,9 @@ class NikahProfile extends Model
         'payment_screenshot',
         'payment_rejection_reason',
         'payment_confirmed_at',
+        'fee_waived',
+        'fee_waived_by',
+        'fee_waived_reason',
         'pref_min_age',
         'pref_max_age',
         'pref_city',
@@ -82,7 +85,13 @@ class NikahProfile extends Model
             'guardian_verified_at' => 'datetime',
             'last_active_at' => 'datetime',
             'payment_confirmed_at' => 'datetime',
+            'fee_waived' => 'boolean',
         ];
+    }
+
+    public function feeWaivedBy()
+    {
+        return $this->belongsTo(User::class, 'fee_waived_by');
     }
 
     // `age` (an integer column) stays the source browse/search filtering

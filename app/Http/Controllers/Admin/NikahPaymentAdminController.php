@@ -139,6 +139,59 @@ class NikahPaymentAdminController extends Controller
         return back()->with('status', 'Payment recorded and confirmed for ' . ($profile->user?->name ?? 'the member') . '.');
     }
 
+    // Admin discretion, case by case (e.g. a widow/divorcee re-entering
+    // the platform) — not an automatic rule off marital_status. Reuses the
+    // normal payment_status/amount/method columns (set to confirmed/0/
+    // 'waived') so every existing payment_status === 'confirmed' check
+    // across the app — browse eligibility, canInteract(), etc. — treats a
+    // waived profile exactly like a paid one, with zero other code changes.
+    public function waive(Request $request, NikahProfile $profile)
+    {
+        if ($profile->payment_status === 'confirmed') {
+            return back()->with('error', 'Payment is already confirmed for this profile.');
+        }
+
+        $validated = $request->validate([
+            'fee_waived_reason' => ['nullable', 'string', 'max:255'],
+        ]);
+
+        \DB::transaction(function () use ($profile, $validated) {
+            $profile->update([
+                'payment_status' => 'confirmed',
+                'payment_amount' => 0,
+                'payment_method' => 'waived',
+                'payment_confirmed_at' => now(),
+                'payment_rejection_reason' => null,
+                'fee_waived' => true,
+                'fee_waived_by' => auth()->id(),
+                'fee_waived_reason' => $validated['fee_waived_reason'] ?? null,
+            ]);
+
+            $profile->moderationNotes()->create([
+                'admin_id' => auth()->id(),
+                'note' => 'Verification fee waived by admin' . (!empty($validated['fee_waived_reason']) ? ' — ' . $validated['fee_waived_reason'] : '') . '.',
+            ]);
+        });
+
+        try {
+            $profile->user->notify(new \App\Notifications\NikahPaymentConfirmed());
+        } catch (\Throwable $e) {
+            \Log::error('NikahPaymentConfirmed notification failed: ' . $e->getMessage());
+        }
+
+        if ($profile->verification_status === 'pending') {
+            \App\Models\User::role('admin')->each(function ($admin) use ($profile) {
+                try {
+                    $admin->notify(new \App\Notifications\NewNikahProfilePendingVerification($profile));
+                } catch (\Throwable $e) {
+                    \Log::error('NewNikahProfilePendingVerification notification failed: ' . $e->getMessage());
+                }
+            });
+        }
+
+        return back()->with('status', 'Verification fee waived for ' . ($profile->user?->name ?? 'the member') . '.');
+    }
+
     public function reject(Request $request, NikahProfile $profile)
     {
         $request->validate(['payment_rejection_reason' => 'required|string|max:500']);
