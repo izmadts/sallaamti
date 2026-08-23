@@ -13,6 +13,15 @@
             </p>
         </div>
 
+        <a href="{{ route('guide.index') }}" class="rounded-xl p-4 flex items-center gap-3 bg-white border border-gray-200 hover:border-teal-300 hover:shadow-sm transition group">
+            <span class="text-2xl">📘</span>
+            <div class="flex-1">
+                <p class="text-sm font-semibold text-gray-800 group-hover:text-teal-700">New here, or need a refresher? Read the full Match Maker Guide</p>
+                <p class="text-xs text-gray-500">Your role, every step from adding a client to sending proposals, and the security rules to follow — in English and اردو.</p>
+            </div>
+            <span class="text-teal-600 text-sm font-semibold">Open →</span>
+        </a>
+
         {{-- Quick actions --}}
         <div class="flex flex-wrap gap-3">
             <a href="{{ route('matchmaker.clients.create') }}" class="text-white text-sm font-semibold px-4 py-2.5 rounded-lg hover:opacity-90 hover:-translate-y-0.5 transition shadow-sm" style="background: var(--mm-plum);">➕ Add Client</a>

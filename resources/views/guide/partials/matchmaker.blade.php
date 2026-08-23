@@ -1,81 +1,135 @@
 <div x-show="lang === 'en'" x-cloak class="prose prose-sm max-w-none">
 
 <h3>Your Role</h3>
-<p>As a Matchmaker, you help connect families on Sallaamti — capturing leads from WhatsApp/Facebook/Instagram, helping them register, and browsing/introducing profiles. Your access is scoped to Leads and Nikah browsing/walk-in assistance, not the broader admin panel (Users, Settings, Integrations stay off-limits).</p>
+<p>As a Match Maker, you help connect families on Sallaamti — capturing leads from WhatsApp/Facebook/Instagram, helping them register, understanding what they're actually looking for, and putting together proposals for candidates who genuinely fit. Your own workspace (the <strong>Match Maker Desk</strong>) is separate from the general admin panel — Users, Settings, and Integrations stay off-limits, and everything you do is scoped to the clients assigned to you.</p>
 
-<h3>Your Dashboard</h3>
-<p>Logging in takes you straight to your own dashboard — not the general member one. It shows your lead stats (new / follow-ups due / registered clients), your contact-request stats, a list of today's follow-ups, and your most recent leads, so your day starts here instead of digging through menus. The <strong>Matchmaking</strong> menu at the top (next to your name) is available on every page and jumps straight to Dashboard, My Leads, Browse Profiles, or My Contact Requests.</p>
-
-<h3>Managing Leads</h3>
-<p>Most real leads arrive over WhatsApp or a Facebook/Instagram ad and never register themselves — <strong>Leads</strong> is where you keep track of them instead of losing the trail in chat history.</p>
+<h3>Privacy &amp; Security — Read This First</h3>
+<p>These aren't formalities — they're what makes clients trust the system enough to use it.</p>
 <ul>
-    <li><strong>Add Lead</strong> — name, phone/email, gender, source, and who it's assigned to (defaults to you).</li>
-    <li>Update <strong>Status</strong> as things progress (New → Contacted → Interested → Registered, or Not Interested/Closed if it doesn't go anywhere), set a <strong>Next Follow-up</strong> date so it surfaces on your dashboard, and keep running <strong>Notes</strong>.</li>
-    <li><strong>Package</strong> — if you've agreed on a paid matchmaking package with them (Verified Profile / Assisted / Premium / VIP), record it here along with the price and expiry — this is just a tracking field, not an automatic billing system.</li>
+    <li><strong>CNIC, photos, and direct contact details are never shown to you.</strong> You work from age, city, education, profession, and the other fields on a profile — never CNIC images or a phone/email. If you need two families introduced, use <strong>Request Contact</strong> and let an admin approve and facilitate it.</li>
+    <li><strong>Every link you send is logged.</strong> When a client opens a proposal link or their progress page, the system quietly records the time, approximate location, and device — not to spy on them, but so there's a real record if something ever needs to be checked.</li>
+    <li><strong>Copy the link — don't open it yourself.</strong> Every proposal and progress link is copy-and-send by design. If you click it yourself first, the system marks it "viewed" against your own visit instead of the client's, which corrupts their real status and could make it look like you accessed something you shouldn't have. Copy the text, paste it into WhatsApp/SMS, and let the client be the one who opens it.</li>
+    <li><strong>Regenerate a link if anything feels off.</strong> Sent it to the wrong number, think it leaked, or the client lost it and asks for a fresh one — press <strong>Regenerate</strong>. The old copy stops working immediately, wherever it ended up.</li>
+    <li><strong>Never contact a family directly outside the system.</strong> Even once you know a name or a candidate's general area, don't reach out yourself — that's what <strong>Request Contact</strong> and admin approval exist for.</li>
+    <li><strong>Requirements notes are working notes, not private chat.</strong> Keep the language plain and respectful — describe what someone is looking for, not judgments about people.</li>
 </ul>
 
-<h3>Converting a Lead to a Client</h3>
-<p>Once someone's ready to actually register, open their lead and press <strong>Convert to Client</strong> — this takes you into the exact same walk-in wizard described below, with their name and phone/email already filled in on the first step. Finish the wizard as normal. If you ever create a profile a different way and need to connect it back to an existing lead afterward, use the "Already have a profile for them?" box on the lead's page and enter the profile ID.</p>
-
-<h3>Building a Shortlist</h3>
-<p>On a lead's page, use <strong>Search verified profiles to add</strong> (filter by gender/city/sect) to build a shortlist of candidates for them. Each shortlisted profile can carry a note (why it's a good fit), and you can mark one <strong>Shared</strong> once you've actually sent it to the client — the wording still happens over WhatsApp in real life, this just keeps a record instead of losing it.</p>
-
-<h3>Browsing Profiles</h3>
-<p>Under <strong>Browse Profiles</strong>, you see every active profile with most detail — but not CNIC images or their profile photo, and no direct contact info. Opening one shows everything else on file.</p>
-
-<h3>Requesting an Introduction</h3>
-<p>Use <strong>Request Contact</strong> on a profile to formally ask an admin to introduce two families — this goes into the admin's <strong>Contact Requests</strong> queue for approval. You don't contact either family directly yourself; the admin decides and facilitates. Check <strong>My Contact Requests</strong> any time to see the status of everything you've asked for.</p>
-
-<h3>Helping a Walk-In Applicant</h3>
-<p>If someone can't create their own profile (no smartphone, needs in-person help), use <strong>Create Profile</strong> under Nikah Profiles (or Convert to Client from an existing lead, above) — a guided step-by-step wizard exactly like the member-facing one (Login Account → Basic Info → Family & Guardian → Deen & Lifestyle → About → Verification & Visibility → Review), but you fill it in together with the applicant in person.</p>
+<h3>Your Dashboard, Explained</h3>
+<p>Logging in takes you straight to the Match Maker Desk — not the general member dashboard. Here's what each part means:</p>
 <ul>
-    <li>Their user account and Nikah profile are created together in one flow.</li>
-    <li>CNIC photos are still required — held to the exact same standard as a self-created profile.</li>
-    <li>If you gave an email address, a password-setup link is sent to them immediately so they can log in themselves afterward. If phone-only, mention that a login link needs to be added by an admin later.</li>
+    <li><strong>New Leads / Follow-ups Due / Registered Clients</strong> — where your assigned clients currently stand.</li>
+    <li><strong>Active Proposal Batches</strong> — batches you've sent that are still waiting on a full response.</li>
+    <li><strong>Awaiting Client Response</strong> — individual candidates you've sent that the client hasn't replied to yet.</li>
+    <li><strong>Interested (7 days)</strong> — a quick pulse on recent positive responses.</li>
+    <li><strong>Active Profiles / Pending &amp; Approved Contact Requests</strong> — the wider pool you can search, and where your own introduction requests stand.</li>
+    <li><strong>Follow-ups Due / Recent Clients / Recent Activity</strong> panels — what needs your attention today, without digging through menus.</li>
 </ul>
+<p>The sidebar covers everything: <strong>Dashboard</strong>, <strong>My Clients</strong>, <strong>Add Client</strong>, <strong>Browse Profiles</strong>, and <strong>My Contact Requests</strong>.</p>
+
+<h3>Step 1 — Add a Client</h3>
+<p>Most real leads arrive over WhatsApp or a Facebook/Instagram ad and never register themselves. Press <strong>Add Client</strong> and record their name, phone/email, gender, and source — they're assigned to you automatically. Update their <strong>Status</strong> as things move (New → Contacted → Interested → Registered, or Not Interested/Closed), and set a <strong>Next Follow-up</strong> date so it surfaces on your dashboard.</p>
+
+<h3>Step 2 — Capture Requirements</h3>
+<p>On a client's page, open the <strong>Requirements</strong> tab and record what they're actually looking for — age range, city, education, marital status, and so on — each marked <strong>Must Have</strong>, <strong>Preferred</strong>, or <strong>Flexible</strong>. This isn't shown to the client; it's what guides your own candidate search so you're not proposing matches at random.</p>
+
+<h3>Step 3 — Build a Shortlist</h3>
+<p>In the <strong>Shortlist</strong> tab, search verified profiles (filter by gender/city/sect) and add promising candidates, with a short note on why each one fits. This is your own working list — nothing is sent to the client yet.</p>
+
+<h3>Step 4 — Create &amp; Send a Proposal Batch</h3>
+<p>In the <strong>Proposal Batches</strong> tab, start a new batch (your client needs a linked Nikah profile first — see Step 6) and add up to <strong>5 candidates</strong> from your shortlist, each with an optional "why this match" note. When you're ready, press <strong>Mark as Sent</strong> — this generates one link per candidate, ready to copy.</p>
+
+<h3>Step 5 — Send the Links (Copy, Don't Open)</h3>
+<p>Each candidate now has a <strong>Copy Link</strong> button. Copy it and send it to your client over WhatsApp, SMS, or read it out on a call — whatever actually reaches them, no login required on their end. If a link ever needs replacing, press <strong>Regenerate</strong> next to it (see the security note above).</p>
+
+<h3>Step 6 — Registering a New Client</h3>
+<p>If someone's ready to actually register, open their client page and press <strong>Convert to Registered Profile</strong> — this takes you into the same walk-in wizard used across the site, with their name and phone/email already filled in. If a profile already exists separately, use the "Already have a profile for them?" box and enter the profile ID instead.</p>
+
+<h3>The Client Progress Page</h3>
+<p>On a client's <strong>Overview</strong> tab, press <strong>Generate Link</strong> to create a standing page they can revisit any time — it shows their status, activity, and full proposal history, all in one place, so they don't need to keep messaging you to ask "any update?" Give the client a heads-up on how it works: every visit asks for the <strong>last 7 digits of the WhatsApp number</strong> you have on file for them — this isn't a bug, it's intentional, and it happens every single time, even if they visited five minutes ago. If they ever ask you to "make it stop asking," explain that this is what keeps the page private if the link ends up somewhere it shouldn't. Press <strong>Regenerate</strong> any time you want the old link to stop working.</p>
+
+<h3>Reading the Activity Timeline</h3>
+<p>Every meaningful action — a lead received, a status change, a profile linked, requirements saved, a candidate shortlisted, a batch sent, a client's response, a link regenerated — is logged automatically to the <strong>Timeline</strong> tab. Use it to pick up a client's history at a glance, especially useful if you're covering for another matchmaker or reviewing an older case.</p>
 
 <h3>What's Outside Your Access</h3>
-<p>Approving/rejecting profiles, confirming verification payments, viewing CNIC images, and reviewing safety reports need the broader <code>nikah.manage</code> permission or the full Admin role. If you spot something that needs that level of action, flag it to an admin.</p>
+<p>Approving/rejecting profiles, confirming verification payments, viewing CNIC images, and reviewing safety reports need the full Admin role. If you spot something that needs that level of action, flag it to an admin rather than trying to work around it.</p>
+
+<h3>Quick Checklist</h3>
+<ul>
+    <li>New lead comes in → <strong>Add Client</strong>, set a follow-up date.</li>
+    <li>Understand what they want → fill in <strong>Requirements</strong>.</li>
+    <li>Find candidates → search &amp; build a <strong>Shortlist</strong>.</li>
+    <li>Client has a registered profile → start a <strong>Proposal Batch</strong>, add up to 5 candidates, <strong>Mark as Sent</strong>.</li>
+    <li><strong>Copy</strong> each link, send it however reaches them — never open it yourself.</li>
+    <li>Give them their <strong>Progress Page</strong> link once, so they can self-serve status checks.</li>
+    <li>Anything feels off (wrong number, leaked link, suspicious activity)? <strong>Regenerate</strong> and, if needed, tell an admin.</li>
+</ul>
 
 </div>
 
 <div x-show="lang === 'ur'" x-cloak dir="rtl" class="prose prose-sm max-w-none prose-ur text-right">
 
 <h3>آپ کا کردار</h3>
-<p>ایک میچ میکر کے طور پر، آپ سلامتی پر خاندانوں کو جوڑنے میں مدد کرتے ہیں — واٹس ایپ/فیس بک/انسٹاگرام سے لیڈز حاصل کرنا، ان کی رجسٹریشن میں مدد کرنا، اور پروفائلز براؤز/متعارف کروانا۔ آپ کی رسائی لیڈز اور نکاح براؤزنگ/واک اِن مدد تک محدود ہے، وسیع ایڈمن پینل (یوزرز، سیٹنگز، انٹیگریشنز) آپ کی رسائی سے باہر رہتے ہیں۔</p>
+<p>ایک میچ میکر کے طور پر، آپ سلامتی پر خاندانوں کو جوڑنے میں مدد کرتے ہیں — واٹس ایپ/فیس بک/انسٹاگرام سے لیڈز حاصل کرنا، ان کی رجسٹریشن میں مدد کرنا، یہ سمجھنا کہ وہ اصل میں کیا تلاش کر رہے ہیں، اور ایسے امیدواروں کے لیے تجاویز تیار کرنا جو واقعی موزوں ہوں۔ آپ کا اپنا ورک اسپیس (<strong>میچ میکر ڈیسک</strong>) عمومی ایڈمن پینل سے الگ ہے — یوزرز، سیٹنگز، اور انٹیگریشنز آپ کی رسائی سے باہر رہتے ہیں، اور آپ جو کچھ بھی کرتے ہیں وہ صرف آپ کو تفویض کردہ کلائنٹس تک محدود ہے۔</p>
 
-<h3>آپ کا ڈیش بورڈ</h3>
-<p>لاگ اِن کرنے پر آپ براہ راست اپنے ڈیش بورڈ پر پہنچتے ہیں — عام ممبر والے پر نہیں۔ یہ آپ کی لیڈز کے اعداد و شمار (نئی / فالو اپ باقی / رجسٹرڈ کلائنٹس)، آپ کی رابطہ درخواستوں کے اعداد و شمار، آج کے فالو اپس کی فہرست، اور آپ کی حالیہ ترین لیڈز دکھاتا ہے، تاکہ آپ کا دن یہاں سے شروع ہو نہ کہ مینو تلاش کرنے میں۔ اوپر (اپنے نام کے پاس) <strong>میچ میکنگ</strong> مینو ہر صفحے پر دستیاب ہے اور براہ راست ڈیش بورڈ، میری لیڈز، پروفائلز براؤز کریں، یا میری رابطہ درخواستوں پر لے جاتا ہے۔</p>
-
-<h3>لیڈز کا انتظام</h3>
-<p>زیادہ تر حقیقی لیڈز واٹس ایپ یا فیس بک/انسٹاگرام اشتہار سے آتی ہیں اور کبھی خود رجسٹر نہیں ہوتیں — <strong>لیڈز</strong> وہ جگہ ہے جہاں آپ انہیں ٹریک رکھتے ہیں بجائے اس کے کہ چیٹ کی تاریخ میں کھو جائیں۔</p>
+<h3>رازداری اور سیکیورٹی — یہ پہلے پڑھیں</h3>
+<p>یہ محض رسمی باتیں نہیں ہیں — یہی وہ چیزیں ہیں جو کلائنٹس کو اس نظام پر اعتماد کرنے کے قابل بناتی ہیں۔</p>
 <ul>
-    <li><strong>لیڈ شامل کریں</strong> — نام، فون/ای میل، جنس، ذریعہ، اور کس کو تفویض ہے (بطور ڈیفالٹ آپ)۔</li>
-    <li>جیسے جیسے معاملہ آگے بڑھے <strong>حیثیت</strong> اپ ڈیٹ کریں (نئی → رابطہ ہوا → دلچسپی → رجسٹرڈ، یا اگر بات آگے نہ بڑھے تو دلچسپی نہیں/بند)، ایک <strong>اگلا فالو اپ</strong> تاریخ مقرر کریں تاکہ یہ آپ کے ڈیش بورڈ پر نظر آئے، اور <strong>نوٹس</strong> جاری رکھیں۔</li>
-    <li><strong>پیکج</strong> — اگر آپ نے ان کے ساتھ کسی ادائیگی والے میچ میکنگ پیکج پر اتفاق کیا ہے (تصدیق شدہ پروفائل / اسسٹڈ / پریمیم / وی آئی پی)، تو یہاں قیمت اور میعاد ختم ہونے کی تاریخ کے ساتھ درج کریں — یہ صرف ٹریکنگ کے لیے ہے، خودکار بلنگ نظام نہیں۔</li>
+    <li><strong>شناختی کارڈ، تصاویر، اور براہ راست رابطہ کی تفصیلات آپ کو کبھی نہیں دکھائی جاتیں۔</strong> آپ عمر، شہر، تعلیم، پیشہ، اور پروفائل کی دیگر تفصیلات کی بنیاد پر کام کرتے ہیں — کبھی شناختی کارڈ کی تصاویر یا فون/ای میل نہیں۔ اگر دو خاندانوں کا تعارف کروانا ضروری ہو تو <strong>رابطے کی درخواست</strong> استعمال کریں اور ایڈمن کو منظوری دینے اور سہولت فراہم کرنے دیں۔</li>
+    <li><strong>آپ کا بھیجا ہوا ہر لنک ریکارڈ ہوتا ہے۔</strong> جب کوئی کلائنٹ کسی تجویز کا لنک یا اپنا پروگریس پیج کھولتا ہے، تو نظام خاموشی سے وقت، تخمینی مقام، اور آلہ ریکارڈ کرتا ہے — جاسوسی کے لیے نہیں، بلکہ اس لیے کہ اگر کبھی کچھ چیک کرنے کی ضرورت پڑے تو ایک حقیقی ریکارڈ موجود ہو۔</li>
+    <li><strong>لنک کاپی کریں — خود نہ کھولیں۔</strong> ہر تجویز اور پروگریس لنک جان بوجھ کر کاپی کر کے بھیجنے کے لیے بنایا گیا ہے۔ اگر آپ خود پہلے اسے کھولیں گے تو نظام اسے آپ کے کلائنٹ کی بجائے آپ کی اپنی وزٹ کے طور پر "دیکھا گیا" نشان زد کر دے گا، جس سے ان کی اصل حیثیت خراب ہو جاتی ہے اور یہ ایسا لگ سکتا ہے جیسے آپ نے کوئی ایسی چیز دیکھی جو آپ کو نہیں دیکھنی چاہیے تھی۔ متن کاپی کریں، واٹس ایپ/ایس ایم ایس میں پیسٹ کریں، اور کلائنٹ کو خود اسے کھولنے دیں۔</li>
+    <li><strong>اگر کچھ غلط محسوس ہو تو لنک دوبارہ بنائیں۔</strong> غلط نمبر پر بھیج دیا، لیک ہونے کا شبہ ہے، یا کلائنٹ نے لنک کھو دیا اور نیا مانگا — <strong>دوبارہ بنائیں</strong> دبائیں۔ پرانی کاپی فوراً کام کرنا بند کر دیتی ہے، چاہے وہ کہیں بھی پہنچ چکی ہو۔</li>
+    <li><strong>نظام سے باہر کبھی کسی خاندان سے براہ راست رابطہ نہ کریں۔</strong> نام یا کسی امیدوار کے عمومی علاقے کا علم ہونے کے باوجود بھی خود رابطہ نہ کریں — اسی لیے <strong>رابطے کی درخواست</strong> اور ایڈمن کی منظوری کا نظام موجود ہے۔</li>
+    <li><strong>ضروریات کے نوٹس کام کے نوٹس ہیں، نجی چیٹ نہیں۔</strong> زبان سادہ اور باوقار رکھیں — یہ بیان کریں کہ کوئی کیا تلاش کر رہا ہے، لوگوں کے بارے میں فیصلے نہیں۔</li>
 </ul>
 
-<h3>لیڈ کو کلائنٹ میں تبدیل کرنا</h3>
-<p>جب کوئی واقعی رجسٹر ہونے کے لیے تیار ہو جائے، تو ان کی لیڈ کھولیں اور <strong>کلائنٹ میں تبدیل کریں</strong> دبائیں — یہ آپ کو بالکل اسی واک اِن عمل میں لے جاتا ہے جس کا ذکر نیچے ہے، جس میں ان کا نام اور فون/ای میل پہلے مرحلے میں پہلے سے بھرا ہوتا ہے۔ عمل کو معمول کے مطابق مکمل کریں۔ اگر آپ نے کسی اور طریقے سے پروفائل بنائی ہو اور بعد میں اسے کسی موجودہ لیڈ سے جوڑنا چاہیں، تو لیڈ کے صفحے پر "کیا ان کے لیے پہلے سے پروفائل موجود ہے؟" باکس استعمال کریں اور پروفائل آئی ڈی درج کریں۔</p>
-
-<h3>شارٹ لسٹ بنانا</h3>
-<p>لیڈ کے صفحے پر، <strong>تصدیق شدہ پروفائلز تلاش کر کے شامل کریں</strong> (جنس/شہر/فرقے کے لحاظ سے فلٹر) استعمال کر کے ان کے لیے امیدواروں کی شارٹ لسٹ بنائیں۔ ہر شارٹ لسٹ شدہ پروفائل کے ساتھ ایک نوٹ ہو سکتا ہے (یہ کیوں موزوں ہے)، اور جب آپ اسے واقعی کلائنٹ کو بھیج دیں تو <strong>شیئر ہو گیا</strong> نشان زد کر سکتے ہیں — حقیقت میں گفتگو اب بھی واٹس ایپ پر ہوتی ہے، یہ صرف ریکارڈ رکھتا ہے تاکہ وہ کھو نہ جائے۔</p>
-
-<h3>پروفائلز براؤز کرنا</h3>
-<p><strong>پروفائلز براؤز کریں</strong> کے تحت، آپ ہر فعال پروفائل زیادہ تر تفصیل کے ساتھ دیکھتے ہیں — لیکن شناختی کارڈ کی تصاویر یا ان کی پروفائل تصویر نہیں، اور نہ ہی براہ راست رابطہ کی معلومات۔ کسی ایک کو کھولنے پر باقی تمام محفوظ معلومات نظر آتی ہیں۔</p>
-
-<h3>تعارف کی درخواست</h3>
-<p>کسی پروفائل پر <strong>رابطے کی درخواست</strong> استعمال کر کے باضابطہ طور پر ایڈمن سے دو خاندانوں کا تعارف کروانے کی درخواست کریں — یہ ایڈمن کی <strong>رابطہ درخواستیں</strong> قطار میں منظوری کے لیے جاتی ہے۔ آپ خود کسی بھی خاندان سے براہ راست رابطہ نہیں کرتے؛ ایڈمن فیصلہ کرتا اور سہولت فراہم کرتا ہے۔ اپنی بھیجی ہوئی ہر درخواست کی حیثیت دیکھنے کے لیے کسی بھی وقت <strong>میری رابطہ درخواستیں</strong> چیک کریں۔</p>
-
-<h3>واک اِن درخواست گزار کی مدد</h3>
-<p>اگر کوئی اپنی پروفائل خود نہیں بنا سکتا (اسمارٹ فون نہ ہونا، ذاتی مدد کی ضرورت)، تو نکاح پروفائلز کے تحت <strong>پروفائل بنائیں</strong> استعمال کریں (یا اوپر بتائے گئے طریقے سے کسی موجودہ لیڈ کو کلائنٹ میں تبدیل کریں) — بالکل ممبر والے عمل کی طرح ایک رہنمائی شدہ مرحلہ وار عمل (لاگ اِن اکاؤنٹ → بنیادی معلومات → خاندان اور سرپرست → دین اور طرزِ زندگی → تعارف → تصدیق اور نمائش → جائزہ)، مگر آپ درخواست گزار کے ساتھ مل کر ذاتی طور پر پُر کرتے ہیں۔</p>
+<h3>آپ کا ڈیش بورڈ سمجھیں</h3>
+<p>لاگ اِن کرنے پر آپ براہ راست میچ میکر ڈیسک پر پہنچتے ہیں — عام ممبر ڈیش بورڈ پر نہیں۔ ہر حصے کا مطلب یہ ہے:</p>
 <ul>
-    <li>ان کا یوزر اکاؤنٹ اور نکاح پروفائل ایک ہی عمل میں اکٹھے بنتے ہیں۔</li>
-    <li>شناختی کارڈ کی تصاویر اب بھی لازمی ہیں — بالکل اسی معیار پر جیسے خود بنائی گئی پروفائل۔</li>
-    <li>اگر آپ نے ای میل ایڈریس دیا تو انہیں فوراً پاس ورڈ سیٹ اپ لنک بھیج دیا جاتا ہے تاکہ وہ بعد میں خود لاگ اِن کر سکیں۔ اگر صرف فون نمبر ہے، تو بتا دیں کہ لاگ اِن لنک بعد میں ایڈمن کو شامل کرنا ہوگا۔</li>
+    <li><strong>نئی لیڈز / فالو اپ باقی / رجسٹرڈ کلائنٹس</strong> — آپ کو تفویض کردہ کلائنٹس اس وقت کہاں کھڑے ہیں۔</li>
+    <li><strong>فعال تجویز بیچز</strong> — وہ بیچز جو آپ نے بھیجے ہیں اور جن کا مکمل جواب ابھی باقی ہے۔</li>
+    <li><strong>کلائنٹ کے جواب کا انتظار</strong> — انفرادی امیدوار جو آپ نے بھیجے ہیں مگر کلائنٹ نے ابھی جواب نہیں دیا۔</li>
+    <li><strong>دلچسپی (7 دن)</strong> — حالیہ مثبت جوابات پر ایک فوری نظر۔</li>
+    <li><strong>فعال پروفائلز / زیرِ التوا اور منظور شدہ رابطہ درخواستیں</strong> — وہ وسیع تر پول جسے آپ تلاش کر سکتے ہیں، اور آپ کی اپنی تعارف درخواستیں کہاں کھڑی ہیں۔</li>
+    <li><strong>فالو اپ باقی / حالیہ کلائنٹس / حالیہ سرگرمی</strong> پینلز — آج کیا توجہ چاہتا ہے، بغیر مینو میں کھوجے۔</li>
 </ul>
+<p>سائیڈبار میں سب کچھ موجود ہے: <strong>ڈیش بورڈ</strong>، <strong>میرے کلائنٹس</strong>، <strong>کلائنٹ شامل کریں</strong>، <strong>پروفائلز براؤز کریں</strong>، اور <strong>میری رابطہ درخواستیں</strong>۔</p>
+
+<h3>مرحلہ 1 — کلائنٹ شامل کریں</h3>
+<p>زیادہ تر حقیقی لیڈز واٹس ایپ یا فیس بک/انسٹاگرام اشتہار سے آتی ہیں اور کبھی خود رجسٹر نہیں ہوتیں۔ <strong>کلائنٹ شامل کریں</strong> دبائیں اور ان کا نام، فون/ای میل، جنس، اور ذریعہ درج کریں — وہ خودکار طور پر آپ کو تفویض ہو جاتے ہیں۔ جیسے جیسے معاملہ آگے بڑھے <strong>حیثیت</strong> اپ ڈیٹ کریں (نئی → رابطہ ہوا → دلچسپی → رجسٹرڈ، یا دلچسپی نہیں/بند)، اور ایک <strong>اگلا فالو اپ</strong> تاریخ مقرر کریں تاکہ یہ آپ کے ڈیش بورڈ پر نظر آئے۔</p>
+
+<h3>مرحلہ 2 — ضروریات درج کریں</h3>
+<p>کلائنٹ کے صفحے پر <strong>ضروریات</strong> ٹیب کھولیں اور درج کریں کہ وہ اصل میں کیا تلاش کر رہے ہیں — عمر کی حد، شہر، تعلیم، ازدواجی حیثیت وغیرہ — ہر ایک کو <strong>لازمی</strong>، <strong>ترجیحی</strong>، یا <strong>لچکدار</strong> نشان زد کریں۔ یہ کلائنٹ کو نہیں دکھایا جاتا؛ یہ آپ کی اپنی امیدوار تلاش کی رہنمائی کرتا ہے تاکہ آپ بے ترتیب تجاویز نہ دیں۔</p>
+
+<h3>مرحلہ 3 — شارٹ لسٹ بنائیں</h3>
+<p><strong>شارٹ لسٹ</strong> ٹیب میں، تصدیق شدہ پروفائلز تلاش کریں (جنس/شہر/فرقے کے لحاظ سے فلٹر) اور امید افزا امیدواروں کو ایک مختصر نوٹ کے ساتھ شامل کریں کہ ہر ایک کیوں موزوں ہے۔ یہ آپ کی اپنی ورکنگ فہرست ہے — ابھی کچھ بھی کلائنٹ کو نہیں بھیجا جاتا۔</p>
+
+<h3>مرحلہ 4 — تجویز بیچ بنائیں اور بھیجیں</h3>
+<p><strong>تجویز بیچز</strong> ٹیب میں، ایک نیا بیچ شروع کریں (آپ کے کلائنٹ کے پاس پہلے سے ایک منسلک نکاح پروفائل ہونی چاہیے — مرحلہ 6 دیکھیں) اور اپنی شارٹ لسٹ سے <strong>5 امیدواروں تک</strong> شامل کریں، ہر ایک کے ساتھ اختیاری "یہ میچ کیوں" نوٹ۔ تیار ہونے پر <strong>بھیجا گیا نشان زد کریں</strong> دبائیں — اس سے ہر امیدوار کے لیے ایک لنک بنتا ہے، کاپی کرنے کے لیے تیار۔</p>
+
+<h3>مرحلہ 5 — لنکس بھیجیں (کاپی کریں، کھولیں نہیں)</h3>
+<p>ہر امیدوار کے پاس اب ایک <strong>لنک کاپی کریں</strong> بٹن ہے۔ اسے کاپی کریں اور اپنے کلائنٹ کو واٹس ایپ، ایس ایم ایس پر بھیجیں، یا کال پر پڑھ کر سنا دیں — جو بھی طریقہ واقعی ان تک پہنچے، ان کی طرف سے لاگ اِن کی ضرورت نہیں۔ اگر کبھی لنک بدلنے کی ضرورت پڑے تو اس کے ساتھ <strong>دوبارہ بنائیں</strong> دبائیں (اوپر سیکیورٹی نوٹ دیکھیں)۔</p>
+
+<h3>مرحلہ 6 — نئے کلائنٹ کی رجسٹریشن</h3>
+<p>اگر کوئی واقعی رجسٹر ہونے کے لیے تیار ہو، تو ان کا کلائنٹ صفحہ کھولیں اور <strong>رجسٹرڈ پروفائل میں تبدیل کریں</strong> دبائیں — یہ آپ کو اسی واک اِن عمل میں لے جاتا ہے جو پوری سائٹ پر استعمال ہوتا ہے، جس میں ان کا نام اور فون/ای میل پہلے سے بھرا ہوتا ہے۔ اگر پروفائل پہلے سے علیحدہ طور پر موجود ہے، تو "کیا ان کے لیے پہلے سے پروفائل موجود ہے؟" باکس استعمال کریں اور پروفائل آئی ڈی درج کریں۔</p>
+
+<h3>کلائنٹ پروگریس پیج</h3>
+<p>کلائنٹ کے <strong>خلاصہ</strong> ٹیب پر، <strong>لنک بنائیں</strong> دبائیں تاکہ ایک مستقل صفحہ بنے جسے وہ کسی بھی وقت دوبارہ دیکھ سکیں — یہ ان کی حیثیت، سرگرمی، اور مکمل تجویز کی تاریخ ایک ہی جگہ دکھاتا ہے، تاکہ انہیں بار بار آپ سے "کوئی خبر؟" پوچھنے کی ضرورت نہ پڑے۔ کلائنٹ کو بتا دیں کہ یہ کیسے کام کرتا ہے: ہر وزٹ پر ان سے <strong>واٹس ایپ نمبر کے آخری 7 ہندسے</strong> مانگے جائیں گے جو آپ کے پاس ان کے لیے درج ہیں — یہ کوئی خرابی نہیں، جان بوجھ کر ایسا کیا گیا ہے، اور یہ ہر بار ہوتا ہے، چاہے انہوں نے پانچ منٹ پہلے ہی وزٹ کیا ہو۔ اگر وہ کبھی کہیں کہ "یہ بار بار کیوں پوچھتا ہے"، تو انہیں سمجھائیں کہ اگر لنک کہیں غلط جگہ پہنچ جائے تو یہی چیز صفحے کو نجی رکھتی ہے۔ جب بھی چاہیں پرانا لنک بند کرنے کے لیے <strong>دوبارہ بنائیں</strong> دبائیں۔</p>
+
+<h3>سرگرمی کی ٹائم لائن پڑھنا</h3>
+<p>ہر اہم عمل — لیڈ موصول ہونا، حیثیت کی تبدیلی، پروفائل کا منسلک ہونا، ضروریات محفوظ ہونا، امیدوار کا شارٹ لسٹ ہونا، بیچ بھیجا جانا، کلائنٹ کا جواب، لنک کا دوبارہ بننا — خودکار طور پر <strong>ٹائم لائن</strong> ٹیب میں ریکارڈ ہوتا ہے۔ اسے کسی کلائنٹ کی تاریخ ایک نظر میں سمجھنے کے لیے استعمال کریں، خاص طور پر اگر آپ کسی دوسرے میچ میکر کی جگہ کام سنبھال رہے ہوں یا کسی پرانے کیس کا جائزہ لے رہے ہوں۔</p>
 
 <h3>آپ کی رسائی سے باہر کیا ہے</h3>
-<p>پروفائلز کی منظوری/مسترد کرنا، تصدیقی ادائیگیوں کی تصدیق، شناختی کارڈ کی تصاویر دیکھنا، اور حفاظتی رپورٹس کا جائزہ لینے کے لیے وسیع <code>nikah.manage</code> اجازت یا مکمل ایڈمن کردار درکار ہے۔ اگر آپ کو کچھ ایسا نظر آئے جس کے لیے اس سطح کی کارروائی درکار ہو، تو ایڈمن کو مطلع کریں۔</p>
+<p>پروفائلز کی منظوری/مسترد کرنا، تصدیقی ادائیگیوں کی تصدیق، شناختی کارڈ کی تصاویر دیکھنا، اور حفاظتی رپورٹس کا جائزہ لینے کے لیے مکمل ایڈمن کردار درکار ہے۔ اگر آپ کو کچھ ایسا نظر آئے جس کے لیے اس سطح کی کارروائی درکار ہو، تو خود کوئی راستہ نکالنے کی بجائے ایڈمن کو مطلع کریں۔</p>
+
+<h3>فوری چیک لسٹ</h3>
+<ul>
+    <li>نئی لیڈ آئے → <strong>کلائنٹ شامل کریں</strong>، فالو اپ تاریخ مقرر کریں۔</li>
+    <li>سمجھیں وہ کیا چاہتے ہیں → <strong>ضروریات</strong> پُر کریں۔</li>
+    <li>امیدوار تلاش کریں → تلاش کریں اور <strong>شارٹ لسٹ</strong> بنائیں۔</li>
+    <li>کلائنٹ کی رجسٹرڈ پروفائل موجود ہے → <strong>تجویز بیچ</strong> شروع کریں، 5 تک امیدوار شامل کریں، <strong>بھیجا گیا نشان زد کریں</strong>۔</li>
+    <li>ہر لنک <strong>کاپی</strong> کریں، جو بھی طریقہ ان تک پہنچے اس سے بھیجیں — خود کبھی نہ کھولیں۔</li>
+    <li>ایک بار ان کا <strong>پروگریس پیج</strong> لنک دے دیں، تاکہ وہ خود حیثیت چیک کر سکیں۔</li>
+    <li>کچھ غلط محسوس ہو (غلط نمبر، لنک لیک، مشکوک سرگرمی)؟ <strong>دوبارہ بنائیں</strong> اور ضرورت پڑے تو ایڈمن کو بتائیں۔</li>
+</ul>
 
 </div>

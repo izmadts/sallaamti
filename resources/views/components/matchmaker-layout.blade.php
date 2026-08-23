@@ -95,6 +95,13 @@
                           {{ request()->routeIs('matchmaker.nikah.requests') ? 'bg-teal-700 text-white' : 'text-teal-100 hover:bg-teal-800' }}">
                     <span class="text-base">📨</span> My Contact Requests
                 </a>
+
+                <p class="text-teal-500 text-xs uppercase tracking-widest px-3 pt-4 pb-1">Help</p>
+                <a href="{{ route('guide.index') }}"
+                    class="flex items-center gap-3 px-3 py-2 rounded-lg transition
+                          {{ request()->routeIs('guide.*') ? 'bg-teal-700 text-white' : 'text-teal-100 hover:bg-teal-800' }}">
+                    <span class="text-base">📘</span> Match Maker Guide
+                </a>
             </nav>
 
             {{-- Bottom: Back to site --}}
