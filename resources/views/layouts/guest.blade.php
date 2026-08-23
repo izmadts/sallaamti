@@ -120,7 +120,20 @@
 
 <body class="antialiased font-sans pb-16 sm:pb-0">
  @include('partials.gtm-body')
- <!-- Spinner -->
+ <!-- Spinner — Alpine removes it after 800ms in the normal case. If
+      Alpine never initializes (blocked/slow script on a mobile
+      connection, a JS error earlier in the page), this pure-CSS
+      animation is a guaranteed fallback that doesn't depend on any
+      JavaScript running at all, so the page can never get stuck
+      permanently covered in white. -->
+ <style>
+ @keyframes spinner-failsafe-hide {
+ to { opacity: 0; visibility: hidden; }
+ }
+ #spinner {
+ animation: spinner-failsafe-hide 0.3s ease-out 2.5s forwards;
+ }
+ </style>
  <div id="spinner"
  class="fixed inset-0 z-50 flex items-center justify-center bg-white w-full h-full"
  x-data
