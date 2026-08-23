@@ -59,11 +59,10 @@
             <div class="absolute inset-0" style="background: linear-gradient(120deg, rgba(9,50,50,.94) 0%, rgba(13,79,79,.88) 55%, rgba(184,150,46,.55) 100%)"></div>
         </div>
 
-        <div class="relative z-10 max-w-3xl mx-auto px-4 py-16 sm:py-20 text-center text-white">
-            <x-application-logo class="h-14 sm:h-16 w-auto mx-auto fill-current text-white mb-4" />
+        <div class="relative z-10 max-w-3xl mx-auto px-4 py-16 sm:py-20 text-center text-white">           
             <p class="text-sm font-semibold tracking-widest" style="color: var(--gold)">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</p>
             <h1 class="text-3xl sm:text-4xl font-extrabold mt-2 leading-tight">
-                {{ __('db.Learn Quran Online. Find Your Match. Build Community.') }}
+                {{ __('db.Learn Quran. Find Your Match. Build Community.') }}
             </h1>
             <p class="text-white/80 mt-4 leading-relaxed">
                 {{ __('db.Sallaamti brings self-paced Quran courses, live classes with qualified teachers, free Digital Skills training, a halal Islamic matrimonial platform, and family counseling together in one place — built for Muslims everywhere, free to join.') }}
