@@ -96,6 +96,16 @@
                             </select>
                         </div>
                     </div>
+                    @if ($canManageTeam)
+                    <div>
+                        <x-input-label for="assigned_to" value="Assigned To" />
+                        <select id="assigned_to" name="assigned_to" class="border-gray-300 rounded-md shadow-sm w-full mt-1">
+                            @foreach ($matchmakers as $mm)
+                            <option value="{{ $mm->id }}" {{ $lead->assigned_to === $mm->id ? 'selected' : '' }}>{{ $mm->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    @endif
                     <div class="grid grid-cols-2 gap-4">
                         <div>
                             <x-input-label for="phone" value="Phone / WhatsApp" />
@@ -489,7 +499,7 @@
                         str_contains($event->event_type, 'requirement') => '📋',
                         str_contains($event->event_type, 'consent') => '✅',
                         str_contains($event->event_type, 'registration') || str_contains($event->event_type, 'profile') => '📝',
-                        str_contains($event->event_type, 'status') => '🔄',
+                        str_contains($event->event_type, 'status') || str_contains($event->event_type, 'reassigned') => '🔄',
                         default => '🕓',
                     } }}</span>
                     <div>

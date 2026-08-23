@@ -56,6 +56,9 @@
 <h3>What's Outside Your Access</h3>
 <p>Approving/rejecting profiles, confirming verification payments, viewing CNIC images, and reviewing safety reports need the full Admin role. If you spot something that needs that level of action, flag it to an admin rather than trying to work around it.</p>
 
+<h3>Team Oversight (Senior Matchmakers only)</h3>
+<p>If an admin has given your account the extra "Leads / Match Maker Desk" permission, <strong>My Clients</strong> shows every matchmaker's clients, not just your own, with a Matchmaker filter to narrow it down. You can also open, edit, and reassign any client to a different matchmaker — useful for covering someone's leave or rebalancing workload. Every reassignment is logged to that client's Timeline. This is a narrow, specific permission — it does not grant CNIC access, verification approval, or anything else that still needs the full Admin role.</p>
+
 <h3>Quick Checklist</h3>
 <ul>
     <li>New lead comes in → <strong>Add Client</strong>, set a follow-up date.</li>
@@ -127,6 +130,9 @@
 
 <h3>آپ کی رسائی سے باہر کیا ہے</h3>
 <p>پروفائلز کی منظوری/مسترد کرنا، تصدیقی ادائیگیوں کی تصدیق، شناختی کارڈ کی تصاویر دیکھنا، اور حفاظتی رپورٹس کا جائزہ لینے کے لیے مکمل ایڈمن کردار درکار ہے۔ اگر آپ کو کچھ ایسا نظر آئے جس کے لیے اس سطح کی کارروائی درکار ہو، تو خود کوئی راستہ نکالنے کی بجائے ایڈمن کو مطلع کریں۔</p>
+
+<h3>ٹیم کی نگرانی (صرف سینیئر میچ میکرز)</h3>
+<p>اگر کسی ایڈمن نے آپ کے اکاؤنٹ کو اضافی "لیڈز / میچ میکر ڈیسک" اجازت دی ہے، تو <strong>میرے کلائنٹس</strong> ہر میچ میکر کے کلائنٹس دکھائے گا، صرف آپ کے اپنے نہیں، ساتھ ہی ایک میچ میکر فلٹر بھی ہوگا۔ آپ کسی بھی کلائنٹ کو کھول، ترمیم، اور دوسرے میچ میکر کو تفویض بھی کر سکتے ہیں — کسی کی چھٹی کے دوران کام سنبھالنے یا کام کا بوجھ متوازن کرنے کے لیے مفید۔ ہر تفویض کلائنٹ کی ٹائم لائن میں ریکارڈ ہوتی ہے۔ یہ ایک محدود، مخصوص اجازت ہے — یہ شناختی کارڈ تک رسائی، تصدیق کی منظوری، یا کوئی اور چیز نہیں دیتی جس کے لیے اب بھی مکمل ایڈمن کردار درکار ہے۔</p>
 
 <h3>فوری چیک لسٹ</h3>
 <ul>

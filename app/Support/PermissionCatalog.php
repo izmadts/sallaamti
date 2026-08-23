@@ -28,6 +28,12 @@ class PermissionCatalog
         'volunteers' => 'Volunteer Applications',
         'wall' => 'Wall Moderation (member-submitted duas)',
         'counseling' => 'Family Counseling Bookings',
+        // Only the ".manage" action is actually checked (Matchmaker\ClientController)
+        // — it grants cross-matchmaker visibility in the Match Maker Desk (a
+        // "Senior Matchmaker" ability) without the broader nikah.manage
+        // permission's CNIC/verification-approval powers. .view/.delete exist
+        // here for consistency with the grid but aren't wired to anything yet.
+        'leads' => 'Leads / Match Maker Desk (cross-matchmaker oversight)',
     ];
 
     public const ACTIONS = [

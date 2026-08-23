@@ -29,11 +29,20 @@ class ClientController extends Controller
 
     protected string $wizardKey = 'admin_nikah_profile';
 
+    // Full admins already bypass the assigned_to scoping; leads.manage grants
+    // the same cross-matchmaker visibility without the rest of the admin
+    // role — the "Senior Matchmaker" ability, assignable via the normal
+    // admin > Users > Roles permission grid (App\Support\PermissionCatalog).
+    private function canManageTeam(): bool
+    {
+        return auth()->user()->hasRole('admin') || auth()->user()->can('leads.manage');
+    }
+
     private function baseQuery()
     {
         $query = Lead::with(['assignedTo', 'nikahProfile.user']);
 
-        if (!auth()->user()->hasRole('admin')) {
+        if (!$this->canManageTeam()) {
             $query->where('assigned_to', auth()->id());
         }
 
@@ -42,10 +51,15 @@ class ClientController extends Controller
 
     public function index(Request $request)
     {
+        $canManageTeam = $this->canManageTeam();
+
         $query = $this->baseQuery();
 
         if ($request->filled('status')) {
             $query->where('status', $request->status);
+        }
+        if ($canManageTeam && $request->filled('assigned_to')) {
+            $query->where('assigned_to', $request->assigned_to);
         }
         if ($request->filled('search')) {
             $search = $request->search;
@@ -64,16 +78,23 @@ class ClientController extends Controller
             'follow_ups_due' => (clone $mine)->whereDate('next_follow_up_at', '<=', now())->whereNotIn('status', ['registered', 'not_interested', 'closed'])->count(),
         ];
 
-        return view('matchmaker.clients.index', compact('clients', 'stats'));
+        $matchmakers = $canManageTeam ? User::role(['admin', 'matchmaker'])->orderBy('name')->get() : collect();
+
+        return view('matchmaker.clients.index', compact('clients', 'stats', 'canManageTeam', 'matchmakers'));
     }
 
     public function create()
     {
-        return view('matchmaker.clients.create');
+        $canManageTeam = $this->canManageTeam();
+        $matchmakers = $canManageTeam ? User::role(['admin', 'matchmaker'])->orderBy('name')->get() : collect();
+
+        return view('matchmaker.clients.create', compact('canManageTeam', 'matchmakers'));
     }
 
     public function store(Request $request)
     {
+        $canManageTeam = $this->canManageTeam();
+
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'gender' => ['nullable', 'in:male,female'],
@@ -83,10 +104,14 @@ class ClientController extends Controller
             'source' => ['required', 'in:facebook,instagram,whatsapp,website,phone,referral,manual,other'],
             'notes' => ['nullable', 'string', 'max:2000'],
             'next_follow_up_at' => ['nullable', 'date'],
+            'assigned_to' => [$canManageTeam ? 'nullable' : 'prohibited', 'exists:users,id'],
         ]);
 
         $validated['created_by'] = auth()->id();
-        $validated['assigned_to'] = auth()->id();
+        // A regular matchmaker can never assign a client to someone else,
+        // even by tampering with the request — 'prohibited' above already
+        // rejects the field outright for them, this is the value fallback.
+        $validated['assigned_to'] = ($canManageTeam && !empty($validated['assigned_to'])) ? $validated['assigned_to'] : auth()->id();
 
         $lead = Lead::create($validated);
 
@@ -148,12 +173,16 @@ class ClientController extends Controller
             }
         }
 
-        return view('matchmaker.clients.show', compact('lead', 'searchResults', 'suggestions'));
+        $canManageTeam = $this->canManageTeam();
+        $matchmakers = $canManageTeam ? User::role(['admin', 'matchmaker'])->orderBy('name')->get() : collect();
+
+        return view('matchmaker.clients.show', compact('lead', 'searchResults', 'suggestions', 'canManageTeam', 'matchmakers'));
     }
 
     public function update(Request $request, Lead $lead)
     {
         $this->authorizeClient($lead);
+        $canManageTeam = $this->canManageTeam();
 
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
@@ -165,10 +194,20 @@ class ClientController extends Controller
             'status' => ['required', 'in:new,contacted,interested,registered,not_interested,closed'],
             'notes' => ['nullable', 'string', 'max:2000'],
             'next_follow_up_at' => ['nullable', 'date'],
+            'assigned_to' => [$canManageTeam ? 'nullable' : 'prohibited', 'exists:users,id'],
         ]);
 
+        if (!$canManageTeam || empty($validated['assigned_to'])) {
+            unset($validated['assigned_to']);
+        }
+
+        $reassigned = isset($validated['assigned_to']) && $validated['assigned_to'] != $lead->assigned_to;
         $statusChanged = $lead->status !== $validated['status'];
         $lead->update($validated);
+
+        if ($reassigned) {
+            MatchmakingTimelineEvent::log($lead, $lead->nikahProfile, 'reassigned', 'Client reassigned to ' . ($lead->assignedTo?->name ?? 'a different matchmaker') . '.');
+        }
 
         if ($statusChanged) {
             MatchmakingTimelineEvent::log($lead, $lead->nikahProfile, 'status_changed', "Status changed to " . ucfirst(str_replace('_', ' ', $validated['status'])) . '.');
@@ -464,7 +503,7 @@ class ClientController extends Controller
 
     private function authorizeClient(Lead $lead): void
     {
-        if (auth()->user()->hasRole('admin')) {
+        if ($this->canManageTeam()) {
             return;
         }
 

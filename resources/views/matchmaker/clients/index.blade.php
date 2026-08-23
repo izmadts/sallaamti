@@ -1,7 +1,7 @@
 <x-matchmaker-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">My Clients</h2>
-        <p class="text-sm text-gray-500">Everyone currently assigned to you.</p>
+        <p class="text-sm text-gray-500">{{ $canManageTeam ? 'Everyone across the team — filter by matchmaker below.' : 'Everyone currently assigned to you.' }}</p>
     </x-slot>
 
     <div class="max-w-6xl mx-auto space-y-6">
@@ -43,12 +43,23 @@
                         @endforeach
                     </select>
                 </div>
+                @if ($canManageTeam)
+                <div>
+                    <label class="text-xs font-semibold text-gray-500 block mb-1">Matchmaker</label>
+                    <select name="assigned_to" class="border-gray-300 rounded-lg text-sm">
+                        <option value="">Everyone</option>
+                        @foreach ($matchmakers as $mm)
+                        <option value="{{ $mm->id }}" {{ (string) request('assigned_to') === (string) $mm->id ? 'selected' : '' }}>{{ $mm->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                @endif
                 <div>
                     <label class="text-xs font-semibold text-gray-500 block mb-1">Search</label>
                     <input type="text" name="search" value="{{ request('search') }}" placeholder="Name, phone, email…" class="border-gray-300 rounded-lg text-sm w-56">
                 </div>
                 <button class="text-sm font-semibold px-4 py-2 rounded-lg text-white hover:opacity-90" style="background: var(--mm-plum);">Filter</button>
-                @if (request()->hasAny(['status', 'search']))
+                @if (request()->hasAny(['status', 'search', 'assigned_to']))
                 <a href="{{ route('matchmaker.clients.index') }}" class="text-sm text-gray-500 px-2 py-2 hover:underline">Clear</a>
                 @endif
             </form>
@@ -63,6 +74,9 @@
                             <th class="px-4 py-3">Status</th>
                             <th class="px-4 py-3">Follow-up</th>
                             <th class="px-4 py-3">Linked Profile</th>
+                            @if ($canManageTeam)
+                            <th class="px-4 py-3">Matchmaker</th>
+                            @endif
                             <th class="px-4 py-3"></th>
                         </tr>
                     </thead>
@@ -91,13 +105,18 @@
                             <td class="px-4 py-3 text-xs text-gray-500">
                                 {{ $lead->nikahProfile?->user?->name ?? '—' }}
                             </td>
+                            @if ($canManageTeam)
+                            <td class="px-4 py-3 text-xs text-gray-500">
+                                {{ $lead->assignedTo?->name ?? 'Unassigned' }}
+                            </td>
+                            @endif
                             <td class="px-4 py-3 text-right">
                                 <a href="{{ route('matchmaker.clients.show', $lead) }}" class="text-sm font-semibold hover:underline" style="color: var(--mm-plum);">Open →</a>
                             </td>
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="5" class="px-4 py-8 text-center text-gray-400 text-sm">No clients yet. <a href="{{ route('matchmaker.clients.create') }}" class="hover:underline" style="color: var(--mm-plum);">Add your first one</a>.</td>
+                            <td colspan="{{ $canManageTeam ? 6 : 5 }}" class="px-4 py-8 text-center text-gray-400 text-sm">No clients yet. <a href="{{ route('matchmaker.clients.create') }}" class="hover:underline" style="color: var(--mm-plum);">Add your first one</a>.</td>
                         </tr>
                         @endforelse
                     </tbody>

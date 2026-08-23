@@ -254,7 +254,7 @@
                         str_contains($event->event_type, 'requirement') => '📋',
                         str_contains($event->event_type, 'consent') => '✅',
                         str_contains($event->event_type, 'registration') || str_contains($event->event_type, 'profile') => '📝',
-                        str_contains($event->event_type, 'status') => '🔄',
+                        str_contains($event->event_type, 'status') || str_contains($event->event_type, 'reassigned') => '🔄',
                         default => '🕓',
                     } }}</span>
                     <div>

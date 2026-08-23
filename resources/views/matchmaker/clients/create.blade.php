@@ -61,6 +61,17 @@
                             @endforeach
                         </select>
                     </div>
+                    @if ($canManageTeam)
+                    <div class="col-span-2">
+                        <x-input-label for="assigned_to" value="Assign To" />
+                        <select id="assigned_to" name="assigned_to" class="border-gray-300 rounded-md shadow-sm w-full mt-1">
+                            <option value="">Me ({{ auth()->user()->name }})</option>
+                            @foreach ($matchmakers as $mm)
+                            <option value="{{ $mm->id }}" {{ old('assigned_to') == $mm->id ? 'selected' : '' }}>{{ $mm->name }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    @endif
                     <div class="col-span-2">
                         <x-input-label for="next_follow_up_at" value="Next Follow-up (optional)" />
                         <x-text-input id="next_follow_up_at" name="next_follow_up_at" type="date" class="w-full mt-1" :value="old('next_follow_up_at')" />
