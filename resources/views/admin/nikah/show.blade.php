@@ -284,19 +284,6 @@
                                     ✅ Confirm Payment Received
                                 </button>
                             </form>
-
-                            <p class="text-xs font-semibold text-gray-500 mt-4 mb-1">🕊️ Waive the Fee Entirely</p>
-                            <p class="text-[11px] text-gray-400 mb-2">
-                                For hardship cases (e.g. a widow or divorcee) — makes verification free for this one profile, no payment needed.
-                            </p>
-                            <form method="POST" action="{{ route('admin.nikah.payments.waive', $profile) }}" class="space-y-2">
-                                @csrf
-                                <input type="text" name="fee_waived_reason" placeholder="Reason (optional, e.g. Widow — hardship)" class="w-full border-gray-300 rounded text-xs px-2 py-1.5">
-                                <button class="w-full bg-purple-600 text-white text-xs px-3 py-1.5 rounded hover:bg-purple-700"
-                                    onclick="return confirm('Waive the verification fee entirely for {{ $profile->user?->name ?? 'this profile' }}? They will not need to pay anything.')">
-                                    🕊️ Waive Fee
-                                </button>
-                            </form>
                         </div>
                         @endif
                     </div>

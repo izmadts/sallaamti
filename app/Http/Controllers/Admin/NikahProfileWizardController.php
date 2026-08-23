@@ -235,7 +235,7 @@ class NikahProfileWizardController extends Controller
         $profileData['user_id'] = $user->id;
         $profileData['allow_photo_sharing'] = (bool) ($profileData['allow_photo_sharing'] ?? false);
         $profileData['open_to_polygamy'] = (bool) ($profileData['open_to_polygamy'] ?? false);
-        $profileData['payment_amount'] = setting('nikah_verification_fee', config('services.nikah.verification_fee'));
+        $profileData['payment_amount'] = NikahProfile::feeForMaritalStatus($profileData['marital_status'] ?? null);
         $profileData['public_token'] = Str::random(32);
 
         $profile = NikahProfile::create($profileData);

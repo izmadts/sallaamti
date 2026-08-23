@@ -16,11 +16,11 @@ class NikahPaymentController extends Controller
             return redirect()->route('nikah.create');
         }
 
-        // Lazily catches both a profile created after the switch was
-        // flipped off and one already sitting unpaid from before — same
-        // approach as age auto-deriving from date_of_birth on save, no
-        // bulk migration needed when admin toggles the setting.
-        if ($profile->payment_status !== 'confirmed' && !setting('nikah_payment_required', true)) {
+        // Lazily catches both a profile created after admin set up a 100%
+        // marital-status discount and one already sitting unpaid from
+        // before — same approach as age auto-deriving from date_of_birth
+        // on save, no bulk migration needed when admin changes the rule.
+        if ($profile->payment_status !== 'confirmed' && $profile->applicableVerificationFee() <= 0) {
             $profile->update([
                 'payment_status' => 'confirmed',
                 'payment_amount' => 0,
@@ -28,7 +28,7 @@ class NikahPaymentController extends Controller
                 'payment_confirmed_at' => now(),
                 'payment_rejection_reason' => null,
                 'fee_waived' => true,
-                'fee_waived_reason' => 'Payment disabled site-wide',
+                'fee_waived_reason' => 'Marital status discount (100%)',
             ]);
 
             return redirect()->route('nikah.show')->with('status', __('db.No verification fee is required right now — your profile is ready.'));
@@ -56,7 +56,7 @@ class NikahPaymentController extends Controller
         $validated['payment_screenshot'] = ImageOptimizer::store($request->file('payment_screenshot'), 'nikah/payments', 'private');
         $validated['payment_status'] = 'submitted';
         $validated['payment_rejection_reason'] = null;
-        $validated['payment_amount'] = setting('nikah_verification_fee', config('services.nikah.verification_fee'));
+        $validated['payment_amount'] = $profile->applicableVerificationFee();
 
         $profile->update($validated);
 

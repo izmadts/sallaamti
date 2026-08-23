@@ -4,7 +4,7 @@
     </x-slot>
 
     @php
-        $feeAmount = $profile->payment_status === 'confirmed' ? $profile->payment_amount : setting('nikah_verification_fee', config('services.nikah.verification_fee'));
+        $feeAmount = $profile->payment_status === 'confirmed' ? $profile->payment_amount : $profile->applicableVerificationFee();
         $whatsappMessage = "Assalam-o-Alaikum, I'm " . auth()->user()->name . " (Sallaamti Profile #" . $profile->id . "). I've paid the Rs. " . number_format($feeAmount) . " Nikah verification fee. Sending my payment receipt here for confirmation.";
     @endphp
 

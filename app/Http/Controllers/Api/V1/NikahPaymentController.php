@@ -30,7 +30,7 @@ class NikahPaymentController extends Controller
         $validated['payment_screenshot'] = ImageOptimizer::store($request->file('payment_screenshot'), 'nikah/payments', 'private');
         $validated['payment_status'] = 'submitted';
         $validated['payment_rejection_reason'] = null;
-        $validated['payment_amount'] = setting('nikah_verification_fee', config('services.nikah.verification_fee'));
+        $validated['payment_amount'] = $profile->applicableVerificationFee();
 
         $profile->update($validated);
 

@@ -62,7 +62,9 @@ class SettingsController extends Controller
             'bank_account_iban'      => ['nullable', 'string', 'max:50'],
             'bank_name'              => ['nullable', 'string', 'max:100'],
             'nikah_verification_fee' => ['required', 'numeric', 'min:0'],
-            'nikah_payment_required' => ['nullable', 'boolean'],
+            'nikah_discount_marital_statuses' => ['nullable', 'array'],
+            'nikah_discount_marital_statuses.*' => ['in:never_married,divorced,widowed,separated,married'],
+            'nikah_discount_percent' => ['nullable', 'integer', 'min:0', 'max:100'],
             'social_facebook'       => ['nullable', 'url'],
             'social_youtube'        => ['nullable', 'url'],
             'social_whatsapp'       => ['nullable', 'string', 'max:30'],
@@ -113,7 +115,7 @@ class SettingsController extends Controller
             'bank_account_number'    => 'payment',
             'bank_name'              => 'payment',
             'nikah_verification_fee' => 'payment',
-            'nikah_payment_required' => 'payment',
+            'nikah_discount_percent' => 'payment',
             'social_facebook'        => 'social',
             'social_youtube'         => 'social',
             'social_whatsapp'        => 'social',
@@ -137,7 +139,7 @@ class SettingsController extends Controller
             'tiktok_login_enabled'       => 'oauth',
         ];
 
-        $checkboxKeys = ['maintenance_mode', 'nikah_payment_required', 'google_login_enabled', 'facebook_login_enabled', 'tiktok_login_enabled'];
+        $checkboxKeys = ['maintenance_mode', 'google_login_enabled', 'facebook_login_enabled', 'tiktok_login_enabled'];
 
         // Required fields (validated above, so never blank here) always
         // get written. Everything else is nullable — only overwrite when a
@@ -164,6 +166,12 @@ class SettingsController extends Controller
                 Setting::set($key, $value, $group);
             }
         }
+
+        // Array of checkboxes, not a single scalar like the rest of
+        // $groups — always written (even empty) so unchecking every box
+        // actually clears the discount instead of the last-saved value
+        // silently sticking around forever.
+        Setting::set('nikah_discount_marital_statuses', implode(',', $request->input('nikah_discount_marital_statuses', [])), 'payment');
 
         if ($request->hasFile('seo_og_image')) {
             if (setting('seo_og_image')) {

@@ -60,7 +60,7 @@ class NikahProfileController extends Controller
 
         // Same lazy waiver the web NikahPaymentController::show() applies —
         // see that method for why this isn't a bulk migration.
-        if ($profile->payment_status !== 'confirmed' && !setting('nikah_payment_required', true)) {
+        if ($profile->payment_status !== 'confirmed' && $profile->applicableVerificationFee() <= 0) {
             $profile->update([
                 'payment_status' => 'confirmed',
                 'payment_amount' => 0,
@@ -68,7 +68,7 @@ class NikahProfileController extends Controller
                 'payment_confirmed_at' => now(),
                 'payment_rejection_reason' => null,
                 'fee_waived' => true,
-                'fee_waived_reason' => 'Payment disabled site-wide',
+                'fee_waived_reason' => 'Marital status discount (100%)',
             ]);
         }
 
@@ -159,7 +159,7 @@ class NikahProfileController extends Controller
         if (!$profile) {
             $validated['user_id'] = $user->id;
             $validated['public_token'] = Str::random(32);
-            $validated['payment_amount'] = setting('nikah_verification_fee', config('services.nikah.verification_fee'));
+            $validated['payment_amount'] = NikahProfile::feeForMaritalStatus($validated['marital_status'] ?? null);
             $profile = NikahProfile::create($validated);
 
             if (!$user->city && !empty($validated['city'])) {
@@ -242,7 +242,7 @@ class NikahProfileController extends Controller
             'fee_waived' => $profile->fee_waived,
             'payment_amount' => $profile->payment_status === 'confirmed'
                 ? $profile->payment_amount
-                : setting('nikah_verification_fee', config('services.nikah.verification_fee')),
+                : $profile->applicableVerificationFee(),
             'payment_instructions' => [
                 'jazzcash_number' => setting('jazzcash_number'),
                 'jazzcash_account_title' => setting('jazzcash_account_title'),

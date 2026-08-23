@@ -125,14 +125,23 @@
                         <x-text-input name="nikah_verification_fee" type="number" class="w-full mt-1" :value="($settings['nikah_verification_fee'] ?? '') ?: '500'" />
                     </div>
                 </div>
-                <div class="flex items-center gap-3 pt-2">
-                    <input type="checkbox" name="nikah_payment_required" id="nikah_payment_required" value="1"
-                        {{ ($settings['nikah_payment_required'] ?? '1') === '1' ? 'checked' : '' }}
-                        class="rounded border-gray-300 text-teal-600">
-                    <label for="nikah_payment_required" class="text-sm text-gray-700">
-                        <span class="font-medium">Require the verification fee</span>
-                        — uncheck to make Nikah profile verification free for everyone (skips the payment step for every new and existing pending profile). Waive it for one person instead from that profile's admin page.
-                    </label>
+
+                <div class="pt-4 mt-2 border-t border-gray-100">
+                    <x-input-label value="Marital Status Discount" />
+                    <p class="text-xs text-gray-400 mb-2">Give a reduced (or fully waived) verification fee to applicants with a chosen marital status — e.g. free for widows and divorcees. Set the percentage to 100 for a complete waiver, or lower for a partial discount.</p>
+                    @php $discountStatuses = explode(',', $settings['nikah_discount_marital_statuses'] ?? ''); @endphp
+                    <div class="flex flex-wrap gap-3 mb-3">
+                        @foreach (['never_married' => 'Never Married', 'divorced' => 'Divorced', 'widowed' => 'Widowed', 'separated' => 'Separated', 'married' => 'Married'] as $val => $label)
+                        <label class="flex items-center gap-1.5 text-sm text-gray-700">
+                            <input type="checkbox" name="nikah_discount_marital_statuses[]" value="{{ $val }}" {{ in_array($val, $discountStatuses) ? 'checked' : '' }} class="rounded border-gray-300 text-teal-600">
+                            {{ $label }}
+                        </label>
+                        @endforeach
+                    </div>
+                    <div class="max-w-xs">
+                        <x-input-label value="Discount Percentage (100 = fully free)" />
+                        <x-text-input name="nikah_discount_percent" type="number" min="0" max="100" class="w-full mt-1" :value="$settings['nikah_discount_percent'] ?? '0'" />
+                    </div>
                 </div>
             </div>
 

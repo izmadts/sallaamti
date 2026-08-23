@@ -194,7 +194,7 @@ class NikahProfileWizardController extends Controller
 
         $validated = $this->wizardAllData();
         $validated['user_id'] = Auth::id();
-        $validated['payment_amount'] = setting('nikah_verification_fee', config('services.nikah.verification_fee'));
+        $validated['payment_amount'] = NikahProfile::feeForMaritalStatus($validated['marital_status'] ?? null);
         $validated['public_token'] = Str::random(32);
 
         NikahProfile::create($validated);
