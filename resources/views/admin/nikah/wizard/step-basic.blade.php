@@ -63,27 +63,29 @@
                                     @endforeach
                                 </select>
                             </div>
-                            <div x-show="['divorced','widowed','separated'].includes(maritalStatus)" x-cloak>
+                            <div x-show="['divorced','widowed','separated','married'].includes(maritalStatus)" x-cloak>
                                 <x-input-label for="has_children" value="Do They Have Children?" />
-                                <select id="has_children" name="has_children" x-model="hasChildren" x-bind:required="['divorced','widowed','separated'].includes(maritalStatus)" class="border-gray-300 rounded-md shadow-sm w-full mt-1">
+                                <select id="has_children" name="has_children" x-model="hasChildren" x-bind:required="['divorced','widowed','separated','married'].includes(maritalStatus)" class="border-gray-300 rounded-md shadow-sm w-full mt-1">
                                     <option value="">Select</option>
                                     <option value="1" {{ $hasKids === '1' ? 'selected' : '' }}>Yes</option>
                                     <option value="0" {{ $hasKids === '0' ? 'selected' : '' }}>No</option>
                                 </select>
                             </div>
-                            <div x-show="['divorced','widowed','separated'].includes(maritalStatus) && hasChildren === '1'" x-cloak>
+                            <div x-show="['divorced','widowed','separated','married'].includes(maritalStatus) && hasChildren === '1'" x-cloak>
                                 <x-input-label for="children_count" value="Number of Children" />
                                 <x-text-input id="children_count" name="children_count" type="number" min="1" max="20" class="w-full mt-1"
                                     :value="old('children_count', $data['children_count'] ?? '')" />
                             </div>
-                            <div x-show="['divorced','widowed','separated'].includes(maritalStatus)" x-cloak>
+                            <div x-show="['divorced','widowed','separated','married'].includes(maritalStatus)" x-cloak>
                                 <x-input-label for="living_situation" value="Who Do They Currently Live With?" />
-                                <select id="living_situation" name="living_situation" x-bind:required="['divorced','widowed','separated'].includes(maritalStatus)" class="border-gray-300 rounded-md shadow-sm w-full mt-1">
+                                <select id="living_situation" name="living_situation" x-bind:required="['divorced','widowed','separated','married'].includes(maritalStatus)" class="border-gray-300 rounded-md shadow-sm w-full mt-1">
                                     <option value="">Select</option>
                                     <option value="alone" {{ $livingVal === 'alone' ? 'selected' : '' }}>Alone</option>
-                                    <option value="with_parents" {{ $livingVal === 'with_parents' ? 'selected' : '' }}>With Parents</option>
+                                    <option value="with_mother" {{ $livingVal === 'with_mother' ? 'selected' : '' }}>With Mother</option>
+                                    <option value="with_father" {{ $livingVal === 'with_father' ? 'selected' : '' }}>With Father</option>
+                                    <option value="with_maternal_grandparents" {{ $livingVal === 'with_maternal_grandparents' ? 'selected' : '' }}>With Maternal Grandparents</option>
+                                    <option value="with_paternal_grandparents" {{ $livingVal === 'with_paternal_grandparents' ? 'selected' : '' }}>With Paternal Grandparents</option>
                                     <option value="with_children" {{ $livingVal === 'with_children' ? 'selected' : '' }}>With Their Children</option>
-                                    <option value="with_family" {{ $livingVal === 'with_family' ? 'selected' : '' }}>With Extended Family</option>
                                     <option value="other" {{ $livingVal === 'other' ? 'selected' : '' }}>Other</option>
                                 </select>
                             </div>

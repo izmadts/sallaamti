@@ -68,7 +68,7 @@
                             </h3>
                             <p class="text-gray-500 mt-1">
                                 {{ ucfirst(str_replace('_', ' ', $profile->marital_status)) }}
-                                @if (in_array($profile->marital_status, ['divorced', 'widowed', 'separated']) && !is_null($profile->has_children))
+                                @if (in_array($profile->marital_status, ['divorced', 'widowed', 'separated', 'married']) && !is_null($profile->has_children))
                                 · {{ $profile->has_children ? 'Has children' . ($profile->children_count ? " ({$profile->children_count})" : '') : 'No children' }}
                                 @endif
                                 @if ($profile->sect) · {{ $profile->sect }} @endif
@@ -221,16 +221,16 @@
                                 <dt class="text-gray-500">Status</dt>
                                 <dd>{{ ucfirst(str_replace('_', ' ', $profile->marital_status)) }}</dd>
                             </div>
-                            @if (in_array($profile->marital_status, ['divorced', 'widowed', 'separated']) && !is_null($profile->has_children))
+                            @if (in_array($profile->marital_status, ['divorced', 'widowed', 'separated', 'married']) && !is_null($profile->has_children))
                             <div class="flex justify-between">
                                 <dt class="text-gray-500">Children</dt>
                                 <dd>{{ $profile->has_children ? 'Yes' . ($profile->children_count ? " ({$profile->children_count})" : '') : 'No' }}</dd>
                             </div>
                             @endif
-                            @if (in_array($profile->marital_status, ['divorced', 'widowed', 'separated']) && $profile->living_situation)
+                            @if (in_array($profile->marital_status, ['divorced', 'widowed', 'separated', 'married']) && $profile->living_situation)
                             <div class="flex justify-between">
                                 <dt class="text-gray-500">Lives With</dt>
-                                <dd>{{ ['alone' => 'Alone', 'with_parents' => 'Parents', 'with_children' => 'Their Children', 'with_family' => 'Extended Family', 'other' => 'Other'][$profile->living_situation] ?? ucfirst(str_replace('_', ' ', $profile->living_situation)) }}</dd>
+                                <dd>{{ ['alone' => 'Alone', 'with_mother' => 'Mother', 'with_father' => 'Father', 'with_maternal_grandparents' => 'Maternal Grandparents', 'with_paternal_grandparents' => 'Paternal Grandparents', 'with_children' => 'Their Children', 'other' => 'Other'][$profile->living_situation] ?? ucfirst(str_replace('_', ' ', $profile->living_situation)) }}</dd>
                             </div>
                             @endif
                             @if ($profile->sect)
