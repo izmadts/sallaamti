@@ -33,15 +33,18 @@
 <p>On a client's page, open the <strong>Requirements</strong> tab and record what they're actually looking for — age range, city, education, marital status, and so on — each marked <strong>Must Have</strong>, <strong>Preferred</strong>, or <strong>Flexible</strong>. This isn't shown to the client; it's what guides your own candidate search so you're not proposing matches at random.</p>
 
 <h3>Step 3 — Build a Shortlist</h3>
-<p>In the <strong>Shortlist</strong> tab, search verified profiles (filter by gender/city/sect) and add promising candidates, with a short note on why each one fits. This is your own working list — nothing is sent to the client yet.</p>
+<p>In the <strong>Shortlist</strong> tab, search verified profiles (filter by gender/city/sect) and add promising candidates, with a short note on why each one fits. This is your own working list — nothing is sent to the client yet. If you've already saved Requirements (Step 2), check <strong>🎯 Suggested Matches</strong> at the top of this tab first — it ranks the active profile pool against what you saved (a candidate is only shown if they satisfy every Must Have) so you're not searching blind.</p>
 
-<h3>Step 4 — Create &amp; Send a Proposal Batch</h3>
-<p>In the <strong>Proposal Batches</strong> tab, start a new batch (your client needs a linked Nikah profile first — see Step 6) and add up to <strong>5 candidates</strong> from your shortlist, each with an optional "why this match" note. When you're ready, press <strong>Mark as Sent</strong> — this generates one link per candidate, ready to copy.</p>
+<h3>Step 4 — Record Consent</h3>
+<p>Before you can send this client any proposals, record their <strong>Matchmaking Participation</strong> consent — found on the <strong>Overview</strong> tab. Get it verbally, over WhatsApp, or in person, note how you got it, and save it. This isn't a formality: the system will block you from creating a proposal batch until an active consent is on file. If a client ever asks to withdraw, press <strong>Revoke</strong> next to it — the record of the original consent (and the revocation) stays, nothing is deleted.</p>
 
-<h3>Step 5 — Send the Links (Copy, Don't Open)</h3>
+<h3>Step 5 — Create &amp; Send a Proposal Batch</h3>
+<p>In the <strong>Proposal Batches</strong> tab, start a new batch (your client needs a linked Nikah profile and an active consent first — see Steps 4 and 7) and add up to <strong>5 candidates</strong> from your shortlist, each with an optional "why this match" note. When you're ready, press <strong>Mark as Sent</strong> — this generates one link per candidate, ready to copy.</p>
+
+<h3>Step 6 — Send the Links (Copy, Don't Open)</h3>
 <p>Each candidate now has a <strong>Copy Link</strong> button. Copy it and send it to your client over WhatsApp, SMS, or read it out on a call — whatever actually reaches them, no login required on their end. If a link ever needs replacing, press <strong>Regenerate</strong> next to it (see the security note above).</p>
 
-<h3>Step 6 — Registering a New Client</h3>
+<h3>Step 7 — Registering a New Client</h3>
 <p>If someone's ready to actually register, open their client page and press <strong>Convert to Registered Profile</strong> — this takes you into the same walk-in wizard used across the site, with their name and phone/email already filled in. If a profile already exists separately, use the "Already have a profile for them?" box and enter the profile ID instead.</p>
 
 <h3>The Client Progress Page</h3>
@@ -57,7 +60,8 @@
 <ul>
     <li>New lead comes in → <strong>Add Client</strong>, set a follow-up date.</li>
     <li>Understand what they want → fill in <strong>Requirements</strong>.</li>
-    <li>Find candidates → search &amp; build a <strong>Shortlist</strong>.</li>
+    <li>Find candidates → check <strong>Suggested Matches</strong>, then search &amp; build a <strong>Shortlist</strong>.</li>
+    <li>Record their <strong>Matchmaking Participation consent</strong> on Overview — required before sending proposals.</li>
     <li>Client has a registered profile → start a <strong>Proposal Batch</strong>, add up to 5 candidates, <strong>Mark as Sent</strong>.</li>
     <li><strong>Copy</strong> each link, send it however reaches them — never open it yourself.</li>
     <li>Give them their <strong>Progress Page</strong> link once, so they can self-serve status checks.</li>
@@ -101,15 +105,18 @@
 <p>کلائنٹ کے صفحے پر <strong>ضروریات</strong> ٹیب کھولیں اور درج کریں کہ وہ اصل میں کیا تلاش کر رہے ہیں — عمر کی حد، شہر، تعلیم، ازدواجی حیثیت وغیرہ — ہر ایک کو <strong>لازمی</strong>، <strong>ترجیحی</strong>، یا <strong>لچکدار</strong> نشان زد کریں۔ یہ کلائنٹ کو نہیں دکھایا جاتا؛ یہ آپ کی اپنی امیدوار تلاش کی رہنمائی کرتا ہے تاکہ آپ بے ترتیب تجاویز نہ دیں۔</p>
 
 <h3>مرحلہ 3 — شارٹ لسٹ بنائیں</h3>
-<p><strong>شارٹ لسٹ</strong> ٹیب میں، تصدیق شدہ پروفائلز تلاش کریں (جنس/شہر/فرقے کے لحاظ سے فلٹر) اور امید افزا امیدواروں کو ایک مختصر نوٹ کے ساتھ شامل کریں کہ ہر ایک کیوں موزوں ہے۔ یہ آپ کی اپنی ورکنگ فہرست ہے — ابھی کچھ بھی کلائنٹ کو نہیں بھیجا جاتا۔</p>
+<p><strong>شارٹ لسٹ</strong> ٹیب میں، تصدیق شدہ پروفائلز تلاش کریں (جنس/شہر/فرقے کے لحاظ سے فلٹر) اور امید افزا امیدواروں کو ایک مختصر نوٹ کے ساتھ شامل کریں کہ ہر ایک کیوں موزوں ہے۔ یہ آپ کی اپنی ورکنگ فہرست ہے — ابھی کچھ بھی کلائنٹ کو نہیں بھیجا جاتا۔ اگر آپ نے پہلے سے ضروریات محفوظ کر لی ہیں (مرحلہ 2)، تو پہلے اس ٹیب کے اوپر <strong>🎯 تجویز کردہ میچز</strong> دیکھیں — یہ فعال پروفائل پول کو آپ کی محفوظ کردہ ضروریات کے مقابلے میں درجہ بندی کرتا ہے (کوئی امیدوار تب ہی دکھایا جاتا ہے جب وہ ہر لازمی شرط پوری کرے) تاکہ آپ اندھیرے میں تلاش نہ کریں۔</p>
 
-<h3>مرحلہ 4 — تجویز بیچ بنائیں اور بھیجیں</h3>
-<p><strong>تجویز بیچز</strong> ٹیب میں، ایک نیا بیچ شروع کریں (آپ کے کلائنٹ کے پاس پہلے سے ایک منسلک نکاح پروفائل ہونی چاہیے — مرحلہ 6 دیکھیں) اور اپنی شارٹ لسٹ سے <strong>5 امیدواروں تک</strong> شامل کریں، ہر ایک کے ساتھ اختیاری "یہ میچ کیوں" نوٹ۔ تیار ہونے پر <strong>بھیجا گیا نشان زد کریں</strong> دبائیں — اس سے ہر امیدوار کے لیے ایک لنک بنتا ہے، کاپی کرنے کے لیے تیار۔</p>
+<h3>مرحلہ 4 — رضامندی درج کریں</h3>
+<p>اس سے پہلے کہ آپ اس کلائنٹ کو کوئی تجویز بھیج سکیں، ان کی <strong>میچ میکنگ میں شرکت</strong> کی رضامندی درج کریں — یہ <strong>خلاصہ</strong> ٹیب پر موجود ہے۔ زبانی طور پر، واٹس ایپ پر، یا ذاتی طور پر حاصل کریں، نوٹ کریں کہ کیسے حاصل کی، اور محفوظ کریں۔ یہ محض رسمی کارروائی نہیں ہے: جب تک فعال رضامندی موجود نہ ہو، نظام آپ کو تجویز بیچ بنانے سے روک دے گا۔ اگر کوئی کلائنٹ کبھی واپس لینا چاہے، تو اس کے ساتھ <strong>منسوخ کریں</strong> دبائیں — اصل رضامندی (اور منسوخی) کا ریکارڈ باقی رہتا ہے، کچھ بھی حذف نہیں ہوتا۔</p>
 
-<h3>مرحلہ 5 — لنکس بھیجیں (کاپی کریں، کھولیں نہیں)</h3>
+<h3>مرحلہ 5 — تجویز بیچ بنائیں اور بھیجیں</h3>
+<p><strong>تجویز بیچز</strong> ٹیب میں، ایک نیا بیچ شروع کریں (آپ کے کلائنٹ کے پاس پہلے سے ایک منسلک نکاح پروفائل اور فعال رضامندی ہونی چاہیے — مراحل 4 اور 7 دیکھیں) اور اپنی شارٹ لسٹ سے <strong>5 امیدواروں تک</strong> شامل کریں، ہر ایک کے ساتھ اختیاری "یہ میچ کیوں" نوٹ۔ تیار ہونے پر <strong>بھیجا گیا نشان زد کریں</strong> دبائیں — اس سے ہر امیدوار کے لیے ایک لنک بنتا ہے، کاپی کرنے کے لیے تیار۔</p>
+
+<h3>مرحلہ 6 — لنکس بھیجیں (کاپی کریں، کھولیں نہیں)</h3>
 <p>ہر امیدوار کے پاس اب ایک <strong>لنک کاپی کریں</strong> بٹن ہے۔ اسے کاپی کریں اور اپنے کلائنٹ کو واٹس ایپ، ایس ایم ایس پر بھیجیں، یا کال پر پڑھ کر سنا دیں — جو بھی طریقہ واقعی ان تک پہنچے، ان کی طرف سے لاگ اِن کی ضرورت نہیں۔ اگر کبھی لنک بدلنے کی ضرورت پڑے تو اس کے ساتھ <strong>دوبارہ بنائیں</strong> دبائیں (اوپر سیکیورٹی نوٹ دیکھیں)۔</p>
 
-<h3>مرحلہ 6 — نئے کلائنٹ کی رجسٹریشن</h3>
+<h3>مرحلہ 7 — نئے کلائنٹ کی رجسٹریشن</h3>
 <p>اگر کوئی واقعی رجسٹر ہونے کے لیے تیار ہو، تو ان کا کلائنٹ صفحہ کھولیں اور <strong>رجسٹرڈ پروفائل میں تبدیل کریں</strong> دبائیں — یہ آپ کو اسی واک اِن عمل میں لے جاتا ہے جو پوری سائٹ پر استعمال ہوتا ہے، جس میں ان کا نام اور فون/ای میل پہلے سے بھرا ہوتا ہے۔ اگر پروفائل پہلے سے علیحدہ طور پر موجود ہے، تو "کیا ان کے لیے پہلے سے پروفائل موجود ہے؟" باکس استعمال کریں اور پروفائل آئی ڈی درج کریں۔</p>
 
 <h3>کلائنٹ پروگریس پیج</h3>
@@ -125,7 +132,8 @@
 <ul>
     <li>نئی لیڈ آئے → <strong>کلائنٹ شامل کریں</strong>، فالو اپ تاریخ مقرر کریں۔</li>
     <li>سمجھیں وہ کیا چاہتے ہیں → <strong>ضروریات</strong> پُر کریں۔</li>
-    <li>امیدوار تلاش کریں → تلاش کریں اور <strong>شارٹ لسٹ</strong> بنائیں۔</li>
+    <li>امیدوار تلاش کریں → <strong>تجویز کردہ میچز</strong> دیکھیں، پھر تلاش کریں اور <strong>شارٹ لسٹ</strong> بنائیں۔</li>
+    <li>خلاصہ پر ان کی <strong>میچ میکنگ شرکت کی رضامندی</strong> درج کریں — تجاویز بھیجنے سے پہلے لازمی ہے۔</li>
     <li>کلائنٹ کی رجسٹرڈ پروفائل موجود ہے → <strong>تجویز بیچ</strong> شروع کریں، 5 تک امیدوار شامل کریں، <strong>بھیجا گیا نشان زد کریں</strong>۔</li>
     <li>ہر لنک <strong>کاپی</strong> کریں، جو بھی طریقہ ان تک پہنچے اس سے بھیجیں — خود کبھی نہ کھولیں۔</li>
     <li>ایک بار ان کا <strong>پروگریس پیج</strong> لنک دے دیں، تاکہ وہ خود حیثیت چیک کر سکیں۔</li>

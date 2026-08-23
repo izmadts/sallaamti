@@ -74,6 +74,16 @@ class Lead extends Model
         return $this->hasMany(ProposalBatch::class)->latest('id');
     }
 
+    public function consents()
+    {
+        return $this->hasMany(MatchmakingConsent::class)->latest('granted_at');
+    }
+
+    public function hasActiveConsent(string $type): bool
+    {
+        return $this->consents()->active()->where('consent_type', $type)->exists();
+    }
+
     public function isConverted(): bool
     {
         return $this->nikah_profile_id !== null;

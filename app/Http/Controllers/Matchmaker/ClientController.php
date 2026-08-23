@@ -6,6 +6,7 @@ use App\Http\Controllers\Concerns\HasWizardSteps;
 use App\Http\Controllers\Controller;
 use App\Models\Lead;
 use App\Models\LeadShortlistItem;
+use App\Models\MatchmakingConsent;
 use App\Models\MatchmakingRequirement;
 use App\Models\MatchmakingTimelineEvent;
 use App\Models\MatchProposal;
@@ -104,6 +105,7 @@ class ClientController extends Controller
             'requirement.items',
             'proposalBatches.proposals.candidate.user',
             'timelineEvents.matchmaker',
+            'consents.recordedBy', 'consents.revokedBy',
         ]);
 
         $searchResults = collect();
@@ -277,12 +279,55 @@ class ClientController extends Controller
         return back()->with('status', 'Requirements saved.');
     }
 
+    // --- Consent (spec doc §14-15) ---
+    //
+    // A recorded moment, not a live checkbox — the matchmaker gets consent
+    // verbally, over WhatsApp, or in person, and logs it here. An active
+    // "matchmaking_participation" consent gates createBatch() below; the
+    // other types are informational records only, not currently enforced
+    // anywhere else, so recording them never blocks any existing action.
+
+    public function recordConsent(Request $request, Lead $lead)
+    {
+        $this->authorizeClient($lead);
+
+        $validated = $request->validate([
+            'consent_type' => ['required', 'in:' . implode(',', array_keys(MatchmakingConsent::TYPES))],
+            'method' => ['required', 'in:' . implode(',', array_keys(MatchmakingConsent::METHODS))],
+            'notes' => ['nullable', 'string', 'max:1000'],
+        ]);
+
+        $validated['lead_id'] = $lead->id;
+        $validated['recorded_by'] = auth()->id();
+        $validated['granted_at'] = now();
+
+        MatchmakingConsent::create($validated);
+
+        MatchmakingTimelineEvent::log($lead, $lead->nikahProfile, 'consent_recorded', MatchmakingConsent::TYPES[$validated['consent_type']] . ' consent recorded (' . MatchmakingConsent::METHODS[$validated['method']] . ').');
+
+        return back()->with('status', 'Consent recorded.');
+    }
+
+    public function revokeConsent(Lead $lead, MatchmakingConsent $consent)
+    {
+        $this->authorizeClient($lead);
+        abort_unless($consent->lead_id === $lead->id, 404);
+        abort_if(!$consent->isActive(), 422, 'This consent was already revoked.');
+
+        $consent->update(['revoked_at' => now(), 'revoked_by' => auth()->id()]);
+
+        MatchmakingTimelineEvent::log($lead, $lead->nikahProfile, 'consent_revoked', MatchmakingConsent::TYPES[$consent->consent_type] . ' consent revoked.');
+
+        return back()->with('status', 'Consent revoked.');
+    }
+
     // --- Proposal Batches (spec doc §20-24) ---
 
     public function createBatch(Lead $lead)
     {
         $this->authorizeClient($lead);
         abort_unless($lead->nikah_profile_id, 422, 'This client needs a linked Nikah profile before a proposal batch can be sent to them.');
+        abort_unless($lead->hasActiveConsent('matchmaking_participation'), 422, 'Record this client\'s consent to participate in matchmaking (see the Consent section on Overview) before sending them proposals.');
 
         $batchNumber = ProposalBatch::where('lead_id', $lead->id)->max('batch_number') + 1;
 

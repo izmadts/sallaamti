@@ -252,6 +252,7 @@
                         str_contains($event->event_type, 'proposal') => '💌',
                         str_contains($event->event_type, 'shortlist') || str_contains($event->event_type, 'shared') => '⭐',
                         str_contains($event->event_type, 'requirement') => '📋',
+                        str_contains($event->event_type, 'consent') => '✅',
                         str_contains($event->event_type, 'registration') || str_contains($event->event_type, 'profile') => '📝',
                         str_contains($event->event_type, 'status') => '🔄',
                         default => '🕓',

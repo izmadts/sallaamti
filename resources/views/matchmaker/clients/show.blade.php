@@ -158,6 +158,59 @@
                     <p class="text-xs text-amber-700 mt-2">Add a phone number above first — that's what {{ $lead->name }} will enter to unlock the page.</p>
                     @endunless
                 </div>
+
+                {{-- Consent — see App\Models\MatchmakingConsent. Matchmaking Participation gates sending proposal batches. --}}
+                <div class="mt-6 pt-6 border-t">
+                    <h4 class="font-semibold text-gray-700 mb-1">✅ Consent</h4>
+                    <p class="text-xs text-gray-500 mb-3">Record consent as you get it — verbally, over WhatsApp, or in person. An active <strong>Matchmaking Participation</strong> consent is required before you can send this client any proposals.</p>
+
+                    @if ($lead->consents->isNotEmpty())
+                    <div class="space-y-1.5 mb-3">
+                        @foreach ($lead->consents as $consent)
+                        <div class="flex items-center justify-between text-xs bg-gray-50 rounded-lg px-3 py-2">
+                            <div>
+                                <span class="font-medium {{ $consent->isActive() ? 'text-gray-800' : 'text-gray-400 line-through' }}">{{ explode(' — ', \App\Models\MatchmakingConsent::TYPES[$consent->consent_type])[0] }}</span>
+                                <span class="text-gray-400"> · {{ \App\Models\MatchmakingConsent::METHODS[$consent->method] ?? $consent->method }} · {{ $consent->granted_at->format('d M Y') }} · by {{ $consent->recordedBy?->name ?? '—' }}</span>
+                                @if (!$consent->isActive())
+                                <span class="text-red-500"> · revoked {{ $consent->revoked_at->format('d M Y') }} by {{ $consent->revokedBy?->name ?? '—' }}</span>
+                                @endif
+                            </div>
+                            @if ($consent->isActive())
+                            <form method="POST" action="{{ route('matchmaker.clients.consents.revoke', [$lead, $consent]) }}" onsubmit="return confirm('Revoke this consent?')">
+                                @csrf
+                                <button class="text-red-500 hover:underline">Revoke</button>
+                            </form>
+                            @endif
+                        </div>
+                        @endforeach
+                    </div>
+                    @endif
+
+                    <form method="POST" action="{{ route('matchmaker.clients.consents.record', $lead) }}" class="flex flex-wrap gap-2 items-end">
+                        @csrf
+                        <div>
+                            <label class="text-xs text-gray-500">Type</label>
+                            <select name="consent_type" required class="border-gray-300 rounded text-sm block">
+                                @foreach (\App\Models\MatchmakingConsent::TYPES as $value => $label)
+                                <option value="{{ $value }}">{{ explode(' — ', $label)[0] }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div>
+                            <label class="text-xs text-gray-500">How obtained</label>
+                            <select name="method" required class="border-gray-300 rounded text-sm block">
+                                @foreach (\App\Models\MatchmakingConsent::METHODS as $value => $label)
+                                <option value="{{ $value }}">{{ $label }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <div class="flex-1 min-w-[10rem]">
+                            <label class="text-xs text-gray-500">Notes (optional)</label>
+                            <input type="text" name="notes" class="border-gray-300 rounded text-sm block w-full">
+                        </div>
+                        <button class="text-xs font-semibold px-3 py-1.5 rounded-lg text-white hover:opacity-90" style="background: var(--mm-plum);">Record Consent</button>
+                    </form>
+                </div>
             </div>
 
             {{-- === REQUIREMENTS === --}}
@@ -314,6 +367,8 @@
             <div x-show="tab === 'batches'" class="p-6 space-y-6">
                 @unless ($lead->nikah_profile_id)
                 <p class="text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded-lg p-3">Link or register this client's Nikah profile before you can send them a proposal batch.</p>
+                @elseif (!$lead->hasActiveConsent('matchmaking_participation'))
+                <p class="text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded-lg p-3">Record this client's <strong>Matchmaking Participation</strong> consent (see the Consent section on Overview) before you can send them a proposal batch.</p>
                 @else
                 <form method="POST" action="{{ route('matchmaker.clients.batches.create', $lead) }}">
                     @csrf
@@ -432,6 +487,7 @@
                         str_contains($event->event_type, 'proposal') => '💌',
                         str_contains($event->event_type, 'shortlist') || str_contains($event->event_type, 'shared') => '⭐',
                         str_contains($event->event_type, 'requirement') => '📋',
+                        str_contains($event->event_type, 'consent') => '✅',
                         str_contains($event->event_type, 'registration') || str_contains($event->event_type, 'profile') => '📝',
                         str_contains($event->event_type, 'status') => '🔄',
                         default => '🕓',
