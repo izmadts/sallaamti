@@ -24,8 +24,10 @@
             @csrf
 
             {{-- General --}}
-            <div class="bg-white rounded-lg shadow-sm p-6 space-y-4">
-                <h3 class="font-semibold text-gray-700 border-b pb-2">🌐 General</h3>
+            <div class="bg-white rounded-lg shadow-sm p-6 space-y-4 border-l-4" style="border-left-color: #0D6B6B">
+                <h3 class="font-semibold pb-2 border-b flex items-center gap-2" style="color: #0D6B6B">
+                    <span class="w-8 h-8 rounded-lg flex items-center justify-center text-base" style="background: #0D6B6B22">🌐</span> General
+                </h3>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                         <x-input-label value="Site Name" />
@@ -60,8 +62,10 @@
             </div>
 
             {{-- About / Homepage --}}
-            <div class="bg-white rounded-lg shadow-sm p-6 space-y-4">
-                <h3 class="font-semibold text-gray-700 border-b pb-2">📖 About / Homepage</h3>
+            <div class="bg-white rounded-lg shadow-sm p-6 space-y-4 border-l-4" style="border-left-color: #B8962E">
+                <h3 class="font-semibold pb-2 border-b flex items-center gap-2" style="color: #92730f">
+                    <span class="w-8 h-8 rounded-lg flex items-center justify-center text-base" style="background: #B8962E22">📖</span> About / Homepage
+                </h3>
                 <p class="text-xs text-gray-400">These appear in the "About" section on the homepage.</p>
                 <div class="grid grid-cols-1 gap-4">
                     <div>
@@ -88,8 +92,10 @@
             </div>
 
             {{-- Payment --}}
-            <div class="bg-white rounded-lg shadow-sm p-6 space-y-4">
-                <h3 class="font-semibold text-gray-700 border-b pb-2">💳 Payment Details</h3>
+            <div class="bg-white rounded-lg shadow-sm p-6 space-y-4 border-l-4" style="border-left-color: #16a34a">
+                <h3 class="font-semibold pb-2 border-b flex items-center gap-2" style="color: #15803d">
+                    <span class="w-8 h-8 rounded-lg flex items-center justify-center text-base" style="background: #16a34a22">💳</span> Payment Details
+                </h3>
                 <p class="text-xs text-gray-400">These appear on all payment submission forms across the site.</p>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
@@ -135,14 +141,14 @@
                     </label>
                 </div>
 
-                <div class="pt-4 mt-2 border-t border-gray-100">
-                    <x-input-label value="Marital Status Discount" />
-                    <p class="text-xs text-gray-400 mb-2">Give a reduced (or fully waived) verification fee to applicants with a chosen marital status — e.g. free for widows and divorcees. Set the percentage to 100 for a complete waiver, or lower for a partial discount.</p>
+                <div class="mt-2 rounded-lg p-4" style="background: #16a34a0d; border: 1px solid #16a34a33">
+                    <p class="font-medium text-sm mb-1" style="color: #15803d">🏷️ Marital Status Discount</p>
+                    <p class="text-xs text-gray-500 mb-2">Give a reduced (or fully waived) verification fee to applicants with a chosen marital status — e.g. free for widows and divorcees. Set the percentage to 100 for a complete waiver, or lower for a partial discount.</p>
                     @php $discountStatuses = explode(',', $settings['nikah_discount_marital_statuses'] ?? ''); @endphp
                     <div class="flex flex-wrap gap-3 mb-3">
                         @foreach (['never_married' => 'Never Married', 'divorced' => 'Divorced', 'widowed' => 'Widowed', 'separated' => 'Separated', 'married' => 'Married'] as $val => $label)
                         <label class="flex items-center gap-1.5 text-sm text-gray-700">
-                            <input type="checkbox" name="nikah_discount_marital_statuses[]" value="{{ $val }}" {{ in_array($val, $discountStatuses) ? 'checked' : '' }} class="rounded border-gray-300 text-teal-600">
+                            <input type="checkbox" name="nikah_discount_marital_statuses[]" value="{{ $val }}" {{ in_array($val, $discountStatuses) ? 'checked' : '' }} class="rounded border-gray-300 text-green-600">
                             {{ $label }}
                         </label>
                         @endforeach
@@ -155,8 +161,10 @@
             </div>
 
             {{-- Social --}}
-            <div class="bg-white rounded-lg shadow-sm p-6 space-y-4">
-                <h3 class="font-semibold text-gray-700 border-b pb-2">📱 Social Media</h3>
+            <div class="bg-white rounded-lg shadow-sm p-6 space-y-4 border-l-4" style="border-left-color: #1D5FB8">
+                <h3 class="font-semibold pb-2 border-b flex items-center gap-2" style="color: #1D5FB8">
+                    <span class="w-8 h-8 rounded-lg flex items-center justify-center text-base" style="background: #1D5FB822">📱</span> Social Media
+                </h3>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                         <x-input-label value="WhatsApp Number" />
@@ -183,9 +191,9 @@
 
 
             {{-- SEO Settings --}}
-            <div class="bg-white rounded-xl shadow-sm p-6 mb-6">
-                <h3 class="font-semibold text-gray-700 mb-5 pb-2 border-b border-gray-100">
-                    🔍 SEO Settings
+            <div class="bg-white rounded-xl shadow-sm p-6 mb-6 border-l-4" style="border-left-color: #6D4AAE">
+                <h3 class="font-semibold mb-5 pb-2 border-b border-gray-100 flex items-center gap-2" style="color: #6D4AAE">
+                    <span class="w-8 h-8 rounded-lg flex items-center justify-center text-base" style="background: #6D4AAE22">🔍</span> SEO Settings
                 </h3>
                 <div class="space-y-4">
                     <div>
@@ -266,8 +274,10 @@
             </script>
             
             {{-- Integrations --}}
-            <div class="bg-white rounded-lg shadow-sm p-6 space-y-4">
-                <h3 class="font-semibold text-gray-700 border-b pb-2">🔌 Integrations</h3>
+            <div class="bg-white rounded-lg shadow-sm p-6 space-y-4 border-l-4" style="border-left-color: #D2691E">
+                <h3 class="font-semibold pb-2 border-b flex items-center gap-2" style="color: #b8591a">
+                    <span class="w-8 h-8 rounded-lg flex items-center justify-center text-base" style="background: #D2691E22">🔌</span> Integrations
+                </h3>
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
                         <x-input-label value="Google Tag Manager Container ID" />
@@ -282,9 +292,11 @@
                 </div>
             </div>
             {{-- Social Login (Google / Facebook / TikTok) --}}
-            <div class="bg-white rounded-lg shadow-sm p-6 space-y-6">
+            <div class="bg-white rounded-lg shadow-sm p-6 space-y-6 border-l-4" style="border-left-color: #B8455A">
                 <div>
-                    <h3 class="font-semibold text-gray-700 border-b pb-2">🔐 Social Login (Google / Facebook / TikTok)</h3>
+                    <h3 class="font-semibold pb-2 border-b flex items-center gap-2" style="color: #B8455A">
+                        <span class="w-8 h-8 rounded-lg flex items-center justify-center text-base" style="background: #B8455A22">🔐</span> Social Login (Google / Facebook / TikTok)
+                    </h3>
                     <p class="text-xs text-gray-400 mt-2">
                         Lets visitors register/sign in with one tap instead of filling a form. Each provider needs a Client ID and Client Secret from its own developer console, and that console needs to know the exact "Redirect URI" below — copy it in exactly, trailing slashes and all.
                     </p>
@@ -423,8 +435,10 @@
         </form>
 
         {{-- Demo Nikah Profiles — cold-start social proof, kept outside the settings form since it's its own action --}}
-        <div class="bg-white rounded-lg shadow-sm p-6 space-y-4 mt-6">
-            <h3 class="font-semibold text-gray-700 border-b pb-2">💍 Demo Nikah Profiles</h3>
+        <div class="bg-white rounded-lg shadow-sm p-6 space-y-4 mt-6 border-l-4" style="border-left-color: #2E8B8B">
+            <h3 class="font-semibold pb-2 border-b flex items-center gap-2" style="color: #2E8B8B">
+                <span class="w-8 h-8 rounded-lg flex items-center justify-center text-base" style="background: #2E8B8B22">💍</span> Demo Nikah Profiles
+            </h3>
             <p class="text-xs text-gray-400">
                 Placeholder verified profiles so the homepage "verified profiles" counter isn't stuck at 0 while the platform is new.
                 They're clearly tagged internally (<code>is_demo</code>) and never mixed up with real members. Remove them the moment you have enough real verified profiles.
