@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
+use App\Support\ModuleRedirects;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -28,14 +29,19 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
+        // A card click that sent a guest here (e.g. they already had an
+        // account and switched to the Sign In tab) still finishes that same
+        // journey — same explicit-module priority as RegisteredUserController.
+        $target = ModuleRedirects::resolve($request->input('module'));
+
         if (Auth::user()->isDeactivated()) {
             Auth::user()->reactivate();
 
-            return redirect()->intended(route('dashboard', absolute: false))
+            return redirect()->intended($target ?? route('dashboard', absolute: false))
                 ->with('status', 'Welcome back! Your account has been reactivated.');
         }
 
-        return redirect()->intended(route('dashboard', absolute: false));
+        return redirect()->intended($target ?? route('dashboard', absolute: false));
     }
 
     /**

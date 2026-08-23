@@ -6,6 +6,7 @@ use App\Http\Controllers\Auth\Concerns\RegistersMinimalUsers;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Rules\ValidPhoneNumber;
+use App\Support\ModuleRedirects;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -71,7 +72,7 @@ class RegisteredUserController extends Controller
         // effect on their very first dashboard view.
         $user->update([
             'nikah_module_enabled' => $request->boolean('nikah_module_enabled'),
-            'quran_module_enabled' => $request->boolean('quran_module_enabled'),
+            'quran_module_enabled' => $request->boolean('quran_module_enabled') || $request->input('module') === 'quran_live',
             'counseling_module_enabled' => $request->boolean('counseling_module_enabled'),
             'skills_module_enabled' => $request->boolean('skills_module_enabled'),
         ]);
@@ -80,11 +81,15 @@ class RegisteredUserController extends Controller
 
         session()->flash('conversion_event', 'user_registered');
 
-        // `intended()` still wins first — e.g. someone who registered from a
-        // shared Nikah profile link must land back on that exact page, not
-        // get diverted here. This default only kicks in when there's no
-        // intended URL waiting.
-        return redirect()->intended($this->postRegistrationRoute($user));
+        // `intended()` wins first — e.g. someone who registered from a
+        // shared Nikah profile link must land back on that exact page. Next,
+        // an explicit ?module= from a homepage card click (stronger signal
+        // than the interest checkboxes, since it's literally which card they
+        // tapped). The checkbox heuristic is the last-resort default for
+        // anyone who landed on /register directly.
+        return redirect()->intended(
+            ModuleRedirects::resolve($request->input('module')) ?? $this->postRegistrationRoute($user)
+        );
     }
 
     // A single interest picked at signup is a strong enough signal to skip

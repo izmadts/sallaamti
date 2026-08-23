@@ -3,6 +3,14 @@
      never drift apart. --}}
 <form method="POST" action="{{ route('register') }}" class="space-y-4">
     @csrf
+    <input type="hidden" name="module" value="{{ old('module', request('module')) }}">
+    @php
+        $moduleParam = old('module', request('module'));
+        $initNikah = old('nikah_module_enabled') !== null ? old('nikah_module_enabled') == '1' : ($moduleParam ? $moduleParam === 'nikah' : true);
+        $initQuran = old('quran_module_enabled') !== null ? old('quran_module_enabled') == '1' : ($moduleParam ? in_array($moduleParam, ['quran', 'quran_live']) : false);
+        $initCounseling = old('counseling_module_enabled') !== null ? old('counseling_module_enabled') == '1' : $moduleParam === 'counseling';
+        $initSkills = old('skills_module_enabled') !== null ? old('skills_module_enabled') == '1' : $moduleParam === 'skills';
+    @endphp
 
     {{-- Name --}}
     <div>
@@ -62,7 +70,7 @@
          what shows up in this member's menu/dashboard after signup AND which
          page they land on right after registering — changeable anytime from
          the profile page. --}}
-    <div x-data="{ nikah: true, quran: false, counseling: false, skills: false }">
+    <div x-data="{ nikah: {{ $initNikah ? 'true' : 'false' }}, quran: {{ $initQuran ? 'true' : 'false' }}, counseling: {{ $initCounseling ? 'true' : 'false' }}, skills: {{ $initSkills ? 'true' : 'false' }} }">
         <label class="auth-label">
             {{ __('db.What brings you to Sallaamti?') }}
             <span class="text-gray-400 block text-xs mt-0.5 font-normal">{{ __('db.Pick one or more — we\'ll take you straight there after you sign up.') }}</span>

@@ -5,6 +5,7 @@
 
 <form method="POST" action="{{ route('login') }}" class="space-y-5">
     @csrf
+    <input type="hidden" name="module" value="{{ old('module', request('module')) }}">
 
     <div>
         <label class="auth-label">{{ __('db.Email Address') }}</label>
