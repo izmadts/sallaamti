@@ -11,6 +11,7 @@ class NikahProfile extends Model
 
     protected $fillable = [
         'user_id',
+        'created_by',
         'public_token',
         'age',
         'date_of_birth',
@@ -149,6 +150,19 @@ class NikahProfile extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    // Null for a self-registered profile — set only when staff (admin or
+    // matchmaker) entered it on the member's behalf via the walk-in
+    // wizard. See Admin\NikahProfileWizardController::finalize().
+    public function createdBy()
+    {
+        return $this->belongsTo(User::class, 'created_by');
+    }
+
+    public function isWalkIn(): bool
+    {
+        return $this->created_by !== null;
     }
 
     public function sentInterests()

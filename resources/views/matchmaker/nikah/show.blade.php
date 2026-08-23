@@ -28,6 +28,10 @@
                     </span>
                 </div>
 
+                @if ($profile->isWalkIn())
+                <p class="text-xs text-amber-700 mb-4">🚶 Walk-in — entered by {{ $profile->createdBy?->name ?? 'a staff member (account since removed)' }}</p>
+                @endif
+
                 <dl class="grid grid-cols-2 gap-x-6 gap-y-2 text-sm">
                     <div><dt class="text-gray-400">Height</dt><dd>{{ $profile->height ?: '—' }}</dd></div>
                     <div><dt class="text-gray-400">Marital Status</dt><dd>{{ ucfirst(str_replace('_', ' ', $profile->marital_status ?? '—')) }}</dd></div>

@@ -23,6 +23,9 @@
                         <p class="text-sm text-gray-500">{{ $profile->user?->email ?: '— no email —' }} · {{ $profile->user?->phone ?: '— no phone —' }}</p>
                         <p class="text-sm text-gray-500">{{ $profile->age }} yrs, {{ ucfirst($profile->user?->gender ?? '—') }}, {{ $profile->city }}, {{ $profile->country }}</p>
                         <p class="text-xs text-gray-400 mt-1">Profile created {{ $profile->created_at->format('d M Y') }} @if ($profile->user) · Account created {{ $profile->user->created_at->format('d M Y') }} @endif</p>
+                        @if ($profile->isWalkIn())
+                        <p class="text-xs text-amber-700 mt-0.5">🚶 Walk-in — entered by {{ $profile->createdBy?->name ?? 'a staff member (account since removed)' }}</p>
+                        @endif
                     </div>
                 </div>
                 <div class="flex flex-col items-end gap-2">

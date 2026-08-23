@@ -233,6 +233,7 @@ class NikahProfileWizardController extends Controller
         $user->update(['gender' => $accountData['gender'], 'city' => $profileData['city'] ?? null]);
 
         $profileData['user_id'] = $user->id;
+        $profileData['created_by'] = auth()->id();
         $profileData['allow_photo_sharing'] = (bool) ($profileData['allow_photo_sharing'] ?? false);
         $profileData['open_to_polygamy'] = (bool) ($profileData['open_to_polygamy'] ?? false);
         $profileData['payment_amount'] = NikahProfile::feeForMaritalStatus($profileData['marital_status'] ?? null);
@@ -249,8 +250,21 @@ class NikahProfileWizardController extends Controller
             $status .= ' No email was provided, so no login link could be sent — add one to their account later via Users, then use "Send Password Reset Link" there.';
         }
 
+        $fee = $profile->applicableVerificationFee();
+        $status .= $fee > 0
+            ? " A Rs. {$fee} verification fee is due before this profile can be verified — the client will be asked to pay it themselves next time they log in, or an admin can confirm payment manually from the Nikah Payments page."
+            : ' No verification fee applies — it can be reviewed and verified as-is.';
+
         $this->clearWizardSession();
 
-        return redirect()->route('admin.nikah.show', $profile)->with('status', $status);
+        // A plain matchmaker (nikah.create-profile only, not nikah.view/
+        // nikah.manage) can't open the admin verification-review page —
+        // that was sending them straight into a 403 right after finishing
+        // the wizard. Send them to their own Browse Profiles view of the
+        // same profile instead; a full admin still lands on the real
+        // review page.
+        $redirectRoute = auth()->user()->can('nikah.view') ? 'admin.nikah.show' : 'matchmaker.nikah.show';
+
+        return redirect()->route($redirectRoute, $profile)->with('status', $status);
     }
 }
