@@ -1,7 +1,7 @@
 <x-matchmaker-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl leading-tight">My Clients</h2>
-        <p class="text-sm">Everyone currently assigned to you.</p>
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight">My Clients</h2>
+        <p class="text-sm text-gray-500">Everyone currently assigned to you.</p>
     </x-slot>
 
     <div class="max-w-6xl mx-auto space-y-6">
@@ -58,7 +58,7 @@
             <div class="overflow-x-auto">
                 <table class="w-full text-sm">
                     <thead>
-                        <tr class="text-left text-xs uppercase tracking-wide text-gray-500 border-b" style="background: #FBF6F9;">
+                        <tr class="text-left text-xs uppercase tracking-wide text-gray-500 border-b bg-gray-50">
                             <th class="px-4 py-3">Client</th>
                             <th class="px-4 py-3">Status</th>
                             <th class="px-4 py-3">Follow-up</th>

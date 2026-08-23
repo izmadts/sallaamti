@@ -1,7 +1,10 @@
 {{-- resources/views/components/matchmaker-layout.blade.php --}}
-{{-- The matchmaker's own themed workspace shell — deliberately NOT the
-     admin panel's teal-900 look. Deep plum/gold, its own identity, per the
-     explicit "own color theme not as admin dashboard" requirement. --}}
+{{-- Matches the admin panel's own teal-900 chrome intentionally — the
+     matchmaker workflow routinely hands off into admin-styled pages (the
+     walk-in Nikah wizard, admin.nikah.show), so a different palette here
+     just meant a jarring color flip mid-task with no real benefit. Kept as
+     its own component (distinct nav items, "Match Maker Desk" label) but
+     visually it's the same shell as x-admin-layout. --}}
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}" dir="{{ ($isRtl ?? false) ? 'rtl' : 'ltr' }}">
 
@@ -14,20 +17,25 @@
 
     <style>
         :root {
-            --mm-plum: #6B2447;
-            --mm-plum-dark: #4A1830;
-            --mm-plum-light: #8C3564;
-            --mm-gold: #C9A227;
-            --mm-gold-light: #E4C55E;
-        }
-
-        .mm-gradient {
-            background: linear-gradient(135deg, var(--mm-plum) 0%, var(--mm-plum-dark) 100%);
+            /* Kept the --mm-* names so every matchmaker view that already
+               references them (dashboard, clients index/create/show) picks
+               up the admin palette automatically without needing every
+               inline style="" touched individually. */
+            --mm-plum: #0f766e;
+            /* Tailwind teal-700 — matches admin's bg-teal-700 active nav state */
+            --mm-plum-dark: #134e4a;
+            /* Tailwind teal-900 — matches admin's bg-teal-900 sidebar */
+            --mm-plum-light: #0d9488;
+            /* Tailwind teal-600 */
+            --mm-gold: #0d9488;
+            /* Tailwind teal-600 — was a gold accent, now teal to match admin */
+            --mm-gold-light: #2dd4bf;
+            /* Tailwind teal-400 — matches admin's muted sidebar text */
         }
     </style>
 </head>
 
-<body class="bg-[#FBF6F9] font-sans antialiased" x-data="{ sidebarOpen: false }">
+<body class="bg-gray-100 font-sans antialiased" x-data="{ sidebarOpen: false }">
 
     {{-- Mobile sidebar overlay --}}
     <div x-show="sidebarOpen" x-cloak class="fixed inset-0 z-20 bg-black/50 lg:hidden" @click="sidebarOpen = false"></div>
@@ -36,21 +44,20 @@
 
         {{-- ===== SIDEBAR ===== --}}
         <aside
-            class="fixed inset-y-0 left-0 z-30 w-64 text-white flex flex-col transform transition-transform duration-200 ease-in-out
+            class="fixed inset-y-0 left-0 z-30 w-64 bg-teal-900 text-white flex flex-col transform transition-transform duration-200 ease-in-out
                    lg:static lg:translate-x-0"
-            style="background: var(--mm-plum-dark);"
             :class="sidebarOpen ? 'translate-x-0' : '-translate-x-full'">
 
             {{-- Logo --}}
-            <div class="flex items-center gap-3 px-5 py-5 border-b" style="border-color: var(--mm-plum);">
+            <div class="flex items-center gap-3 px-5 py-5 border-b border-teal-700">
                 @if (file_exists(public_path('images/sallaamti-logo.png')))
-                <img src="{{ asset('images/sallaamti-logo.png') }}" class="w-8 h-8 object-contain rounded-full bg-white/10 p-0.5">
+                <img src="{{ asset('images/sallaamti-logo.png') }}" class="w-8 h-8 object-contain">
                 @else
-                <div class="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold" style="background: var(--mm-gold); color: var(--mm-plum-dark);">S</div>
+                <div class="w-8 h-8 bg-teal-600 rounded-full flex items-center justify-center text-xs font-bold">S</div>
                 @endif
                 <div>
                     <p class="font-bold text-white leading-none">Sallaamti</p>
-                    <p class="text-xs" style="color: var(--mm-gold-light);">Match Maker Desk</p>
+                    <p class="text-teal-400 text-xs">Match Maker Desk</p>
                 </div>
             </div>
 
@@ -59,51 +66,46 @@
 
                 <a href="{{ route('dashboard.matchmaker') }}"
                     class="flex items-center gap-3 px-3 py-2 rounded-lg transition
-                          {{ request()->routeIs('dashboard.matchmaker') ? 'text-white' : 'text-white/70 hover:bg-white/10 hover:text-white' }}"
-                    @if(request()->routeIs('dashboard.matchmaker')) style="background: var(--mm-plum);" @endif>
+                          {{ request()->routeIs('dashboard.matchmaker') ? 'bg-teal-700 text-white' : 'text-teal-100 hover:bg-teal-800' }}">
                     <span class="text-base">🏠</span> Dashboard
                 </a>
 
-                <p class="text-xs uppercase tracking-widest px-3 pt-4 pb-1" style="color: var(--mm-gold-light);">Clients</p>
+                <p class="text-teal-500 text-xs uppercase tracking-widest px-3 pt-4 pb-1">Clients</p>
 
                 <a href="{{ route('matchmaker.clients.index') }}"
                     class="flex items-center gap-3 px-3 py-2 rounded-lg transition
-                          {{ request()->routeIs('matchmaker.clients.*') ? 'text-white' : 'text-white/70 hover:bg-white/10 hover:text-white' }}"
-                    @if(request()->routeIs('matchmaker.clients.*')) style="background: var(--mm-plum);" @endif>
+                          {{ request()->routeIs('matchmaker.clients.*') ? 'bg-teal-700 text-white' : 'text-teal-100 hover:bg-teal-800' }}">
                     <span class="text-base">🗂️</span> My Clients
                 </a>
                 <a href="{{ route('matchmaker.clients.create') }}"
                     class="flex items-center gap-3 px-3 py-2 rounded-lg transition
-                          {{ request()->routeIs('matchmaker.clients.create') ? 'text-white' : 'text-white/70 hover:bg-white/10 hover:text-white' }}"
-                    @if(request()->routeIs('matchmaker.clients.create')) style="background: var(--mm-plum);" @endif>
+                          {{ request()->routeIs('matchmaker.clients.create') ? 'bg-teal-700 text-white' : 'text-teal-100 hover:bg-teal-800' }}">
                     <span class="text-base">➕</span> Add Client
                 </a>
 
-                <p class="text-xs uppercase tracking-widest px-3 pt-4 pb-1" style="color: var(--mm-gold-light);">Nikah Profiles</p>
+                <p class="text-teal-500 text-xs uppercase tracking-widest px-3 pt-4 pb-1">Nikah Profiles</p>
 
                 <a href="{{ route('matchmaker.nikah.index') }}"
                     class="flex items-center gap-3 px-3 py-2 rounded-lg transition
-                          {{ request()->routeIs('matchmaker.nikah.index') || request()->routeIs('matchmaker.nikah.show') ? 'text-white' : 'text-white/70 hover:bg-white/10 hover:text-white' }}"
-                    @if(request()->routeIs('matchmaker.nikah.index') || request()->routeIs('matchmaker.nikah.show')) style="background: var(--mm-plum);" @endif>
+                          {{ request()->routeIs('matchmaker.nikah.index') || request()->routeIs('matchmaker.nikah.show') ? 'bg-teal-700 text-white' : 'text-teal-100 hover:bg-teal-800' }}">
                     <span class="text-base">🔎</span> Browse Profiles
                 </a>
                 <a href="{{ route('matchmaker.nikah.requests') }}"
                     class="flex items-center gap-3 px-3 py-2 rounded-lg transition
-                          {{ request()->routeIs('matchmaker.nikah.requests') ? 'text-white' : 'text-white/70 hover:bg-white/10 hover:text-white' }}"
-                    @if(request()->routeIs('matchmaker.nikah.requests')) style="background: var(--mm-plum);" @endif>
+                          {{ request()->routeIs('matchmaker.nikah.requests') ? 'bg-teal-700 text-white' : 'text-teal-100 hover:bg-teal-800' }}">
                     <span class="text-base">📨</span> My Contact Requests
                 </a>
             </nav>
 
             {{-- Bottom: Back to site --}}
-            <div class="px-3 py-4 border-t space-y-1" style="border-color: var(--mm-plum);">
+            <div class="px-3 py-4 border-t border-teal-700 space-y-1">
                 <a href="{{ route('dashboard') }}"
-                    class="flex items-center gap-3 px-3 py-2 rounded-lg text-white/60 hover:bg-white/10 hover:text-white text-sm transition">
+                    class="flex items-center gap-3 px-3 py-2 rounded-lg text-teal-300 hover:bg-teal-800 text-sm transition">
                     <span class="text-base">↩️</span> Back to Site
                 </a>
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
-                    <button class="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-white/60 hover:bg-white/10 hover:text-white text-sm transition text-left">
+                    <button class="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-teal-300 hover:bg-teal-800 text-sm transition text-left">
                         <span class="text-base">🚪</span> Logout
                     </button>
                 </form>
@@ -114,10 +116,10 @@
         <div class="flex-1 flex flex-col overflow-hidden">
 
             {{-- Top bar --}}
-            <header class="mm-gradient px-4 py-3 flex items-center justify-between flex-shrink-0 shadow-md">
+            <header class="bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between flex-shrink-0">
                 <div class="flex items-center gap-3">
                     {{-- Mobile menu toggle --}}
-                    <button @click="sidebarOpen = !sidebarOpen" class="lg:hidden text-white/80 hover:text-white">
+                    <button @click="sidebarOpen = !sidebarOpen" class="lg:hidden text-gray-500 hover:text-gray-700">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
                         </svg>
@@ -125,16 +127,16 @@
 
                     {{-- Page title slot --}}
                     @isset($header)
-                    <div class="text-white [&_h2]:text-white [&_p]:text-white/80">{{ $header }}</div>
+                    <div>{{ $header }}</div>
                     @endisset
                 </div>
 
                 {{-- Matchmaker info --}}
                 <div class="flex items-center gap-3">
                     <x-language-switcher />
-                    <span class="text-xs hidden sm:block" style="color: var(--mm-gold-light);">{{ now()->format('d M Y') }}</span>
-                    <img src="{{ Auth::user()->avatarUrl() }}" class="w-8 h-8 rounded-full object-cover ring-2" style="--tw-ring-color: var(--mm-gold);">
-                    <span class="text-sm text-white hidden sm:block">{{ Auth::user()->name }}</span>
+                    <span class="text-xs text-gray-400 hidden sm:block">{{ now()->format('d M Y') }}</span>
+                    <img src="{{ Auth::user()->avatarUrl() }}" class="w-8 h-8 rounded-full object-cover">
+                    <span class="text-sm text-gray-700 hidden sm:block">{{ Auth::user()->name }}</span>
                 </div>
             </header>
 

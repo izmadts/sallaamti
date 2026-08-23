@@ -1,9 +1,9 @@
 <x-matchmaker-layout>
     <x-slot name="header">
         <div class="flex items-center gap-2 text-sm">
-            <a href="{{ route('matchmaker.clients.index') }}" class="text-white/70 hover:text-white">My Clients</a>
-            <span class="text-white/50">›</span>
-            <span class="font-semibold">Add Client</span>
+            <a href="{{ route('matchmaker.clients.index') }}" class="text-gray-400 hover:text-gray-600">My Clients</a>
+            <span class="text-gray-300">›</span>
+            <span class="text-gray-700 font-semibold">Add Client</span>
         </div>
     </x-slot>
 

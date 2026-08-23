@@ -1,12 +1,12 @@
 <x-matchmaker-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl leading-tight">Match Maker Desk — {{ $user->name }}</h2>
-        <p class="text-sm">Your clients, proposals, and responses in one place.</p>
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight">Match Maker Desk — {{ $user->name }}</h2>
+        <p class="text-sm text-gray-500">Your clients, proposals, and responses in one place.</p>
     </x-slot>
 
     <div class="max-w-6xl mx-auto space-y-6">
 
-        <div class="rounded-xl p-4 flex items-start gap-3 bg-white border" style="border-color: #6B244733">
+        <div class="rounded-xl p-4 flex items-start gap-3" style="background: var(--teal-light); border: 1px solid #0d6b6b33">
             <span class="text-xl">🛡️</span>
             <p class="text-sm text-gray-700">
                 Contact details, CNIC, and photos stay hidden everywhere in this workspace. Proposal links you send are logged (time, device, approximate location) for everyone's safety.
@@ -17,7 +17,7 @@
         <div class="flex flex-wrap gap-3">
             <a href="{{ route('matchmaker.clients.create') }}" class="text-white text-sm font-semibold px-4 py-2.5 rounded-lg hover:opacity-90 hover:-translate-y-0.5 transition shadow-sm" style="background: var(--mm-plum);">➕ Add Client</a>
             <a href="{{ route('matchmaker.clients.index') }}" class="text-white text-sm font-semibold px-4 py-2.5 rounded-lg hover:opacity-90 hover:-translate-y-0.5 transition shadow-sm" style="background: var(--mm-plum-dark);">🗂️ My Clients</a>
-            <a href="{{ route('matchmaker.nikah.index') }}" class="text-sm font-semibold px-4 py-2.5 rounded-lg hover:-translate-y-0.5 transition shadow-sm" style="background: var(--mm-gold); color: var(--mm-plum-dark);">🔎 Browse Nikah Profiles</a>
+            <a href="{{ route('matchmaker.nikah.index') }}" class="text-white text-sm font-semibold px-4 py-2.5 rounded-lg hover:opacity-90 hover:-translate-y-0.5 transition shadow-sm" style="background: var(--mm-gold);">🔎 Browse Nikah Profiles</a>
             <a href="{{ route('matchmaker.nikah.requests') }}" class="text-gray-700 text-sm font-semibold px-4 py-2.5 rounded-lg border border-gray-300 hover:bg-gray-50 transition">📨 My Contact Requests</a>
         </div>
 
