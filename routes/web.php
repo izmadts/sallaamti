@@ -671,6 +671,7 @@ Route::middleware(['auth', 'matchmaker'])->prefix('matchmaker')->name('matchmake
     Route::delete('/clients/{lead}/proposal-batches/{batch}/proposals/{proposal}', [\App\Http\Controllers\Matchmaker\ClientController::class, 'removeProposal'])->name('clients.batches.proposals.remove');
     Route::post('/clients/{lead}/proposal-batches/{batch}/send', [\App\Http\Controllers\Matchmaker\ClientController::class, 'sendBatch'])->name('clients.batches.send');
     Route::post('/clients/{lead}/proposal-batches/{batch}/proposals/{proposal}/regenerate-link', [\App\Http\Controllers\Matchmaker\ClientController::class, 'regenerateLink'])->name('clients.batches.proposals.regenerate-link');
+    Route::post('/clients/{lead}/progress-link', [\App\Http\Controllers\Matchmaker\ClientController::class, 'regenerateProgressLink'])->name('clients.progress-link.regenerate');
 });
 
 // Public, no-login signed-link actions — reachable only via a link a
@@ -680,6 +681,8 @@ Route::middleware(['auth', 'matchmaker'])->prefix('matchmaker')->name('matchmake
 Route::middleware('signed')->prefix('m')->name('public.matchmaking.')->group(function () {
     Route::get('/proposal/{proposal}', [\App\Http\Controllers\Public\MatchmakingActionController::class, 'showProposal'])->name('proposal.show');
     Route::post('/proposal/{proposal}/respond', [\App\Http\Controllers\Public\MatchmakingActionController::class, 'respondProposal'])->name('proposal.respond');
+    Route::get('/progress/{lead}', [\App\Http\Controllers\Public\MatchmakingProgressController::class, 'show'])->name('progress.show');
+    Route::post('/progress/{lead}/verify', [\App\Http\Controllers\Public\MatchmakingProgressController::class, 'verify'])->name('progress.verify');
 });
 
 require __DIR__ . '/auth.php';

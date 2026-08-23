@@ -137,6 +137,27 @@
                         <button class="text-white text-sm font-semibold px-5 py-2.5 rounded-lg hover:opacity-90 hover:-translate-y-0.5 transition shadow-sm" style="background: var(--mm-plum);">Save Changes</button>
                     </div>
                 </form>
+
+                {{-- Progress page link — a standing link the client can revisit to see their own status/timeline/proposals, gated by their WhatsApp number's last 7 digits each visit --}}
+                <div class="mt-6 pt-6 border-t">
+                    <h4 class="font-semibold text-gray-700 mb-1">🔗 Client Progress Page</h4>
+                    <p class="text-xs text-gray-500 mb-3">A standing link {{ $lead->name }} can revisit any time to see their status, timeline, and proposal history. They'll enter the last 7 digits of the phone number above to unlock it — every time, nothing is remembered.</p>
+
+                    @php $progressLink = \App\Http\Controllers\Matchmaker\ClientController::progressLink($lead); @endphp
+                    <div class="flex flex-wrap items-center gap-2">
+                        @if ($progressLink)
+                        <input type="text" readonly value="{{ $progressLink }}" class="text-xs border-gray-200 rounded-lg flex-1 min-w-[16rem] bg-gray-50" onclick="this.select()" id="progress-link">
+                        <button type="button" onclick="navigator.clipboard.writeText(document.getElementById('progress-link').value); this.textContent = 'Copied!'; setTimeout(() => this.textContent = 'Copy Link', 1500);" class="text-xs font-semibold px-2 py-1.5 rounded-lg text-white hover:opacity-90" style="background: var(--mm-plum);">Copy Link</button>
+                        @endif
+                        <form method="POST" action="{{ route('matchmaker.clients.progress-link.regenerate', $lead) }}" @if($progressLink) onsubmit="return confirm('Generate a new progress link? The old one will stop working immediately.')" @endif>
+                            @csrf
+                            <button class="text-xs font-semibold px-2 py-1.5 rounded-lg border" style="border-color: var(--mm-plum); color: var(--mm-plum);">{{ $progressLink ? '↻ Regenerate' : '+ Generate Link' }}</button>
+                        </form>
+                    </div>
+                    @unless ($lead->phone)
+                    <p class="text-xs text-amber-700 mt-2">Add a phone number above first — that's what {{ $lead->name }} will enter to unlock the page.</p>
+                    @endunless
+                </div>
             </div>
 
             {{-- === REQUIREMENTS === --}}

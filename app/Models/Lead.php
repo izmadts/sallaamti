@@ -21,6 +21,7 @@ class Lead extends Model
         'notes',
         'next_follow_up_at',
         'nikah_profile_id',
+        'progress_link_token',
         'package',
         'package_price',
         'package_started_at',

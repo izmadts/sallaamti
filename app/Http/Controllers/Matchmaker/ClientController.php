@@ -369,6 +369,34 @@ class ClientController extends Controller
         return URL::signedRoute('public.matchmaking.proposal.show', ['proposal' => $proposal->id, 'token' => $proposal->link_token]);
     }
 
+    // A standing link the client can revisit any time to see their own
+    // status, timeline, and full proposal/response history — gated by the
+    // last 7 digits of the WhatsApp number on file rather than a login,
+    // re-checked on every visit (see Public\MatchmakingProgressController).
+    // One button does both first-generation and regeneration: regenerating
+    // kills the old copy the same way it does for a single proposal link.
+    public function regenerateProgressLink(Lead $lead)
+    {
+        $this->authorizeClient($lead);
+        abort_unless($lead->phone, 422, 'Add a phone number for this client first — it\'s what they\'ll enter to unlock the page.');
+
+        $hadTokenAlready = (bool) $lead->progress_link_token;
+        $lead->update(['progress_link_token' => Str::random(40)]);
+
+        MatchmakingTimelineEvent::log($lead, $lead->nikahProfile, 'progress_link_regenerated', 'Progress page link was ' . ($hadTokenAlready ? 'regenerated — the old copy no longer works' : 'generated') . '.');
+
+        return back()->with('status', 'Progress link ready — copy it below and send it to ' . $lead->name . '. They\'ll need the last 7 digits of the WhatsApp number on file to view it, every time.');
+    }
+
+    public static function progressLink(Lead $lead): ?string
+    {
+        if (!$lead->progress_link_token) {
+            return null;
+        }
+
+        return URL::signedRoute('public.matchmaking.progress.show', ['lead' => $lead->id, 'token' => $lead->progress_link_token]);
+    }
+
     private function authorizeClient(Lead $lead): void
     {
         if (auth()->user()->hasRole('admin')) {
