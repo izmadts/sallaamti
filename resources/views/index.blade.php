@@ -89,14 +89,14 @@
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-5 mt-10">
                 @foreach ($modules as $m)
                 <a href="{{ auth()->check() ? (\App\Support\ModuleRedirects::resolve($m['key']) ?? route('dashboard')) : route('register', ['module' => $m['key']]) }}"
-                    class="group relative flex flex-col items-center text-center rounded-2xl p-5 sm:p-6 transition-all duration-200 hover:-translate-y-1 hover:shadow-xl bg-white/95 backdrop-blur-sm"
-                    style="border: 2px solid {{ $m['color'] }}">
+                    class="group relative flex flex-col items-center text-center rounded-2xl p-5 sm:p-6 transition-all duration-200 hover:-translate-y-1 hover:shadow-xl"
+                    style="background: rgba(255,255,255,0.92); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 2px solid {{ $m['color'] }}">
                     <span class="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl mb-3 transition-transform duration-200 group-hover:scale-110"
                         style="background: {{ $m['color'] }}">
                         {{ $m['emoji'] }}
                     </span>
-                    <span class="font-bold text-sm sm:text-base" style="color: color-mix(in srgb, {{ $m['color'] }} 85%, black)">{{ $m['title'] }}</span>
-                    <span class="text-xs text-gray-500 mt-0.5">{{ $m['tagline'] }}</span>
+                    <span class="font-bold text-sm sm:text-base" style="color: {{ $m['color'] }}">{{ $m['title'] }}</span>
+                    <span class="text-xs text-gray-600 mt-0.5">{{ $m['tagline'] }}</span>
                 </a>
                 @endforeach
             </div>
