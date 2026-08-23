@@ -39,12 +39,12 @@
                     <div class="border rounded-lg p-4 flex justify-between items-start">
                         <div>
                             <p class="text-xs text-gray-400">Basic Info</p>
-                            <p class="text-sm text-gray-800">Age: {{ $data['age'] }} @if (!empty($data['height'])) &middot; Height: {{ $data['height'] }} @endif</p>
+                            <p class="text-sm text-gray-800">Age: {{ !empty($data['date_of_birth']) ? \Illuminate\Support\Carbon::parse($data['date_of_birth'])->age : '—' }} @if (!empty($data['height'])) &middot; Height: {{ $data['height'] }} @endif</p>
                             <p class="text-sm text-gray-800">{{ ucfirst(str_replace('_', ' ', $data['marital_status'])) }}</p>
                             @if (!empty($data['education']) || !empty($data['profession']))
                             <p class="text-sm text-gray-600">{{ $data['education'] ?? '' }}{{ !empty($data['education']) && !empty($data['profession']) ? ' — ' : '' }}{{ $data['profession'] ?? '' }}</p>
                             @endif
-                            <p class="text-sm text-gray-600">{{ $data['city'] }}, {{ $data['state'] ? $data['state'] . ', ' : '' }}{{ $data['country'] }}</p>
+                            <p class="text-sm text-gray-600">{{ $data['city'] ?? '' }}, {{ !empty($data['state']) ? $data['state'] . ', ' : '' }}{{ $data['country'] ?? '' }}</p>
                         </div>
                         <a href="{{ route('admin.nikah.profiles.create.step', 'basic') }}" class="text-xs text-teal-700 hover:underline">Edit</a>
                     </div>

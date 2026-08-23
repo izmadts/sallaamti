@@ -25,8 +25,8 @@
 
                 @php
                 $sections = [
-                    'basic' => ['Age' => 'age', 'Height' => 'height', 'Marital Status' => 'marital_status', 'Education' => 'education', 'Profession' => 'profession', 'City' => 'city', 'Country' => 'country'],
-                    'family' => ['Caste' => 'caste', 'Family Type' => 'family_type', 'Ethnicity' => 'ethnicity', 'Language' => 'language', 'Guardian Name' => 'guardian_name', 'Guardian Contact' => 'guardian_contact', 'Guardian Relation' => 'guardian_relation'],
+                    'basic' => ['Age' => 'date_of_birth', 'Height' => 'height', 'Marital Status' => 'marital_status', 'Education' => 'education', 'Profession' => 'profession', 'City' => 'city', 'Country' => 'country'],
+                    'family' => ['Caste' => 'caste', 'Family Type' => 'family_type', 'Ethnicity' => 'ethnicity', 'Language' => 'languages', 'Guardian Name' => 'guardian_name', 'Guardian Contact' => 'guardian_contact', 'Guardian Relation' => 'guardian_relation'],
                     'deen' => ['Sect' => 'sect', 'Prayer Frequency' => 'prayer_frequency', 'Hijab/Beard' => 'hijab_or_beard', 'Smokes' => 'smokes', 'Diet' => 'diet', 'Open to Polygamy' => 'open_to_polygamy'],
                     'about' => ['About' => 'about', 'Expectations' => 'expectations', 'Preferred Age Range' => null, 'Preferred City' => 'pref_city', 'Preferred Sect' => 'pref_sect', 'Preferred Education' => 'pref_education', 'Preferred Marital Status' => 'pref_marital_status'],
                     'verification' => ['CNIC Number' => 'cnic_number', 'Visibility' => 'visibility'],
@@ -47,6 +47,10 @@
                                 <dd class="text-gray-800">
                                     @if ($label === 'Preferred Age Range')
                                         {{ $data['pref_min_age'] ?? '—' }} – {{ $data['pref_max_age'] ?? '—' }}
+                                    @elseif ($label === 'Age')
+                                        {{ !empty($data['date_of_birth']) ? \Illuminate\Support\Carbon::parse($data['date_of_birth'])->age : '—' }}
+                                    @elseif ($label === 'Language')
+                                        {{ collect($data['languages'] ?? [])->push($data['language_other'] ?? null)->filter()->implode(', ') ?: '—' }}
                                     @elseif ($key === 'open_to_polygamy')
                                         {{ !empty($data[$key]) ? __('db.Yes') : __('db.No') }}
                                     @else
