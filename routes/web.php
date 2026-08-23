@@ -576,6 +576,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
         Route::post('languages/{language}/set-default', [LanguageController::class, 'setDefault'])->name('languages.set-default');
 
         Route::get('translations', [TranslationController::class, 'index'])->name('translations.index');
+        Route::post('translations/rescan', [TranslationController::class, 'rescan'])->name('translations.rescan');
         Route::get('translations/fetch/{locale}', [TranslationController::class, 'fetchByLocale'])->name('translations.fetch');
         Route::post('translations', [TranslationController::class, 'store'])->name('translations.store');
         Route::put('translations/{translation}', [TranslationController::class, 'update'])->name('translations.update');
