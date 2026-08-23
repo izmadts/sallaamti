@@ -89,6 +89,7 @@
                     @endif
                     <a class="text-gray-300 hover:text-white mb-2" href="{{ route('blog.index') }}"><i class="fa fa-check text-[--teal] mr-2"></i>{{ __('db.Blog') }}</a>
                     <a class="text-gray-300 hover:text-white mb-2" href="{{ url('/team') }}"><i class="fa fa-check text-[--teal] mr-2"></i>{{ __('db.Team') }}</a>
+                    <a class="text-gray-300 hover:text-white mb-2" href="{{ url('/testimonial') }}"><i class="fa fa-check text-[--teal] mr-2"></i>{{ __('db.Testimonials') }}</a>
                     <a class="text-gray-300 hover:text-white mb-2" href="{{ url('/contact') }}"><i class="fa fa-check text-[--teal] mr-2"></i>{{ __('db.Contact us') }}</a>
                     <a class="text-gray-300 hover:text-white mb-2" href="{{ url('/donate') }}"><i class="fa fa-check text-[--teal] mr-2"></i>{{ __('db.Donations') }}</a>
                     <a class="text-gray-300 hover:text-white mb-2" href="{{ url('/volunteer') }}"><i class="fa fa-check text-[--teal] mr-2"></i>{{ __('db.Become Volunteer') }}</a>

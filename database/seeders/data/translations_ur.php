@@ -14,6 +14,7 @@ return [
     'Courses' => 'کورسز',
     'Contact' => 'رابطہ',
     'Team' => 'ٹیم',
+    'My Testimonials' => 'میرے تجربات',
     'Wall' => 'وال',
     'Contact us' => 'ہم سے رابطہ کریں',
     'Log In' => 'لاگ ان',

@@ -75,6 +75,9 @@
             <a href="{{ route('donate.create') }}" class="flex items-center gap-3 px-2 py-2 rounded-lg text-sm text-gray-600 hover:bg-gray-50 transition">
                 <span class="text-lg">💝</span> {{ __('db.Donate') }}
             </a>
+            <a href="{{ route('testimonials.mine') }}" class="flex items-center gap-3 px-2 py-2 rounded-lg text-sm text-gray-600 hover:bg-gray-50 transition">
+                <span class="text-lg">⭐</span> {{ __('db.My Testimonials') }}
+            </a>
         </div>
 
     </div>
