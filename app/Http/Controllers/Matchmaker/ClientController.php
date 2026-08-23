@@ -14,6 +14,7 @@ use App\Models\ProposalBatch;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Str;
 
 // The matchmaker's own themed workspace — separate routes/views from
 // Admin\LeadController (which stays exactly as-is for admin's global
@@ -328,7 +329,9 @@ class ClientController extends Controller
         }
 
         $now = now();
-        $batch->proposals()->update(['status' => 'sent', 'sent_at' => $now]);
+        foreach ($batch->proposals as $proposal) {
+            $proposal->update(['status' => 'sent', 'sent_at' => $now, 'link_token' => $proposal->link_token ?? Str::random(40)]);
+        }
         $batch->update(['status' => 'sent', 'sent_at' => $now]);
 
         MatchmakingTimelineEvent::log($lead, $lead->nikahProfile, 'proposal_batch_sent', "Proposal Batch #{$batch->batch_number} sent ({$batch->proposals()->count()} candidates).");
@@ -336,17 +339,34 @@ class ClientController extends Controller
         return back()->with('status', "Batch #{$batch->batch_number} marked as sent — copy the link below for each candidate and send it to {$lead->name} however reaches them best.");
     }
 
-    // Stable across repeat views (same sent_at + 14-day window each time)
-    // rather than re-randomizing on every page load, so a link the
-    // matchmaker already copied and sent doesn't silently stop matching
-    // what's shown on screen.
+    // The link doesn't expire on its own — it stays valid until the client
+    // actually responds, since a matchmaker relaying it by hand (WhatsApp,
+    // SMS, a phone call) has no control over how quickly it reaches them.
+    // The only way to kill a copy that's already out is regenerateLink()
+    // below, which swaps the token so the old URL stops matching.
+    public function regenerateLink(Lead $lead, ProposalBatch $batch, MatchProposal $proposal)
+    {
+        $this->authorizeClient($lead);
+        abort_unless($batch->lead_id === $lead->id && $proposal->proposal_batch_id === $batch->id, 404);
+        abort_unless($proposal->sent_at, 422, 'This candidate has not been sent a link yet.');
+        abort_if($proposal->status === 'responded', 422, 'The client already responded to this proposal — nothing to regenerate.');
+
+        $proposal->update(['link_token' => Str::random(40)]);
+
+        MatchmakingTimelineEvent::log($lead, $lead->nikahProfile, 'proposal_link_regenerated', 'A proposal link was regenerated — the old copy no longer works.');
+
+        return back()->with('status', 'New link generated — the old one has stopped working. Copy and send the new link below.');
+    }
+
+    // Permanent (no time expiry) — see the note on regenerateLink() above
+    // for how a link actually gets invalidated.
     public static function proposalLink(MatchProposal $proposal): ?string
     {
-        if (!$proposal->sent_at) {
+        if (!$proposal->sent_at || !$proposal->link_token) {
             return null;
         }
 
-        return URL::temporarySignedRoute('public.matchmaking.proposal.show', $proposal->sent_at->addDays(14), ['proposal' => $proposal->id]);
+        return URL::signedRoute('public.matchmaking.proposal.show', ['proposal' => $proposal->id, 'token' => $proposal->link_token]);
     }
 
     private function authorizeClient(Lead $lead): void

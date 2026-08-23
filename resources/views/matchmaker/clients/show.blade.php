@@ -1,9 +1,9 @@
 <x-matchmaker-layout>
     <x-slot name="header">
         <div class="flex items-center gap-2 text-sm">
-            <a href="{{ route('matchmaker.clients.index') }}" class="text-white/70 hover:text-white">My Clients</a>
-            <span class="text-white/50">›</span>
-            <span class="font-semibold">{{ $lead->name }}</span>
+            <a href="{{ route('matchmaker.clients.index') }}" class="text-gray-400 hover:text-gray-600">My Clients</a>
+            <span class="text-gray-300">›</span>
+            <span class="text-gray-700 font-semibold">{{ $lead->name }}</span>
         </div>
     </x-slot>
 
@@ -47,7 +47,7 @@
                 @else
                 <form method="POST" action="{{ route('matchmaker.clients.convert', $lead) }}">
                     @csrf
-                    <button class="text-sm font-semibold px-3 py-2 rounded-lg hover:opacity-90" style="background: var(--mm-gold); color: var(--mm-plum-dark);"
+                    <button class="text-sm font-semibold px-3 py-2 rounded-lg text-white hover:opacity-90" style="background: #be185d"
                         onclick="return confirm('Start registering {{ $lead->name }} as a real Sallaamti account? You\'ll continue in the walk-in wizard with their details pre-filled.')">
                         Convert to Registered Profile →
                     </button>
@@ -267,7 +267,7 @@
 
                 @forelse ($lead->proposalBatches as $batch)
                 <div class="border border-gray-100 rounded-xl overflow-hidden">
-                    <div class="flex flex-wrap justify-between items-center gap-2 px-4 py-3" style="background: #FBF6F9;">
+                    <div class="flex flex-wrap justify-between items-center gap-2 px-4 py-3 bg-gray-50">
                         <div>
                             <span class="font-semibold text-gray-800">Batch #{{ $batch->batch_number }}</span>
                             <span class="text-xs px-2 py-0.5 rounded-full ml-2
@@ -321,9 +321,15 @@
                             </form>
                             @elseif ($proposal->sent_at)
                             @php $link = \App\Http\Controllers\Matchmaker\ClientController::proposalLink($proposal); @endphp
-                            <div class="flex items-center gap-2">
+                            <div class="flex items-center gap-2 flex-wrap justify-end">
                                 <input type="text" readonly value="{{ $link }}" class="text-xs border-gray-200 rounded-lg w-56 bg-gray-50" onclick="this.select()" id="link-{{ $proposal->id }}">
                                 <button type="button" onclick="navigator.clipboard.writeText(document.getElementById('link-{{ $proposal->id }}').value); this.textContent = 'Copied!'; setTimeout(() => this.textContent = 'Copy Link', 1500);" class="text-xs font-semibold px-2 py-1.5 rounded-lg text-white hover:opacity-90" style="background: var(--mm-plum);">Copy Link</button>
+                                @if ($proposal->status !== 'responded')
+                                <form method="POST" action="{{ route('matchmaker.clients.batches.proposals.regenerate-link', [$lead, $batch, $proposal]) }}" onsubmit="return confirm('Generate a new link for this candidate? The old link will stop working immediately, even if it was already sent.')">
+                                    @csrf
+                                    <button class="text-xs font-semibold px-2 py-1.5 rounded-lg border" style="border-color: var(--mm-plum); color: var(--mm-plum);">↻ Regenerate</button>
+                                </form>
+                                @endif
                             </div>
                             @endif
                         </div>

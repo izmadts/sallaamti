@@ -8,7 +8,7 @@ class MatchProposal extends Model
 {
     protected $fillable = [
         'proposal_batch_id', 'candidate_profile_id', 'match_reasons', 'internal_notes',
-        'status', 'response', 'sent_at', 'viewed_at', 'responded_at',
+        'status', 'response', 'sent_at', 'viewed_at', 'responded_at', 'link_token',
     ];
 
     protected function casts(): array

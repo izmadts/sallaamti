@@ -19,6 +19,8 @@ class MatchmakingActionController extends Controller
 {
     public function showProposal(Request $request, MatchProposal $proposal)
     {
+        $this->assertValidToken($request, $proposal);
+
         $proposal->load(['candidate.user', 'batch.nikahProfile.user']);
 
         if (!$proposal->viewed_at) {
@@ -30,14 +32,17 @@ class MatchmakingActionController extends Controller
         // A separate signed URL for the respond POST — the signature on
         // *this* GET request is only valid for this route's own URI, so the
         // form posting to a different path needs its own signature, not a
-        // forwarded one.
-        $respondUrl = URL::temporarySignedRoute('public.matchmaking.proposal.respond', $proposal->sent_at->addDays(14), ['proposal' => $proposal->id]);
+        // forwarded one. Permanent (no expiry) like the show link — see
+        // Matchmaker\ClientController::proposalLink()'s docblock.
+        $respondUrl = URL::signedRoute('public.matchmaking.proposal.respond', ['proposal' => $proposal->id, 'token' => $proposal->link_token]);
 
         return view('public.matchmaking.proposal', compact('proposal', 'respondUrl'));
     }
 
     public function respondProposal(Request $request, MatchProposal $proposal)
     {
+        $this->assertValidToken($request, $proposal);
+
         $validated = $request->validate([
             'response' => ['required', 'in:interested,not_interested,maybe'],
         ]);
@@ -67,8 +72,17 @@ class MatchmakingActionController extends Controller
         // Generate a fresh signature for the 'show' route rather than
         // forwarding the query params from this request — those were only
         // ever valid for the 'respond' URI they arrived on.
-        $showUrl = URL::temporarySignedRoute('public.matchmaking.proposal.show', $proposal->sent_at->addDays(14), ['proposal' => $proposal->id]);
+        $showUrl = URL::signedRoute('public.matchmaking.proposal.show', ['proposal' => $proposal->id, 'token' => $proposal->link_token]);
 
         return redirect($showUrl)->with('status', 'Thank you — your response has been recorded.');
+    }
+
+    // Laravel's own signature only proves the URL wasn't tampered with — it
+    // says nothing about whether a *particular copy* of the link is still
+    // the current one. The token is what regenerateLink() actually swaps to
+    // kill an old copy, so both checks are needed together.
+    private function assertValidToken(Request $request, MatchProposal $proposal): void
+    {
+        abort_unless($proposal->link_token && $request->query('token') === $proposal->link_token, 403, 'This link is no longer valid — ask your matchmaker for a fresh one.');
     }
 }
