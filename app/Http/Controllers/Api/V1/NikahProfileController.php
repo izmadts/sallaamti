@@ -68,7 +68,7 @@ class NikahProfileController extends Controller
                 'payment_confirmed_at' => now(),
                 'payment_rejection_reason' => null,
                 'fee_waived' => true,
-                'fee_waived_reason' => 'Marital status discount (100%)',
+                'fee_waived_reason' => !setting('nikah_payment_required', true) ? 'Payment disabled site-wide' : 'Marital status discount (100%)',
             ]);
         }
 

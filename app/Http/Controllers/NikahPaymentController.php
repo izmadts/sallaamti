@@ -16,10 +16,11 @@ class NikahPaymentController extends Controller
             return redirect()->route('nikah.create');
         }
 
-        // Lazily catches both a profile created after admin set up a 100%
-        // marital-status discount and one already sitting unpaid from
-        // before — same approach as age auto-deriving from date_of_birth
-        // on save, no bulk migration needed when admin changes the rule.
+        // Lazily catches a profile sitting unpaid from before admin
+        // disabled payment globally or set up a 100% marital-status
+        // discount (both folded into applicableVerificationFee() itself)
+        // — same approach as age auto-deriving from date_of_birth on
+        // save, no bulk migration needed either way.
         if ($profile->payment_status !== 'confirmed' && $profile->applicableVerificationFee() <= 0) {
             $profile->update([
                 'payment_status' => 'confirmed',
@@ -28,7 +29,7 @@ class NikahPaymentController extends Controller
                 'payment_confirmed_at' => now(),
                 'payment_rejection_reason' => null,
                 'fee_waived' => true,
-                'fee_waived_reason' => 'Marital status discount (100%)',
+                'fee_waived_reason' => !setting('nikah_payment_required', true) ? 'Payment disabled site-wide' : 'Marital status discount (100%)',
             ]);
 
             return redirect()->route('nikah.show')->with('status', __('db.No verification fee is required right now — your profile is ready.'));

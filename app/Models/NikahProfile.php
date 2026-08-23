@@ -94,16 +94,23 @@ class NikahProfile extends Model
         return $this->belongsTo(User::class, 'fee_waived_by');
     }
 
-    // Admin-configurable, marital-status-targeted pricing (Settings >
-    // Payment > Marital Status Discount) — e.g. widows/divorcees at 100%
-    // off (fully free) or any partial percentage. Static so it can be
-    // called before a profile row exists yet (wizard finalize/store,
-    // where only the validated marital_status string is on hand).
-    // Standard base fee (setting('nikah_verification_fee')) applies to
-    // any status not in the configured discount list, or when the
-    // discount percent is 0.
+    // Admin-configurable Nikah verification pricing (Settings > Payment) —
+    // a site-wide on/off switch, plus marital-status-targeted discounts
+    // (e.g. widows/divorcees at 100% off / fully free, or any partial
+    // percentage) on top of it. Static so it can be called before a
+    // profile row exists yet (wizard finalize/store, where only the
+    // validated marital_status string is on hand). This is the single
+    // source of truth for the fee — every place that used to read
+    // setting('nikah_verification_fee') directly goes through here instead,
+    // so the site-wide switch and the discount rule both apply everywhere
+    // consistently (creation-time amount, live display, and the payment
+    // page) rather than needing separate checks scattered per call site.
     public static function feeForMaritalStatus(?string $maritalStatus): float
     {
+        if (!setting('nikah_payment_required', true)) {
+            return 0.0;
+        }
+
         $baseFee = (float) setting('nikah_verification_fee', config('services.nikah.verification_fee'));
         $percent = (float) setting('nikah_discount_percent', 0);
 
