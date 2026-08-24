@@ -63,8 +63,21 @@ class CommissionController extends Controller
         return view('admin.commissions.ledger', compact('entries', 'matchmakers', 'totals'));
     }
 
+    // Defense-in-depth: today the 'commissions.manage' permission is
+    // admin-role-only, so this can't fire yet — but PermissionCatalog
+    // allows delegating it to a matchmaker (e.g. a future "Senior
+    // Matchmaker" role), and CommissionLedgerEntry rows are always
+    // matchmaker-owned, so approve/pay must never let someone action
+    // their own earnings even if that delegation happens later.
+    private function abortIfSelfDealing(CommissionLedgerEntry $entry): void
+    {
+        abort_if($entry->matchmaker_id === auth()->id(), 403, 'You cannot action a commission entry that belongs to you.');
+    }
+
     public function approve(CommissionLedgerEntry $entry)
     {
+        $this->abortIfSelfDealing($entry);
+
         abort_unless($entry->isEligibleForApproval(), 422, $entry->isFlagged()
             ? 'This entry is flagged — clear the flag before approving.'
             : 'Not eligible yet — the 7-day hold hasn\'t passed, or it\'s already been actioned.');
@@ -80,6 +93,8 @@ class CommissionController extends Controller
 
     public function pay(CommissionLedgerEntry $entry)
     {
+        $this->abortIfSelfDealing($entry);
+
         abort_unless($entry->status === 'approved', 422, 'Only approved commissions can be marked paid.');
 
         $entry->update([
@@ -93,6 +108,8 @@ class CommissionController extends Controller
 
     public function flag(Request $request, CommissionLedgerEntry $entry)
     {
+        $this->abortIfSelfDealing($entry);
+
         abort_if($entry->status !== 'pending', 422, 'Only pending entries can be flagged.');
 
         $validated = $request->validate(['flag_reason' => ['required', 'string', 'max:255']]);
@@ -108,6 +125,8 @@ class CommissionController extends Controller
 
     public function unflag(CommissionLedgerEntry $entry)
     {
+        $this->abortIfSelfDealing($entry);
+
         $entry->update(['flagged_at' => null, 'flag_reason' => null, 'flagged_by' => null]);
 
         return back()->with('status', 'Flag cleared.');
@@ -119,6 +138,8 @@ class CommissionController extends Controller
     // as per term" requirement.
     public function reclassify(Request $request, CommissionLedgerEntry $entry)
     {
+        $this->abortIfSelfDealing($entry);
+
         abort_if($entry->status !== 'pending', 422, 'Only pending entries can be reclassified.');
         abort_if($entry->rule_type !== 'package', 422, 'Only package-based entries can be reclassified.');
 
