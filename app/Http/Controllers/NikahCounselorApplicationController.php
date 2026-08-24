@@ -42,6 +42,7 @@ class NikahCounselorApplicationController extends Controller
             'cnic_front_image' => ['required', 'image', 'max:4096'],
             'cnic_back_image' => ['required', 'image', 'max:4096'],
             'area' => ['nullable', 'string', 'max:100'],
+            'country' => ['nullable', 'string', 'max:100'],
             'address' => ['nullable', 'string', 'max:500'],
             'payout_method' => ['nullable', 'in:bank_transfer,jazzcash,easypaisa'],
             'payout_account_title' => ['nullable', 'required_with:payout_method', 'string', 'max:255'],

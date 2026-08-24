@@ -66,7 +66,7 @@ class MatchmakerApplication extends Model
         'user_id', 'full_name', 'guardian_name', 'mobile_number', 'whatsapp_number',
         'gender', 'age', 'marital_status', 'qualification', 'qualification_other',
         'selfie_photo', 'cnic_number', 'cnic_front_image', 'cnic_back_image',
-        'area', 'address',
+        'area', 'address', 'country',
         'payout_method', 'payout_account_title', 'payout_account_number', 'payout_bank_name',
         'consent_accepted', 'terms_accepted',
         'ip_address', 'user_agent', 'device_city',

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Models\MatchmakerApplication;
 use App\Support\CountryStates;
+use App\Support\PakistanCities;
 use Illuminate\Http\JsonResponse;
 
 // Static reference data the app needs for form dropdowns (Country/State on
@@ -39,6 +40,8 @@ class MetaController extends Controller
                 'jazzcash' => 'JazzCash',
                 'easypaisa' => 'EasyPaisa',
             ],
+            'cities' => PakistanCities::all(),
+            'default_country' => 'Pakistan',
         ]);
     }
 }

@@ -157,7 +157,8 @@
                     <div><dt class="text-gray-400">WhatsApp</dt><dd>{{ $application->whatsapp_number ?: 'Same as mobile' }}</dd></div>
                     <div><dt class="text-gray-400">Marital Status</dt><dd>{{ ucfirst(str_replace('_', ' ', $application->marital_status)) }}</dd></div>
                     <div><dt class="text-gray-400">Qualification</dt><dd>{{ $application->qualification === 'other' ? $application->qualification_other : (\App\Models\MatchmakerApplication::QUALIFICATIONS[$application->qualification] ?? '—') }}</dd></div>
-                    <div><dt class="text-gray-400">Area</dt><dd>{{ $application->area ?: '—' }}</dd></div>
+                    <div><dt class="text-gray-400">City</dt><dd>{{ $application->area ?: '—' }}</dd></div>
+                    <div><dt class="text-gray-400">Country</dt><dd>{{ $application->country ?: '—' }}</dd></div>
                     <div><dt class="text-gray-400">Address</dt><dd>{{ $application->address ?: '—' }}</dd></div>
                     <div><dt class="text-gray-400">CNIC Number</dt><dd>{{ $application->cnic_number }}</dd></div>
                     <div><dt class="text-gray-400">Linked Account</dt><dd>{{ $application->user?->name ?? '— not created yet —' }}</dd></div>

@@ -128,13 +128,17 @@
                                 </div>
                             </div>
 
-                            <div class="grid sm:grid-cols-2 gap-4">
+                            <div class="grid sm:grid-cols-3 gap-4">
                                 <div>
-                                    <label for="area" class="auth-label">Area / City</label>
+                                    <label for="country" class="auth-label">Country</label>
                                     <div class="auth-input-wrap">
-                                        <i class="fa fa-map-marker-alt auth-icon"></i>
-                                        <input id="area" type="text" name="area" value="{{ old('area') }}" class="auth-input" placeholder="e.g. Multan, Lahore...">
+                                        <i class="fa fa-flag auth-icon"></i>
+                                        <input id="country" type="text" name="country" value="{{ old('country', 'Pakistan') }}" class="auth-input">
                                     </div>
+                                </div>
+                                <div>
+                                    <label for="area" class="auth-label">City</label>
+                                    <x-searchable-select name="area" :options="\App\Support\PakistanCities::all()" :value="old('area')" placeholder="Type to search or select" class="auth-input" style="padding-left: 1rem" />
                                 </div>
                                 <div>
                                     <label for="address" class="auth-label">Address</label>
@@ -159,17 +163,18 @@
                                     </div>
                                     <div>
                                         <label class="auth-label">Selfie Photo <span class="text-red-400">*</span></label>
-                                        <x-photo-upload-field name="selfie_photo" :required="true" />
+                                        <x-photo-upload-field name="selfie_photo" :required="true" :allow-gallery="false" />
+                                        <p class="text-xs text-gray-400 mt-1">Camera only — must be a live photo of you, not an uploaded file.</p>
                                         <x-input-error :messages="$errors->get('selfie_photo')" class="mt-1" />
                                     </div>
                                     <div>
                                         <label class="auth-label">CNIC Photo (Front) <span class="text-red-400">*</span></label>
-                                        <x-photo-upload-field name="cnic_front_image" :required="true" />
+                                        <x-photo-upload-field name="cnic_front_image" :required="true" :allow-camera="false" />
                                         <x-input-error :messages="$errors->get('cnic_front_image')" class="mt-1" />
                                     </div>
                                     <div>
                                         <label class="auth-label">CNIC Photo (Back) <span class="text-red-400">*</span></label>
-                                        <x-photo-upload-field name="cnic_back_image" :required="true" />
+                                        <x-photo-upload-field name="cnic_back_image" :required="true" :allow-camera="false" />
                                         <x-input-error :messages="$errors->get('cnic_back_image')" class="mt-1" />
                                     </div>
                                 </div>
