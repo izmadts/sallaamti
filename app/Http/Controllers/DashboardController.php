@@ -43,7 +43,17 @@ class DashboardController extends Controller
         return $this->matchmakerDashboard($authUser);
     }
 
-    private function matchmakerDashboard($authUser)
+    protected function matchmakerDashboard($authUser)
+    {
+        return view('dashboard.matchmaker', array_merge(['user' => $authUser], $this->matchmakerDashboardData($authUser)));
+    }
+
+    // Split out from matchmakerDashboard() so Api\V1\Matchmaker\DashboardController
+    // can reuse the exact same stats/queries (via composition, not
+    // inheritance — extending this class broke PHP's method-signature
+    // compatibility check on index()) and JSON-encode them instead of
+    // re-deriving a second copy that could drift from the web version.
+    public function matchmakerDashboardData($authUser): array
     {
         $requests = \App\Models\NikahContactRequest::where('requested_by', $authUser->id)->get();
 
@@ -76,13 +86,12 @@ class DashboardController extends Controller
             ->take(6)
             ->get();
 
-        return view('dashboard.matchmaker', [
-            'user' => $authUser,
+        return [
             'stats' => $stats,
             'followUps' => $followUps,
             'recentLeads' => $recentLeads,
             'recentActivity' => $recentActivity,
-        ]);
+        ];
     }
 
     private function teacherDashboard($authUser)

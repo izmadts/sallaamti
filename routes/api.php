@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\DashboardController;
 use App\Http\Controllers\Api\V1\FaqController;
+use App\Http\Controllers\Api\V1\Matchmaker as MatchmakerApi;
 use App\Http\Controllers\Api\V1\MetaController;
 use App\Http\Controllers\Api\V1\NikahBrowseController;
 use App\Http\Controllers\Api\V1\NikahFileController;
@@ -57,6 +58,53 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
             Route::get('interests', [NikahInterestController::class, 'index'])->name('interests.index');
             Route::post('interests/{interest}/accept', [NikahInterestController::class, 'accept'])->name('interests.accept');
             Route::post('interests/{interest}/decline', [NikahInterestController::class, 'decline'])->name('interests.decline');
+        });
+
+        // Nikah Counselor (matchmaker) app — see EnsureUserIsMatchmakerApi's
+        // class docblock for why this uses its own 'api.matchmaker' gate
+        // instead of the web-only 'matchmaker' alias.
+        Route::prefix('matchmaker')->name('matchmaker.')->middleware('api.matchmaker')->group(function () {
+            Route::get('dashboard', [MatchmakerApi\DashboardController::class, 'index'])->name('dashboard');
+
+            Route::get('clients', [MatchmakerApi\ClientController::class, 'index'])->name('clients.index');
+            Route::post('clients', [MatchmakerApi\ClientController::class, 'store'])->name('clients.store');
+            Route::get('clients/{lead}', [MatchmakerApi\ClientController::class, 'show'])->name('clients.show');
+            Route::patch('clients/{lead}', [MatchmakerApi\ClientController::class, 'update'])->name('clients.update');
+            Route::post('clients/{lead}/link-profile', [MatchmakerApi\ClientController::class, 'linkProfile'])->name('clients.link-profile');
+            Route::post('clients/{lead}/shortlist', [MatchmakerApi\ClientController::class, 'addToShortlist'])->name('clients.shortlist.add');
+            Route::delete('clients/{lead}/shortlist/{item}', [MatchmakerApi\ClientController::class, 'removeFromShortlist'])->name('clients.shortlist.remove');
+            Route::post('clients/{lead}/requirements', [MatchmakerApi\ClientController::class, 'saveRequirement'])->name('clients.requirements.save');
+
+            Route::post('clients/{lead}/consents', [MatchmakerApi\ClientController::class, 'recordConsent'])->name('clients.consents.record');
+            Route::post('clients/{lead}/consents/request', [MatchmakerApi\ClientController::class, 'requestConsent'])->name('clients.consents.request');
+            Route::post('clients/{lead}/consents/{consent}/revoke', [MatchmakerApi\ClientController::class, 'revokeConsent'])->name('clients.consents.revoke');
+            Route::post('clients/{lead}/progress-link', [MatchmakerApi\ClientController::class, 'regenerateProgressLink'])->name('clients.progress-link.regenerate');
+
+            Route::post('clients/{lead}/proposal-batches', [MatchmakerApi\ClientController::class, 'createBatch'])->name('clients.batches.create');
+            Route::post('clients/{lead}/proposal-batches/{batch}/proposals', [MatchmakerApi\ClientController::class, 'addProposal'])->name('clients.batches.proposals.add');
+            Route::delete('clients/{lead}/proposal-batches/{batch}/proposals/{proposal}', [MatchmakerApi\ClientController::class, 'removeProposal'])->name('clients.batches.proposals.remove');
+            Route::post('clients/{lead}/proposal-batches/{batch}/send', [MatchmakerApi\ClientController::class, 'sendBatch'])->name('clients.batches.send');
+            Route::post('clients/{lead}/proposal-batches/{batch}/proposals/{proposal}/regenerate-link', [MatchmakerApi\ClientController::class, 'regenerateLink'])->name('clients.batches.proposals.regenerate-link');
+
+            // Stateless walk-in registration — see ClientProfileController's class docblock
+            Route::get('clients/{lead}/profile', [MatchmakerApi\ClientProfileController::class, 'show'])->name('clients.profile.show');
+            Route::post('clients/{lead}/profile', [MatchmakerApi\ClientProfileController::class, 'store'])->name('clients.profile.store');
+            Route::post('clients/{lead}/profile/payment', [MatchmakerApi\ClientProfileController::class, 'payment'])->name('clients.profile.payment');
+            Route::get('clients/{lead}/profile/file/{type}', [MatchmakerApi\ClientFileController::class, 'show'])->name('clients.profile.file');
+
+            Route::get('browse', [MatchmakerApi\NikahBrowseController::class, 'index'])->name('browse.index');
+            Route::get('browse/{profile}', [MatchmakerApi\NikahBrowseController::class, 'show'])->name('browse.show');
+            Route::post('browse/{profile}/request-contact', [MatchmakerApi\NikahBrowseController::class, 'requestContact'])->name('browse.request-contact');
+
+            Route::get('interests', [MatchmakerApi\InterestController::class, 'index'])->name('interests.index');
+            Route::post('interests/{interest}/accept', [MatchmakerApi\InterestController::class, 'accept'])->name('interests.accept');
+            Route::post('interests/{interest}/decline', [MatchmakerApi\InterestController::class, 'decline'])->name('interests.decline');
+
+            Route::get('commissions', [MatchmakerApi\CommissionController::class, 'index'])->name('commissions.index');
+            Route::get('performance', [MatchmakerApi\PerformanceController::class, 'index'])->name('performance.index');
+            Route::get('referral', [MatchmakerApi\ReferralController::class, 'show'])->name('referral.show');
+            Route::get('application', [MatchmakerApi\ApplicationController::class, 'show'])->name('application.show');
+            Route::get('meta/enums', [MatchmakerApi\MetaController::class, 'enums'])->name('meta.enums');
         });
     });
 });

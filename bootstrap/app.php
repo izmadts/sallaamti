@@ -24,6 +24,7 @@ return Application::configure(basePath: dirname(__DIR__))
         'nikah.activity' => \App\Http\Middleware\TrackNikahActivity::class,
         'counselor' => \App\Http\Middleware\EnsureUserIsCounselor::class,
         'matchmaker' => \App\Http\Middleware\EnsureUserIsMatchmaker::class,
+        'api.matchmaker' => \App\Http\Middleware\EnsureUserIsMatchmakerApi::class,
         ]);
     })->withMiddleware(function (Middleware $middleware) {
     $middleware->web(append: [
