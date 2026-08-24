@@ -168,8 +168,13 @@
                 </a>
                 <a href="{{ route('admin.commissions.ledger') }}"
                     class="flex items-center justify-between gap-3 px-3 py-2 rounded-lg transition
-                          {{ request()->routeIs('admin.commissions*') ? 'bg-teal-700 text-white' : 'text-teal-100 hover:bg-teal-800' }}">
-                    <span class="flex items-center gap-3"><span class="text-base">💰</span> Commissions</span>
+                          {{ request()->routeIs('admin.commissions.*') && !request()->routeIs('admin.commissions.rules*') ? 'bg-teal-700 text-white' : 'text-teal-100 hover:bg-teal-800' }}">
+                    <span class="flex items-center gap-3"><span class="text-base">💰</span> Commission Ledger</span>
+                </a>
+                <a href="{{ route('admin.commissions.rules') }}"
+                    class="flex items-center gap-3 px-3 py-2 rounded-lg transition
+                          {{ request()->routeIs('admin.commissions.rules*') ? 'bg-teal-700 text-white' : 'text-teal-100 hover:bg-teal-800' }}">
+                    <span class="text-base">⚙️</span> Commission Rules
                 </a>
 
                 {{-- Quran --}}
