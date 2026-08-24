@@ -6,6 +6,7 @@ use App\Http\Controllers\Auth\Concerns\RegistersMinimalUsers;
 use App\Http\Controllers\Controller;
 use App\Models\Certificate;
 use App\Models\MatchmakerApplication;
+use App\Models\User;
 use App\Notifications\NikahCounselorCertified;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -26,7 +27,19 @@ class MatchmakerApplicationController extends Controller
 
         $applications = $query->paginate(20)->withQueryString();
 
-        return view('admin.matchmaker-applications.index', compact('applications'));
+        // A matchmaker account doesn't have to come through this pipeline
+        // at all — admin can grant the role directly from Users > Roles.
+        // Those accounts were previously invisible on this page entirely
+        // (this page only ever queried MatchmakerApplication rows), even
+        // though they're real, currently-working counselors. Shown as
+        // their own section, always, regardless of the stage filter,
+        // since they have no stage to filter by.
+        $directRoleUsers = User::role('matchmaker')
+            ->whereNotIn('id', MatchmakerApplication::whereNotNull('user_id')->pluck('user_id'))
+            ->orderBy('name')
+            ->get();
+
+        return view('admin.matchmaker-applications.index', compact('applications', 'directRoleUsers'));
     }
 
     public function show(MatchmakerApplication $matchmakerApplication)

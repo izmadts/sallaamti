@@ -26,6 +26,26 @@
                 </form>
             </div>
 
+            @if ($directRoleUsers->isNotEmpty())
+            <div class="bg-white rounded-lg shadow-sm overflow-hidden">
+                <div class="px-5 py-3 bg-amber-50 border-b border-amber-100">
+                    <p class="font-semibold text-amber-800 text-sm">⚠️ Assigned Directly by Admin — no application record</p>
+                    <p class="text-xs text-amber-700 mt-1">These accounts have the Nikah Counselor role but never went through the 10-stage pipeline below — admin granted it directly from Users → Roles. They still earn commission at the base tier (no counselor code, no certificate, no public level until a formal record exists).</p>
+                </div>
+                <div class="divide-y">
+                    @foreach ($directRoleUsers as $user)
+                    <a href="{{ route('admin.users.show', $user) }}" class="p-5 flex justify-between items-center flex-wrap gap-3 hover:bg-gray-50 transition">
+                        <div>
+                            <p class="font-medium text-gray-800">{{ $user->name }}</p>
+                            <p class="text-sm text-gray-500">{{ $user->email ?: $user->phone }}</p>
+                        </div>
+                        <span class="text-xs px-2 py-1 rounded-full font-semibold bg-amber-100 text-amber-800">Role Assigned by Admin</span>
+                    </a>
+                    @endforeach
+                </div>
+            </div>
+            @endif
+
             <div class="bg-white rounded-lg shadow-sm divide-y">
                 @forelse ($applications as $application)
                 <a href="{{ route('admin.matchmaker-applications.show', $application) }}" class="p-5 flex justify-between items-start flex-wrap gap-3 hover:bg-gray-50 transition">
@@ -34,6 +54,7 @@
                             @if ($application->counselor_code)
                             <span class="text-xs font-normal text-gray-400">· {{ $application->counselor_code }}</span>
                             @endif
+                            <span class="text-xs px-1.5 py-0.5 rounded bg-blue-50 text-blue-600 font-normal align-middle">Via Application</span>
                         </p>
                         <p class="text-sm text-gray-500">{{ $application->mobile_number }} @if ($application->area) · {{ $application->area }} @endif</p>
                         <p class="text-xs text-gray-400 mt-1">Applied {{ $application->created_at->format('d M Y, h:i A') }}</p>
