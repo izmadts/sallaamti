@@ -31,15 +31,27 @@
             </div>
 
             @foreach ($rules as $groupName => $groupRules)
+            @php $isVerifiedProfileGroup = $groupRules->first()->rule_type === 'verified_profile'; @endphp
             <div class="bg-white rounded-xl shadow-sm overflow-hidden">
-                <div class="px-5 py-3 bg-gray-50 border-b font-semibold text-gray-700">{{ $groupName }}</div>
+                <div class="px-5 py-3 bg-gray-50 border-b">
+                    <p class="font-semibold text-gray-700">{{ $groupName }}</p>
+                    @if ($isVerifiedProfileGroup)
+                    <p class="text-xs text-gray-500 mt-1">
+                        Pays out the moment admin <strong>confirms a member's Nikah verification-fee payment</strong> (single confirm, bulk-confirm, or recording an offline payment) — whether that member was a counselor's walk-in registration or someone who self-registered through the counselor's referral link. This is separate from any matchmaking package below; every verified profile triggers this once.
+                    </p>
+                    @else
+                    <p class="text-xs text-gray-500 mt-1">
+                        Pays out when admin <strong>assigns or changes the "{{ $groupName }}" package</strong> on a client's Lead. <strong>First Purchase</strong> applies the first time this package is put on that Lead; <strong>Renewal</strong> applies automatically from the second time onward (e.g. after the package expires and is renewed) — admin can flip a pending entry between the two from the Ledger if it was auto-detected wrong.
+                    </p>
+                    @endif
+                </div>
 
                 <div class="grid grid-cols-6 gap-2 px-5 py-2 bg-gray-50/50 text-xs uppercase text-gray-400 border-b">
-                    <div class="col-span-2">Tier</div>
+                    <div class="col-span-2">Tier <span class="cursor-help normal-case text-gray-400" title="The counselor's certification level. Changing a row here only changes the rate for counselors at exactly this level — the other three tiers are untouched.">❓</span></div>
                     <div>Type</div>
                     <div>Rate Type</div>
                     <div>Rate <span class="cursor-help normal-case text-gray-400" title="Percentage: enter as a whole number, e.g. 10 means 10%. Fixed: enter the flat Rs. amount, e.g. 200 means Rs. 200.">❓</span></div>
-                    <div>Active</div>
+                    <div>Active <span class="cursor-help normal-case text-gray-400" title="Unchecking this doesn't set the rate to zero — it stops this combination from paying ANY commission at all. A counselor at this exact tier will earn nothing for this row's type until it's checked again.">❓</span></div>
                 </div>
 
                 <div class="divide-y">
