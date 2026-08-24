@@ -130,7 +130,7 @@
                                     <select id="nikah_package_id" name="nikah_package_id" class="border-gray-300 rounded-md shadow-sm w-full mt-1">
                                         <option value="">None</option>
                                         @foreach ($packages as $p)
-                                        <option value="{{ $p->id }}" {{ $lead->nikah_package_id === $p->id ? 'selected' : '' }}>{{ $p->name }} (Rs. {{ number_format($p->price) }}{{ $p->duration_days ? ' / ' . $p->duration_days . 'd' : '' }})</option>
+                                        <option value="{{ $p->id }}" {{ $lead->nikah_package_id === $p->id ? 'selected' : '' }}>{{ $loop->iteration }}. {{ $p->name }} (Rs. {{ number_format($p->price) }}{{ $p->duration_days ? ' / ' . $p->duration_days . 'd' : '' }})</option>
                                         @endforeach
                                     </select>
                                 </div>

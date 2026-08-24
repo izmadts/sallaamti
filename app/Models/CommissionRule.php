@@ -55,9 +55,17 @@ class CommissionRule extends Model
     }
 
     // Idempotent, same spirit as PermissionCatalog::ensureSeeded() — fills
-    // in any missing (rule_type, package, tier, is_renewal) combination
-    // with a sensible default rather than requiring admin to hand-create
-    // every row, but never overwrites a rate admin already configured.
+    // in any missing (rule_type, tier, is_renewal) combination with a
+    // sensible default rather than requiring admin to hand-create every
+    // row, but never overwrites a rate admin already configured.
+    //
+    // 'package' rules are deliberately package-agnostic (nikah_package_id
+    // is always null here, same as 'verified_profile') — one slab per
+    // tier applies to whichever package was actually purchased. Confirmed
+    // explicitly by the user: every package had ended up with identical
+    // per-tier rates anyway (nothing package-specific was ever actually
+    // configured), so one universal slab removes duplicate rows without
+    // losing any real customization.
     public static function ensureSeeded(): void
     {
         $tiers = array_keys(MatchmakerApplication::LEVELS);
@@ -70,17 +78,15 @@ class CommissionRule extends Model
                 ['rate_type' => 'fixed', 'rate_value' => round(200 * $multiplier)]
             );
 
-            foreach (NikahPackage::all() as $package) {
-                static::firstOrCreate(
-                    ['rule_type' => 'package', 'nikah_package_id' => $package->id, 'tier' => $tier, 'is_renewal' => false],
-                    ['rate_type' => 'percentage', 'rate_value' => round(20 * $multiplier, 2)]
-                );
+            static::firstOrCreate(
+                ['rule_type' => 'package', 'nikah_package_id' => null, 'tier' => $tier, 'is_renewal' => false],
+                ['rate_type' => 'percentage', 'rate_value' => round(20 * $multiplier, 2)]
+            );
 
-                static::firstOrCreate(
-                    ['rule_type' => 'package', 'nikah_package_id' => $package->id, 'tier' => $tier, 'is_renewal' => true],
-                    ['rate_type' => 'percentage', 'rate_value' => 10]
-                );
-            }
+            static::firstOrCreate(
+                ['rule_type' => 'package', 'nikah_package_id' => null, 'tier' => $tier, 'is_renewal' => true],
+                ['rate_type' => 'percentage', 'rate_value' => 10]
+            );
         }
     }
 }

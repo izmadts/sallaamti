@@ -37,11 +37,11 @@
                     <p class="font-semibold text-gray-700">{{ $groupName }}</p>
                     @if ($isVerifiedProfileGroup)
                     <p class="text-xs text-gray-500 mt-1">
-                        Pays out the moment admin <strong>confirms a member's Nikah verification-fee payment</strong> (single confirm, bulk-confirm, or recording an offline payment) — whether that member was a counselor's walk-in registration or someone who self-registered through the counselor's referral link. This is separate from any matchmaking package below; every verified profile triggers this once.
+                        Pays out the moment admin <strong>confirms a member's Nikah verification-fee payment</strong> (single confirm, bulk-confirm, or recording an offline payment) — whether that member was a counselor's walk-in registration or someone who self-registered through the counselor's referral link. This is separate from matchmaking packages below; every verified profile triggers this once.
                     </p>
                     @else
                     <p class="text-xs text-gray-500 mt-1">
-                        Pays out when admin <strong>assigns or changes the "{{ $groupName }}" package</strong> on a client's Lead. <strong>First Purchase</strong> applies the first time this package is put on that Lead; <strong>Renewal</strong> applies automatically from the second time onward (e.g. after the package expires and is renewed) — admin can flip a pending entry between the two from the Ledger if it was auto-detected wrong.
+                        Pays out when admin <strong>assigns or changes a matchmaking package</strong> on a client's Lead — but only once a Nikah Counselor is actually selected on that same Lead; leaving the counselor field empty means no commission is created at all. <strong>One slab applies to every package equally</strong> — {{ $matchmakingPackageNames->implode(', ') }} — no per-package rate to keep track of. <strong>First Purchase</strong> applies the first time any package is put on that Lead; <strong>Renewal</strong> applies automatically from the second time onward.
                     </p>
                     @endif
                 </div>

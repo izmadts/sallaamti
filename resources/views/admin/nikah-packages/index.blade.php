@@ -28,6 +28,7 @@
                 <div class="p-5 flex justify-between items-start flex-wrap gap-3">
                     <div class="max-w-2xl">
                         <div class="flex items-center gap-2 flex-wrap">
+                            <span class="text-xs font-bold text-gray-400">#{{ $loop->iteration }}</span>
                             <span class="text-xs px-2 py-0.5 rounded-full font-medium
                                 {{ match($package->color) {
                                     'green' => 'bg-green-50 text-green-700',

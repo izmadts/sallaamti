@@ -130,7 +130,13 @@ class LeadController extends Controller
 
         $lead->load(['assignedTo', 'createdBy', 'nikahProfile.user', 'nikahPackage', 'shortlistItems.nikahProfile.user', 'shortlistItems.createdBy', 'timelineEvents.matchmaker']);
         $matchmakers = User::role(['admin', 'matchmaker'])->orderBy('name')->get();
-        $packages = NikahPackage::active()->ordered()->get();
+        // One-time packages (e.g. "Sallaamti Verified") aren't a real
+        // matchmaking service a counselor assigns — every profile already
+        // pays its own verification fee automatically, which fires its own
+        // 'verified_profile' commission. Assigning a one-time package here
+        // too would fire a second, separate commission for the same Rs.
+        // amount — so this dropdown only offers real time-boxed packages.
+        $packages = NikahPackage::active()->ordered()->get()->reject->isOneTime()->values();
 
         $searchResults = collect();
         if (request()->filled('search_city') || request()->filled('search_gender') || request()->filled('search_sect')) {

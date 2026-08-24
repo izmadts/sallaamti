@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\CommissionLedgerEntry;
 use App\Models\CommissionRule;
 use App\Models\MatchmakerApplication;
+use App\Models\NikahPackage;
 use App\Models\User;
 use App\Notifications\MatchmakerCommissionEarned;
 use Illuminate\Http\Request;
@@ -16,15 +17,24 @@ class CommissionController extends Controller
     {
         CommissionRule::ensureSeeded();
 
-        $rules = CommissionRule::with('nikahPackage')
-            ->orderBy('rule_type')
-            ->orderBy('nikah_package_id')
+        // One universal slab per tier for ALL matchmaking packages (not
+        // one rate table per package) — confirmed explicitly by the user,
+        // since every package had ended up with identical rates anyway.
+        // 'package'-type rules are package-agnostic (nikah_package_id is
+        // always null, see CommissionRule::ensureSeeded()), so grouping
+        // is just these two buckets, not one per package.
+        $rules = CommissionRule::orderBy('rule_type')
             ->orderByRaw("FIELD(tier, 'nikah_counselor', 'certified_nikah_counselor', 'senior_nikah_counselor', 'regional_nikah_coordinator')")
             ->orderBy('is_renewal')
             ->get()
-            ->groupBy(fn ($rule) => $rule->rule_type === 'verified_profile' ? 'Verified Profile' : ($rule->nikahPackage?->name ?? 'Unknown Package'));
+            ->groupBy(fn ($rule) => $rule->rule_type === 'verified_profile' ? 'Verified Profile' : 'Matchmaking Packages');
 
-        return view('admin.commissions.rules', compact('rules'));
+        // Shown in the "Matchmaking Packages" group's description so admin
+        // can see exactly which real packages this one slab actually
+        // applies to.
+        $matchmakingPackageNames = NikahPackage::ordered()->get()->reject->isOneTime()->pluck('name');
+
+        return view('admin.commissions.rules', compact('rules', 'matchmakingPackageNames'));
     }
 
     public function updateRule(Request $request, CommissionRule $commissionRule)
@@ -145,7 +155,7 @@ class CommissionController extends Controller
 
         $validated = $request->validate(['is_renewal' => ['required', 'boolean']]);
 
-        $rule = CommissionRule::findFor('package', $entry->nikah_package_id, $entry->tier_at_time, $validated['is_renewal']);
+        $rule = CommissionRule::findFor('package', null, $entry->tier_at_time, $validated['is_renewal']);
         abort_unless($rule, 422, 'No commission rule configured for that combination yet.');
 
         $entry->update([

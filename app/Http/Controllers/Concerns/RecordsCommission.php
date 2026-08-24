@@ -107,8 +107,12 @@ trait RecordsCommission
             ->where('rule_type', 'package')
             ->exists();
 
+        // Rate lookup is package-agnostic (one slab per tier, same for
+        // every package — see CommissionRule::ensureSeeded()) even though
+        // the ledger entry below still records exactly which package was
+        // purchased.
         $tier = $this->tierForMatchmaker($matchmaker);
-        $rule = CommissionRule::findFor('package', $lead->nikah_package_id, $tier, $isRenewal);
+        $rule = CommissionRule::findFor('package', null, $tier, $isRenewal);
 
         if (!$rule) {
             return;
