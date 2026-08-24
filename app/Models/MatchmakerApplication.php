@@ -52,13 +52,22 @@ class MatchmakerApplication extends Model
         'ip_address', 'user_agent', 'device_city',
         'status', 'level', 'notes', 'reviewed_by',
         'counselor_code', 'certified_at', 'rejected_at',
+        'agreement_link_token', 'agreement_accepted_at', 'agreement_ip',
+        'nda_accepted_at', 'nda_ip',
     ];
+
+    public function hasAcceptedAgreementAndNda(): bool
+    {
+        return $this->agreement_accepted_at !== null && $this->nda_accepted_at !== null;
+    }
 
     protected function casts(): array
     {
         return [
             'consent_accepted' => 'boolean',
             'terms_accepted' => 'boolean',
+            'agreement_accepted_at' => 'datetime',
+            'nda_accepted_at' => 'datetime',
             'certified_at' => 'datetime',
             'rejected_at' => 'datetime',
         ];

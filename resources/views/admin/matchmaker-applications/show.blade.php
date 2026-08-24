@@ -59,7 +59,7 @@
                     </div>
                     <button class="text-sm font-semibold px-4 py-2 rounded-lg text-white hover:opacity-90" style="background: #0d6b6b">Update Stage</button>
                 </form>
-                <p class="text-xs text-gray-400 mt-2">Moving to "Certified" creates their Sallaamti account, grants the matchmaker role, generates their Counselor ID, and issues their certificate — all automatically.</p>
+                <p class="text-xs text-gray-400 mt-2">Moving to "Certified" creates their Sallaamti account, grants the matchmaker role, generates their Counselor ID, and issues their certificate — all automatically. This is blocked until they've accepted the Agreement/NDA below.</p>
 
                 <form method="POST" action="{{ route('admin.matchmaker-applications.reject', $application) }}" class="mt-4 pt-4 border-t flex gap-2 items-end" onsubmit="return confirm('Reject this application?')">
                     @csrf
@@ -71,6 +71,30 @@
                 </form>
             </div>
             @endunless
+
+            {{-- Agreement / NDA --}}
+            <div class="bg-white rounded-xl shadow-sm p-6">
+                <h4 class="font-semibold text-gray-700 mb-1 border-b pb-2">📜 Nikah Counselor Agreement & NDA</h4>
+
+                @if ($application->hasAcceptedAgreementAndNda())
+                <p class="text-sm bg-green-50 text-green-700 rounded-lg p-3 mt-3">✅ Accepted {{ $application->agreement_accepted_at->format('d M Y, h:i A') }} (IP: {{ $application->agreement_ip }})</p>
+                @else
+                <p class="text-xs text-gray-500 mt-3 mb-3">They haven't accepted the Agreement/NDA themselves yet — required before certification.</p>
+
+                <form method="POST" action="{{ route('admin.matchmaker-applications.agreement-link', $application) }}">
+                    @csrf
+                    <button class="text-xs font-semibold px-3 py-1.5 rounded-lg text-white hover:opacity-90" style="background: #0d6b6b">{{ $application->agreement_link_token ? '↻ Regenerate Link' : '+ Generate Agreement Link' }}</button>
+                </form>
+
+                @if ($application->agreement_link_token)
+                <div class="flex flex-wrap items-center gap-2 mt-3">
+                    <input type="text" readonly value="{{ \App\Http\Controllers\Admin\MatchmakerApplicationController::agreementLink($application) }}" class="text-xs border-gray-200 rounded-lg flex-1 min-w-[16rem] bg-gray-50" onclick="this.select()" id="agreement-link">
+                    <button type="button" onclick="navigator.clipboard.writeText(document.getElementById('agreement-link').value); this.textContent = 'Copied!'; setTimeout(() => this.textContent = 'Copy Link', 1500);" class="text-xs font-semibold px-2 py-1.5 rounded-lg text-white hover:opacity-90" style="background: #0d6b6b">Copy Link</button>
+                </div>
+                <p class="text-xs text-amber-700 mt-2">They'll need the last 7 digits of their mobile number ({{ $application->mobile_number }}) to open it, every time.</p>
+                @endif
+                @endif
+            </div>
 
             {{-- Certified: level + referral --}}
             @if ($application->isCertified())

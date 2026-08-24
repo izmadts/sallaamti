@@ -58,6 +58,9 @@
                         <dd>{{ $certificate->certificate_number }}</dd>
                     </div>
                 </dl>
+                @if ($certificate->type === 'nikah_counselor_id')
+                <p class="text-xs text-center mt-4"><a href="{{ route('nikah-counselor.code-of-conduct') }}" class="text-teal-700 hover:underline">What is a Nikah Counselor held to? →</a></p>
+                @endif
                 @else
                 <p class="text-red-600 font-medium text-center">❌ No certificate or ID found with this code.</p>
                 @endif

@@ -551,6 +551,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::post('matchmaker-applications/{matchmakerApplication}/level', [\App\Http\Controllers\Admin\MatchmakerApplicationController::class, 'updateLevel'])->name('matchmaker-applications.level')->middleware('can:matchmaker-applications.manage');
     Route::post('matchmaker-applications/{matchmakerApplication}/reject', [\App\Http\Controllers\Admin\MatchmakerApplicationController::class, 'reject'])->name('matchmaker-applications.reject')->middleware('can:matchmaker-applications.manage');
     Route::get('matchmaker-applications/{matchmakerApplication}/file/{type}', [\App\Http\Controllers\Admin\MatchmakerApplicationController::class, 'file'])->name('matchmaker-applications.file')->middleware('can:matchmaker-applications.view');
+    Route::post('matchmaker-applications/{matchmakerApplication}/agreement-link', [\App\Http\Controllers\Admin\MatchmakerApplicationController::class, 'sendAgreementLink'])->name('matchmaker-applications.agreement-link')->middleware('can:matchmaker-applications.manage');
 
     // Matchmaker commission engine & ledger (permission-gated, see App\Support\PermissionCatalog)
     Route::get('commissions/rules', [\App\Http\Controllers\Admin\CommissionController::class, 'rules'])->name('commissions.rules')->middleware('can:commissions.view');
@@ -740,5 +741,20 @@ Route::middleware('signed')->prefix('m')->name('public.matchmaking.')->group(fun
     Route::post('/progress/{lead}/documents', [\App\Http\Controllers\Public\MatchmakingProgressController::class, 'uploadDocuments'])->name('progress.documents');
     Route::post('/progress/{lead}/consents/{consentRequest}', [\App\Http\Controllers\Public\MatchmakingProgressController::class, 'respondToConsent'])->name('progress.consents.respond');
 });
+
+// Nikah Counselor Agreement + NDA acceptance — same signed-link pattern as
+// above, but scoped to MatchmakerApplication (no Lead/account exists yet
+// at this stage of onboarding).
+Route::middleware('signed')->prefix('nikah-counselor-agreement')->name('public.matchmaker-agreement.')->group(function () {
+    Route::get('/{matchmakerApplication}', [\App\Http\Controllers\Public\MatchmakerAgreementController::class, 'show'])->name('show');
+    Route::post('/{matchmakerApplication}/verify', [\App\Http\Controllers\Public\MatchmakerAgreementController::class, 'verify'])->name('verify');
+    Route::post('/{matchmakerApplication}/accept', [\App\Http\Controllers\Public\MatchmakerAgreementController::class, 'accept'])->name('accept');
+});
+
+// Public Nikah Counselor Code of Conduct — a static, generic page (unlike
+// the signed Agreement above, this isn't personalized/binding-acceptance,
+// it's the same trust-building "here's what we hold counselors to" page
+// linked from the footer and certificate verify page.
+Route::view('/nikah-counselor/code-of-conduct', 'nikah-counselor.code-of-conduct')->name('nikah-counselor.code-of-conduct');
 
 require __DIR__ . '/auth.php';

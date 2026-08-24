@@ -9,6 +9,8 @@ use App\Models\MatchmakerApplication;
 use App\Notifications\NikahCounselorCertified;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Str;
 
 class MatchmakerApplicationController extends Controller
 {
@@ -41,6 +43,11 @@ class MatchmakerApplicationController extends Controller
         $validated = $request->validate([
             'status' => ['required', 'in:' . implode(',', array_keys(MatchmakerApplication::STEPS))],
         ]);
+
+        // The one hard gate in an otherwise-flexible pipeline — certifying
+        // someone who never actually accepted the Agreement/NDA themselves
+        // is exactly the gap this module exists to close.
+        abort_if($validated['status'] === 'certified' && !$matchmakerApplication->hasAcceptedAgreementAndNda(), 422, 'This applicant hasn\'t accepted the Nikah Counselor Agreement and NDA yet — send them the agreement link first.');
 
         $wasCertified = $matchmakerApplication->isCertified();
 
@@ -98,6 +105,25 @@ class MatchmakerApplicationController extends Controller
         ]);
 
         return back()->with('status', 'Application rejected.');
+    }
+
+    // Generates (or regenerates, if suspected leaked) the signed link the
+    // applicant uses to actually read and accept the Nikah Counselor
+    // Agreement + NDA themselves — see Public\MatchmakerAgreementController.
+    public function sendAgreementLink(MatchmakerApplication $matchmakerApplication)
+    {
+        $matchmakerApplication->update(['agreement_link_token' => Str::random(40)]);
+
+        return back()->with('status', 'Agreement link ready — copy it below and send it to ' . $matchmakerApplication->full_name . '. They\'ll need the last 7 digits of their mobile number to open it, every time.');
+    }
+
+    public static function agreementLink(MatchmakerApplication $application): ?string
+    {
+        if (!$application->agreement_link_token) {
+            return null;
+        }
+
+        return URL::signedRoute('public.matchmaker-agreement.show', ['matchmakerApplication' => $application->id, 'token' => $application->agreement_link_token]);
     }
 
     // Creates the account (if the applicant didn't already have one),

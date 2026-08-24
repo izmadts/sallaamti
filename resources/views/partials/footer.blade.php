@@ -190,6 +190,8 @@
                     <a class="hover:text-white" href="{{ route('privacy-policy') }}">{{ __('db.Privacy Policy') }}</a>
                     <span class="mx-2 text-gray-600">·</span>
                     <a class="hover:text-white" href="{{ route('terms-of-service') }}">{{ __('db.Terms of Service') }}</a>
+                    <span class="mx-2 text-gray-600">·</span>
+                    <a class="hover:text-white" href="{{ route('nikah-counselor.code-of-conduct') }}">{{ __('db.Nikah Counselor Code of Conduct') }}</a>
                 </div>
                 <div class="text-center md:text-right">
                     {{ __('db.Designed & Developed By') }} <a class="border-b border-gray-500" href="https://izmadts.com">IZMAdts</a>
