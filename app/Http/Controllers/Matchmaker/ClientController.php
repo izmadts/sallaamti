@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Lead;
 use App\Models\LeadShortlistItem;
 use App\Models\MatchmakingConsent;
+use App\Models\MatchmakingConsentRequest;
 use App\Models\MatchmakingRequirement;
 use App\Models\MatchmakingTimelineEvent;
 use App\Models\MatchProposal;
@@ -132,6 +133,7 @@ class ClientController extends Controller
             'proposalBatches.proposals.nikahInterest',
             'timelineEvents.matchmaker',
             'consents.recordedBy', 'consents.revokedBy',
+            'consentRequests',
         ]);
 
         $searchResults = collect();
@@ -348,6 +350,47 @@ class ClientController extends Controller
         MatchmakingTimelineEvent::log($lead, $lead->nikahProfile, 'consent_recorded', MatchmakingConsent::TYPES[$validated['consent_type']] . ' consent recorded (' . MatchmakingConsent::METHODS[$validated['method']] . ').');
 
         return back()->with('status', 'Consent recorded.');
+    }
+
+    // Instead of the matchmaker just asserting consent happened, this asks
+    // the client to confirm it themselves through their own progress link
+    // — the real requester→recipient→confirm flow the platform was
+    // missing. recordConsent() above is untouched for the genuinely
+    // verbal/phone/in-person cases where that's how consent actually
+    // happened.
+    public function requestConsent(Request $request, Lead $lead)
+    {
+        $this->authorizeClient($lead);
+
+        $validated = $request->validate([
+            'consent_type' => ['required', 'in:' . implode(',', array_keys(MatchmakingConsent::TYPES))],
+        ]);
+
+        abort_unless($lead->phone, 422, 'Add a phone number for this client first — that\'s what secures the link they\'ll confirm through.');
+
+        if (!$lead->progress_link_token) {
+            $lead->update(['progress_link_token' => Str::random(40)]);
+        }
+
+        $alreadyPending = MatchmakingConsentRequest::where('lead_id', $lead->id)
+            ->where('consent_type', $validated['consent_type'])
+            ->where('status', 'pending')
+            ->exists();
+
+        if ($alreadyPending) {
+            return back()->with('status', "Already waiting on {$lead->name} to confirm this.");
+        }
+
+        MatchmakingConsentRequest::create([
+            'lead_id' => $lead->id,
+            'consent_type' => $validated['consent_type'],
+            'requested_by' => auth()->id(),
+            'requested_at' => now(),
+        ]);
+
+        MatchmakingTimelineEvent::log($lead, $lead->nikahProfile, 'consent_requested', MatchmakingConsent::TYPES[$validated['consent_type']] . ' consent requested — waiting on the client to confirm via their secure link.');
+
+        return back()->with('status', "Consent request sent — {$lead->name} will see it next time they open their progress link.");
     }
 
     public function revokeConsent(Lead $lead, MatchmakingConsent $consent)

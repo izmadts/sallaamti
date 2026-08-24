@@ -5,13 +5,17 @@ namespace App\Http\Controllers\Public;
 use App\Http\Controllers\Concerns\ValidatesNikahProfile;
 use App\Http\Controllers\Controller;
 use App\Models\Lead;
+use App\Models\MatchmakingConsent;
+use App\Models\MatchmakingConsentRequest;
 use App\Models\MatchmakingLinkAccess;
 use App\Models\MatchmakingTimelineEvent;
 use App\Models\User;
+use App\Notifications\MatchmakerConsentResponded;
 use App\Notifications\NewNikahVerificationDocumentsSubmitted;
 use App\Services\ImageOptimizer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\URL;
+use Illuminate\View\View;
 
 // A standing page a client can revisit any time to see their own status,
 // timeline, and full proposal/response history — no login, but re-verified
@@ -24,9 +28,9 @@ use Illuminate\Support\Facades\URL;
 // This is deliberately the ONE link a matchmaker ever sends a client — see
 // project_matchmaker_hiring_document's "no CNIC over WhatsApp" rule and the
 // user's explicit "don't disturb the customer with multiple links" steer.
-// When a profile was registered remotely without CNIC/photo, this same page
-// also carries the self-upload form (uploadDocuments() below) rather than
-// minting a second, separate link for that.
+// A remotely-registered profile's document upload (uploadDocuments()) and
+// any pending consent confirmations (respondToConsent()) both live on this
+// same page rather than minting separate links for each.
 class MatchmakingProgressController extends Controller
 {
     use ValidatesNikahProfile;
@@ -51,10 +55,11 @@ class MatchmakingProgressController extends Controller
         ]);
 
         $expected = substr(preg_replace('/\D/', '', $lead->phone ?? ''), -7);
-        $verifyUrl = URL::signedRoute('public.matchmaking.progress.verify', ['lead' => $lead->id, 'token' => $lead->progress_link_token]);
 
         if (!$expected || $validated['last7'] !== $expected) {
             MatchmakingLinkAccess::record($lead, 'progress_verify', $request, 'failed');
+
+            $verifyUrl = URL::signedRoute('public.matchmaking.progress.verify', ['lead' => $lead->id, 'token' => $lead->progress_link_token]);
 
             return view('public.matchmaking.progress', ['lead' => $lead, 'verifyUrl' => $verifyUrl, 'unlocked' => false])
                 ->with('error', 'That doesn\'t match — check the last 7 digits of the WhatsApp number your matchmaker has on file and try again.');
@@ -62,11 +67,7 @@ class MatchmakingProgressController extends Controller
 
         MatchmakingLinkAccess::record($lead, 'progress_verify', $request, 'success');
 
-        $lead->load(['timelineEvents.matchmaker', 'proposalBatches.proposals.candidate.user', 'nikahProfile']);
-
-        $documentsUrl = URL::signedRoute('public.matchmaking.progress.documents', ['lead' => $lead->id, 'token' => $lead->progress_link_token]);
-
-        return view('public.matchmaking.progress', ['lead' => $lead, 'verifyUrl' => $verifyUrl, 'documentsUrl' => $documentsUrl, 'unlocked' => true, 'last7' => $validated['last7']]);
+        return $this->unlockedView($lead, $validated['last7']);
     }
 
     // Re-checks the same last-7-digits proof (carried forward as a hidden
@@ -77,21 +78,15 @@ class MatchmakingProgressController extends Controller
     {
         $this->assertValidToken($request, $lead);
 
-        $last7 = (string) $request->input('last7');
-        $expected = substr(preg_replace('/\D/', '', $lead->phone ?? ''), -7);
-        $verifyUrl = URL::signedRoute('public.matchmaking.progress.verify', ['lead' => $lead->id, 'token' => $lead->progress_link_token]);
-
-        if (!$expected || $last7 !== $expected) {
+        if (!$this->reverifyLast7($lead, $request)) {
             MatchmakingLinkAccess::record($lead, 'documents_upload', $request, 'failed');
 
-            return view('public.matchmaking.progress', ['lead' => $lead, 'verifyUrl' => $verifyUrl, 'unlocked' => false])
-                ->with('error', 'Your verification expired — please enter the last 7 digits again.');
+            return $this->lockedView($lead, 'Your verification expired — please enter the last 7 digits again.');
         }
 
+        $last7 = (string) $request->input('last7');
         abort_unless($lead->nikahProfile, 404);
         $profile = $lead->nikahProfile;
-
-        $documentsUrl = URL::signedRoute('public.matchmaking.progress.documents', ['lead' => $lead->id, 'token' => $lead->progress_link_token]);
 
         $rules = collect($this->nikahProfileRules($profile))
             ->only(['cnic_number', 'cnic_front_image', 'cnic_back_image', 'photo', 'allow_photo_sharing'])
@@ -100,10 +95,7 @@ class MatchmakingProgressController extends Controller
         try {
             $documentData = $request->validate($rules, $this->nikahProfileMessages());
         } catch (\Illuminate\Validation\ValidationException $e) {
-            $lead->load(['timelineEvents.matchmaker', 'proposalBatches.proposals.candidate.user', 'nikahProfile']);
-
-            return view('public.matchmaking.progress', ['lead' => $lead, 'verifyUrl' => $verifyUrl, 'documentsUrl' => $documentsUrl, 'unlocked' => true, 'last7' => $last7])
-                ->withErrors($e->errors());
+            return $this->unlockedView($lead, $last7)->withErrors($e->errors());
         }
 
         foreach (['cnic_front_image', 'cnic_back_image', 'photo'] as $file) {
@@ -131,10 +123,87 @@ class MatchmakingProgressController extends Controller
             }
         });
 
-        $lead->load(['timelineEvents.matchmaker', 'proposalBatches.proposals.candidate.user', 'nikahProfile']);
+        return $this->unlockedView($lead)->with('status', 'Thank you — your documents have been submitted for verification.');
+    }
 
-        return view('public.matchmaking.progress', ['lead' => $lead, 'verifyUrl' => $verifyUrl, 'documentsUrl' => $documentsUrl, 'unlocked' => true])
-            ->with('status', 'Thank you — your documents have been submitted for verification.');
+    // The client-side half of ClientController::requestConsent() — grants
+    // or declines a pending request themselves rather than the matchmaker
+    // asserting consent happened on their behalf. A real MatchmakingConsent
+    // row (method='digital_form') is only created here, at the moment of
+    // an actual "grant" — the request row itself never counts toward
+    // Lead::hasActiveConsent() while pending.
+    public function respondToConsent(Request $request, Lead $lead, MatchmakingConsentRequest $consentRequest)
+    {
+        $this->assertValidToken($request, $lead);
+        abort_unless($consentRequest->lead_id === $lead->id, 404);
+
+        if (!$this->reverifyLast7($lead, $request)) {
+            MatchmakingLinkAccess::record($lead, 'consent_response', $request, 'failed');
+
+            return $this->lockedView($lead, 'Your verification expired — please enter the last 7 digits again.');
+        }
+
+        abort_if(!$consentRequest->isPending(), 422, 'This request has already been responded to.');
+
+        $decision = $request->input('decision');
+        abort_unless(in_array($decision, ['grant', 'decline'], true), 422);
+
+        if ($decision === 'grant') {
+            MatchmakingConsent::create([
+                'lead_id' => $lead->id,
+                'consent_type' => $consentRequest->consent_type,
+                'method' => 'digital_form',
+                'recorded_by' => $consentRequest->requested_by,
+                'granted_at' => now(),
+            ]);
+            $consentRequest->update(['status' => 'granted', 'responded_at' => now()]);
+            $label = explode(' — ', MatchmakingConsent::TYPES[$consentRequest->consent_type])[0];
+            MatchmakingTimelineEvent::log($lead, $lead->nikahProfile, 'consent_recorded', "{$label} consent confirmed by the client themselves via their secure link.");
+            $statusMessage = 'Thank you — your consent has been recorded.';
+        } else {
+            $consentRequest->update(['status' => 'declined', 'responded_at' => now()]);
+            $label = explode(' — ', MatchmakingConsent::TYPES[$consentRequest->consent_type])[0];
+            MatchmakingTimelineEvent::log($lead, $lead->nikahProfile, 'consent_declined', "{$label} consent was declined by the client.");
+            $statusMessage = 'Noted — your matchmaker has been informed.';
+        }
+
+        MatchmakingLinkAccess::record($lead, 'consent_response', $request, $decision);
+
+        if ($lead->assigned_to) {
+            try {
+                User::find($lead->assigned_to)?->notify(new MatchmakerConsentResponded($consentRequest, $lead));
+            } catch (\Throwable $e) {
+                \Log::error('MatchmakerConsentResponded notification failed: ' . $e->getMessage());
+            }
+        }
+
+        return $this->unlockedView($lead)->with('status', $statusMessage);
+    }
+
+    private function reverifyLast7(Lead $lead, Request $request): bool
+    {
+        $last7 = (string) $request->input('last7');
+        $expected = substr(preg_replace('/\D/', '', $lead->phone ?? ''), -7);
+
+        return $expected && $last7 === $expected;
+    }
+
+    private function lockedView(Lead $lead, string $error): View
+    {
+        $verifyUrl = URL::signedRoute('public.matchmaking.progress.verify', ['lead' => $lead->id, 'token' => $lead->progress_link_token]);
+
+        return view('public.matchmaking.progress', ['lead' => $lead, 'verifyUrl' => $verifyUrl, 'unlocked' => false])
+            ->with('error', $error);
+    }
+
+    private function unlockedView(Lead $lead, ?string $last7 = null): View
+    {
+        $lead->load(['timelineEvents.matchmaker', 'proposalBatches.proposals.candidate.user', 'nikahProfile', 'consentRequests']);
+
+        $verifyUrl = URL::signedRoute('public.matchmaking.progress.verify', ['lead' => $lead->id, 'token' => $lead->progress_link_token]);
+        $documentsUrl = URL::signedRoute('public.matchmaking.progress.documents', ['lead' => $lead->id, 'token' => $lead->progress_link_token]);
+
+        return view('public.matchmaking.progress', ['lead' => $lead, 'verifyUrl' => $verifyUrl, 'documentsUrl' => $documentsUrl, 'unlocked' => true, 'last7' => $last7]);
     }
 
     private function assertValidToken(Request $request, Lead $lead): void

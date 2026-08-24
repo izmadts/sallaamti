@@ -185,7 +185,18 @@
                 {{-- Consent — see App\Models\MatchmakingConsent. Matchmaking Participation gates sending proposal batches. --}}
                 <div class="mt-6 pt-6 border-t">
                     <h4 class="font-semibold text-gray-700 mb-1">✅ Consent</h4>
-                    <p class="text-xs text-gray-500 mb-3">Record consent as you get it — verbally, over WhatsApp, or in person. An active <strong>Matchmaking Participation</strong> consent is required before you can send this client any proposals.</p>
+                    <p class="text-xs text-gray-500 mb-3">Best way: ask them to confirm it themselves through their secure link — the system asks them directly, no guesswork about what they actually agreed to. If that's not possible, you can still record consent you got verbally, by phone, or in person. An active <strong>Matchmaking Participation</strong> consent is required before you can send this client any proposals.</p>
+
+                    @if ($lead->consentRequests->where('status', 'pending')->isNotEmpty())
+                    <div class="space-y-1.5 mb-3">
+                        @foreach ($lead->consentRequests->where('status', 'pending') as $req)
+                        <div class="text-xs bg-blue-50 text-blue-800 rounded-lg px-3 py-2">
+                            ⏳ Waiting on {{ $lead->name }} to confirm: <strong>{{ explode(' — ', \App\Models\MatchmakingConsent::TYPES[$req->consent_type])[0] }}</strong>
+                            <span class="text-blue-500"> · requested {{ $req->requested_at->diffForHumans() }}</span>
+                        </div>
+                        @endforeach
+                    </div>
+                    @endif
 
                     @if ($lead->consents->isNotEmpty())
                     <div class="space-y-1.5 mb-3">
@@ -208,6 +219,24 @@
                         @endforeach
                     </div>
                     @endif
+
+                    <form method="POST" action="{{ route('matchmaker.clients.consents.request', $lead) }}" class="flex flex-wrap gap-2 items-end mb-3">
+                        @csrf
+                        <div>
+                            <label class="text-xs text-gray-500">Type</label>
+                            <select name="consent_type" required class="border-gray-300 rounded text-sm block">
+                                @foreach (\App\Models\MatchmakingConsent::TYPES as $value => $label)
+                                <option value="{{ $value }}">{{ explode(' — ', $label)[0] }}</option>
+                                @endforeach
+                            </select>
+                        </div>
+                        <button class="text-xs font-semibold px-3 py-1.5 rounded-lg border" style="border-color: var(--mm-plum); color: var(--mm-plum);">🔗 Ask Them to Confirm via Link</button>
+                        @unless ($lead->phone)
+                        <span class="text-xs text-amber-700">Add a phone number above first.</span>
+                        @endunless
+                    </form>
+
+                    <p class="text-xs text-gray-400 mb-2">— or, if you already got it verbally, by phone, or in person —</p>
 
                     <form method="POST" action="{{ route('matchmaker.clients.consents.record', $lead) }}" class="flex flex-wrap gap-2 items-end">
                         @csrf

@@ -699,6 +699,7 @@ Route::middleware(['auth', 'matchmaker'])->prefix('matchmaker')->name('matchmake
     Route::post('/clients/{lead}/proposal-batches/{batch}/proposals/{proposal}/regenerate-link', [\App\Http\Controllers\Matchmaker\ClientController::class, 'regenerateLink'])->name('clients.batches.proposals.regenerate-link');
     Route::post('/clients/{lead}/progress-link', [\App\Http\Controllers\Matchmaker\ClientController::class, 'regenerateProgressLink'])->name('clients.progress-link.regenerate');
     Route::post('/clients/{lead}/consents', [\App\Http\Controllers\Matchmaker\ClientController::class, 'recordConsent'])->name('clients.consents.record');
+    Route::post('/clients/{lead}/consents/request', [\App\Http\Controllers\Matchmaker\ClientController::class, 'requestConsent'])->name('clients.consents.request');
     Route::post('/clients/{lead}/consents/{consent}/revoke', [\App\Http\Controllers\Matchmaker\ClientController::class, 'revokeConsent'])->name('clients.consents.revoke');
 });
 
@@ -712,6 +713,7 @@ Route::middleware('signed')->prefix('m')->name('public.matchmaking.')->group(fun
     Route::get('/progress/{lead}', [\App\Http\Controllers\Public\MatchmakingProgressController::class, 'show'])->name('progress.show');
     Route::post('/progress/{lead}/verify', [\App\Http\Controllers\Public\MatchmakingProgressController::class, 'verify'])->name('progress.verify');
     Route::post('/progress/{lead}/documents', [\App\Http\Controllers\Public\MatchmakingProgressController::class, 'uploadDocuments'])->name('progress.documents');
+    Route::post('/progress/{lead}/consents/{consentRequest}', [\App\Http\Controllers\Public\MatchmakingProgressController::class, 'respondToConsent'])->name('progress.consents.respond');
 });
 
 require __DIR__ . '/auth.php';

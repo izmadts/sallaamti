@@ -85,6 +85,11 @@ class Lead extends Model
         return $this->hasMany(MatchmakingConsent::class)->latest('granted_at');
     }
 
+    public function consentRequests()
+    {
+        return $this->hasMany(MatchmakingConsentRequest::class)->latest('requested_at');
+    }
+
     public function hasActiveConsent(string $type): bool
     {
         return $this->consents()->active()->where('consent_type', $type)->exists();

@@ -37,6 +37,28 @@
             <div class="p-4 bg-green-50 text-green-700 rounded-lg text-sm text-center">{{ session('status') }}</div>
             @endif
 
+            @php $pendingConsents = $lead->consentRequests->where('status', 'pending'); @endphp
+            @if ($pendingConsents->isNotEmpty())
+            <div class="bg-white rounded-xl shadow-sm p-6">
+                <h4 class="font-semibold text-gray-700 mb-1">✅ Please Confirm</h4>
+                <p class="text-xs text-gray-500 mb-4">Your matchmaker is asking you to confirm the following. This goes straight to Sallaamti — nothing is assumed on your behalf.</p>
+
+                <div class="space-y-3">
+                    @foreach ($pendingConsents as $req)
+                    <div class="border border-gray-100 rounded-lg p-4">
+                        <p class="text-sm text-gray-700 mb-3">{{ \App\Models\MatchmakingConsent::TYPES[$req->consent_type] }}</p>
+                        <form method="POST" action="{{ route('public.matchmaking.progress.consents.respond', ['lead' => $lead->id, 'consentRequest' => $req->id, 'token' => $lead->progress_link_token]) }}" class="flex flex-wrap gap-3">
+                            @csrf
+                            <input type="hidden" name="last7" value="{{ $last7 ?? '' }}">
+                            <button name="decision" value="grant" class="bg-green-500 hover:bg-green-600 text-white text-sm font-semibold px-5 py-2.5 rounded-lg transition">✅ I Agree</button>
+                            <button name="decision" value="decline" class="bg-white border border-gray-300 text-gray-600 hover:bg-gray-50 text-sm font-semibold px-5 py-2.5 rounded-lg transition">Not Now</button>
+                        </form>
+                    </div>
+                    @endforeach
+                </div>
+            </div>
+            @endif
+
             @if ($lead->nikahProfile && (empty($lead->nikahProfile->cnic_front_image) || empty($lead->nikahProfile->cnic_back_image) || empty($lead->nikahProfile->cnic_number)))
             <div class="bg-white rounded-xl shadow-sm p-6">
                 <h4 class="font-semibold text-gray-700 mb-1">🪪 Upload Your Verification Documents</h4>
