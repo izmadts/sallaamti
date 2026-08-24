@@ -6,6 +6,7 @@ use App\Http\Controllers\Api\V1\FaqController;
 use App\Http\Controllers\Api\V1\Matchmaker as MatchmakerApi;
 use App\Http\Controllers\Api\V1\MetaController;
 use App\Http\Controllers\Api\V1\NikahBrowseController;
+use App\Http\Controllers\Api\V1\NikahCounselorApplicationController;
 use App\Http\Controllers\Api\V1\NikahFileController;
 use App\Http\Controllers\Api\V1\NikahInterestController;
 use App\Http\Controllers\Api\V1\NikahPaymentController;
@@ -37,6 +38,12 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
 
     Route::get('faqs', [FaqController::class, 'index'])->name('faqs.index');
     Route::get('meta/country-states', [MetaController::class, 'countryStates'])->name('meta.country-states');
+    Route::get('meta/nikah-counselor-application', [MetaController::class, 'nikahCounselorApplicationEnums'])->name('meta.nikah-counselor-application');
+
+    // Guest "Apply to become a Nikah Counselor" — no account required, see
+    // NikahCounselorApplicationController's class docblock. Throttled like
+    // the auth endpoints above since it's an unauthenticated write.
+    Route::post('nikah-counselor-application', [NikahCounselorApplicationController::class, 'store'])->middleware('throttle:5,1')->name('nikah-counselor-application.store');
 
     Route::middleware('auth:sanctum')->group(function () {
         Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
