@@ -217,6 +217,12 @@
                     @endif
                 </a>
 
+                <a href="{{ route('admin.commissions.ledger') }}"
+                    class="flex items-center justify-between gap-3 px-3 py-2 rounded-lg transition
+                          {{ request()->routeIs('admin.commissions*') ? 'bg-teal-700 text-white' : 'text-teal-100 hover:bg-teal-800' }}">
+                    <span class="flex items-center gap-3"><span class="text-base">💰</span> Commissions</span>
+                </a>
+
                 <a href="{{ route('admin.posts.index') }}"
                     class="flex items-center justify-between gap-3 px-3 py-2 rounded-lg transition
                           {{ request()->routeIs('admin.posts*') ? 'bg-teal-700 text-white' : 'text-teal-100 hover:bg-teal-800' }}">

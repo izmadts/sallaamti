@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Concerns\RecordsCommission;
 use App\Http\Controllers\Controller;
 use App\Models\NikahProfile;
 use App\Services\ImageOptimizer;
@@ -9,6 +10,8 @@ use Illuminate\Http\Request;
 
 class NikahPaymentAdminController extends Controller
 {
+    use RecordsCommission;
+
 
     public function index(Request $request)
     {
@@ -30,6 +33,7 @@ class NikahPaymentAdminController extends Controller
 
         foreach ($profiles as $profile) {
             $profile->update(['payment_status' => 'confirmed', 'payment_confirmed_at' => now()]);
+            $this->recordVerifiedProfileCommission($profile);
 
             try {
                 $profile->user->notify(new \App\Notifications\NikahPaymentConfirmed());
@@ -64,6 +68,7 @@ class NikahPaymentAdminController extends Controller
         }
 
         $profile->update(['payment_status' => 'confirmed', 'payment_confirmed_at' => now()]);
+        $this->recordVerifiedProfileCommission($profile);
 
         try {
             $profile->user->notify(new \App\Notifications\NikahPaymentConfirmed());
@@ -119,6 +124,8 @@ class NikahPaymentAdminController extends Controller
                 'note' => 'Payment recorded manually by admin — received via ' . $validated['payment_method'] . '.',
             ]);
         });
+
+        $this->recordVerifiedProfileCommission($profile->fresh());
 
         try {
             $profile->user->notify(new \App\Notifications\NikahPaymentConfirmed());

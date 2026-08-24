@@ -108,6 +108,11 @@
                     class="flex items-center gap-3 px-3 py-2 rounded-lg transition text-pink-100 hover:bg-pink-800">
                     <span class="text-base">💳</span> Nikah Packages
                 </a>
+                <a href="{{ route('matchmaker.commissions.index') }}"
+                    class="flex items-center gap-3 px-3 py-2 rounded-lg transition
+                          {{ request()->routeIs('matchmaker.commissions*') ? 'bg-pink-700 text-white' : 'text-pink-100 hover:bg-pink-800' }}">
+                    <span class="text-base">💰</span> My Commissions
+                </a>
 
                 <p class="text-pink-400 text-xs uppercase tracking-widest px-3 pt-4 pb-1">Help</p>
                 <a href="{{ route('guide.index') }}"

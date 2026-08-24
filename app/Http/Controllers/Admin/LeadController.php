@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Concerns\HasWizardSteps;
+use App\Http\Controllers\Concerns\RecordsCommission;
 use App\Http\Controllers\Controller;
 use App\Models\Lead;
 use App\Models\LeadShortlistItem;
@@ -25,7 +26,7 @@ use Illuminate\Support\Carbon;
 // stops that trail from being lost when the chat scrolls away.
 class LeadController extends Controller
 {
-    use HasWizardSteps;
+    use HasWizardSteps, RecordsCommission;
 
     // Reuses the walk-in wizard's own session namespace (see convert()
     // below) — must match Admin\NikahProfileWizardController::$wizardKey
@@ -188,6 +189,10 @@ class LeadController extends Controller
 
         if ($packageChanged) {
             MatchmakingTimelineEvent::log($lead, $lead->nikahProfile, 'package_changed', 'Package changed to ' . ($lead->fresh()->nikahPackage?->name ?? 'None') . '.');
+
+            if ($lead->nikah_package_id) {
+                $this->recordPackageCommission($lead->fresh());
+            }
         }
 
         if ($statusChanged) {

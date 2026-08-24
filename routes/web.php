@@ -552,6 +552,17 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::post('matchmaker-applications/{matchmakerApplication}/reject', [\App\Http\Controllers\Admin\MatchmakerApplicationController::class, 'reject'])->name('matchmaker-applications.reject')->middleware('can:matchmaker-applications.manage');
     Route::get('matchmaker-applications/{matchmakerApplication}/file/{type}', [\App\Http\Controllers\Admin\MatchmakerApplicationController::class, 'file'])->name('matchmaker-applications.file')->middleware('can:matchmaker-applications.view');
 
+    // Matchmaker commission engine & ledger (permission-gated, see App\Support\PermissionCatalog)
+    Route::get('commissions/rules', [\App\Http\Controllers\Admin\CommissionController::class, 'rules'])->name('commissions.rules')->middleware('can:commissions.view');
+    Route::post('commissions/rules/{commissionRule}', [\App\Http\Controllers\Admin\CommissionController::class, 'updateRule'])->name('commissions.rules.update')->middleware('can:commissions.manage');
+    Route::get('commissions/ledger', [\App\Http\Controllers\Admin\CommissionController::class, 'ledger'])->name('commissions.ledger')->middleware('can:commissions.view');
+    Route::post('commissions/ledger/{entry}/approve', [\App\Http\Controllers\Admin\CommissionController::class, 'approve'])->name('commissions.approve')->middleware('can:commissions.manage');
+    Route::post('commissions/ledger/{entry}/pay', [\App\Http\Controllers\Admin\CommissionController::class, 'pay'])->name('commissions.pay')->middleware('can:commissions.manage');
+    Route::post('commissions/ledger/{entry}/flag', [\App\Http\Controllers\Admin\CommissionController::class, 'flag'])->name('commissions.flag')->middleware('can:commissions.manage');
+    Route::post('commissions/ledger/{entry}/unflag', [\App\Http\Controllers\Admin\CommissionController::class, 'unflag'])->name('commissions.unflag')->middleware('can:commissions.manage');
+    Route::post('commissions/ledger/{entry}/reclassify', [\App\Http\Controllers\Admin\CommissionController::class, 'reclassify'])->name('commissions.reclassify')->middleware('can:commissions.manage');
+    Route::post('commissions/bonus', [\App\Http\Controllers\Admin\CommissionController::class, 'grantBonus'])->name('commissions.bonus')->middleware('can:commissions.manage');
+
     // Sallaamti Wall moderation (permission-gated)
     Route::get('wall', [DuaWallAdminController::class, 'index'])->name('wall.index')->middleware('can:wall.view');
     Route::post('wall/{duaRequest}/approve', [DuaWallAdminController::class, 'approve'])->name('wall.approve')->middleware('can:wall.manage');
@@ -713,6 +724,8 @@ Route::middleware(['auth', 'matchmaker'])->prefix('matchmaker')->name('matchmake
     Route::post('/clients/{lead}/consents', [\App\Http\Controllers\Matchmaker\ClientController::class, 'recordConsent'])->name('clients.consents.record');
     Route::post('/clients/{lead}/consents/request', [\App\Http\Controllers\Matchmaker\ClientController::class, 'requestConsent'])->name('clients.consents.request');
     Route::post('/clients/{lead}/consents/{consent}/revoke', [\App\Http\Controllers\Matchmaker\ClientController::class, 'revokeConsent'])->name('clients.consents.revoke');
+
+    Route::get('/commissions', [\App\Http\Controllers\Matchmaker\CommissionController::class, 'index'])->name('commissions.index');
 });
 
 // Public, no-login signed-link actions — reachable only via a link a

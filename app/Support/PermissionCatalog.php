@@ -35,6 +35,7 @@ class PermissionCatalog
         // here for consistency with the grid but aren't wired to anything yet.
         'leads' => 'Leads / Match Maker Desk (cross-matchmaker oversight)',
         'matchmaker-applications' => 'Nikah Counselor Applications',
+        'commissions' => 'Matchmaker Commission Rules & Ledger',
     ];
 
     public const ACTIONS = [
