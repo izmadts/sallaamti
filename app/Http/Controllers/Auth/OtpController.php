@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Auth\Concerns\RegistersMinimalUsers;
+use App\Http\Controllers\Concerns\TracksReferrals;
 use App\Http\Controllers\Controller;
 use App\Models\OtpCode;
 use App\Models\User;
@@ -16,7 +17,7 @@ use Illuminate\View\View;
 
 class OtpController extends Controller
 {
-    use RegistersMinimalUsers;
+    use RegistersMinimalUsers, TracksReferrals;
 
     public function requestForm(): View
     {
@@ -78,6 +79,7 @@ class OtpController extends Controller
 
         if ($pending['purpose'] === 'registration') {
             $user = $this->createMinimalUser($pending['name'], $pending['email'], $pending['phone'], provider: 'whatsapp');
+            $this->attributeReferral($user);
         } else {
             $user = User::findOrFail($pending['user_id']);
         }

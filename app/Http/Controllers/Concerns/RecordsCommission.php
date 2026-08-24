@@ -6,6 +6,7 @@ use App\Models\CommissionLedgerEntry;
 use App\Models\CommissionRule;
 use App\Models\Lead;
 use App\Models\MatchmakerApplication;
+use App\Models\MatchmakerReferral;
 use App\Models\NikahProfile;
 use App\Models\User;
 use App\Notifications\MatchmakerCommissionEarned;
@@ -27,10 +28,20 @@ trait RecordsCommission
 
     // Fired once, right after NikahProfileWizardController/NikahPaymentAdminController
     // flips payment_status to 'confirmed' — never before, since an
-    // unconfirmed payment isn't real revenue yet.
+    // unconfirmed payment isn't real revenue yet. A walk-in profile's
+    // created_by takes priority; a self-service profile falls back to
+    // whichever counselor's referral link the member originally
+    // registered through (Concerns\TracksReferrals) — a counselor's
+    // marketing bringing in someone who registers AND verifies themselves
+    // is the same kind of real acquisition work a walk-in represents.
     private function recordVerifiedProfileCommission(NikahProfile $profile): void
     {
         $matchmaker = $profile->createdBy;
+
+        if (!$matchmaker) {
+            $referral = MatchmakerReferral::where('referred_user_id', $profile->user_id)->first();
+            $matchmaker = $referral?->counselor;
+        }
 
         if (!$matchmaker || !$matchmaker->hasRole('matchmaker')) {
             return;

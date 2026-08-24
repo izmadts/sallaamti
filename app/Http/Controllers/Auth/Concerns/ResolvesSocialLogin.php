@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Auth\Concerns;
 
+use App\Http\Controllers\Concerns\TracksReferrals;
 use App\Mail\SocialProviderLinked;
 use App\Models\User;
 use Illuminate\Support\Facades\Mail;
@@ -13,7 +14,7 @@ use Illuminate\Support\Facades\Mail;
 // being copied between the two.
 trait ResolvesSocialLogin
 {
-    use RegistersMinimalUsers;
+    use RegistersMinimalUsers, TracksReferrals;
 
     // Set by resolveSocialUser() on every call — callers that want to show
     // a "welcome back, your account was reactivated" message check this
@@ -46,6 +47,7 @@ trait ResolvesSocialLogin
         if (!$user) {
             $user = $this->createMinimalUser($name, $email, null, provider: $provider);
             $user->update(['provider_id' => $providerId]);
+            $this->attributeReferral($user);
         }
 
         if (!$user->email_verified_at && $email) {

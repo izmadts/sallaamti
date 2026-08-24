@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Matchmaker;
 use App\Http\Controllers\Controller;
 use App\Models\CommissionLedgerEntry;
 use App\Models\MatchmakerApplication;
+use App\Models\MatchmakerReferral;
 use Illuminate\Support\Facades\Auth;
 
 // A matchmaker's own transparent view of what they've earned — the
@@ -27,7 +28,9 @@ class CommissionController extends Controller
         ];
 
         $application = MatchmakerApplication::where('user_id', Auth::id())->where('status', 'certified')->first();
+        $referralCount = MatchmakerReferral::where('counselor_user_id', Auth::id())->count();
+        $referralLink = $application ? url('/register?ref=' . $application->counselor_code) : null;
 
-        return view('matchmaker.commissions.index', compact('entries', 'totals', 'application'));
+        return view('matchmaker.commissions.index', compact('entries', 'totals', 'application', 'referralCount', 'referralLink'));
     }
 }

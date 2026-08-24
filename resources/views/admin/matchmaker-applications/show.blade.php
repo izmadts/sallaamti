@@ -114,10 +114,14 @@
                     <button class="text-xs font-semibold px-3 py-1.5 rounded-lg border" style="border-color: #b8962e; color: #b8962e;">Update Level</button>
                 </form>
 
-                <div class="grid sm:grid-cols-2 gap-4 text-sm">
+                <div class="grid sm:grid-cols-3 gap-4 text-sm">
                     <div class="bg-gray-50 rounded-lg p-3">
                         <p class="text-xs text-gray-400 mb-1">Referral Link</p>
                         <input type="text" readonly value="{{ url('/register?ref=' . $application->counselor_code) }}" class="text-xs border-gray-200 rounded-lg w-full bg-white" onclick="this.select()">
+                    </div>
+                    <div class="bg-gray-50 rounded-lg p-3">
+                        <p class="text-xs text-gray-400 mb-1">Referred Registrations</p>
+                        <p class="text-lg font-bold" style="color: #0d6b6b">{{ \App\Models\MatchmakerReferral::where('counselor_user_id', $application->user_id)->count() }}</p>
                     </div>
                     <div class="bg-gray-50 rounded-lg p-3">
                         <p class="text-xs text-gray-400 mb-1">Certificate</p>
@@ -129,7 +133,6 @@
                         @endif
                     </div>
                 </div>
-                <p class="text-xs text-amber-700 mt-3">⚠️ Referral link attribution tracking (crediting this counselor when someone registers via this link) is not wired up yet — this link format is ready for when that's built.</p>
             </div>
             @endif
 

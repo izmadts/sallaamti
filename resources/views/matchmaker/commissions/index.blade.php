@@ -13,6 +13,18 @@
                 <p class="text-white/60 text-xs">ID: {{ $application->counselor_code }}</p>
             </div>
         </div>
+
+        <div class="bg-white rounded-xl shadow-sm p-5">
+            <div class="flex flex-wrap justify-between items-center gap-3 mb-2">
+                <h4 class="font-semibold text-gray-700">🔗 My Referral Link</h4>
+                <p class="text-sm"><strong style="color: #0d6b6b">{{ $referralCount }}</strong> <span class="text-gray-500">registered through it</span></p>
+            </div>
+            <p class="text-xs text-gray-500 mb-2">Share this on your visiting card, WhatsApp, or social media — anyone who registers through it is credited to you, including if they later verify their profile.</p>
+            <div class="flex flex-wrap items-center gap-2">
+                <input type="text" readonly value="{{ $referralLink }}" class="text-xs border-gray-200 rounded-lg flex-1 min-w-[16rem] bg-gray-50" onclick="this.select()" id="referral-link">
+                <button type="button" onclick="navigator.clipboard.writeText(document.getElementById('referral-link').value); this.textContent = 'Copied!'; setTimeout(() => this.textContent = 'Copy Link', 1500);" class="text-xs font-semibold px-2 py-1.5 rounded-lg text-white hover:opacity-90" style="background: #0d6b6b">Copy Link</button>
+            </div>
+        </div>
         @endif
 
         <div class="grid sm:grid-cols-3 gap-4">

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Auth\Concerns\RegistersMinimalUsers;
+use App\Http\Controllers\Concerns\TracksReferrals;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Rules\ValidPhoneNumber;
@@ -18,13 +19,15 @@ use Illuminate\View\View;
 
 class RegisteredUserController extends Controller
 {
-    use RegistersMinimalUsers;
+    use RegistersMinimalUsers, TracksReferrals;
 
     /**
      * Display the registration view.
      */
-    public function create(): View
+    public function create(Request $request): View
     {
+        $this->captureReferralCode($request->query('ref'));
+
         return view('auth.register');
     }
 
@@ -65,6 +68,8 @@ class RegisteredUserController extends Controller
             $isEmail ? null : $identifier,
             $request->password
         );
+
+        $this->attributeReferral($user);
 
         // Interest checkboxes on the registration form — same columns the
         // profile page's "Your Interests" section and the topbar toggle
