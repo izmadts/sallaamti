@@ -37,11 +37,7 @@ class SetApiLocale
         App::setLocale($locale);
 
         if (Schema::hasTable('translations')) {
-            $translations = Translation::getTranslationsByLocale($locale);
-
-            if (!empty($translations)) {
-                app('translator')->addLines($translations, $locale);
-            }
+            Translation::applyToTranslator($locale);
         }
 
         return $next($request);

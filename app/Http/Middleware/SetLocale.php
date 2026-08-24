@@ -39,11 +39,7 @@ class SetLocale
         App::setLocale($locale);
 
         if (Schema::hasTable('translations')) {
-            $translations = Translation::getTranslationsByLocale($locale);
-
-            if (!empty($translations)) {
-                app('translator')->addLines($translations, $locale);
-            }
+            Translation::applyToTranslator($locale);
         }
 
         view()->share('isRtl', (bool) ($language->is_rtl ?? false));
