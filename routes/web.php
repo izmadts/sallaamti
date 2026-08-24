@@ -727,6 +727,7 @@ Route::middleware(['auth', 'matchmaker'])->prefix('matchmaker')->name('matchmake
     Route::post('/clients/{lead}/consents/{consent}/revoke', [\App\Http\Controllers\Matchmaker\ClientController::class, 'revokeConsent'])->name('clients.consents.revoke');
 
     Route::get('/commissions', [\App\Http\Controllers\Matchmaker\CommissionController::class, 'index'])->name('commissions.index');
+    Route::get('/performance', [\App\Http\Controllers\Matchmaker\PerformanceController::class, 'index'])->name('performance.index');
 });
 
 // Public, no-login signed-link actions — reachable only via a link a

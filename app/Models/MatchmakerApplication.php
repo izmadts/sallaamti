@@ -2,10 +2,30 @@
 
 namespace App\Models;
 
+use Endroid\QrCode\QrCode;
+use Endroid\QrCode\Writer\PngWriter;
 use Illuminate\Database\Eloquent\Model;
 
 class MatchmakerApplication extends Model
 {
+    // Separate from Certificate::qrCodeBase64() (which points at the
+    // certificate verification URL, a trust check) — this one encodes
+    // the counselor's own referral link, the marketing/conversion tool
+    // from the hiring document's section 14 ("referral URL... or QR
+    // code"). Scanning this takes someone straight to /register?ref=...,
+    // not to a verification page.
+    public function referralQrCodeBase64(): ?string
+    {
+        if (!$this->counselor_code) {
+            return null;
+        }
+
+        $qrCode = new QrCode(url('/register?ref=' . $this->counselor_code));
+        $writer = new PngWriter();
+
+        return $writer->write($qrCode)->getDataUri();
+    }
+
     // Order matters for the admin pipeline UI (progress bar / next-step
     // logic) — index position doubles as pipeline order. rejected/withdrawn
     // are terminal side-exits, not steps in the main sequence.

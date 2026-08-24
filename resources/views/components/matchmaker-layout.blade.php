@@ -113,6 +113,11 @@
                           {{ request()->routeIs('matchmaker.commissions*') ? 'bg-pink-700 text-white' : 'text-pink-100 hover:bg-pink-800' }}">
                     <span class="text-base">💰</span> My Commissions
                 </a>
+                <a href="{{ route('matchmaker.performance.index') }}"
+                    class="flex items-center gap-3 px-3 py-2 rounded-lg transition
+                          {{ request()->routeIs('matchmaker.performance*') ? 'bg-pink-700 text-white' : 'text-pink-100 hover:bg-pink-800' }}">
+                    <span class="text-base">📊</span> My Performance
+                </a>
 
                 <p class="text-pink-400 text-xs uppercase tracking-widest px-3 pt-4 pb-1">Help</p>
                 <a href="{{ route('guide.index') }}"
@@ -160,7 +165,17 @@
                 <div class="flex items-center gap-3">
                     <x-language-switcher />
                     <span class="text-xs text-gray-400 hidden sm:block">{{ now()->format('d M Y') }}</span>
-                    <img src="{{ Auth::user()->avatarUrl() }}" class="w-8 h-8 rounded-full object-cover">
+                    @php
+                        $myApplication = \App\Models\MatchmakerApplication::where('user_id', Auth::id())->where('status', 'certified')->first();
+                        $tierColors = ['nikah_counselor' => '#0d6b6b', 'certified_nikah_counselor' => '#1a6fb8', 'senior_nikah_counselor' => '#b8962e', 'regional_nikah_coordinator' => '#7a2e8c'];
+                        $tierBadges = ['nikah_counselor' => '🥉', 'certified_nikah_counselor' => '🥈', 'senior_nikah_counselor' => '🥇', 'regional_nikah_coordinator' => '⭐'];
+                    @endphp
+                    <a href="{{ route('matchmaker.performance.index') }}" class="relative flex-shrink-0" title="{{ $myApplication ? \App\Models\MatchmakerApplication::LEVELS[$myApplication->level] : '' }}">
+                        <img src="{{ Auth::user()->avatarUrl() }}" class="w-8 h-8 rounded-full object-cover" @if($myApplication) style="border: 2px solid {{ $tierColors[$myApplication->level] }}" @endif>
+                        @if ($myApplication)
+                        <span class="absolute -bottom-1 -right-1 text-xs leading-none">{{ $tierBadges[$myApplication->level] }}</span>
+                        @endif
+                    </a>
                     <span class="text-sm text-gray-700 hidden sm:block">{{ Auth::user()->name }}</span>
                 </div>
             </header>

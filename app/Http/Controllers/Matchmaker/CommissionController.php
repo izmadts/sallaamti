@@ -30,7 +30,8 @@ class CommissionController extends Controller
         $application = MatchmakerApplication::where('user_id', Auth::id())->where('status', 'certified')->first();
         $referralCount = MatchmakerReferral::where('counselor_user_id', Auth::id())->count();
         $referralLink = $application ? url('/register?ref=' . $application->counselor_code) : null;
+        $referralQrCode = $application?->referralQrCodeBase64();
 
-        return view('matchmaker.commissions.index', compact('entries', 'totals', 'application', 'referralCount', 'referralLink'));
+        return view('matchmaker.commissions.index', compact('entries', 'totals', 'application', 'referralCount', 'referralLink', 'referralQrCode'));
     }
 }

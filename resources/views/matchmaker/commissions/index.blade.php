@@ -19,10 +19,20 @@
                 <h4 class="font-semibold text-gray-700">🔗 My Referral Link</h4>
                 <p class="text-sm"><strong style="color: #0d6b6b">{{ $referralCount }}</strong> <span class="text-gray-500">registered through it</span></p>
             </div>
-            <p class="text-xs text-gray-500 mb-2">Share this on your visiting card, WhatsApp, or social media — anyone who registers through it is credited to you, including if they later verify their profile.</p>
-            <div class="flex flex-wrap items-center gap-2">
-                <input type="text" readonly value="{{ $referralLink }}" class="text-xs border-gray-200 rounded-lg flex-1 min-w-[16rem] bg-gray-50" onclick="this.select()" id="referral-link">
-                <button type="button" onclick="navigator.clipboard.writeText(document.getElementById('referral-link').value); this.textContent = 'Copied!'; setTimeout(() => this.textContent = 'Copy Link', 1500);" class="text-xs font-semibold px-2 py-1.5 rounded-lg text-white hover:opacity-90" style="background: #0d6b6b">Copy Link</button>
+            <p class="text-xs text-gray-500 mb-3">Share this on your visiting card, WhatsApp, or social media — anyone who registers through it is credited to you, including if they later verify their profile.</p>
+            <div class="flex flex-wrap items-start gap-4">
+                <div class="flex-1 min-w-[16rem] space-y-2">
+                    <div class="flex flex-wrap items-center gap-2">
+                        <input type="text" readonly value="{{ $referralLink }}" class="text-xs border-gray-200 rounded-lg flex-1 min-w-[14rem] bg-gray-50" onclick="this.select()" id="referral-link">
+                        <button type="button" onclick="navigator.clipboard.writeText(document.getElementById('referral-link').value); this.textContent = 'Copied!'; setTimeout(() => this.textContent = 'Copy Link', 1500);" class="text-xs font-semibold px-2 py-1.5 rounded-lg text-white hover:opacity-90" style="background: #0d6b6b">Copy Link</button>
+                    </div>
+                </div>
+                @if ($referralQrCode)
+                <div class="text-center flex-shrink-0">
+                    <img src="{{ $referralQrCode }}" class="w-24 h-24 rounded-lg border border-gray-200 p-1">
+                    <p class="text-xs text-gray-400 mt-1">Scan to register</p>
+                </div>
+                @endif
             </div>
         </div>
         @endif

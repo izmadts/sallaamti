@@ -118,6 +118,7 @@
                     <div class="bg-gray-50 rounded-lg p-3">
                         <p class="text-xs text-gray-400 mb-1">Referral Link</p>
                         <input type="text" readonly value="{{ url('/register?ref=' . $application->counselor_code) }}" class="text-xs border-gray-200 rounded-lg w-full bg-white" onclick="this.select()">
+                        <img src="{{ $application->referralQrCodeBase64() }}" class="w-16 h-16 rounded border border-gray-200 p-1 bg-white mt-2">
                     </div>
                     <div class="bg-gray-50 rounded-lg p-3">
                         <p class="text-xs text-gray-400 mb-1">Referred Registrations</p>
