@@ -34,13 +34,23 @@ class LeadController extends Controller
     // controller never looks.
     protected string $wizardKey = 'admin_nikah_profile';
 
-    // Same ability pair NikahProfileWizardController::authorizeProfileCreation()
-    // already uses for the walk-in wizard — a matchmaker doesn't have (and
-    // shouldn't need) the full 'admin' role just to run their own leads.
+    // SECURITY FIX (2026-08-24): this used to allow anyone holding
+    // nikah.create-profile — a permission auto-granted to every plain
+    // matchmaker (see 2026_08_20_071522_add_nikah_create_profile_
+    // permission_for_matchmaker.php) — straight into this controller,
+    // which unlike Matchmaker\ClientController::authorizeClient() applies
+    // NO per-record scoping in index()/show()/update()/destroy(). Any
+    // matchmaker could view, edit, or permanently delete any OTHER
+    // matchmaker's lead by guessing the ID. A plain matchmaker already
+    // has their own fully self-scoped equivalent at /matchmaker/clients
+    // (Matchmaker\ClientController) — this admin surface is for real
+    // cross-matchmaker oversight only, so it now requires the exact same
+    // gate Matchmaker\ClientController::canManageTeam() already uses for
+    // that purpose, not the much more broadly held nikah.* permissions.
     private function authorize_(): void
     {
         $user = auth()->user();
-        abort_unless($user->hasRole('admin') || $user->can('nikah.manage') || $user->can('nikah.create-profile'), 403);
+        abort_unless($user->hasRole('admin') || $user->can('leads.manage'), 403);
     }
 
     public function index(Request $request)
