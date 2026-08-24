@@ -43,6 +43,7 @@
                 <div class="flex flex-wrap gap-3">
                     <a href="{{ url('/donate') }}" class="inline-flex items-center rounded-md bg-[--teal] text-white font-medium py-2 px-4 hover:bg-[--teal-dark] transition">{{ __('db.Donate Now') }}</a>
                     <a href="{{ url('/volunteer') }}" class="inline-flex items-center rounded-md border border-gray-600 text-white font-medium py-2 px-4 hover:border-[--teal] hover:bg-white/5 transition">{{ __('db.Become Volunteer') }}</a>
+                    <a href="{{ url('/nikah-counselor/apply') }}" class="inline-flex items-center rounded-md border border-gray-600 text-white font-medium py-2 px-4 hover:border-[--teal] hover:bg-white/5 transition">{{ __('db.Become a Nikah Counselor') }}</a>
                 </div>
                 <div class="flex flex-wrap items-center gap-3 mt-5 pt-4 border-t border-gray-700">
                     <span class="text-gray-400 text-sm">{{ __('db.Follow Us:') }}</span>
@@ -93,6 +94,7 @@
                     <a class="text-gray-300 hover:text-white mb-2" href="{{ url('/contact') }}"><i class="fa fa-check text-[--teal] mr-2"></i>{{ __('db.Contact us') }}</a>
                     <a class="text-gray-300 hover:text-white mb-2" href="{{ url('/donate') }}"><i class="fa fa-check text-[--teal] mr-2"></i>{{ __('db.Donations') }}</a>
                     <a class="text-gray-300 hover:text-white mb-2" href="{{ url('/volunteer') }}"><i class="fa fa-check text-[--teal] mr-2"></i>{{ __('db.Become Volunteer') }}</a>
+                    <a class="text-gray-300 hover:text-white mb-2" href="{{ url('/nikah-counselor/apply') }}"><i class="fa fa-check text-[--teal] mr-2"></i>{{ __('db.Become a Nikah Counselor') }}</a>
                 </div>
             </div>
             <div>

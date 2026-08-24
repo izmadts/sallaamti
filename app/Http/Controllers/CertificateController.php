@@ -42,6 +42,13 @@ class CertificateController extends Controller
             return $pdf->download('Sallaamti-Volunteer-ID-' . $certificate->certificate_number . '.pdf');
         }
 
+        if ($certificate->type === 'nikah_counselor_id') {
+            $pdf = Pdf::loadView('certificates.nikah-counselor-id', ['certificate' => $certificate])
+                ->setPaper([0, 0, 242.7, 153.15]);
+
+            return $pdf->download('Sallaamti-Nikah-Counselor-ID-' . $certificate->certificate_number . '.pdf');
+        }
+
         if ($certificate->course?->track === 'skills') {
             $pdf = Pdf::loadView('certificates.pdf-skills', ['certificate' => $certificate])
                 ->setPaper('a4', 'landscape');

@@ -206,6 +206,17 @@
                     <span class="bg-blue-400 text-blue-900 text-xs font-bold px-1.5 py-0.5 rounded-full">{{ $pendingVols }}</span>
                     @endif
                 </a>
+
+                <a href="{{ route('admin.matchmaker-applications.index') }}"
+                    class="flex items-center justify-between gap-3 px-3 py-2 rounded-lg transition
+                          {{ request()->routeIs('admin.matchmaker-applications*') ? 'bg-teal-700 text-white' : 'text-teal-100 hover:bg-teal-800' }}">
+                    <span class="flex items-center gap-3"><span class="text-base">💍</span> Nikah Counselors</span>
+                    @php $pendingCounselors = \App\Models\MatchmakerApplication::where('status', 'applied')->count(); @endphp
+                    @if ($pendingCounselors > 0)
+                    <span class="bg-blue-400 text-blue-900 text-xs font-bold px-1.5 py-0.5 rounded-full">{{ $pendingCounselors }}</span>
+                    @endif
+                </a>
+
                 <a href="{{ route('admin.posts.index') }}"
                     class="flex items-center justify-between gap-3 px-3 py-2 rounded-lg transition
                           {{ request()->routeIs('admin.posts*') ? 'bg-teal-700 text-white' : 'text-teal-100 hover:bg-teal-800' }}">

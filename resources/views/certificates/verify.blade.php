@@ -18,7 +18,7 @@
             @if ($code)
             <div class="bg-white rounded-lg shadow p-6 text-left">
                 @if ($certificate)
-                <p class="text-green-600 font-medium mb-4 text-center">✅ This {{ $certificate->type === 'volunteer_id' ? 'volunteer ID' : 'certificate' }} is valid.</p>
+                <p class="text-green-600 font-medium mb-4 text-center">✅ This {{ $certificate->type === 'volunteer_id' ? 'volunteer ID' : ($certificate->type === 'nikah_counselor_id' ? 'Nikah Counselor ID' : 'certificate') }} is valid.</p>
                 <dl class="text-sm space-y-2">
                     <div class="flex justify-between">
                         <dt class="text-gray-500">Name</dt>
@@ -36,6 +36,19 @@
                             @endif
                         </dd>
                     </div>
+                    @if ($certificate->type === 'nikah_counselor_id')
+                    @php $application = \App\Models\MatchmakerApplication::where('user_id', $certificate->user_id)->where('status', 'certified')->first(); @endphp
+                    <div class="flex justify-between">
+                        <dt class="text-gray-500">Level</dt>
+                        <dd>{{ \App\Models\MatchmakerApplication::LEVELS[$application?->level ?? 'nikah_counselor'] }}</dd>
+                    </div>
+                    @if ($application?->area)
+                    <div class="flex justify-between">
+                        <dt class="text-gray-500">Area</dt>
+                        <dd>{{ $application->area }}</dd>
+                    </div>
+                    @endif
+                    @endif
                     <div class="flex justify-between">
                         <dt class="text-gray-500">Issued</dt>
                         <dd>{{ $certificate->issued_at->format('F j, Y') }}</dd>

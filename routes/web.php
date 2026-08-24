@@ -122,9 +122,13 @@ Route::get('/blog/{blog_post:slug}', [BlogController::class, 'show'])->name('blo
 Route::middleware('throttle:5,1')->group(function () {
     Route::post('/donate', [DonationController::class, 'store'])->name('donate.store');
     Route::post('/volunteer', [VolunteerController::class, 'store'])->name('volunteer.store');
+    Route::post('/nikah-counselor/apply', [\App\Http\Controllers\NikahCounselorApplicationController::class, 'store'])->name('nikah-counselor.store');
 });
 // Volunteer (guests can apply)
 Route::get('/volunteer', [VolunteerController::class, 'create'])->name('volunteer.create');
+
+// Become a Nikah Counselor / matchmaker representative (guests can apply — see project_matchmaker_hiring_document)
+Route::get('/nikah-counselor/apply', [\App\Http\Controllers\NikahCounselorApplicationController::class, 'create'])->name('nikah-counselor.create');
 
 // Donation (guests can donate)
 Route::get('/donate', [DonationController::class, 'create'])->name('donate.create');
@@ -539,6 +543,14 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::post('volunteers/{volunteer}/approve', [VolunteerAdminController::class, 'approve'])->name('volunteers.approve')->middleware('can:volunteers.manage');
     Route::post('volunteers/{volunteer}/reject', [VolunteerAdminController::class, 'reject'])->name('volunteers.reject')->middleware('can:volunteers.manage');
     Route::delete('volunteers/{volunteer}', [VolunteerAdminController::class, 'destroy'])->name('volunteers.destroy')->middleware('can:volunteers.delete');
+
+    // Nikah Counselor applications (permission-gated, see App\Support\PermissionCatalog) — project_matchmaker_hiring_document
+    Route::get('matchmaker-applications', [\App\Http\Controllers\Admin\MatchmakerApplicationController::class, 'index'])->name('matchmaker-applications.index')->middleware('can:matchmaker-applications.view');
+    Route::get('matchmaker-applications/{matchmakerApplication}', [\App\Http\Controllers\Admin\MatchmakerApplicationController::class, 'show'])->name('matchmaker-applications.show')->middleware('can:matchmaker-applications.view');
+    Route::post('matchmaker-applications/{matchmakerApplication}/status', [\App\Http\Controllers\Admin\MatchmakerApplicationController::class, 'updateStatus'])->name('matchmaker-applications.status')->middleware('can:matchmaker-applications.manage');
+    Route::post('matchmaker-applications/{matchmakerApplication}/level', [\App\Http\Controllers\Admin\MatchmakerApplicationController::class, 'updateLevel'])->name('matchmaker-applications.level')->middleware('can:matchmaker-applications.manage');
+    Route::post('matchmaker-applications/{matchmakerApplication}/reject', [\App\Http\Controllers\Admin\MatchmakerApplicationController::class, 'reject'])->name('matchmaker-applications.reject')->middleware('can:matchmaker-applications.manage');
+    Route::get('matchmaker-applications/{matchmakerApplication}/file/{type}', [\App\Http\Controllers\Admin\MatchmakerApplicationController::class, 'file'])->name('matchmaker-applications.file')->middleware('can:matchmaker-applications.view');
 
     // Sallaamti Wall moderation (permission-gated)
     Route::get('wall', [DuaWallAdminController::class, 'index'])->name('wall.index')->middleware('can:wall.view');

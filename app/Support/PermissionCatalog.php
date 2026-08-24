@@ -34,6 +34,7 @@ class PermissionCatalog
         // permission's CNIC/verification-approval powers. .view/.delete exist
         // here for consistency with the grid but aren't wired to anything yet.
         'leads' => 'Leads / Match Maker Desk (cross-matchmaker oversight)',
+        'matchmaker-applications' => 'Nikah Counselor Applications',
     ];
 
     public const ACTIONS = [
