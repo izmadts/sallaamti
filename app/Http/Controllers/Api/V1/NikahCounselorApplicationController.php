@@ -22,7 +22,7 @@ class NikahCounselorApplicationController extends Controller
         $validated = $request->validate([
             'full_name' => ['required', 'string', 'max:255'],
             'guardian_name' => ['required', 'string', 'max:255'],
-            'mobile_number' => ['required', 'string', 'max:30'],
+            'mobile_number' => ['required', 'string', 'max:30', 'unique:matchmaker_applications,mobile_number'],
             'whatsapp_number' => ['nullable', 'string', 'max:30'],
             'gender' => ['required', 'in:male,female'],
             'age' => ['required', 'integer', 'min:21', 'max:70'],
