@@ -33,6 +33,54 @@
                 </p>
             </div>
 
+            @if (session('status'))
+            <div class="p-4 bg-green-50 text-green-700 rounded-lg text-sm text-center">{{ session('status') }}</div>
+            @endif
+
+            @if ($lead->nikahProfile && (empty($lead->nikahProfile->cnic_front_image) || empty($lead->nikahProfile->cnic_back_image) || empty($lead->nikahProfile->cnic_number)))
+            <div class="bg-white rounded-xl shadow-sm p-6">
+                <h4 class="font-semibold text-gray-700 mb-1">🪪 Upload Your Verification Documents</h4>
+                <p class="text-xs text-gray-500 mb-4">Your matchmaker registered your profile but couldn't collect your CNIC/photo in person. Upload them here — this goes straight to Sallaamti for verification, never through your matchmaker's phone.</p>
+
+                @if ($errors->any())
+                <div class="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">
+                    <ul class="list-disc list-inside">
+                        @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+                @endif
+
+                <form method="POST" action="{{ $documentsUrl }}" enctype="multipart/form-data" class="space-y-4">
+                    @csrf
+                    <input type="hidden" name="last7" value="{{ $last7 ?? '' }}">
+
+                    <div>
+                        <label class="text-xs text-gray-500 block mb-1">CNIC Number</label>
+                        <input type="text" name="cnic_number" value="{{ old('cnic_number') }}" placeholder="e.g. 12345-1234567-1" class="border-gray-300 rounded-lg w-full text-sm">
+                    </div>
+                    <div>
+                        <label class="text-xs text-gray-500 block mb-1">CNIC Photo (Front)</label>
+                        <input type="file" name="cnic_front_image" accept="image/*" capture="environment" class="text-sm w-full">
+                    </div>
+                    <div>
+                        <label class="text-xs text-gray-500 block mb-1">CNIC Photo (Back)</label>
+                        <input type="file" name="cnic_back_image" accept="image/*" capture="environment" class="text-sm w-full">
+                    </div>
+                    <div>
+                        <label class="text-xs text-gray-500 block mb-1">Your Photo (optional)</label>
+                        <input type="file" name="photo" accept="image/*" capture="environment" class="text-sm w-full">
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <input type="checkbox" id="allow_photo_sharing" name="allow_photo_sharing" value="1" class="rounded">
+                        <label for="allow_photo_sharing" class="text-xs text-gray-600">Allow my photo to be shared with a match after mutual interest is accepted</label>
+                    </div>
+                    <button class="text-white text-sm font-semibold px-5 py-2.5 rounded-lg hover:opacity-90 transition" style="background: #0d6b6b">Submit for Verification</button>
+                </form>
+            </div>
+            @endif
+
             <div class="bg-white rounded-xl shadow-sm p-6 text-center">
                 <p class="text-xs text-gray-400 uppercase tracking-widest mb-1">Current Status</p>
                 <span class="inline-block text-sm px-3 py-1 rounded-full font-semibold

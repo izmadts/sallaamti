@@ -711,6 +711,7 @@ Route::middleware('signed')->prefix('m')->name('public.matchmaking.')->group(fun
     Route::post('/proposal/{proposal}/respond', [\App\Http\Controllers\Public\MatchmakingActionController::class, 'respondProposal'])->name('proposal.respond');
     Route::get('/progress/{lead}', [\App\Http\Controllers\Public\MatchmakingProgressController::class, 'show'])->name('progress.show');
     Route::post('/progress/{lead}/verify', [\App\Http\Controllers\Public\MatchmakingProgressController::class, 'verify'])->name('progress.verify');
+    Route::post('/progress/{lead}/documents', [\App\Http\Controllers\Public\MatchmakingProgressController::class, 'uploadDocuments'])->name('progress.documents');
 });
 
 require __DIR__ . '/auth.php';

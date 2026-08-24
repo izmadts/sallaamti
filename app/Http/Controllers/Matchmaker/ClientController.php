@@ -223,6 +223,12 @@ class ClientController extends Controller
 
         session()->forget($this->wizardSessionKey());
 
+        // Tracked so finalize() can link the finished profile straight back
+        // to this Lead automatically — previously the matchmaker had to
+        // remember to come back and use "Already have a profile for them?"
+        // to connect the two manually.
+        session(["{$this->wizardSessionKey()}.lead_id" => $lead->id]);
+
         $this->saveWizardStep('account', [
             'name' => $lead->name,
             'identifier' => $lead->email ?: $lead->phone,

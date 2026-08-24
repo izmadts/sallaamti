@@ -62,6 +62,13 @@
             </div>
             @endif
 
+            @if ($linkedLead && $linkedLead->progress_link_token)
+            <div class="rounded-xl p-4 bg-blue-50 border border-blue-200 text-sm text-blue-800">
+                🔗 This profile has a linked client record with a secure progress &amp; documents link.
+                <a href="{{ route('matchmaker.clients.show', $linkedLead) }}" class="font-semibold hover:underline">View &amp; copy it →</a>
+            </div>
+            @endif
+
             <div class="bg-white rounded-xl shadow-sm p-6">
                 <h4 class="font-semibold text-gray-700 mb-2 border-b pb-2">About</h4>
                 <p class="text-sm text-gray-600 leading-relaxed">{{ $profile->about ?: '— not filled in —' }}</p>

@@ -92,8 +92,12 @@
                     <div class="border rounded-lg p-4 flex justify-between items-start">
                         <div>
                             <p class="text-xs text-gray-400">Verification & Visibility</p>
+                            @if (!empty($data['remote_verification']))
+                            <p class="text-sm text-blue-700">🔗 Client will upload CNIC/photo themselves via a secure link after registration.</p>
+                            @else
                             <p class="text-sm text-gray-800">CNIC: {{ $data['cnic_number'] }}</p>
                             <p class="text-sm text-gray-600">{{ !empty($data['cnic_front_image']) && !empty($data['cnic_back_image']) ? '✓ Front & back photos uploaded' : 'Missing CNIC photo(s)' }}</p>
+                            @endif
                             <p class="text-sm text-gray-600">Visibility: {{ match($data['visibility'] ?? null) {
                                 'public' => 'Public',
                                 'members_only' => 'Members Only',

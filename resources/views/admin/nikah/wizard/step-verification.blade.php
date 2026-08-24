@@ -25,40 +25,53 @@
                 <form id="verification-form" method="POST" action="{{ route($routePrefix . '.nikah.profiles.create.step.save', 'verification') }}" enctype="multipart/form-data" class="space-y-6">
                     @csrf
 
-                    <x-nikah-section title="Verification" icon="🪪" color="rose" description="Required — held to the same bar as a self-created profile.">
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div>
-                                <x-input-label for="cnic_number" value="CNIC Number" />
-                                <x-text-input id="cnic_number" name="cnic_number" type="text" class="w-full mt-1" :value="old('cnic_number', $data['cnic_number'] ?? '')" required placeholder="e.g. 12345-1234567-1" />
-                            </div>
-                            <div></div>
-                            <div>
-                                <x-input-label for="cnic_front_image" value="CNIC Photo (Front)" />
-                                <x-photo-upload-field name="cnic_front_image" :required="empty($data['cnic_front_image'])" />
-                                @if (!empty($data['cnic_front_image']))
-                                <p class="text-xs text-green-600 mt-1">✓ Already uploaded — choose a file only if you want to replace it.</p>
-                                @endif
-                            </div>
-                            <div>
-                                <x-input-label for="cnic_back_image" value="CNIC Photo (Back)" />
-                                <x-photo-upload-field name="cnic_back_image" :required="empty($data['cnic_back_image'])" />
-                                @if (!empty($data['cnic_back_image']))
-                                <p class="text-xs text-green-600 mt-1">✓ Already uploaded — choose a file only if you want to replace it.</p>
-                                @endif
-                            </div>
-                            <div>
-                                <x-input-label for="photo" value="Profile Photo (optional)" />
-                                <input id="photo" name="photo" type="file" accept="image/*" class="w-full mt-1">
-                                @if (!empty($data['photo']))
-                                <p class="text-xs text-green-600 mt-1">✓ Already uploaded — choose a file only if you want to replace it.</p>
-                                @endif
-                            </div>
+                    <div x-data="{ remote: {{ old('remote_verification', $data['remote_verification'] ?? false) ? 'true' : 'false' }} }">
+                        <div class="mb-4 p-4 rounded-lg border" :class="remote ? 'bg-blue-50 border-blue-300' : 'bg-gray-50 border-gray-200'">
+                            <label class="flex items-start gap-2 cursor-pointer">
+                                <input type="checkbox" name="remote_verification" value="1" x-model="remote" class="rounded mt-0.5">
+                                <span class="text-sm text-gray-700">
+                                    <strong>🔗 I don't have their CNIC/photo yet — send them a secure link to upload it themselves.</strong>
+                                    <br><span class="text-xs text-gray-500">Use this for a lead you can't meet in person. Never collect their CNIC over WhatsApp — this generates one link, re-verified with the last 7 digits of their WhatsApp number every visit, that they use to upload everything themselves.</span>
+                                </span>
+                            </label>
                         </div>
-                        <div class="mt-4 flex items-center gap-2">
-                            <input type="checkbox" id="allow_photo_sharing" name="allow_photo_sharing" value="1" {{ old('allow_photo_sharing', $data['allow_photo_sharing'] ?? false) ? 'checked' : '' }} class="rounded">
-                            <x-input-label for="allow_photo_sharing" value="Allow photo to be shared with a match after mutual interest is accepted" />
-                        </div>
-                    </x-nikah-section>
+
+                        <x-nikah-section title="Verification" icon="🪪" color="rose" description="Required — held to the same bar as a self-created profile.">
+                            <div x-show="!remote" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <x-input-label for="cnic_number" value="CNIC Number" />
+                                    <x-text-input id="cnic_number" name="cnic_number" type="text" class="w-full mt-1" :value="old('cnic_number', $data['cnic_number'] ?? '')" x-bind:required="!remote" placeholder="e.g. 12345-1234567-1" />
+                                </div>
+                                <div></div>
+                                <div>
+                                    <x-input-label for="cnic_front_image" value="CNIC Photo (Front)" />
+                                    <x-photo-upload-field name="cnic_front_image" x-bind:required="!remote && {{ empty($data['cnic_front_image']) ? 'true' : 'false' }}" />
+                                    @if (!empty($data['cnic_front_image']))
+                                    <p class="text-xs text-green-600 mt-1">✓ Already uploaded — choose a file only if you want to replace it.</p>
+                                    @endif
+                                </div>
+                                <div>
+                                    <x-input-label for="cnic_back_image" value="CNIC Photo (Back)" />
+                                    <x-photo-upload-field name="cnic_back_image" x-bind:required="!remote && {{ empty($data['cnic_back_image']) ? 'true' : 'false' }}" />
+                                    @if (!empty($data['cnic_back_image']))
+                                    <p class="text-xs text-green-600 mt-1">✓ Already uploaded — choose a file only if you want to replace it.</p>
+                                    @endif
+                                </div>
+                                <div>
+                                    <x-input-label for="photo" value="Profile Photo (optional)" />
+                                    <input id="photo" name="photo" type="file" accept="image/*" class="w-full mt-1">
+                                    @if (!empty($data['photo']))
+                                    <p class="text-xs text-green-600 mt-1">✓ Already uploaded — choose a file only if you want to replace it.</p>
+                                    @endif
+                                </div>
+                            </div>
+                            <p x-show="remote" x-cloak class="text-sm text-blue-700">They'll upload their CNIC and photo themselves from their secure link after this profile is created.</p>
+                            <div class="mt-4 flex items-center gap-2">
+                                <input type="checkbox" id="allow_photo_sharing" name="allow_photo_sharing" value="1" {{ old('allow_photo_sharing', $data['allow_photo_sharing'] ?? false) ? 'checked' : '' }} class="rounded">
+                                <x-input-label for="allow_photo_sharing" value="Allow photo to be shared with a match after mutual interest is accepted" />
+                            </div>
+                        </x-nikah-section>
+                    </div>
 
                     <x-nikah-section title="Profile Visibility" icon="👁️" color="teal">
                         @php $vis = old('visibility', $data['visibility'] ?? 'public'); @endphp

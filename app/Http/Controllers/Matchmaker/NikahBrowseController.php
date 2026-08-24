@@ -81,7 +81,9 @@ class NikahBrowseController extends Controller
             ? $profile->receivedInterests()->where('status', 'pending')->with('sender.user')->latest()->get()
             : collect();
 
-        return view('matchmaker.nikah.show', compact('profile', 'existingRequest', 'canActOnBehalf', 'pendingReceivedInterests'));
+        $linkedLead = $canActOnBehalf ? Lead::where('nikah_profile_id', $profile->id)->first() : null;
+
+        return view('matchmaker.nikah.show', compact('profile', 'existingRequest', 'canActOnBehalf', 'pendingReceivedInterests', 'linkedLead'));
     }
 
     public function requestContact(NikahProfile $profile)
