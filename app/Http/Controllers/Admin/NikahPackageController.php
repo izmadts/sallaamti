@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\CommissionRule;
 use App\Models\NikahPackage;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -32,6 +33,11 @@ class NikahPackageController extends Controller
         $validated = $this->validated($request);
 
         NikahPackage::create($validated);
+
+        // A brand-new package has no CommissionRule rows yet — without this,
+        // recordPackageCommission() silently no-ops and a matchmaker earns
+        // zero commission on it until an admin happens to visit /admin/commissions/rules.
+        CommissionRule::ensureSeeded();
 
         return redirect()->route('admin.nikah-packages.index')->with('status', 'Package created.');
     }

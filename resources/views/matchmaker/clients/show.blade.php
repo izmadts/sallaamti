@@ -226,7 +226,7 @@
                             <label class="text-xs text-gray-500">Type</label>
                             <select name="consent_type" required class="border-gray-300 rounded text-sm block">
                                 @foreach (\App\Models\MatchmakingConsent::TYPES as $value => $label)
-                                <option value="{{ $value }}">{{ explode(' — ', $label)[0] }}</option>
+                                <option value="{{ $value }}" title="{{ $label }}">{{ explode(' — ', $label)[0] }}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -244,7 +244,7 @@
                             <label class="text-xs text-gray-500">Type</label>
                             <select name="consent_type" required class="border-gray-300 rounded text-sm block">
                                 @foreach (\App\Models\MatchmakingConsent::TYPES as $value => $label)
-                                <option value="{{ $value }}">{{ explode(' — ', $label)[0] }}</option>
+                                <option value="{{ $value }}" title="{{ $label }}">{{ explode(' — ', $label)[0] }}</option>
                                 @endforeach
                             </select>
                         </div>

@@ -6,7 +6,15 @@
     <div class="py-12">
         <div class="max-w-4xl mx-auto sm:px-6 lg:px-8 space-y-4">
 
-            <form id="bulkConfirmForm" method="POST" action="{{ route('admin.nikah.payments.bulk-confirm') }}"></form>
+            <form id="bulkConfirmForm" method="POST" action="{{ route('admin.nikah.payments.bulk-confirm') }}">@csrf</form>
+
+            @if (session('status'))
+            <div class="p-4 bg-green-50 text-green-700 rounded-lg text-sm">{{ session('status') }}</div>
+            @endif
+            @if (session('error'))
+            <div class="p-4 bg-red-50 text-red-700 rounded-lg text-sm">{{ session('error') }}</div>
+            @endif
+
             @if ($profiles->isNotEmpty())
             <div class="bg-white p-3 rounded-lg shadow-sm flex items-center justify-between">
                 <p class="text-xs text-gray-500">Select payments below, then bulk-confirm.</p>

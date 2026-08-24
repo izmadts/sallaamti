@@ -47,6 +47,21 @@ trait RecordsCommission
             return;
         }
 
+        // A profile can cycle payment_status through submitted -> rejected
+        // -> submitted -> confirmed (reject() explicitly invites the member
+        // to resubmit) without ever losing the ledger entry from its first
+        // confirmation, since ledger entries have no "reversed" status.
+        // Without this guard, that cycle pays the matchmaker twice for the
+        // same profile.
+        $alreadyRecorded = CommissionLedgerEntry::where('source_type', NikahProfile::class)
+            ->where('source_id', $profile->id)
+            ->where('rule_type', 'verified_profile')
+            ->exists();
+
+        if ($alreadyRecorded) {
+            return;
+        }
+
         $tier = $this->tierForMatchmaker($matchmaker);
         $rule = CommissionRule::findFor('verified_profile', null, $tier);
 

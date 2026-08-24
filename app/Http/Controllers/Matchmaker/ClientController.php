@@ -186,7 +186,12 @@ class ClientController extends Controller
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'gender' => ['nullable', 'in:male,female'],
-            'phone' => ['nullable', 'string', 'max:30'],
+            // A live progress_link_token means the client unlocks their
+            // progress page with the last 7 digits of this exact phone —
+            // clearing it here would silently and permanently lock them
+            // out, with no clue as to why. Once a token exists, phone can
+            // be changed but never blanked.
+            'phone' => [$lead->progress_link_token ? 'required' : 'nullable', 'string', 'max:30'],
             'email' => ['nullable', 'email', 'max:255'],
             'looking_for' => ['nullable', 'in:self,family_member'],
             'source' => ['required', 'in:facebook,instagram,whatsapp,website,phone,referral,manual,other'],

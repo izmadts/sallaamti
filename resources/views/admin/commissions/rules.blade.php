@@ -13,6 +13,18 @@
             @if (session('status'))
             <div class="p-4 bg-green-50 text-green-700 rounded-lg text-sm">{{ session('status') }}</div>
             @endif
+            @if (session('error'))
+            <div class="p-4 bg-red-50 text-red-700 rounded-lg text-sm">{{ session('error') }}</div>
+            @endif
+            @if ($errors->any())
+            <div class="p-4 bg-red-50 text-red-700 rounded-lg text-sm">
+                <ul class="list-disc list-inside">
+                    @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+            @endif
 
             <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 text-sm text-blue-800">
                 Rates are grouped by service, then by tier — a "Senior Nikah Counselor" can earn a different rate than a base "Nikah Counselor" for the exact same sale. Renewal rows only apply on a repeat package for the same client. Changes apply to commissions calculated from this point forward — already-created ledger entries keep the rate they were created with.
@@ -26,7 +38,7 @@
                     <div class="col-span-2">Tier</div>
                     <div>Type</div>
                     <div>Rate Type</div>
-                    <div>Rate</div>
+                    <div>Rate <span class="cursor-help normal-case text-gray-400" title="Percentage: enter as a whole number, e.g. 10 means 10%. Fixed: enter the flat Rs. amount, e.g. 200 means Rs. 200.">❓</span></div>
                     <div>Active</div>
                 </div>
 

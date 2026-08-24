@@ -13,6 +13,18 @@
             @if (session('status'))
             <div class="p-4 bg-green-50 text-green-700 rounded-lg text-sm">{{ session('status') }}</div>
             @endif
+            @if (session('error'))
+            <div class="p-4 bg-red-50 text-red-700 rounded-lg text-sm">{{ session('error') }}</div>
+            @endif
+            @if ($errors->any())
+            <div class="p-4 bg-red-50 text-red-700 rounded-lg text-sm">
+                <ul class="list-disc list-inside">
+                    @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+            @endif
 
             {{-- Grant a bonus --}}
             <div class="bg-white rounded-xl shadow-sm p-5" style="border-top: 3px solid #b8962e">

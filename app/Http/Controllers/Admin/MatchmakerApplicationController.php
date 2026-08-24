@@ -38,7 +38,9 @@ class MatchmakerApplicationController extends Controller
 
     public function updateStatus(Request $request, MatchmakerApplication $matchmakerApplication)
     {
-        abort_if($matchmakerApplication->isTerminal(), 422, 'This application was already rejected or withdrawn.');
+        if ($matchmakerApplication->isTerminal()) {
+            return back()->with('error', 'This application was already rejected or withdrawn.');
+        }
 
         $validated = $request->validate([
             'status' => ['required', 'in:' . implode(',', array_keys(MatchmakerApplication::STEPS))],
@@ -46,8 +48,12 @@ class MatchmakerApplicationController extends Controller
 
         // The one hard gate in an otherwise-flexible pipeline — certifying
         // someone who never actually accepted the Agreement/NDA themselves
-        // is exactly the gap this module exists to close.
-        abort_if($validated['status'] === 'certified' && !$matchmakerApplication->hasAcceptedAgreementAndNda(), 422, 'This applicant hasn\'t accepted the Nikah Counselor Agreement and NDA yet — send them the agreement link first.');
+        // is exactly the gap this module exists to close. A friendly
+        // redirect-back, not abort_if(), so this reaches the page's own
+        // flash-message convention instead of Laravel's generic 422 page.
+        if ($validated['status'] === 'certified' && !$matchmakerApplication->hasAcceptedAgreementAndNda()) {
+            return back()->with('error', 'This applicant hasn\'t accepted the Nikah Counselor Agreement and NDA yet — send them the agreement link first.');
+        }
 
         $wasCertified = $matchmakerApplication->isCertified();
 

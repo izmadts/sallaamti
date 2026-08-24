@@ -49,8 +49,15 @@
                 </div>
             </div>
 
+            @if (session('status'))
+            <div class="p-4 bg-green-50 text-green-700 rounded-lg text-sm">{{ session('status') }}</div>
+            @endif
+            @if (session('error'))
+            <div class="p-4 bg-red-50 text-red-700 rounded-lg text-sm">{{ session('error') }}</div>
+            @endif
+
             <!-- Bulk approve (checkboxes below attach via the form="" attribute) -->
-            <form id="bulkApproveForm" method="POST" action="{{ route('admin.nikah.verifications.bulk-approve') }}"></form>
+            <form id="bulkApproveForm" method="POST" action="{{ route('admin.nikah.verifications.bulk-approve') }}">@csrf</form>
             <div class="bg-white p-3 rounded-lg shadow-sm flex items-center justify-between">
                 <p class="text-xs text-gray-500">Select profiles with confirmed payment below, then bulk-approve.</p>
                 <button type="submit" form="bulkApproveForm" onclick="return confirm('Approve all selected profiles?')"
@@ -58,7 +65,7 @@
             </div>
 
             <!-- Bulk remind (separate checkbox set, only shown on unpaid/rejected profiles) -->
-            <form id="bulkRemindForm" method="POST" action="{{ route('admin.nikah.verifications.bulk-remind') }}"></form>
+            <form id="bulkRemindForm" method="POST" action="{{ route('admin.nikah.verifications.bulk-remind') }}">@csrf</form>
             <div class="bg-white p-3 rounded-lg shadow-sm flex items-center justify-between">
                 <p class="text-xs text-gray-500">Select profiles stuck on the payment step, then nudge them to finish and get verified.</p>
                 <button type="submit" form="bulkRemindForm" onclick="return confirm('Send a completion reminder email to all selected profiles?')"
@@ -139,7 +146,7 @@
                             <div>
                                 <p class="text-xs text-gray-500 mb-1">CNIC Front:</p>
                                 <a href="{{ route('nikah.file', [$profile, 'cnic_front_image']) }}" target="_blank">
-                                    <img class="w-20 h-10 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400 text-xs" src="{{ route('nikah.file', [$profile, 'cnic_front_image']) }}" class="w-40 rounded border hover:opacity-80">
+                                    <img class="w-40 rounded border hover:opacity-80" src="{{ route('nikah.file', [$profile, 'cnic_front_image']) }}">
                                 </a>
                             </div>
                             @endif
@@ -147,7 +154,7 @@
                             <div>
                                 <p class="text-xs text-gray-500 mb-1">CNIC Back:</p>
                                 <a href="{{ route('nikah.file', [$profile, 'cnic_back_image']) }}" target="_blank">
-                                    <img class="w-20 h-10 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400 text-xs" src="{{ route('nikah.file', [$profile, 'cnic_back_image']) }}" class="w-40 rounded border hover:opacity-80">
+                                    <img class="w-40 rounded border hover:opacity-80" src="{{ route('nikah.file', [$profile, 'cnic_back_image']) }}">
                                 </a>
                             </div>
                             @endif
