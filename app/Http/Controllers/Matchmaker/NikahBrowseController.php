@@ -2,11 +2,13 @@
 
 namespace App\Http\Controllers\Matchmaker;
 
+use App\Http\Controllers\Concerns\SendsNikahInterest;
 use App\Http\Controllers\Concerns\SubmitsNikahPayment;
 use App\Http\Controllers\Controller;
 use App\Models\Lead;
 use App\Models\MatchmakingTimelineEvent;
 use App\Models\NikahContactRequest;
+use App\Models\NikahInterest;
 use App\Models\NikahProfile;
 use App\Services\ImageOptimizer;
 use Illuminate\Http\Request;
@@ -19,7 +21,7 @@ use Illuminate\Support\Facades\Auth;
 // rather than directly involved with both parties.
 class NikahBrowseController extends Controller
 {
-    use SubmitsNikahPayment;
+    use SubmitsNikahPayment, SendsNikahInterest;
 
 
     public function index(Request $request)
@@ -71,11 +73,15 @@ class NikahBrowseController extends Controller
             ->latest()
             ->first();
 
-        $canSubmitPayment = Auth::user()->hasRole('admin')
+        $canActOnBehalf = Auth::user()->hasRole('admin')
             || $profile->created_by === Auth::id()
             || Lead::where('nikah_profile_id', $profile->id)->where('assigned_to', Auth::id())->exists();
 
-        return view('matchmaker.nikah.show', compact('profile', 'existingRequest', 'canSubmitPayment'));
+        $pendingReceivedInterests = $canActOnBehalf
+            ? $profile->receivedInterests()->where('status', 'pending')->with('sender.user')->latest()->get()
+            : collect();
+
+        return view('matchmaker.nikah.show', compact('profile', 'existingRequest', 'canActOnBehalf', 'pendingReceivedInterests'));
     }
 
     public function requestContact(NikahProfile $profile)
@@ -130,11 +136,40 @@ class NikahBrowseController extends Controller
         return back()->with('status', 'Payment proof submitted — our team will confirm it shortly.');
     }
 
+    // A matchmaker's client may not check their own account often — this
+    // lets the assigned/registering matchmaker respond to an interest their
+    // client received exactly as if the client had done it themselves (same
+    // acceptNikahInterest()/declineNikahInterest() trait methods the
+    // self-service NikahInterestController uses — same contact-reveal and
+    // guardian-messaging behavior, same mutual-interest notification).
+    public function acceptInterestOnBehalf(NikahInterest $interest)
+    {
+        $this->authorizeActionOnBehalf($interest->receiver);
+
+        abort_if($interest->status !== 'pending', 422, 'This interest has already been responded to.');
+        abort_unless($interest->receiver->canInteract(), 422, "This client's own profile must be verified and payment confirmed before accepting interests.");
+
+        $this->acceptNikahInterest($interest);
+
+        return back()->with('status', "Interest accepted on the client's behalf — contact details are now visible to both sides.");
+    }
+
+    public function declineInterestOnBehalf(NikahInterest $interest)
+    {
+        $this->authorizeActionOnBehalf($interest->receiver);
+
+        abort_if($interest->status !== 'pending', 422, 'This interest has already been responded to.');
+
+        $this->declineNikahInterest($interest);
+
+        return back()->with('status', "Interest declined on the client's behalf.");
+    }
+
     // Only a matchmaker who actually walked this person in, or who is the
-    // assigned matchmaker for a client this profile is linked to, can
-    // submit a payment claim on their behalf — not any matchmaker for any
-    // profile in the system.
-    private function authorizePaymentSubmission(NikahProfile $profile): void
+    // assigned matchmaker for a client this profile is linked to, can act
+    // on their behalf (submit payment, respond to interests) — not any
+    // matchmaker for any profile in the system.
+    private function authorizeActionOnBehalf(NikahProfile $profile): void
     {
         if (auth()->user()->hasRole('admin')) {
             return;
@@ -143,6 +178,11 @@ class NikahBrowseController extends Controller
         $isCreator = $profile->created_by === auth()->id();
         $isAssignedViaLead = Lead::where('nikah_profile_id', $profile->id)->where('assigned_to', auth()->id())->exists();
 
-        abort_unless($isCreator || $isAssignedViaLead, 403, 'You can only submit payment for clients you registered or are assigned to.');
+        abort_unless($isCreator || $isAssignedViaLead, 403, 'You can only act on behalf of clients you registered or are assigned to.');
+    }
+
+    private function authorizePaymentSubmission(NikahProfile $profile): void
+    {
+        $this->authorizeActionOnBehalf($profile);
     }
 }

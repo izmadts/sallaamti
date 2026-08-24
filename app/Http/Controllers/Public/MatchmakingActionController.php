@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Public;
 
+use App\Http\Controllers\Concerns\SendsNikahInterest;
 use App\Http\Controllers\Controller;
 use App\Models\MatchmakingLinkAccess;
 use App\Models\MatchmakingTimelineEvent;
@@ -17,6 +18,8 @@ use Illuminate\Support\Facades\URL;
 // never blocking the actual response.
 class MatchmakingActionController extends Controller
 {
+    use SendsNikahInterest;
+
     public function showProposal(Request $request, MatchProposal $proposal)
     {
         $this->assertValidToken($request, $proposal);
@@ -51,10 +54,33 @@ class MatchmakingActionController extends Controller
             return back()->with('status', 'A response was already recorded for this candidate.');
         }
 
+        // On "interested," bridge into the platform's real mutual-interest
+        // system (see Concerns\SendsNikahInterest) rather than leaving this
+        // as a dead-end flag the candidate never learns about. The response
+        // itself is always recorded regardless of whether the bridge
+        // succeeds — a client's stated preference shouldn't be lost just
+        // because their own profile isn't verified/paid yet or the
+        // candidate previously declined them; the matchmaker sees why via
+        // the timeline note below and can act on it.
+        $interestId = null;
+        $bridgeNote = '';
+
+        if ($validated['response'] === 'interested') {
+            $result = $this->sendInterestBetweenProfiles($proposal->batch->nikahProfile, $proposal->candidate);
+            $interestId = $result['interest']?->id;
+            $bridgeNote = match ($result['error']) {
+                'not_eligible' => ' Their interest could not yet be forwarded to the candidate — the client\'s own profile needs to be verified and payment confirmed first.',
+                'blocked' => ' Their interest could not be forwarded — contact between these two profiles is blocked.',
+                'previously_declined' => ' Their interest was not forwarded — the candidate previously declined an interest from this client.',
+                default => ' Their interest was forwarded to the candidate.',
+            };
+        }
+
         $proposal->update([
             'status' => 'responded',
             'response' => $validated['response'],
             'responded_at' => now(),
+            'nikah_interest_id' => $interestId,
         ]);
 
         $batch = $proposal->batch;
@@ -65,7 +91,7 @@ class MatchmakingActionController extends Controller
         }
 
         $label = str_replace('_', ' ', $validated['response']);
-        MatchmakingTimelineEvent::log($batch->lead, $batch->nikahProfile, 'proposal_response', "Client responded \"{$label}\" to a candidate in Proposal Batch #{$batch->batch_number}.");
+        MatchmakingTimelineEvent::log($batch->lead, $batch->nikahProfile, 'proposal_response', "Client responded \"{$label}\" to a candidate in Proposal Batch #{$batch->batch_number}.{$bridgeNote}");
 
         MatchmakingLinkAccess::record($proposal, 'proposal_response', $request, $validated['response']);
 

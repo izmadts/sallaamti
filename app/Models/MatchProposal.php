@@ -8,7 +8,7 @@ class MatchProposal extends Model
 {
     protected $fillable = [
         'proposal_batch_id', 'candidate_profile_id', 'match_reasons', 'internal_notes',
-        'status', 'response', 'sent_at', 'viewed_at', 'responded_at', 'link_token',
+        'status', 'response', 'nikah_interest_id', 'sent_at', 'viewed_at', 'responded_at', 'link_token',
     ];
 
     protected function casts(): array
@@ -29,5 +29,10 @@ class MatchProposal extends Model
     public function candidate()
     {
         return $this->belongsTo(NikahProfile::class, 'candidate_profile_id');
+    }
+
+    public function nikahInterest()
+    {
+        return $this->belongsTo(NikahInterest::class);
     }
 }

@@ -2,7 +2,7 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\NikahBlock;
+use App\Http\Controllers\Concerns\SendsNikahInterest;
 use App\Models\NikahInterest;
 use App\Models\NikahProfile;
 use Illuminate\Support\Facades\Auth;
@@ -10,6 +10,8 @@ use Illuminate\Support\Facades\RateLimiter;
 
 class NikahInterestController extends Controller
 {
+    use SendsNikahInterest;
+
     /** Blocks mass-sending interest requests (spam/harassment) across the browse grid. */
     private function guardAgainstBruteForce(string $key): void
     {
@@ -29,35 +31,16 @@ class NikahInterestController extends Controller
             return redirect()->route('nikah.create');
         }
 
-        if (!$myProfile->canInteract()) {
-            return back()->with('error', 'Your profile must be fully verified and paid before you can send interest to others.');
-        }
-
         $this->guardAgainstBruteForce('nikah-interest-send:' . Auth::id());
 
-        abort_if(NikahBlock::existsBetween($myProfile->id, $profile->id), 403);
+        $result = $this->sendInterestBetweenProfiles($myProfile, $profile);
 
-        $wasDeclined = NikahInterest::where('sender_profile_id', $myProfile->id)
-            ->where('receiver_profile_id', $profile->id)
-            ->where('status', 'declined')
-            ->exists();
-
-        if ($wasDeclined) {
-            return back()->with('status', 'This person already declined your interest — you can\'t resend it.');
-        }
-
-        $interest = NikahInterest::firstOrCreate([
-            'sender_profile_id' => $myProfile->id,
-            'receiver_profile_id' => $profile->id,
-        ]);
-
-        try {
-            $profile->user->notify(new \App\Notifications\NikahInterestReceived($interest));
-        } catch (\Throwable $e) {
-            \Log::error('NikahInterestReceived notification failed: ' . $e->getMessage());
-        }
-
-        return back()->with('status', 'Interest sent! You will be notified if accepted.');
+        return match ($result['error']) {
+            'not_eligible' => back()->with('error', 'Your profile must be fully verified and paid before you can send interest to others.'),
+            'blocked' => abort(403),
+            'previously_declined' => back()->with('status', 'This person already declined your interest — you can\'t resend it.'),
+            default => back()->with('status', 'Interest sent! You will be notified if accepted.'),
+        };
     }
 
     public function index()
@@ -88,13 +71,7 @@ class NikahInterestController extends Controller
             return back()->with('error', 'Your profile must be fully verified and paid before you can accept interests.');
         }
 
-        $interest->update(['status' => 'accepted', 'responded_at' => now()]);
-
-        try {
-            $interest->sender->user->notify(new \App\Notifications\NikahInterestAccepted($interest));
-        } catch (\Throwable $e) {
-            \Log::error('NikahInterestAccepted notification failed: ' . $e->getMessage());
-        }
+        $this->acceptNikahInterest($interest);
 
         return back()->with('status', 'Interest accepted! Contact details are now visible to both sides.');
     }
@@ -104,15 +81,8 @@ class NikahInterestController extends Controller
         $myProfile = Auth::user()->nikahProfile;
         abort_unless($myProfile && $interest->receiver_profile_id === $myProfile->id, 403);
 
-        $interest->update(['status' => 'declined', 'responded_at' => now()]);
-
-        try {
-            $interest->sender->user->notify(new \App\Notifications\NikahInterestDeclined($interest));
-        } catch (\Throwable $e) {
-            \Log::error('NikahInterestDeclined notification failed: ' . $e->getMessage());
-        }
+        $this->declineNikahInterest($interest);
 
         return back()->with('status', 'Interest declined.');
     }
-    
 }

@@ -152,6 +152,13 @@
                 <div class="mt-6 pt-6 border-t">
                     @include('matchmaker.nikah._payment-form', ['profile' => $lead->nikahProfile])
                 </div>
+
+                @php $pendingReceivedInterests = $lead->nikahProfile->receivedInterests()->where('status', 'pending')->with('sender.user')->latest()->get(); @endphp
+                @if ($pendingReceivedInterests->isNotEmpty())
+                <div class="mt-6 pt-6 border-t">
+                    @include('matchmaker.nikah._interest-inbox', ['interests' => $pendingReceivedInterests])
+                </div>
+                @endif
                 @endif
 
                 {{-- Progress page link — a standing link the client can revisit to see their own status/timeline/proposals, gated by their WhatsApp number's last 7 digits each visit --}}
@@ -452,6 +459,20 @@
                                     } }}">
                                     {{ $proposal->response ? ucfirst(str_replace('_', ' ', $proposal->response)) : ucfirst($proposal->status) }}
                                 </span>
+                                @if ($proposal->nikahInterest)
+                                <span class="inline-block mt-1 ml-1 text-xs px-2 py-0.5 rounded-full
+                                    {{ match($proposal->nikahInterest->status) {
+                                        'accepted' => 'bg-pink-100 text-pink-800',
+                                        'declined' => 'bg-red-100 text-red-700',
+                                        default => 'bg-blue-100 text-blue-800',
+                                    } }}">
+                                    {{ match($proposal->nikahInterest->status) {
+                                        'accepted' => '💞 Mutual Interest!',
+                                        'declined' => 'Candidate Declined',
+                                        default => 'Awaiting Candidate',
+                                    } }}
+                                </span>
+                                @endif
                             </div>
 
                             @if ($batch->status === 'draft')

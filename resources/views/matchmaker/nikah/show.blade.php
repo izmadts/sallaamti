@@ -50,9 +50,15 @@
                 </dl>
             </div>
 
-            @if ($canSubmitPayment)
+            @if ($canActOnBehalf)
             <div class="bg-white rounded-xl shadow-sm p-6">
                 @include('matchmaker.nikah._payment-form')
+            </div>
+            @endif
+
+            @if ($pendingReceivedInterests->isNotEmpty())
+            <div class="bg-white rounded-xl shadow-sm p-6">
+                @include('matchmaker.nikah._interest-inbox', ['interests' => $pendingReceivedInterests])
             </div>
             @endif
 

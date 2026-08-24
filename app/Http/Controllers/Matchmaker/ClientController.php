@@ -129,6 +129,7 @@ class ClientController extends Controller
             'shortlistItems.nikahProfile.user', 'shortlistItems.createdBy',
             'requirement.items',
             'proposalBatches.proposals.candidate.user',
+            'proposalBatches.proposals.nikahInterest',
             'timelineEvents.matchmaker',
             'consents.recordedBy', 'consents.revokedBy',
         ]);
