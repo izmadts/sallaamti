@@ -129,6 +129,7 @@ Route::get('/volunteer', [VolunteerController::class, 'create'])->name('voluntee
 
 // Become a Nikah Counselor / matchmaker representative (guests can apply — see project_matchmaker_hiring_document)
 Route::get('/nikah-counselor/apply', [\App\Http\Controllers\NikahCounselorApplicationController::class, 'create'])->name('nikah-counselor.create');
+Route::get('/nikah-counselor/thank-you', [\App\Http\Controllers\NikahCounselorApplicationController::class, 'thankYou'])->name('nikah-counselor.thank-you');
 
 // Donation (guests can donate)
 Route::get('/donate', [DonationController::class, 'create'])->name('donate.create');

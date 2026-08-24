@@ -20,11 +20,25 @@ class NikahCounselorApplicationController extends Controller
         return view('nikah-counselor.create');
     }
 
+    // Landing page after a real submission — explains what happens next
+    // (the live certification pipeline, read straight from
+    // MatchmakerApplication::STEPS so it never goes stale if that pipeline
+    // changes), the counselor's actual duties, and a clear Do's/Don'ts list
+    // drawn directly from project_matchmaker_hiring_document's conduct
+    // rules. No application id/param — an applicant has no account or
+    // session to look one up by at this stage anyway, so this is the same
+    // static page for everyone who just submitted.
+    public function thankYou()
+    {
+        return view('nikah-counselor.thank-you');
+    }
+
     public function store(Request $request)
     {
-        // Honeypot: real visitors never see or fill this field.
+        // Honeypot: real visitors never see or fill this field. Still
+        // sends them to the real thank-you page — never reveal the trap.
         if ($request->filled('website')) {
-            return back()->with('status', 'Thank you! Your application has been received.');
+            return redirect()->route('nikah-counselor.thank-you');
         }
 
         $validated = $request->validate([
@@ -67,7 +81,7 @@ class NikahCounselorApplicationController extends Controller
 
         session()->flash('conversion_event', 'nikah_counselor_applied');
 
-        return back()->with('status', 'Thank you! Your application has been received — our team will review it and be in touch soon.');
+        return redirect()->route('nikah-counselor.thank-you');
     }
 
     private function lookupCity(?string $ip): ?string

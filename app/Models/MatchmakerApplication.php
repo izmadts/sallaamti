@@ -42,6 +42,23 @@ class MatchmakerApplication extends Model
         'certified' => 'Certified Nikah Counselor',
     ];
 
+    // Urdu labels for the same STEPS keys — kept as its own const (not a
+    // second language file) so the two always stay in sync: adding/
+    // renaming/reordering a stage in STEPS is an obvious, un-missable
+    // diff right next to this array, never a silently-stale translation.
+    public const STEPS_UR = [
+        'applied' => 'درخواست موصول ہوئی',
+        'identity_verified' => 'شناخت کی تصدیق',
+        'references_checked' => 'حوالہ جات کی جانچ',
+        'interviewed' => 'انٹرویو',
+        'agreement_signed' => 'معاہدے پر دستخط',
+        'nda_signed' => 'رازداری کے معاہدے پر دستخط',
+        'training' => 'تربیت',
+        'assessed' => 'تشخیصی امتحان پاس',
+        'probation' => 'آزمائشی مدت',
+        'certified' => 'سرٹیفائیڈ نکاح کاؤنسلر',
+    ];
+
     public const TERMINAL_EXIT_STATUSES = ['rejected', 'withdrawn'];
 
     public const LEVELS = [
