@@ -141,11 +141,11 @@ class ClientController extends Controller
         $validated = $request->validate([
             'name' => ['sometimes', 'required', 'string', 'max:255'],
             'gender' => ['nullable', 'in:male,female'],
-            // See Matchmaker\ClientController::update() — a live progress_link_token
-            // means the client unlocks their progress page with the last 7
-            // digits of this exact phone; clearing it would silently and
-            // permanently lock them out.
-            'phone' => [$lead->progress_link_token ? 'required' : 'nullable', 'string', 'max:30'],
+            // Blank means "leave it as-is", never "clear it" — same
+            // web-side fix (Matchmaker\ClientController::update()) and same
+            // reason: clearing the phone a live progress_link_token is
+            // keyed to would silently and permanently lock the client out.
+            'phone' => ['nullable', 'string', 'max:30'],
             'email' => ['nullable', 'email', 'max:255'],
             'looking_for' => ['nullable', 'in:self,family_member'],
             'source' => ['sometimes', 'required', 'in:facebook,instagram,whatsapp,website,phone,referral,manual,other'],
@@ -157,6 +157,10 @@ class ClientController extends Controller
 
         if (!$canManageTeam || empty($validated['assigned_to'])) {
             unset($validated['assigned_to']);
+        }
+
+        if (!$request->filled('phone')) {
+            unset($validated['phone']);
         }
 
         $reassigned = isset($validated['assigned_to']) && $validated['assigned_to'] != $lead->assigned_to;
@@ -282,7 +286,7 @@ class ClientController extends Controller
         abort_unless($lead->phone, 422, 'Add a phone number for this client first — that\'s what secures the link they\'ll confirm through.');
 
         if (!$lead->progress_link_token) {
-            $lead->update(['progress_link_token' => Str::random(40)]);
+            $lead->update(['progress_link_token' => Str::random(24)]);
         }
 
         $alreadyPending = MatchmakingConsentRequest::where('lead_id', $lead->id)
@@ -325,7 +329,7 @@ class ClientController extends Controller
         abort_unless($lead->phone, 422, 'Add a phone number for this client first — it\'s what they\'ll enter to unlock the page.');
 
         $hadTokenAlready = (bool) $lead->progress_link_token;
-        $lead->update(['progress_link_token' => Str::random(40)]);
+        $lead->update(['progress_link_token' => Str::random(24)]);
 
         MatchmakingTimelineEvent::log($lead, $lead->nikahProfile, 'progress_link_regenerated', 'Progress page link was ' . ($hadTokenAlready ? 'regenerated — the old copy no longer works' : 'generated') . '.');
 
@@ -419,12 +423,13 @@ class ClientController extends Controller
 
     // STALE (2026-08-25): the web side retired the standalone per-proposal
     // public link this generates a URL for — Public\MatchmakingActionController
-    // and its routes are gone, so WebClientController::proposalLink() below
-    // now points at a 404. Responses live on the client's one progress link
-    // instead (Public\MatchmakingProgressController::respondToProposal()).
-    // This endpoint (and sendBatch()'s link_token seeding above) needs the
-    // same rework before the Flutter app resumes — left as-is for now since
-    // that app is paused and this is unreachable in the meantime.
+    // and its routes are gone. Responses live on the client's one progress
+    // link instead (Public\MatchmakingProgressController::respondToProposal()).
+    // WebClientController::proposalLink() below now returns null (rather
+    // than throwing) so this endpoint degrades to a JSON {"url": null}
+    // instead of a 500, but it's still functionally dead — this endpoint
+    // (and sendBatch()'s link_token seeding above) needs the same
+    // consolidation rework before the Flutter app resumes.
     public function regenerateLink(Lead $lead, ProposalBatch $batch, MatchProposal $proposal): JsonResponse
     {
         $this->authorizeClient($lead);

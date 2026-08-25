@@ -16,7 +16,6 @@ use App\Models\ProposalBatch;
 use App\Models\User;
 use App\Services\Matchmaking\CompatibilityScorer;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
 
 // The matchmaker's own themed workspace — separate routes/views from
@@ -534,11 +533,15 @@ class ClientController extends Controller
     // the same change that removed the route.
     public static function proposalLink(MatchProposal $proposal): ?string
     {
-        if (!$proposal->sent_at || !$proposal->link_token) {
-            return null;
-        }
-
-        return URL::signedRoute('public.matchmaking.proposal.show', ['proposal' => $proposal->id, 'token' => $proposal->link_token]);
+        // The route this used to build a URL for (public.matchmaking.
+        // proposal.show) no longer exists — proposal responses now happen
+        // on the client's one progress link instead. Returns null rather
+        // than throwing a RouteNotFoundException so the paused Flutter
+        // app's API layer (its only remaining caller — see Api\V1\
+        // Matchmaker\ClientController's own STALE comment) degrades to
+        // "no link" instead of a 500 if it's ever hit before that layer
+        // gets reworked.
+        return null;
     }
 
     // A standing link the client can revisit any time to see their own
