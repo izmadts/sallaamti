@@ -114,14 +114,25 @@ class NikahVerificationController extends Controller
         $query = NikahProfile::with('user');
 
         if ($request->filled('search')) {
-            $search = $request->search;
-            $query->where(function ($q) use ($search) {
+            // Accepts a bare or "#"-prefixed profile ID (as it now appears
+            // on the profile's own share summary — see NikahProfile::
+            // shareSummary()) alongside the existing name/email/phone/city
+            // search, so pasting one straight from a shared WhatsApp
+            // message finds the exact profile instead of a same-city list.
+            $search = trim($request->search);
+            $possibleId = ltrim($search, '#');
+
+            $query->where(function ($q) use ($search, $possibleId) {
                 $q->where('city', 'like', "%{$search}%")
                     ->orWhereHas('user', function ($uq) use ($search) {
                         $uq->where('name', 'like', "%{$search}%")
                             ->orWhere('email', 'like', "%{$search}%")
                             ->orWhere('phone', 'like', "%{$search}%");
                     });
+
+                if (ctype_digit($possibleId)) {
+                    $q->orWhere('id', $possibleId);
+                }
             });
         }
 

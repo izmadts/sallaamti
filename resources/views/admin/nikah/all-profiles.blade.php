@@ -27,8 +27,8 @@
             <!-- Filters -->
             <form method="GET" class="bg-white p-4 rounded-lg shadow-sm flex flex-wrap gap-3 items-end">
                 <div>
-                    <label class="text-xs text-gray-500">Search (name, email, phone, city)</label>
-                    <input type="text" name="search" value="{{ request('search') }}" class="border-gray-300 rounded text-sm block w-56">
+                    <label class="text-xs text-gray-500">Search (name, email, phone, city, or #ID)</label>
+                    <input type="text" name="search" value="{{ request('search') }}" placeholder="e.g. 123 or #123" class="border-gray-300 rounded text-sm block w-56">
                 </div>
                 <div>
                     <label class="text-xs text-gray-500">Gender</label>
@@ -74,6 +74,7 @@
                 <table class="min-w-full text-sm">
                     <thead class="bg-gray-50 text-gray-500 text-xs uppercase">
                         <tr>
+                            <th class="px-4 py-3 text-left">ID</th>
                             <th class="px-4 py-3 text-left">Member</th>
                             <th class="px-4 py-3 text-left">Age / Gender</th>
                             <th class="px-4 py-3 text-left">City</th>
@@ -87,6 +88,7 @@
                     <tbody class="divide-y divide-gray-100">
                         @forelse ($profiles as $profile)
                         <tr class="hover:bg-gray-50">
+                            <td class="px-4 py-3 text-xs font-mono text-gray-400">#{{ $profile->id }}</td>
                             <td class="px-4 py-3">
                                 <p class="font-medium text-gray-800">{{ $profile->user?->name ?? 'Deleted account' }}</p>
                                 <p class="text-xs text-gray-400">{{ $profile->user?->email ?: $profile->user?->phone }}</p>
@@ -124,7 +126,7 @@
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="8" class="px-4 py-8 text-center text-gray-400">No profiles match your filters.</td>
+                            <td colspan="9" class="px-4 py-8 text-center text-gray-400">No profiles match your filters.</td>
                         </tr>
                         @endforelse
                     </tbody>

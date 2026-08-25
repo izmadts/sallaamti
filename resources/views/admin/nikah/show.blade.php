@@ -35,7 +35,10 @@
                     <div class="w-24 h-24 bg-gray-100 rounded-lg flex items-center justify-center text-gray-400 text-xs">No Photo</div>
                     @endif
                     <div>
-                        <h2 class="text-xl font-bold text-gray-800">{{ $profile->user?->name ?? 'Deleted account' }}</h2>
+                        <div class="flex items-center gap-2">
+                            <h2 class="text-xl font-bold text-gray-800">{{ $profile->user?->name ?? 'Deleted account' }}</h2>
+                            <span class="text-xs font-mono text-gray-400 bg-gray-50 border border-gray-200 rounded-full px-2 py-0.5" title="This profile's unique ID — also shown on its share summary">Profile #{{ $profile->id }}</span>
+                        </div>
                         <p class="text-sm text-gray-500">{{ $profile->user?->email ?: '— no email —' }} · {{ $profile->user?->phone ?: '— no phone —' }}</p>
                         <p class="text-sm text-gray-500">{{ $profile->age }} yrs, {{ ucfirst($profile->user?->gender ?? '—') }}, {{ $profile->city }}, {{ $profile->country }}</p>
                         <p class="text-xs text-gray-400 mt-1">Profile created {{ $profile->created_at->format('d M Y') }} @if ($profile->user) · Account created {{ $profile->user->created_at->format('d M Y') }} @endif</p>

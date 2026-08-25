@@ -413,7 +413,9 @@ class NikahProfile extends Model
 
         $lines = [
             '💍 *Sallaamti Nikah Profile* 💍',
+            '🆔 Profile #' . $this->id,
             '',
+            '⚧ Gender: ' . $field($this->user?->gender ? ucfirst($this->user->gender) : null),
             '👤 Age: ' . $field($this->age),
             '📏 Height: ' . $field($this->height),
             '💑 Marital Status: ' . $field($this->marital_status ? ucfirst(str_replace('_', ' ', $this->marital_status)) : null),
