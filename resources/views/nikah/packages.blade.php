@@ -22,10 +22,10 @@
                 @endphp
                 <div class="bg-white rounded-2xl shadow-sm border-2 {{ $styles['border'] }} p-5 sm:p-6 flex flex-col h-full">
                     <span class="inline-flex items-center gap-1 text-xs font-semibold px-2.5 py-1 rounded-full w-fit {{ $styles['badge'] }}">
-                        {{ $package->icon }} {{ $package->name }}
+                        {{ $package->icon }} {{ $package->localizedName() }}
                     </span>
-                    @if ($package->tagline)
-                    <p class="text-sm text-gray-500 mt-3 italic">{{ $package->tagline }}</p>
+                    @if ($package->localizedTagline())
+                    <p class="text-sm text-gray-500 mt-3 italic">{{ $package->localizedTagline() }}</p>
                     @endif
 
                     <div class="mt-4">
@@ -33,13 +33,13 @@
                         <span class="text-sm text-gray-400">{{ $package->isOneTime() ? ' ' . __('db.one-time') : ' / ' . __('db.:days days', ['days' => $package->duration_days]) }}</span>
                     </div>
 
-                    @if ($package->description)
-                    <p class="text-sm text-gray-600 mt-4 leading-relaxed">{{ $package->description }}</p>
+                    @if ($package->localizedDescription())
+                    <p class="text-sm text-gray-600 mt-4 leading-relaxed">{{ $package->localizedDescription() }}</p>
                     @endif
 
-                    @if (!empty($package->features))
+                    @if (!empty($package->localizedFeatures()))
                     <ul class="mt-5 space-y-2 flex-1">
-                        @foreach ($package->features as $feature)
+                        @foreach ($package->localizedFeatures() as $feature)
                         <li class="flex items-start gap-2 text-sm text-gray-700">
                             <span class="text-green-500 mt-0.5 shrink-0">✓</span>
                             <span>{{ $feature }}</span>

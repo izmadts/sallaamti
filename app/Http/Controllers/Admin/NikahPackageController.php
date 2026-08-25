@@ -69,15 +69,19 @@ class NikahPackageController extends Controller
     {
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
+            'name_ur' => ['nullable', 'string', 'max:255'],
             'slug' => ['required', 'string', 'max:255', 'alpha_dash', 'unique:nikah_packages,slug' . ($existing ? ",{$existing->id}" : '')],
             'tagline' => ['nullable', 'string', 'max:255'],
+            'tagline_ur' => ['nullable', 'string', 'max:255'],
             'price' => ['required', 'numeric', 'min:0'],
             'currency' => ['nullable', 'string', 'max:8'],
             'duration_days' => ['nullable', 'integer', 'min:1'],
             'proposal_limit' => ['nullable', 'integer', 'min:1'],
             'consultant_level' => ['nullable', 'string', 'max:255'],
             'description' => ['nullable', 'string', 'max:2000'],
+            'description_ur' => ['nullable', 'string', 'max:2000'],
             'features_text' => ['nullable', 'string'],
+            'features_text_ur' => ['nullable', 'string'],
             'color' => ['required', 'in:' . implode(',', self::COLORS)],
             'icon' => ['nullable', 'string', 'max:8'],
             'sort_order' => ['nullable', 'integer', 'min:0'],
@@ -91,6 +95,13 @@ class NikahPackageController extends Controller
             ->values()
             ->all();
         unset($validated['features_text']);
+
+        $validated['features_ur'] = collect(explode("\n", $validated['features_text_ur'] ?? ''))
+            ->map(fn ($line) => trim($line))
+            ->filter()
+            ->values()
+            ->all();
+        unset($validated['features_text_ur']);
 
         $validated['currency'] = ($validated['currency'] ?? null) ?: 'PKR';
         $validated['sort_order'] = $validated['sort_order'] ?? 0;

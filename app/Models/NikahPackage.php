@@ -12,8 +12,8 @@ use Illuminate\Database\Eloquent\Model;
 class NikahPackage extends Model
 {
     protected $fillable = [
-        'name', 'slug', 'tagline', 'price', 'currency', 'duration_days', 'proposal_limit',
-        'consultant_level', 'description', 'features', 'color', 'icon', 'sort_order',
+        'name', 'name_ur', 'slug', 'tagline', 'tagline_ur', 'price', 'currency', 'duration_days', 'proposal_limit',
+        'consultant_level', 'description', 'description_ur', 'features', 'features_ur', 'color', 'icon', 'sort_order',
         'is_active', 'show_on_public_page',
     ];
 
@@ -22,9 +22,33 @@ class NikahPackage extends Model
         return [
             'price' => 'decimal:2',
             'features' => 'array',
+            'features_ur' => 'array',
             'is_active' => 'boolean',
             'show_on_public_page' => 'boolean',
         ];
+    }
+
+    // Urdu columns are optional per-package overrides — fall back to the English
+    // content whenever an admin hasn't filled in a translation yet, so the public
+    // page never shows blank text just because the locale is 'ur'.
+    public function localizedName(): string
+    {
+        return app()->getLocale() === 'ur' && $this->name_ur ? $this->name_ur : $this->name;
+    }
+
+    public function localizedTagline(): ?string
+    {
+        return app()->getLocale() === 'ur' && $this->tagline_ur ? $this->tagline_ur : $this->tagline;
+    }
+
+    public function localizedDescription(): ?string
+    {
+        return app()->getLocale() === 'ur' && $this->description_ur ? $this->description_ur : $this->description;
+    }
+
+    public function localizedFeatures(): array
+    {
+        return app()->getLocale() === 'ur' && !empty($this->features_ur) ? $this->features_ur : ($this->features ?? []);
     }
 
     public function leads()
