@@ -58,10 +58,13 @@ class NikahCounselorApplicationController extends Controller
             'area' => ['nullable', 'string', 'max:100'],
             'country' => ['nullable', 'string', 'max:100'],
             'address' => ['nullable', 'string', 'max:500'],
-            'payout_method' => ['nullable', 'in:bank_transfer,jazzcash,easypaisa'],
-            'payout_account_title' => ['nullable', 'required_with:payout_method', 'string', 'max:255'],
-            'payout_account_number' => ['nullable', 'required_with:payout_method', 'string', 'max:50'],
-            'payout_bank_name' => ['nullable', 'required_if:payout_method,bank_transfer', 'string', 'max:100'],
+            // Mandatory, not "add it later" — commission can't be paid out
+            // without it, and chasing a certified counselor for these
+            // details after the fact is exactly the friction this avoids.
+            'payout_method' => ['required', 'in:bank_transfer,jazzcash,easypaisa'],
+            'payout_account_title' => ['required', 'string', 'max:255'],
+            'payout_account_number' => ['required', 'string', 'max:50'],
+            'payout_bank_name' => ['required_if:payout_method,bank_transfer', 'nullable', 'string', 'max:100'],
             'consent_accepted' => ['accepted'],
             'terms_accepted' => ['accepted'],
         ]);

@@ -33,7 +33,7 @@
                         </div>
                         @endif
 
-                        <form method="POST" action="{{ route('nikah-counselor.store') }}" enctype="multipart/form-data" class="space-y-5" x-data="{ payoutMethod: '' }">
+                        <form method="POST" action="{{ route('nikah-counselor.store') }}" enctype="multipart/form-data" class="space-y-5" x-data="{ payoutMethod: '{{ old('payout_method', '') }}' }">
                             @csrf
                             {{-- Honeypot --}}
                             <div class="absolute -left-[9999px]" aria-hidden="true">
@@ -183,28 +183,32 @@
 
                             {{-- Payout details --}}
                             <div class="p-4 rounded-xl" style="background: var(--cream); border: 1px solid #e5e5e5">
-                                <p class="text-sm font-semibold text-gray-700 mb-3">💳 Commission Payout Details <span class="text-gray-400 font-normal text-xs">(so we know where to pay you — you can also add this later)</span></p>
+                                <p class="text-sm font-semibold text-gray-700 mb-3">💳 Commission Payout Details <span class="text-gray-400 font-normal text-xs">(required — this is where we'll send your commission once you're certified)</span></p>
                                 <div class="grid sm:grid-cols-2 gap-4">
                                     <div>
-                                        <label for="payout_method" class="auth-label">Payout Method</label>
-                                        <select id="payout_method" name="payout_method" x-model="payoutMethod" class="auth-input" style="padding-left: 1rem">
-                                            <option value="">Not now</option>
+                                        <label for="payout_method" class="auth-label">Payout Method <span class="text-red-400">*</span></label>
+                                        <select id="payout_method" name="payout_method" x-model="payoutMethod" required class="auth-input @error('payout_method') auth-input-error @enderror" style="padding-left: 1rem">
+                                            <option value="">Select</option>
                                             <option value="bank_transfer" {{ old('payout_method') === 'bank_transfer' ? 'selected' : '' }}>Bank Transfer</option>
                                             <option value="jazzcash" {{ old('payout_method') === 'jazzcash' ? 'selected' : '' }}>JazzCash</option>
                                             <option value="easypaisa" {{ old('payout_method') === 'easypaisa' ? 'selected' : '' }}>EasyPaisa</option>
                                         </select>
+                                        <x-input-error :messages="$errors->get('payout_method')" class="mt-1" />
                                     </div>
                                     <div x-show="payoutMethod" x-cloak>
-                                        <label for="payout_account_title" class="auth-label">Account Title</label>
-                                        <input id="payout_account_title" type="text" name="payout_account_title" value="{{ old('payout_account_title') }}" class="auth-input" style="padding-left: 1rem">
+                                        <label for="payout_account_title" class="auth-label">Account Title <span class="text-red-400">*</span></label>
+                                        <input id="payout_account_title" type="text" name="payout_account_title" value="{{ old('payout_account_title') }}" :required="payoutMethod" class="auth-input @error('payout_account_title') auth-input-error @enderror" style="padding-left: 1rem">
+                                        <x-input-error :messages="$errors->get('payout_account_title')" class="mt-1" />
                                     </div>
                                     <div x-show="payoutMethod" x-cloak>
-                                        <label for="payout_account_number" class="auth-label">Account / Mobile Number</label>
-                                        <input id="payout_account_number" type="text" name="payout_account_number" value="{{ old('payout_account_number') }}" class="auth-input" style="padding-left: 1rem">
+                                        <label for="payout_account_number" class="auth-label">Account / Mobile Number <span class="text-red-400">*</span></label>
+                                        <input id="payout_account_number" type="text" name="payout_account_number" value="{{ old('payout_account_number') }}" :required="payoutMethod" class="auth-input @error('payout_account_number') auth-input-error @enderror" style="padding-left: 1rem">
+                                        <x-input-error :messages="$errors->get('payout_account_number')" class="mt-1" />
                                     </div>
                                     <div x-show="payoutMethod === 'bank_transfer'" x-cloak>
-                                        <label for="payout_bank_name" class="auth-label">Bank Name</label>
-                                        <input id="payout_bank_name" type="text" name="payout_bank_name" value="{{ old('payout_bank_name') }}" class="auth-input" style="padding-left: 1rem">
+                                        <label for="payout_bank_name" class="auth-label">Bank Name <span class="text-red-400">*</span></label>
+                                        <input id="payout_bank_name" type="text" name="payout_bank_name" value="{{ old('payout_bank_name') }}" :required="payoutMethod === 'bank_transfer'" class="auth-input @error('payout_bank_name') auth-input-error @enderror" style="padding-left: 1rem">
+                                        <x-input-error :messages="$errors->get('payout_bank_name')" class="mt-1" />
                                     </div>
                                 </div>
                             </div>
