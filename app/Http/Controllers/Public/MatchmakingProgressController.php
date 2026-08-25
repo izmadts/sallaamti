@@ -11,9 +11,11 @@ use App\Models\MatchmakingConsentRequest;
 use App\Models\MatchmakingLinkAccess;
 use App\Models\MatchmakingTimelineEvent;
 use App\Models\MatchProposal;
+use App\Models\NikahPackage;
 use App\Models\User;
 use App\Notifications\MatchmakerConsentResponded;
 use App\Notifications\NewNikahVerificationDocumentsSubmitted;
+use App\Notifications\NewPackagePaymentSubmitted;
 use App\Services\ImageOptimizer;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -245,6 +247,62 @@ class MatchmakingProgressController extends Controller
         return $this->unlockedView($lead)->with('status', 'Thank you — your response has been recorded.');
     }
 
+    // A client picks a matchmaking package and submits their own payment
+    // proof — this only ever records the CLAIM (pending_package_id +
+    // package_payment_status='submitted'); it never touches
+    // nikah_package_id itself. Admin confirming it
+    // (Admin\LeadController::confirmPackagePayment()) is the one moment
+    // that actually activates the package and fires commission — same
+    // "never auto-confirm a client's own claim" rule as every other
+    // payment in this system (see Concerns\SubmitsNikahPayment).
+    public function selectPackage(Request $request, Lead $lead)
+    {
+        $this->assertValidToken($request, $lead);
+
+        if (!$this->reverifyLast7($lead, $request)) {
+            MatchmakingLinkAccess::record($lead, 'package_payment', $request, 'failed');
+
+            return $this->lockedView($lead, 'Your verification expired — please enter the last 7 digits again.', 'آپ کی تصدیق ختم ہو گئی — براہ کرم آخری 7 ہندسے دوبارہ درج کریں۔');
+        }
+
+        abort_if($lead->package_payment_status === 'submitted', 422, 'A package payment is already awaiting review.');
+
+        $validated = $request->validate([
+            'nikah_package_id' => ['required', 'exists:nikah_packages,id'],
+            'payment_method' => ['required', 'in:jazzcash,bank_transfer,easypaisa'],
+            'payment_reference' => ['nullable', 'string', 'max:100'],
+            'payment_screenshot' => ['required', 'image', 'max:4096'],
+        ]);
+
+        $package = NikahPackage::active()->findOrFail($validated['nikah_package_id']);
+        abort_if($package->isOneTime(), 422, 'That package is not a matchmaking package.');
+
+        $screenshotPath = ImageOptimizer::store($request->file('payment_screenshot'), 'nikah/payments', 'private');
+
+        $lead->update([
+            'pending_package_id' => $package->id,
+            'package_payment_method' => $validated['payment_method'],
+            'package_payment_reference' => $validated['payment_reference'] ?? null,
+            'package_payment_screenshot' => $screenshotPath,
+            'package_payment_status' => 'submitted',
+            'package_payment_rejection_reason' => null,
+        ]);
+
+        MatchmakingTimelineEvent::log($lead, $lead->nikahProfile, 'package_payment_submitted', "Client selected the {$package->name} package and submitted payment proof.");
+
+        MatchmakingLinkAccess::record($lead, 'package_payment', $request, 'submitted');
+
+        User::role('admin')->each(function ($admin) use ($lead) {
+            try {
+                $admin->notify(new NewPackagePaymentSubmitted($lead));
+            } catch (\Throwable $e) {
+                \Log::error('NewPackagePaymentSubmitted notification failed: ' . $e->getMessage());
+            }
+        });
+
+        return $this->unlockedView($lead)->with('status', 'Thank you — your package payment has been submitted for review.');
+    }
+
     private function reverifyLast7(Lead $lead, Request $request): bool
     {
         $last7 = (string) $request->input('last7');
@@ -264,12 +322,16 @@ class MatchmakingProgressController extends Controller
 
     private function unlockedView(Lead $lead, ?string $last7 = null): View
     {
-        $lead->load(['timelineEvents.matchmaker', 'proposalBatches.proposals.candidate.user', 'nikahProfile', 'consentRequests']);
+        $lead->load(['timelineEvents.matchmaker', 'proposalBatches.proposals.candidate.user', 'nikahProfile', 'consentRequests', 'nikahPackage', 'pendingPackage']);
 
         $verifyUrl = route('public.matchmaking.progress.verify', ['lead' => $lead->id, 't' => $lead->progress_link_token]);
         $documentsUrl = route('public.matchmaking.progress.documents', ['lead' => $lead->id, 't' => $lead->progress_link_token]);
+        // One-time packages (e.g. "Sallaamti Verified") aren't a matchmaking
+        // service to pick here — same exclusion Admin\LeadController's own
+        // package dropdown already applies.
+        $packages = NikahPackage::active()->ordered()->get()->reject->isOneTime()->values();
 
-        return view('public.matchmaking.progress', ['lead' => $lead, 'verifyUrl' => $verifyUrl, 'documentsUrl' => $documentsUrl, 'unlocked' => true, 'last7' => $last7]);
+        return view('public.matchmaking.progress', ['lead' => $lead, 'verifyUrl' => $verifyUrl, 'documentsUrl' => $documentsUrl, 'unlocked' => true, 'last7' => $last7, 'packages' => $packages]);
     }
 
     private function assertValidToken(Request $request, Lead $lead): void

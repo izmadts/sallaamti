@@ -27,6 +27,12 @@ class Lead extends Model
         'package_price',
         'package_started_at',
         'package_expires_at',
+        'pending_package_id',
+        'package_payment_method',
+        'package_payment_reference',
+        'package_payment_screenshot',
+        'package_payment_status',
+        'package_payment_rejection_reason',
         'created_by',
     ];
 
@@ -77,6 +83,16 @@ class Lead extends Model
     public function nikahPackage()
     {
         return $this->belongsTo(NikahPackage::class);
+    }
+
+    // The package a client selected on their own progress link and
+    // submitted payment proof for — not yet active. Admin confirming it
+    // (Admin\LeadController::confirmPackagePayment()) is what actually
+    // copies this into nikah_package_id and fires commission; nothing
+    // about a client's own claim activates the package on its own.
+    public function pendingPackage()
+    {
+        return $this->belongsTo(NikahPackage::class, 'pending_package_id');
     }
 
     public function shortlistItems()

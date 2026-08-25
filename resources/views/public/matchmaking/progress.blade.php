@@ -135,6 +135,115 @@
                 </span>
             </div>
 
+            {{-- Package + payment --}}
+            <div class="bg-white rounded-xl shadow-sm p-6">
+                <h4 class="font-semibold text-gray-700 mb-1 border-b pb-2">📦 Matchmaking Package</h4>
+                <p class="text-xs text-gray-400 mb-3" dir="rtl">📦 میچ میکنگ پیکج</p>
+
+                @if ($lead->nikahPackage)
+                <div class="flex items-center justify-between bg-green-50 border border-green-200 rounded-lg p-4">
+                    <div>
+                        <p class="font-semibold text-gray-800">{{ $lead->nikahPackage->name }} — Active</p>
+                        <p class="text-xs text-gray-500 mt-0.5">
+                            @if ($lead->package_expires_at) Valid until {{ $lead->package_expires_at->format('d M Y') }} @else No expiry @endif
+                        </p>
+                        <p class="text-xs text-gray-400" dir="rtl">
+                            @if ($lead->package_expires_at) {{ $lead->package_expires_at->format('d M Y') }} تک درست @else کوئی معیاد ختم نہیں @endif
+                        </p>
+                    </div>
+                    <span class="text-2xl">✅</span>
+                </div>
+
+                @elseif ($lead->package_payment_status === 'submitted')
+                <div class="p-4 bg-amber-50 border border-amber-200 text-amber-700 rounded-lg text-sm">
+                    <p>⏳ Your {{ $lead->pendingPackage?->name }} package payment has been submitted and is awaiting confirmation by our team.</p>
+                    <p dir="rtl" class="mt-1">⏳ آپ کے {{ $lead->pendingPackage?->name }} پیکج کی ادائیگی جمع کروا دی گئی ہے اور ہماری ٹیم کی تصدیق کی منتظر ہے۔</p>
+                </div>
+
+                @else
+                @if ($lead->package_payment_status === 'rejected')
+                <div class="p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm mb-4">
+                    <p>❌ Your previous payment proof was rejected. Reason: {{ $lead->package_payment_rejection_reason }} Please choose a package and resubmit below.</p>
+                    <p dir="rtl" class="mt-1">❌ آپ کی پچھلی ادائیگی مسترد کر دی گئی۔ وجہ: {{ $lead->package_payment_rejection_reason }} براہ کرم دوبارہ پیکج منتخب کر کے جمع کروائیں۔</p>
+                </div>
+                @endif
+
+                <p class="text-sm text-gray-600 mb-1">Choose a package, then send the amount to the account below and upload your receipt.</p>
+                <p class="text-xs text-gray-400 mb-4" dir="rtl">پیکج منتخب کریں، پھر نیچے دیے گئے اکاؤنٹ میں رقم بھیجیں اور رسید اپلوڈ کریں۔</p>
+
+                @if ($errors->any())
+                <div class="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">
+                    <ul class="list-disc list-inside">
+                        @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+                @endif
+
+                <div class="bg-gray-50 border border-gray-200 rounded-lg p-4 text-sm mb-4 space-y-4">
+                    @if (setting('jazzcash_number'))
+                    <div>
+                        <p class="font-bold mb-1" style="color: #b8962e">📱 JazzCash</p>
+                        <p class="text-gray-600 flex items-center gap-1">{{ setting('jazzcash_number') }} <x-copy-button :value="setting('jazzcash_number')" /></p>
+                        <p class="font-semibold text-gray-700">{{ setting('jazzcash_account_title') }}</p>
+                    </div>
+                    @endif
+                    @if (setting('easypaisa_number'))
+                    <div>
+                        <p class="font-bold mb-1" style="color: #b8962e">📱 EasyPaisa</p>
+                        <p class="text-gray-600 flex items-center gap-1">{{ setting('easypaisa_number') }} <x-copy-button :value="setting('easypaisa_number')" /></p>
+                    </div>
+                    @endif
+                    @if (setting('bank_name'))
+                    <div>
+                        <p class="font-bold mb-1" style="color: #b8962e">🏦 Bank Transfer</p>
+                        <p class="text-gray-600">Bank: {{ setting('bank_name') }}</p>
+                        <p class="text-gray-600">Account Title: {{ setting('bank_account_title') }}</p>
+                        <p class="text-gray-600 flex items-center gap-1">Account No: {{ setting('bank_account_number') }} <x-copy-button :value="setting('bank_account_number')" /></p>
+                        @if (setting('bank_account_iban'))
+                        <p class="text-gray-600 flex items-center gap-1">IBAN: {{ setting('bank_account_iban') }} <x-copy-button :value="setting('bank_account_iban')" /></p>
+                        @endif
+                    </div>
+                    @endif
+                    @if (!setting('jazzcash_number') && !setting('easypaisa_number') && !setting('bank_name'))
+                    <p class="text-red-600">Payment details have not been configured yet — contact your matchmaker before sending anything.</p>
+                    @endif
+                </div>
+
+                <form method="POST" action="{{ route('public.matchmaking.progress.package', ['lead' => $lead->id, 't' => $lead->progress_link_token]) }}" enctype="multipart/form-data" class="space-y-3">
+                    @csrf
+                    <input type="hidden" name="last7" value="{{ $last7 ?? '' }}">
+                    <div>
+                        <label class="text-xs text-gray-500 block mb-1">Package</label>
+                        <select name="nikah_package_id" required class="border-gray-300 rounded-lg text-sm w-full">
+                            <option value="">Select a package</option>
+                            @foreach ($packages as $pkg)
+                            <option value="{{ $pkg->id }}">{{ $pkg->name }} — Rs. {{ number_format($pkg->price) }} ({{ $pkg->duration_days ? $pkg->duration_days . ' days' : 'no expiry' }}@if($pkg->proposal_limit), {{ $pkg->proposal_limit }} proposals @endif)</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-xs text-gray-500 block mb-1">Payment Method</label>
+                        <select name="payment_method" required class="border-gray-300 rounded-lg text-sm w-full">
+                            <option value="jazzcash">JazzCash</option>
+                            <option value="bank_transfer">Bank Transfer</option>
+                            <option value="easypaisa">EasyPaisa</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-xs text-gray-500 block mb-1">Payment Reference (optional)</label>
+                        <input type="text" name="payment_reference" class="border-gray-300 rounded-lg text-sm w-full">
+                    </div>
+                    <div>
+                        <label class="text-xs text-gray-500 block mb-1">Payment Screenshot</label>
+                        <input type="file" name="payment_screenshot" accept="image/*" capture="environment" required class="text-sm w-full">
+                    </div>
+                    <button class="w-full text-white text-sm font-semibold px-5 py-2.5 rounded-lg hover:opacity-90 transition" style="background: #0d6b6b">Submit Package Payment / پیکج ادائیگی جمع کروائیں</button>
+                </form>
+                @endif
+            </div>
+
             {{-- Proposal / response history --}}
             <div class="bg-white rounded-xl shadow-sm p-6">
                 <h4 class="font-semibold text-gray-700 mb-1 border-b pb-2">💌 Proposals Shared With You</h4>

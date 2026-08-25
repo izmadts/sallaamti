@@ -476,6 +476,9 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::post('/leads/{lead}/shortlist/{item}/sent', [\App\Http\Controllers\Admin\LeadController::class, 'markShortlistSent'])->name('leads.shortlist.sent');
     Route::delete('/leads/{lead}/shortlist/{item}', [\App\Http\Controllers\Admin\LeadController::class, 'removeFromShortlist'])->name('leads.shortlist.remove');
     Route::post('/leads/{lead}/progress-link', [\App\Http\Controllers\Admin\LeadController::class, 'regenerateProgressLink'])->name('leads.progress-link.regenerate');
+    Route::post('/leads/{lead}/package-payment/confirm', [\App\Http\Controllers\Admin\LeadController::class, 'confirmPackagePayment'])->name('leads.package-payment.confirm');
+    Route::post('/leads/{lead}/package-payment/reject', [\App\Http\Controllers\Admin\LeadController::class, 'rejectPackagePayment'])->name('leads.package-payment.reject');
+    Route::get('/leads/{lead}/file/{type}', [\App\Http\Controllers\Admin\LeadController::class, 'file'])->name('leads.file');
     Route::middleware('admin.only')->group(function () {
         Route::get('/nikah-contact-requests', [NikahVerificationController::class, 'contactRequests'])->name('nikah.contact-requests');
         Route::post('/nikah-contact-requests/{contactRequest}/approve', [NikahVerificationController::class, 'approveContactRequest'])->name('nikah.contact-requests.approve');
@@ -744,6 +747,7 @@ Route::prefix('p')->name('public.matchmaking.progress.')->group(function () {
     Route::post('/{lead}/documents', [\App\Http\Controllers\Public\MatchmakingProgressController::class, 'uploadDocuments'])->name('documents')->middleware('throttle:10,1');
     Route::post('/{lead}/consents/{consentRequest}', [\App\Http\Controllers\Public\MatchmakingProgressController::class, 'respondToConsent'])->name('consents.respond')->middleware('throttle:10,1');
     Route::post('/{lead}/proposals/{proposal}/respond', [\App\Http\Controllers\Public\MatchmakingProgressController::class, 'respondToProposal'])->name('proposals.respond')->middleware('throttle:10,1');
+    Route::post('/{lead}/package', [\App\Http\Controllers\Public\MatchmakingProgressController::class, 'selectPackage'])->name('package')->middleware('throttle:10,1');
 });
 
 // Nikah Counselor Agreement + NDA acceptance. Auth is the app-issued

@@ -169,6 +169,36 @@
                 </div>
             </div>
 
+            {{-- Package payment awaiting review — client submitted this themselves via their progress link (Public\MatchmakingProgressController::selectPackage()); confirming is what actually activates the package and fires commission. --}}
+            @if ($lead->package_payment_status === 'submitted')
+            <div class="bg-white rounded-xl shadow-sm p-6" style="border-left: 4px solid #b8962e">
+                <h3 class="font-semibold text-gray-700 mb-3 border-b pb-2">⏳ Package Payment Awaiting Review</h3>
+                <div class="grid sm:grid-cols-2 gap-4">
+                    <div class="text-sm space-y-1">
+                        <p><span class="text-gray-500">Package:</span> <strong>{{ $lead->pendingPackage?->name }}</strong> (Rs. {{ number_format($lead->pendingPackage?->price ?? 0) }})</p>
+                        <p><span class="text-gray-500">Method:</span> {{ ucfirst(str_replace('_', ' ', $lead->package_payment_method)) }}</p>
+                        @if ($lead->package_payment_reference)
+                        <p><span class="text-gray-500">Reference:</span> {{ $lead->package_payment_reference }}</p>
+                        @endif
+                        @if ($lead->package_payment_screenshot)
+                        <a href="{{ route('admin.leads.file', [$lead, 'package_payment_screenshot']) }}" target="_blank" class="inline-block text-sm font-semibold mt-1" style="color: #0d6b6b">📎 View Payment Screenshot →</a>
+                        @endif
+                    </div>
+                    <div class="flex flex-col gap-2 justify-center">
+                        <form method="POST" action="{{ route('admin.leads.package-payment.confirm', $lead) }}" onsubmit="return confirm('Confirm this package payment? The package will activate and commission will fire immediately.')">
+                            @csrf
+                            <button class="w-full text-white text-sm font-semibold px-4 py-2.5 rounded-lg hover:opacity-90" style="background: #16a34a">✅ Confirm — Activate Package</button>
+                        </form>
+                        <form method="POST" action="{{ route('admin.leads.package-payment.reject', $lead) }}" onsubmit="return confirm('Reject this package payment?')" class="flex gap-2">
+                            @csrf
+                            <input type="text" name="reason" required placeholder="Reason for rejection" class="border-gray-300 rounded-lg text-sm flex-1">
+                            <button class="text-sm font-semibold px-4 py-2.5 rounded-lg border border-red-300 text-red-600 hover:bg-red-50">❌ Reject</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            @endif
+
             {{-- Shortlist --}}
             <div class="bg-white rounded-xl shadow-sm p-6">
                 <h3 class="font-semibold text-gray-700 mb-3 border-b pb-2">💌 Shortlist ({{ $lead->shortlistItems->count() }})</h3>
