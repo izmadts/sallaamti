@@ -118,6 +118,16 @@ class ClientController extends Controller
 
         MatchmakingTimelineEvent::log($lead, null, 'lead_received', "Lead received from {$lead->source}.");
 
+        // Every client gets their one standing link from the moment
+        // they're added — no separate "generate" step to remember. Needs a
+        // phone number since that's the secret they prove ownership of on
+        // every visit; if none was given yet, update() generates it the
+        // moment a phone number is finally entered.
+        if ($lead->phone) {
+            $lead->update(['progress_link_token' => Str::random(24)]);
+            MatchmakingTimelineEvent::log($lead, null, 'progress_link_generated', 'Progress page link was generated.');
+        }
+
         return redirect()->route('matchmaker.clients.show', $lead)->with('status', 'Client added.');
     }
 
@@ -207,6 +217,7 @@ class ClientController extends Controller
 
         $reassigned = isset($validated['assigned_to']) && $validated['assigned_to'] != $lead->assigned_to;
         $statusChanged = $lead->status !== $validated['status'];
+        $hadNoLinkYet = !$lead->progress_link_token;
         $lead->update($validated);
 
         if ($reassigned) {
@@ -215,6 +226,14 @@ class ClientController extends Controller
 
         if ($statusChanged) {
             MatchmakingTimelineEvent::log($lead, $lead->nikahProfile, 'status_changed', "Status changed to " . ucfirst(str_replace('_', ' ', $validated['status'])) . '.');
+        }
+
+        // Phone just arrived for a client added without one — mint their
+        // one standing link now instead of waiting for a manual "Generate
+        // Link" click or the first consent request.
+        if ($hadNoLinkYet && $lead->phone) {
+            $lead->update(['progress_link_token' => Str::random(24)]);
+            MatchmakingTimelineEvent::log($lead, $lead->nikahProfile, 'progress_link_generated', 'Progress page link was generated.');
         }
 
         return back()->with('status', 'Client updated.');
@@ -374,7 +393,7 @@ class ClientController extends Controller
         abort_unless($lead->phone, 422, 'Add a phone number for this client first — that\'s what secures the link they\'ll confirm through.');
 
         if (!$lead->progress_link_token) {
-            $lead->update(['progress_link_token' => Str::random(40)]);
+            $lead->update(['progress_link_token' => Str::random(24)]);
         }
 
         $alreadyPending = MatchmakingConsentRequest::where('lead_id', $lead->id)
@@ -546,7 +565,7 @@ class ClientController extends Controller
         abort_unless($lead->phone, 422, 'Add a phone number for this client first — it\'s what they\'ll enter to unlock the page.');
 
         $hadTokenAlready = (bool) $lead->progress_link_token;
-        $lead->update(['progress_link_token' => Str::random(40)]);
+        $lead->update(['progress_link_token' => Str::random(24)]);
 
         MatchmakingTimelineEvent::log($lead, $lead->nikahProfile, 'progress_link_regenerated', 'Progress page link was ' . ($hadTokenAlready ? 'regenerated — the old copy no longer works' : 'generated') . '.');
 
@@ -559,7 +578,7 @@ class ClientController extends Controller
             return null;
         }
 
-        return URL::signedRoute('public.matchmaking.progress.show', ['lead' => $lead->id, 'token' => $lead->progress_link_token]);
+        return route('public.matchmaking.progress.show', ['lead' => $lead->id, 't' => $lead->progress_link_token]);
     }
 
     private function authorizeClient(Lead $lead): void

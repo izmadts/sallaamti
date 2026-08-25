@@ -738,10 +738,20 @@ Route::middleware(['auth', 'matchmaker'])->prefix('matchmaker')->name('matchmake
 Route::middleware('signed')->prefix('m')->name('public.matchmaking.')->group(function () {
     Route::get('/proposal/{proposal}', [\App\Http\Controllers\Public\MatchmakingActionController::class, 'showProposal'])->name('proposal.show');
     Route::post('/proposal/{proposal}/respond', [\App\Http\Controllers\Public\MatchmakingActionController::class, 'respondProposal'])->name('proposal.respond');
-    Route::get('/progress/{lead}', [\App\Http\Controllers\Public\MatchmakingProgressController::class, 'show'])->name('progress.show');
-    Route::post('/progress/{lead}/verify', [\App\Http\Controllers\Public\MatchmakingProgressController::class, 'verify'])->name('progress.verify');
-    Route::post('/progress/{lead}/documents', [\App\Http\Controllers\Public\MatchmakingProgressController::class, 'uploadDocuments'])->name('progress.documents');
-    Route::post('/progress/{lead}/consents/{consentRequest}', [\App\Http\Controllers\Public\MatchmakingProgressController::class, 'respondToConsent'])->name('progress.consents.respond');
+});
+
+// The client's one standing link (Public\MatchmakingProgressController) —
+// deliberately outside 'signed': the stored progress_link_token, checked
+// exactly against ?t= on every request, is already the real authentication,
+// same reasoning as the Nikah Counselor Agreement link. Kept short and
+// signature-free on purpose so it reads clean, not spammy, when shared over
+// WhatsApp. Throttled since dropping 'signed' also drops its incidental
+// request throttling, and the last-7-digits check has none of its own.
+Route::prefix('p')->name('public.matchmaking.progress.')->group(function () {
+    Route::get('/{lead}', [\App\Http\Controllers\Public\MatchmakingProgressController::class, 'show'])->name('show');
+    Route::post('/{lead}/verify', [\App\Http\Controllers\Public\MatchmakingProgressController::class, 'verify'])->name('verify')->middleware('throttle:10,1');
+    Route::post('/{lead}/documents', [\App\Http\Controllers\Public\MatchmakingProgressController::class, 'uploadDocuments'])->name('documents')->middleware('throttle:10,1');
+    Route::post('/{lead}/consents/{consentRequest}', [\App\Http\Controllers\Public\MatchmakingProgressController::class, 'respondToConsent'])->name('consents.respond')->middleware('throttle:10,1');
 });
 
 // Nikah Counselor Agreement + NDA acceptance. Auth is the app-issued

@@ -14,7 +14,6 @@ use App\Notifications\MatchmakerConsentResponded;
 use App\Notifications\NewNikahVerificationDocumentsSubmitted;
 use App\Services\ImageOptimizer;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\URL;
 use Illuminate\View\View;
 
 // A standing page a client can revisit any time to see their own status,
@@ -41,7 +40,7 @@ class MatchmakingProgressController extends Controller
 
         MatchmakingLinkAccess::record($lead, 'progress_view', $request);
 
-        $verifyUrl = URL::signedRoute('public.matchmaking.progress.verify', ['lead' => $lead->id, 'token' => $lead->progress_link_token]);
+        $verifyUrl = route('public.matchmaking.progress.verify', ['lead' => $lead->id, 't' => $lead->progress_link_token]);
 
         return view('public.matchmaking.progress', ['lead' => $lead, 'verifyUrl' => $verifyUrl, 'unlocked' => false]);
     }
@@ -59,10 +58,11 @@ class MatchmakingProgressController extends Controller
         if (!$expected || $validated['last7'] !== $expected) {
             MatchmakingLinkAccess::record($lead, 'progress_verify', $request, 'failed');
 
-            $verifyUrl = URL::signedRoute('public.matchmaking.progress.verify', ['lead' => $lead->id, 'token' => $lead->progress_link_token]);
+            $verifyUrl = route('public.matchmaking.progress.verify', ['lead' => $lead->id, 't' => $lead->progress_link_token]);
 
             return view('public.matchmaking.progress', ['lead' => $lead, 'verifyUrl' => $verifyUrl, 'unlocked' => false])
-                ->with('error', 'That doesn\'t match — check the last 7 digits of the WhatsApp number your matchmaker has on file and try again.');
+                ->with('error', 'That doesn\'t match — check the last 7 digits of the WhatsApp number your matchmaker has on file and try again.')
+                ->with('error_ur', 'یہ نمبر میل نہیں کھاتا — اپنے میچ میکر کے پاس موجود واٹس ایپ نمبر کے آخری 7 ہندسے چیک کر کے دوبارہ کوشش کریں۔');
         }
 
         MatchmakingLinkAccess::record($lead, 'progress_verify', $request, 'success');
@@ -81,7 +81,7 @@ class MatchmakingProgressController extends Controller
         if (!$this->reverifyLast7($lead, $request)) {
             MatchmakingLinkAccess::record($lead, 'documents_upload', $request, 'failed');
 
-            return $this->lockedView($lead, 'Your verification expired — please enter the last 7 digits again.');
+            return $this->lockedView($lead, 'Your verification expired — please enter the last 7 digits again.', 'آپ کی تصدیق ختم ہو گئی — براہ کرم آخری 7 ہندسے دوبارہ درج کریں۔');
         }
 
         $last7 = (string) $request->input('last7');
@@ -140,7 +140,7 @@ class MatchmakingProgressController extends Controller
         if (!$this->reverifyLast7($lead, $request)) {
             MatchmakingLinkAccess::record($lead, 'consent_response', $request, 'failed');
 
-            return $this->lockedView($lead, 'Your verification expired — please enter the last 7 digits again.');
+            return $this->lockedView($lead, 'Your verification expired — please enter the last 7 digits again.', 'آپ کی تصدیق ختم ہو گئی — براہ کرم آخری 7 ہندسے دوبارہ درج کریں۔');
         }
 
         abort_if(!$consentRequest->isPending(), 422, 'This request has already been responded to.');
@@ -188,26 +188,27 @@ class MatchmakingProgressController extends Controller
         return $expected && $last7 === $expected;
     }
 
-    private function lockedView(Lead $lead, string $error): View
+    private function lockedView(Lead $lead, string $error, ?string $errorUr = null): View
     {
-        $verifyUrl = URL::signedRoute('public.matchmaking.progress.verify', ['lead' => $lead->id, 'token' => $lead->progress_link_token]);
+        $verifyUrl = route('public.matchmaking.progress.verify', ['lead' => $lead->id, 't' => $lead->progress_link_token]);
 
         return view('public.matchmaking.progress', ['lead' => $lead, 'verifyUrl' => $verifyUrl, 'unlocked' => false])
-            ->with('error', $error);
+            ->with('error', $error)
+            ->with('error_ur', $errorUr);
     }
 
     private function unlockedView(Lead $lead, ?string $last7 = null): View
     {
         $lead->load(['timelineEvents.matchmaker', 'proposalBatches.proposals.candidate.user', 'nikahProfile', 'consentRequests']);
 
-        $verifyUrl = URL::signedRoute('public.matchmaking.progress.verify', ['lead' => $lead->id, 'token' => $lead->progress_link_token]);
-        $documentsUrl = URL::signedRoute('public.matchmaking.progress.documents', ['lead' => $lead->id, 'token' => $lead->progress_link_token]);
+        $verifyUrl = route('public.matchmaking.progress.verify', ['lead' => $lead->id, 't' => $lead->progress_link_token]);
+        $documentsUrl = route('public.matchmaking.progress.documents', ['lead' => $lead->id, 't' => $lead->progress_link_token]);
 
         return view('public.matchmaking.progress', ['lead' => $lead, 'verifyUrl' => $verifyUrl, 'documentsUrl' => $documentsUrl, 'unlocked' => true, 'last7' => $last7]);
     }
 
     private function assertValidToken(Request $request, Lead $lead): void
     {
-        abort_unless($lead->progress_link_token && $request->query('token') === $lead->progress_link_token, 403, 'This link is no longer valid — ask your matchmaker for a fresh one.');
+        abort_unless($lead->progress_link_token && $request->query('t') === $lead->progress_link_token, 403, 'This link is no longer valid — ask your matchmaker for a fresh one. / یہ لنک اب کارآمد نہیں — اپنے میچ میکر سے نیا لنک طلب کریں۔');
     }
 }

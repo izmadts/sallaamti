@@ -8,11 +8,16 @@
             <div class="bg-white rounded-xl shadow-sm p-8 text-center">
                 <div class="w-16 h-16 mx-auto rounded-full flex items-center justify-center text-3xl mb-4" style="background: var(--teal-light);">🔒</div>
                 <h3 class="text-lg font-bold text-gray-800 mb-1">Your Matchmaking Progress</h3>
-                <p class="text-sm text-gray-500 mb-6">Enter the <strong>last 7 digits</strong> of the WhatsApp number your matchmaker has on file to view your status. You'll need to do this every time you visit this page — nothing is remembered on this device.</p>
+                <p class="text-sm text-gray-500 mb-1" dir="rtl">آپ کی میچ میکنگ کی صورتحال</p>
+                <p class="text-sm text-gray-500 mb-1">Enter the <strong>last 7 digits</strong> of the WhatsApp number your matchmaker has on file to view your status. You'll need to do this every time you visit this page — nothing is remembered on this device.</p>
+                <p class="text-sm text-gray-500 mb-6" dir="rtl">اپنی صورتحال دیکھنے کے لیے اپنے میچ میکر کے پاس موجود واٹس ایپ نمبر کے <strong>آخری 7 ہندسے</strong> درج کریں۔ ہر بار اس صفحے پر آنے پر یہ دوبارہ کرنا ہوگا — اس ڈیوائس پر کچھ بھی یاد نہیں رکھا جاتا۔</p>
 
                 @if (($error ?? null) || $errors->any())
-                <div class="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm text-left">
-                    {{ $error ?? $errors->first() }}
+                <div class="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm text-left space-y-1">
+                    <p>{{ $error ?? $errors->first() }}</p>
+                    @if ($error_ur ?? null)
+                    <p dir="rtl">{{ $error_ur }}</p>
+                    @endif
                 </div>
                 @endif
 
@@ -20,7 +25,7 @@
                     @csrf
                     <input type="text" name="last7" inputmode="numeric" pattern="[0-9]{7}" maxlength="7" minlength="7" required placeholder="e.g. 3001234"
                         class="border-gray-300 rounded-lg text-center text-lg tracking-widest w-48" autofocus>
-                    <button class="text-white text-sm font-semibold px-6 py-3 rounded-lg hover:opacity-90 transition" style="background: #0d6b6b">Unlock My Progress</button>
+                    <button class="text-white text-sm font-semibold px-6 py-3 rounded-lg hover:opacity-90 transition" style="background: #0d6b6b">Unlock My Progress / میری صورتحال دیکھیں</button>
                 </form>
             </div>
 
@@ -28,9 +33,14 @@
 
             <div class="rounded-xl p-4 flex items-start gap-3 bg-white border" style="border-color: #0d6b6b33">
                 <span class="text-xl">💍</span>
-                <p class="text-sm text-gray-700">
-                    Hello {{ $lead->name }} — here's everything your matchmaker has shared so far. This page always asks for verification again next time you visit.
-                </p>
+                <div>
+                    <p class="text-sm text-gray-700">
+                        Hello {{ $lead->name }} — here's everything your matchmaker has shared so far. This page always asks for verification again next time you visit.
+                    </p>
+                    <p class="text-sm text-gray-700 mt-1" dir="rtl">
+                        السلام علیکم {{ $lead->name }} — یہاں وہ سب کچھ ہے جو آپ کے میچ میکر نے اب تک آپ کے ساتھ شیئر کیا ہے۔ اگلی بار آنے پر یہ صفحہ ہمیشہ دوبارہ تصدیق مانگے گا۔
+                    </p>
+                </div>
             </div>
 
             @if (session('status'))
@@ -41,20 +51,19 @@
             @if ($pendingConsents->isNotEmpty())
             <div class="bg-white rounded-xl shadow-sm p-6">
                 <h4 class="font-semibold text-gray-700 mb-1">✅ Please Confirm</h4>
-                <p class="text-xs text-gray-500 mb-4">Your matchmaker is asking you to confirm the following. This goes straight to Sallaamti — nothing is assumed on your behalf.</p>
+                <p class="text-xs text-gray-400 mb-1" dir="rtl">✅ براہ کرم تصدیق کریں</p>
+                <p class="text-xs text-gray-500 mb-1">Your matchmaker is asking you to confirm the following. This goes straight to Sallaamti — nothing is assumed on your behalf.</p>
+                <p class="text-xs text-gray-500 mb-4" dir="rtl">آپ کا میچ میکر آپ سے مندرجہ ذیل کی تصدیق مانگ رہا ہے۔ یہ براہ راست سلامتی کو جاتا ہے — آپ کی طرف سے کچھ بھی از خود فرض نہیں کیا جاتا۔</p>
 
                 <div class="space-y-3">
                     @foreach ($pendingConsents as $req)
                     <div class="border border-gray-100 rounded-lg p-4">
                         <p class="text-sm text-gray-700 mb-3">{{ \App\Models\MatchmakingConsent::TYPES[$req->consent_type] }}</p>
-                        {{-- Must be a genuinely signed URL, not a plain route() call — this
-                             route sits behind the 'signed' middleware group, which checks
-                             a real signature, not just a matching ?token= value. --}}
-                        <form method="POST" action="{{ \Illuminate\Support\Facades\URL::signedRoute('public.matchmaking.progress.consents.respond', ['lead' => $lead->id, 'consentRequest' => $req->id, 'token' => $lead->progress_link_token]) }}" class="flex flex-wrap gap-3">
+                        <form method="POST" action="{{ route('public.matchmaking.progress.consents.respond', ['lead' => $lead->id, 'consentRequest' => $req->id, 't' => $lead->progress_link_token]) }}" class="flex flex-wrap gap-3">
                             @csrf
                             <input type="hidden" name="last7" value="{{ $last7 ?? '' }}">
-                            <button name="decision" value="grant" class="bg-green-500 hover:bg-green-600 text-white text-sm font-semibold px-5 py-2.5 rounded-lg transition">✅ I Agree</button>
-                            <button name="decision" value="decline" class="bg-white border border-gray-300 text-gray-600 hover:bg-gray-50 text-sm font-semibold px-5 py-2.5 rounded-lg transition">Not Now</button>
+                            <button name="decision" value="grant" class="bg-green-500 hover:bg-green-600 text-white text-sm font-semibold px-5 py-2.5 rounded-lg transition">✅ I Agree / میں راضی ہوں</button>
+                            <button name="decision" value="decline" class="bg-white border border-gray-300 text-gray-600 hover:bg-gray-50 text-sm font-semibold px-5 py-2.5 rounded-lg transition">Not Now / ابھی نہیں</button>
                         </form>
                     </div>
                     @endforeach
@@ -65,7 +74,9 @@
             @if ($lead->nikahProfile && (empty($lead->nikahProfile->cnic_front_image) || empty($lead->nikahProfile->cnic_back_image) || empty($lead->nikahProfile->cnic_number)))
             <div class="bg-white rounded-xl shadow-sm p-6">
                 <h4 class="font-semibold text-gray-700 mb-1">🪪 Upload Your Verification Documents</h4>
-                <p class="text-xs text-gray-500 mb-4">Your matchmaker registered your profile but couldn't collect your CNIC/photo in person. Upload them here — this goes straight to Sallaamti for verification, never through your matchmaker's phone.</p>
+                <p class="text-xs text-gray-400 mb-1" dir="rtl">🪪 اپنی تصدیقی دستاویزات اپلوڈ کریں</p>
+                <p class="text-xs text-gray-500 mb-1">Your matchmaker registered your profile but couldn't collect your CNIC/photo in person. Upload them here — this goes straight to Sallaamti for verification, never through your matchmaker's phone.</p>
+                <p class="text-xs text-gray-500 mb-4" dir="rtl">آپ کے میچ میکر نے آپ کی پروفائل رجسٹر کر دی ہے لیکن آپ کا شناختی کارڈ/تصویر ذاتی طور پر جمع نہیں کر سکے۔ یہاں اپلوڈ کریں — یہ براہ راست سلامتی کو تصدیق کے لیے جاتا ہے، کبھی آپ کے میچ میکر کے فون سے نہیں۔</p>
 
                 @if ($errors->any())
                 <div class="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">
@@ -82,32 +93,36 @@
                     <input type="hidden" name="last7" value="{{ $last7 ?? '' }}">
 
                     <div>
-                        <label class="text-xs text-gray-500 block mb-1">CNIC Number</label>
+                        <label class="text-xs text-gray-500 block mb-1">CNIC Number <span dir="rtl">/ شناختی کارڈ نمبر</span></label>
                         <input type="text" name="cnic_number" value="{{ old('cnic_number') }}" placeholder="e.g. 12345-1234567-1" class="border-gray-300 rounded-lg w-full text-sm">
                     </div>
                     <div>
-                        <label class="text-xs text-gray-500 block mb-1">CNIC Photo (Front)</label>
+                        <label class="text-xs text-gray-500 block mb-1">CNIC Photo (Front) <span dir="rtl">/ شناختی کارڈ کی تصویر (اگلا حصہ)</span></label>
                         <input type="file" name="cnic_front_image" accept="image/*" capture="environment" class="text-sm w-full">
                     </div>
                     <div>
-                        <label class="text-xs text-gray-500 block mb-1">CNIC Photo (Back)</label>
+                        <label class="text-xs text-gray-500 block mb-1">CNIC Photo (Back) <span dir="rtl">/ شناختی کارڈ کی تصویر (پچھلا حصہ)</span></label>
                         <input type="file" name="cnic_back_image" accept="image/*" capture="environment" class="text-sm w-full">
                     </div>
                     <div>
-                        <label class="text-xs text-gray-500 block mb-1">Your Photo (optional)</label>
+                        <label class="text-xs text-gray-500 block mb-1">Your Photo (optional) <span dir="rtl">/ آپ کی تصویر (اختیاری)</span></label>
                         <input type="file" name="photo" accept="image/*" capture="environment" class="text-sm w-full">
                     </div>
                     <div class="flex items-center gap-2">
                         <input type="checkbox" id="allow_photo_sharing" name="allow_photo_sharing" value="1" class="rounded">
-                        <label for="allow_photo_sharing" class="text-xs text-gray-600">Allow my photo to be shared with a match after mutual interest is accepted</label>
+                        <label for="allow_photo_sharing" class="text-xs text-gray-600">
+                            Allow my photo to be shared with a match after mutual interest is accepted
+                            <span class="block" dir="rtl">باہمی رضامندی کے بعد میری تصویر رشتے کے ساتھ شیئر کرنے کی اجازت ہے</span>
+                        </label>
                     </div>
-                    <button class="text-white text-sm font-semibold px-5 py-2.5 rounded-lg hover:opacity-90 transition" style="background: #0d6b6b">Submit for Verification</button>
+                    <button class="text-white text-sm font-semibold px-5 py-2.5 rounded-lg hover:opacity-90 transition" style="background: #0d6b6b">Submit for Verification / تصدیق کے لیے جمع کروائیں</button>
                 </form>
             </div>
             @endif
 
             <div class="bg-white rounded-xl shadow-sm p-6 text-center">
                 <p class="text-xs text-gray-400 uppercase tracking-widest mb-1">Current Status</p>
+                <p class="text-xs text-gray-400 mb-2" dir="rtl">موجودہ صورتحال</p>
                 <span class="inline-block text-sm px-3 py-1 rounded-full font-semibold
                     {{ match($lead->status) {
                         'new' => 'bg-blue-100 text-blue-800',
@@ -122,7 +137,8 @@
 
             {{-- Proposal / response history --}}
             <div class="bg-white rounded-xl shadow-sm p-6">
-                <h4 class="font-semibold text-gray-700 mb-3 border-b pb-2">💌 Proposals Shared With You</h4>
+                <h4 class="font-semibold text-gray-700 mb-1 border-b pb-2">💌 Proposals Shared With You</h4>
+                <p class="text-xs text-gray-400 mb-3" dir="rtl">💌 آپ کے ساتھ شیئر کیے گئے رشتے</p>
 
                 @forelse ($lead->proposalBatches->where('status', '!=', 'draft') as $batch)
                 <div class="mb-4 last:mb-0 border border-gray-100 rounded-lg overflow-hidden">
@@ -152,20 +168,27 @@
                     </div>
                 </div>
                 @empty
-                <p class="text-sm text-gray-400">No proposals shared yet — your matchmaker will send some here once they've found a match.</p>
+                <div class="text-sm text-gray-400">
+                    <p>No proposals shared yet — your matchmaker will send some here once they've found a match.</p>
+                    <p class="mt-0.5" dir="rtl">ابھی تک کوئی رشتہ شیئر نہیں کیا گیا — جیسے ہی آپ کے میچ میکر کو کوئی مناسب رشتہ ملے گا وہ یہاں بھیج دیں گے۔</p>
+                </div>
                 @endforelse
             </div>
 
             {{-- Timeline --}}
             <div class="bg-white rounded-xl shadow-sm p-6">
-                <h4 class="font-semibold text-gray-700 mb-3 border-b pb-2">🕓 Activity</h4>
+                <h4 class="font-semibold text-gray-700 mb-1 border-b pb-2">🕓 Activity</h4>
+                <p class="text-xs text-gray-400 mb-3" dir="rtl">🕓 سرگرمی</p>
                 @forelse ($lead->timelineEvents as $event)
                 <div class="py-2 border-b last:border-0">
                     <p class="text-sm text-gray-700">{{ $event->description }}</p>
                     <p class="text-xs text-gray-400 mt-0.5">{{ $event->created_at->format('d M Y') }}</p>
                 </div>
                 @empty
-                <p class="text-sm text-gray-400">No activity yet.</p>
+                <div class="text-sm text-gray-400">
+                    <p>No activity yet.</p>
+                    <p dir="rtl">ابھی تک کوئی سرگرمی نہیں۔</p>
+                </div>
                 @endforelse
             </div>
 
