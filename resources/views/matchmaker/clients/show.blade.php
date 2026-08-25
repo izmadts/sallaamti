@@ -333,12 +333,12 @@
                         <div class="border border-gray-100 rounded-lg p-3">
                             <div class="flex items-center justify-between gap-2">
                                 <p class="text-sm font-medium text-gray-800">{{ $profile->user?->name ?? 'Deleted account' }}</p>
-                                <span class="text-xs font-semibold px-2 py-0.5 rounded-full shrink-0
+                                <span class="text-xs font-semibold px-2 py-0.5 rounded-full shrink-0 whitespace-nowrap
                                     {{ $result['score'] >= 70 ? 'bg-green-100 text-green-800' : ($result['score'] >= 40 ? 'bg-amber-100 text-amber-800' : 'bg-gray-100 text-gray-600') }}">
-                                    {{ $result['score'] }}% match
+                                    {{ $result['score'] >= 70 ? '🟢 High' : ($result['score'] >= 40 ? '🟡 Medium' : '⚪ Low') }} · {{ $result['score'] }}%
                                 </span>
                             </div>
-                            <p class="text-xs text-gray-500">{{ $profile->age }} yrs, {{ $profile->city }} @if($profile->sect) · {{ $profile->sect }} @endif</p>
+                            <p class="text-xs text-gray-500">{{ $profile->user?->gender ? ucfirst($profile->user->gender) . ', ' : '' }}{{ $profile->age }} yrs, {{ $profile->city }} @if($profile->sect) · {{ $profile->sect }} @endif</p>
                             @if ($result['matched']->isNotEmpty())
                             <p class="text-xs text-green-700 mt-1">✓ Matches: {{ $result['matched']->pluck('requirement_type')->map(fn($t) => \App\Models\MatchmakingRequirementItem::TYPES[$t] ?? $t)->implode(', ') }}</p>
                             @endif
