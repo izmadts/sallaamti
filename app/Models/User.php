@@ -22,6 +22,7 @@ class User extends Authenticatable
         'city',
         'avatar',
         'password',
+        'pin',
         'provider',
         'provider_id',
         'nikah_module_enabled',
@@ -41,6 +42,7 @@ class User extends Authenticatable
 
     protected $hidden = [
         'password',
+        'pin',
         'remember_token',
     ];
 
@@ -53,12 +55,18 @@ class User extends Authenticatable
             'teacher_vetted_at' => 'datetime',
             'last_active_date' => 'date',
             'password' => 'hashed',
+            'pin' => 'hashed',
             'nikah_module_enabled' => 'boolean',
             'quran_module_enabled' => 'boolean',
             'counseling_module_enabled' => 'boolean',
             'skills_module_enabled' => 'boolean',
             'whatsapp_notify_opt_in' => 'boolean',
         ];
+    }
+
+    public function trustedDevices()
+    {
+        return $this->hasMany(TrustedDevice::class);
     }
 
     public function isDeactivated(): bool

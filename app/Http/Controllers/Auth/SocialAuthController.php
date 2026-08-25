@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Auth;
 use App\Http\Controllers\Auth\Concerns\ResolvesSocialLogin;
 use App\Http\Controllers\Controller;
 use App\Models\Setting;
+use App\Support\DeviceTrust;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -154,6 +155,10 @@ class SocialAuthController extends Controller
         $user = $this->resolveSocialUser($provider, $providerId, $name, $email);
 
         Auth::login($user);
+        // A verified OAuth login is at least as strong as a password —
+        // counts the same toward letting this device use the PIN shortcut
+        // later (see App\Support\DeviceTrust).
+        DeviceTrust::trust($user, request());
 
         if ($this->socialLoginWasReactivated) {
             session()->flash('status', 'Welcome back! Your account has been reactivated.');

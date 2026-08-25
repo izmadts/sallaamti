@@ -8,19 +8,19 @@
     <input type="hidden" name="module" value="{{ old('module', request('module')) }}">
 
     <div>
-        <label class="auth-label">{{ __('db.Email Address') }}</label>
+        <label class="auth-label">{{ __('db.Email or Mobile Number') }}</label>
         <div class="auth-input-wrap">
-            <i class="fa fa-envelope auth-icon"></i>
-            <input type="email" name="email" value="{{ old('email') }}" required autofocus
+            <i class="fa fa-user auth-icon"></i>
+            <input type="text" name="email" value="{{ old('email') }}" required autofocus
                 class="auth-input @error('email') auth-input-error @enderror"
-                placeholder="your@email.com">
+                placeholder="{{ __('db.your@email.com or mobile number') }}">
         </div>
         <x-input-error :messages="$errors->get('email')" class="mt-1" />
     </div>
 
     <div>
         <div class="flex justify-between items-center mb-1">
-            <label class="auth-label mb-0">{{ __('db.Password') }}</label>
+            <label class="auth-label mb-0">{{ __('db.Password or PIN') }}</label>
             @if (Route::has('password.request'))
             <a href="{{ route('password.request') }}" class="text-xs font-medium" style="color: var(--teal)">{{ __('db.Forgot password?') }}</a>
             @endif
@@ -29,7 +29,7 @@
             <i class="fa fa-lock auth-icon"></i>
             <input :type="show ? 'text' : 'password'" name="password" required
                 class="auth-input @error('password') auth-input-error @enderror"
-                placeholder="••••••••">
+                placeholder="{{ __('db.Password or 4-digit PIN') }}">
             <button type="button" @click="show = !show" class="auth-eye-btn">
                 <i :class="show ? 'fa fa-eye-slash' : 'fa fa-eye'"></i>
             </button>

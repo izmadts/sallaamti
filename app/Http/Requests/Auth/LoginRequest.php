@@ -2,10 +2,13 @@
 
 namespace App\Http\Requests\Auth;
 
+use App\Models\User;
+use App\Support\DeviceTrust;
 use Illuminate\Auth\Events\Lockout;
 use Illuminate\Contracts\Validation\ValidationRule;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
@@ -23,18 +26,29 @@ class LoginRequest extends FormRequest
     /**
      * Get the validation rules that apply to the request.
      *
+     * The 'email' field now doubles as "email or mobile number" and
+     * 'password' as "password or PIN" — see authenticate() below. Kept
+     * these two field names rather than renaming to identifier/credential
+     * so every other reference to old('email') etc. across the app keeps
+     * working untouched; only what they're allowed to contain changed.
+     *
      * @return array<string, ValidationRule|array<mixed>|string>
      */
     public function rules(): array
     {
         return [
-            'email' => ['required', 'string', 'email'],
+            'email' => ['required', 'string', 'max:255'],
             'password' => ['required', 'string'],
         ];
     }
 
     /**
-     * Attempt to authenticate the request's credentials.
+     * Attempt to authenticate the request's credentials — email or phone
+     * as the identifier, password or a set-up PIN as the credential, all
+     * four combinations interchangeable. A PIN is only accepted on a
+     * device this exact user has already logged into with their real
+     * password (or social login) at least once — see App\Support\
+     * DeviceTrust's own docblock on why.
      *
      * @throws ValidationException
      */
@@ -42,15 +56,39 @@ class LoginRequest extends FormRequest
     {
         $this->ensureIsNotRateLimited();
 
-        if (! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
-            RateLimiter::hit($this->throttleKey());
+        $identifier = trim((string) $this->input('email'));
+        $credential = (string) $this->input('password');
 
-            throw ValidationException::withMessages([
-                'email' => trans('auth.failed'),
-            ]);
+        $user = User::where('email', $identifier)->orWhere('phone', $identifier)->first();
+
+        if ($user && $user->password && Hash::check($credential, $user->password)) {
+            RateLimiter::clear($this->throttleKey());
+            Auth::login($user, $this->boolean('remember'));
+            DeviceTrust::trust($user, $this);
+
+            return;
         }
 
-        RateLimiter::clear($this->throttleKey());
+        if ($user && $user->pin && preg_match('/^\d{4}$/', $credential) === 1 && Hash::check($credential, $user->pin)) {
+            if (!DeviceTrust::isTrusted($user, $this)) {
+                RateLimiter::hit($this->throttleKey());
+
+                throw ValidationException::withMessages([
+                    'email' => 'This device hasn\'t been used with your PIN before — sign in with your password once first, then your PIN will work here too.',
+                ]);
+            }
+
+            RateLimiter::clear($this->throttleKey());
+            Auth::login($user, $this->boolean('remember'));
+
+            return;
+        }
+
+        RateLimiter::hit($this->throttleKey());
+
+        throw ValidationException::withMessages([
+            'email' => trans('auth.failed'),
+        ]);
     }
 
     /**
