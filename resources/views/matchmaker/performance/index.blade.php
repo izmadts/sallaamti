@@ -102,7 +102,33 @@ $accent = $tierColors[$myTier];
                 </div>
                 @endforeach
             </div>
-            <p class="text-xs text-gray-400 mt-4 text-center">Ask your Sallaamti coordinator about what it takes to move up a level — higher tiers earn a higher commission rate on every sale.</p>
+            @if ($levelProgress)
+            <div class="mt-6 pt-6 border-t">
+                <p class="text-sm font-semibold text-gray-700 mb-1">🚀 On Your Way to {{ $levelProgress['next_level_label'] }}</p>
+                <p class="text-xs text-gray-400 mb-4">Meet all three below and you're promoted automatically — no need to ask anyone. Higher tiers earn a higher commission rate on every sale.</p>
+                <div class="space-y-3">
+                    @foreach ([
+                        ['Verified Profiles', $levelProgress['verified'], ''],
+                        ['Quality Score', $levelProgress['quality_score'], '%'],
+                        ['Days as a Counselor', $levelProgress['tenure_days'], ' days'],
+                    ] as $req)
+                    <div>
+                        <div class="flex justify-between text-sm mb-1">
+                            <span class="text-gray-600">{{ $req[0] }}</span>
+                            <span class="font-semibold {{ $req[1]['met'] ? 'text-green-600' : 'text-gray-800' }}">
+                                {{ $req[1]['met'] ? '✓ ' : '' }}{{ $req[1]['current'] }}{{ $req[2] }} / {{ $req[1]['needed'] }}{{ $req[2] }}
+                            </span>
+                        </div>
+                        <div class="w-full bg-gray-100 rounded-full h-2">
+                            <div class="h-2 rounded-full {{ $req[1]['met'] ? 'bg-green-500' : '' }}" style="width: {{ min(100, $req[1]['needed'] > 0 ? round($req[1]['current'] / $req[1]['needed'] * 100) : 100) }}%; {{ $req[1]['met'] ? '' : 'background: ' . $accent }}"></div>
+                        </div>
+                    </div>
+                    @endforeach
+                </div>
+            </div>
+            @else
+            <p class="text-xs text-gray-400 mt-4 text-center">You've reached the highest level — thank you for your outstanding work.</p>
+            @endif
         </div>
 
     </div>

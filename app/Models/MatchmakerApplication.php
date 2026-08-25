@@ -68,6 +68,20 @@ class MatchmakerApplication extends Model
         'regional_nikah_coordinator' => 'Regional Nikah Coordinator',
     ];
 
+    // What it takes to auto-promote into each level — checked by
+    // Console\Commands\PromoteEligibleCounselors, run daily. Deliberately
+    // requires all three together (real volume + real quality + real time
+    // in the role), not any single number alone — a single well-verified
+    // walk-in in week one shouldn't jump someone straight to Senior.
+    // 'level' directly drives commission tier (RecordsCommission::
+    // tierForMatchmaker()), so promotion is intentionally one-way here —
+    // this never auto-demotes; that stays a deliberate admin action.
+    public const PROMOTION_THRESHOLDS = [
+        'certified_nikah_counselor' => ['verified' => 5, 'quality_score' => 60, 'tenure_days' => 30],
+        'senior_nikah_counselor' => ['verified' => 20, 'quality_score' => 75, 'tenure_days' => 90],
+        'regional_nikah_coordinator' => ['verified' => 50, 'quality_score' => 85, 'tenure_days' => 180],
+    ];
+
     public const QUALIFICATIONS = [
         'under_matric' => 'Under Matric',
         'matric' => 'Matric',
@@ -140,5 +154,70 @@ class MatchmakerApplication extends Model
         }
 
         return $keys[$currentIndex + 1];
+    }
+
+    public function nextLevelKey(): ?string
+    {
+        $keys = array_keys(self::LEVELS);
+        $currentIndex = array_search($this->level, $keys, true);
+
+        if ($currentIndex === false || $currentIndex === count($keys) - 1) {
+            return null;
+        }
+
+        return $keys[$currentIndex + 1];
+    }
+
+    public function tenureDays(): ?int
+    {
+        return $this->certified_at?->diffInDays(now());
+    }
+
+    // Every threshold for the next level must actually be met — see
+    // PROMOTION_THRESHOLDS' own comment on why all three together.
+    public function isEligibleForPromotion(array $score, array $stats): bool
+    {
+        $nextLevel = $this->nextLevelKey();
+        if (!$nextLevel) {
+            return false;
+        }
+
+        $thresholds = self::PROMOTION_THRESHOLDS[$nextLevel] ?? null;
+        $tenureDays = $this->tenureDays();
+
+        if (!$thresholds || $tenureDays === null) {
+            return false;
+        }
+
+        return $tenureDays >= $thresholds['tenure_days']
+            && $stats['verified'] >= $thresholds['verified']
+            && ($score['overall'] ?? 0) >= $thresholds['quality_score'];
+    }
+
+    // Powers the "X to go" progress bar on the Performance page — shows
+    // exactly which of the three requirements (if any) are still short,
+    // rather than a single opaque percentage.
+    public function nextLevelProgress(array $score, array $stats): ?array
+    {
+        $nextLevel = $this->nextLevelKey();
+        if (!$nextLevel) {
+            return null;
+        }
+
+        $thresholds = self::PROMOTION_THRESHOLDS[$nextLevel] ?? null;
+        if (!$thresholds) {
+            return null;
+        }
+
+        $tenureDays = $this->tenureDays() ?? 0;
+        $qualityScore = $score['overall'] ?? 0;
+
+        return [
+            'next_level' => $nextLevel,
+            'next_level_label' => self::LEVELS[$nextLevel],
+            'verified' => ['current' => $stats['verified'], 'needed' => $thresholds['verified'], 'met' => $stats['verified'] >= $thresholds['verified']],
+            'quality_score' => ['current' => $qualityScore, 'needed' => $thresholds['quality_score'], 'met' => $qualityScore >= $thresholds['quality_score']],
+            'tenure_days' => ['current' => $tenureDays, 'needed' => $thresholds['tenure_days'], 'met' => $tenureDays >= $thresholds['tenure_days']],
+        ];
     }
 }

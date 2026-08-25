@@ -12,6 +12,7 @@ Schedule::command('bookings:send-reminders')->hourly();
 Schedule::command('users:purge-deactivated')->daily();
 Schedule::command('quran:send-class-reminders')->dailyAt('08:00');
 Schedule::command('quran:send-fee-reminders')->dailyAt('08:30');
+Schedule::command('matchmaker:promote-eligible-counselors')->dailyAt('02:00');
 
 // Admin-configurable via Settings (Admin > Integrations) — read fresh on
 // every schedule:run tick, so a changed batch size/time takes effect
