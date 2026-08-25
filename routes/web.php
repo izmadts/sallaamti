@@ -724,7 +724,6 @@ Route::middleware(['auth', 'matchmaker'])->prefix('matchmaker')->name('matchmake
     Route::post('/clients/{lead}/proposal-batches/{batch}/send', [\App\Http\Controllers\Matchmaker\ClientController::class, 'sendBatch'])->name('clients.batches.send');
     Route::post('/clients/{lead}/proposal-batches/{batch}/proposals/{proposal}/regenerate-link', [\App\Http\Controllers\Matchmaker\ClientController::class, 'regenerateLink'])->name('clients.batches.proposals.regenerate-link');
     Route::post('/clients/{lead}/progress-link', [\App\Http\Controllers\Matchmaker\ClientController::class, 'regenerateProgressLink'])->name('clients.progress-link.regenerate');
-    Route::get('/clients/{lead}/progress-link/send/{channel}', [\App\Http\Controllers\Matchmaker\ClientController::class, 'sendLinkVia'])->name('clients.progress-link.send')->whereIn('channel', ['whatsapp', 'sms']);
     Route::post('/clients/{lead}/consents', [\App\Http\Controllers\Matchmaker\ClientController::class, 'recordConsent'])->name('clients.consents.record');
     Route::post('/clients/{lead}/consents/request', [\App\Http\Controllers\Matchmaker\ClientController::class, 'requestConsent'])->name('clients.consents.request');
     Route::post('/clients/{lead}/consents/{consent}/revoke', [\App\Http\Controllers\Matchmaker\ClientController::class, 'revokeConsent'])->name('clients.consents.revoke');

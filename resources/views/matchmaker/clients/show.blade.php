@@ -174,13 +174,11 @@
                     @endphp
                     @if ($progressLink)
                     <p class="text-xs font-semibold text-gray-600 mb-2">🔗 {{ $linkTitle }}</p>
-                    <p class="text-xs text-gray-400 mb-2">The link itself isn't shown here — use the actions below. Only admin can see the raw link.</p>
+                    <p class="text-xs text-gray-400 mb-2">The link itself isn't shown here — copy it and paste it into WhatsApp, Messenger, SMS, or wherever you're already talking to {{ $lead->name }}. Only admin can see the raw link.</p>
                     @endif
                     <div class="flex flex-wrap items-center gap-2">
                         @if ($progressLink)
                         <button type="button" data-link="{{ $progressLink }}" onclick="navigator.clipboard.writeText(this.dataset.link); this.textContent = '✅ Copied!'; setTimeout(() => this.textContent = '📋 Copy Link', 1500);" class="text-xs font-semibold px-3 py-1.5 rounded-lg text-white hover:opacity-90" style="background: var(--mm-plum);">📋 Copy Link</button>
-                        <a href="{{ route('matchmaker.clients.progress-link.send', [$lead, 'whatsapp']) }}" class="text-xs font-semibold px-3 py-1.5 rounded-lg text-white hover:opacity-90 bg-green-600">💬 Send via WhatsApp</a>
-                        <a href="{{ route('matchmaker.clients.progress-link.send', [$lead, 'sms']) }}" class="text-xs font-semibold px-3 py-1.5 rounded-lg text-white hover:opacity-90 bg-blue-500">✉️ Send via SMS</a>
                         @endif
                         <form method="POST" action="{{ route('matchmaker.clients.progress-link.regenerate', $lead) }}" @if($progressLink) onsubmit="return confirm('Generate a new progress link? The old one will stop working immediately.')" @endif>
                             @csrf

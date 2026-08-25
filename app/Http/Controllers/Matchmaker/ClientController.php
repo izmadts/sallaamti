@@ -573,42 +573,7 @@ class ClientController extends Controller
 
         MatchmakingTimelineEvent::log($lead, $lead->nikahProfile, 'progress_link_regenerated', 'Progress page link was ' . ($hadTokenAlready ? 'regenerated — the old copy no longer works' : 'generated') . '.');
 
-        return back()->with('status', 'Progress link ready — use Copy Link or Send via WhatsApp/SMS below. ' . $lead->name . ' will need the last 7 digits of the WhatsApp number on file to view it, every time.');
-    }
-
-    // The matchmaker never sees or types the client's real phone number
-    // (see Lead::maskedPhone()) — this builds the WhatsApp/SMS deep link
-    // server-side and redirects straight there, so the number only ever
-    // exists in the destination app's own address bar, never rendered as
-    // readable text anywhere on a Sallaamti page. Kept as a GET (not a
-    // form) since it's just an outbound redirect, matching how mailto:/
-    // tel: actions are normally wired up.
-    public function sendLinkVia(Lead $lead, string $channel)
-    {
-        $this->authorizeClient($lead);
-        abort_unless(in_array($channel, ['whatsapp', 'sms'], true), 404);
-        abort_unless($lead->phone, 422, 'Add a phone number for this client first.');
-
-        $link = static::progressLink($lead);
-        abort_unless($link, 422, 'Generate the progress link first.');
-
-        $message = "Assalamualaikum {$lead->name}, here is your secure Sallaamti link: {$link}";
-
-        MatchmakingTimelineEvent::log($lead, $lead->nikahProfile, 'progress_link_sent', 'Progress link sent to client via ' . ($channel === 'whatsapp' ? 'WhatsApp' : 'SMS') . '.');
-
-        if ($channel === 'whatsapp') {
-            $digits = preg_replace('/\D/', '', $lead->phone);
-            // wa.me needs a full international number — a local 03xxxxxxxxx
-            // Pakistani number needs its leading 0 swapped for the country
-            // code, same normalization WhatsappNotifier applies.
-            if (str_starts_with($digits, '0')) {
-                $digits = '92' . substr($digits, 1);
-            }
-
-            return redirect()->away('https://wa.me/' . $digits . '?text=' . rawurlencode($message));
-        }
-
-        return redirect()->away('sms:' . $lead->phone . '?body=' . rawurlencode($message));
+        return back()->with('status', 'Progress link ready — use Copy Link below and paste it wherever you\'re messaging ' . $lead->name . '. They\'ll need the last 7 digits of the WhatsApp number on file to view it, every time.');
     }
 
     public static function progressLink(Lead $lead): ?string
