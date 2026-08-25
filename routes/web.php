@@ -559,6 +559,12 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('matchmaker-applications/{matchmakerApplication}/file/{type}', [\App\Http\Controllers\Admin\MatchmakerApplicationController::class, 'file'])->name('matchmaker-applications.file')->middleware('can:matchmaker-applications.view');
     Route::post('matchmaker-applications/{matchmakerApplication}/agreement-link', [\App\Http\Controllers\Admin\MatchmakerApplicationController::class, 'sendAgreementLink'])->name('matchmaker-applications.agreement-link')->middleware('can:matchmaker-applications.manage');
 
+    // Static reference/training material — deliberately open to anyone who
+    // can reach the admin panel at all (no extra can: gate), since the more
+    // staff who can pull this up to train someone, the better. No sensitive
+    // data of its own, just documentation.
+    Route::view('nikah-counselor-training', 'admin.nikah-counselor-training')->name('nikah-counselor-training');
+
     // Matchmaker commission engine & ledger (permission-gated, see App\Support\PermissionCatalog)
     Route::get('commissions/rules', [\App\Http\Controllers\Admin\CommissionController::class, 'rules'])->name('commissions.rules')->middleware('can:commissions.view');
     Route::post('commissions/rules/{commissionRule}', [\App\Http\Controllers\Admin\CommissionController::class, 'updateRule'])->name('commissions.rules.update')->middleware('can:commissions.manage');

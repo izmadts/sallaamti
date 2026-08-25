@@ -176,6 +176,11 @@
                           {{ request()->routeIs('admin.commissions.rules*') ? 'bg-teal-700 text-white' : 'text-teal-100 hover:bg-teal-800' }}">
                     <span class="text-base">⚙️</span> Commission Rules
                 </a>
+                <a href="{{ route('admin.nikah-counselor-training') }}"
+                    class="flex items-center gap-3 px-3 py-2 rounded-lg transition
+                          {{ request()->routeIs('admin.nikah-counselor-training') ? 'bg-teal-700 text-white' : 'text-teal-100 hover:bg-teal-800' }}">
+                    <span class="text-base">📘</span> Counselor Training
+                </a>
 
                 {{-- Quran --}}
                 <p class="text-teal-500 text-xs uppercase tracking-widest px-3 pt-4 pb-1">Quran Learning</p>
