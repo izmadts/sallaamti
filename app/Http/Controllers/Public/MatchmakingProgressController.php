@@ -331,7 +331,50 @@ class MatchmakingProgressController extends Controller
         // package dropdown already applies.
         $packages = NikahPackage::active()->ordered()->get()->reject->isOneTime()->values();
 
-        return view('public.matchmaking.progress', ['lead' => $lead, 'verifyUrl' => $verifyUrl, 'documentsUrl' => $documentsUrl, 'unlocked' => true, 'last7' => $last7, 'packages' => $packages]);
+        $queue = $this->buildActionQueue($lead);
+        $currentStep = $queue->first();
+        $stepsRemaining = max(0, $queue->count() - 1);
+
+        return view('public.matchmaking.progress', ['lead' => $lead, 'verifyUrl' => $verifyUrl, 'documentsUrl' => $documentsUrl, 'unlocked' => true, 'last7' => $last7, 'packages' => $packages, 'currentStep' => $currentStep, 'stepsRemaining' => $stepsRemaining]);
+    }
+
+    // One thing at a time, in the order it actually happens for a real
+    // client — see project's "keep the link clean, only show what's left"
+    // steer. Consent and documents come before a package even makes
+    // sense; proposals only exist once a package is active, so this order
+    // never actually needs to interrupt something later for something
+    // earlier — it's already chronological, not an arbitrary priority
+    // call. Proposals are grouped per batch (a batch is a curated set the
+    // client should compare together), not one candidate at a time —
+    // everything else here genuinely is one-at-a-time.
+    private function buildActionQueue(Lead $lead): \Illuminate\Support\Collection
+    {
+        $queue = collect();
+
+        foreach ($lead->consentRequests->where('status', 'pending') as $consentRequest) {
+            $queue->push(['type' => 'consent', 'data' => $consentRequest]);
+        }
+
+        if ($lead->nikahProfile && (empty($lead->nikahProfile->cnic_front_image) || empty($lead->nikahProfile->cnic_back_image) || empty($lead->nikahProfile->cnic_number))) {
+            $queue->push(['type' => 'documents', 'data' => null]);
+        }
+
+        if (!$lead->nikah_package_id) {
+            if (in_array($lead->package_payment_status, [null, 'rejected'], true)) {
+                $queue->push(['type' => 'package', 'data' => null]);
+            } elseif ($lead->package_payment_status === 'submitted') {
+                $queue->push(['type' => 'package_pending', 'data' => null]);
+            }
+        }
+
+        foreach ($lead->proposalBatches->where('status', '!=', 'draft') as $batch) {
+            $pending = $batch->proposals->whereNull('response');
+            if ($pending->isNotEmpty()) {
+                $queue->push(['type' => 'proposal_batch', 'data' => $batch, 'pending' => $pending]);
+            }
+        }
+
+        return $queue;
     }
 
     private function assertValidToken(Request $request, Lead $lead): void
