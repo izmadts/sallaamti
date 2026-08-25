@@ -491,12 +491,10 @@ class ClientController extends Controller
         return back()->with('status', 'Candidate removed from the batch.');
     }
 
-    // Generates a 14-day signed link per candidate (no login required to
-    // respond — see Public\MatchmakingActionController) and hands the
-    // matchmaker a "copy to send" URL rather than the system emailing it
-    // automatically, so it works for a client who doesn't use email at
-    // all — WhatsApp, SMS, or read aloud over a call, whatever actually
-    // reaches them.
+    // Just flips every candidate in the batch to 'sent' — no per-candidate
+    // link to generate any more. The client reviews and responds to each
+    // one from their own one standing progress link instead (see
+    // Public\MatchmakingProgressController::respondToProposal()).
     public function sendBatch(Lead $lead, ProposalBatch $batch)
     {
         $this->authorizeClient($lead);
@@ -517,37 +515,23 @@ class ClientController extends Controller
         }
 
         $now = now();
-        foreach ($batch->proposals as $proposal) {
-            $proposal->update(['status' => 'sent', 'sent_at' => $now, 'link_token' => $proposal->link_token ?? Str::random(40)]);
-        }
+        $batch->proposals()->update(['status' => 'sent', 'sent_at' => $now]);
         $batch->update(['status' => 'sent', 'sent_at' => $now]);
 
         MatchmakingTimelineEvent::log($lead, $lead->nikahProfile, 'proposal_batch_sent', "Proposal Batch #{$batch->batch_number} sent ({$batch->proposals()->count()} candidates).");
 
-        return back()->with('status', "Batch #{$batch->batch_number} marked as sent — copy the link below for each candidate and send it to {$lead->name} however reaches them best.");
+        return back()->with('status', "Batch #{$batch->batch_number} marked as sent — {$lead->name} will see these candidates on their own progress link.");
     }
 
-    // The link doesn't expire on its own — it stays valid until the client
-    // actually responds, since a matchmaker relaying it by hand (WhatsApp,
-    // SMS, a phone call) has no control over how quickly it reaches them.
-    // The only way to kill a copy that's already out is regenerateLink()
-    // below, which swaps the token so the old URL stops matching.
-    public function regenerateLink(Lead $lead, ProposalBatch $batch, MatchProposal $proposal)
-    {
-        $this->authorizeClient($lead);
-        abort_unless($batch->lead_id === $lead->id && $proposal->proposal_batch_id === $batch->id, 404);
-        abort_unless($proposal->sent_at, 422, 'This candidate has not been sent a link yet.');
-        abort_if($proposal->status === 'responded', 422, 'The client already responded to this proposal — nothing to regenerate.');
-
-        $proposal->update(['link_token' => Str::random(40)]);
-
-        MatchmakingTimelineEvent::log($lead, $lead->nikahProfile, 'proposal_link_regenerated', 'A proposal link was regenerated — the old copy no longer works.');
-
-        return back()->with('status', 'New link generated — the old one has stopped working. Copy and send the new link below.');
-    }
-
-    // Permanent (no time expiry) — see the note on regenerateLink() above
-    // for how a link actually gets invalidated.
+    // STALE (2026-08-25): kept only because Api\V1\Matchmaker\ClientController
+    // (paused Flutter app) still calls this — see that controller's own
+    // regenerateLink() comment. The named route this builds a URL for
+    // (public.matchmaking.proposal.show) no longer exists: proposal
+    // responses now happen on the client's one progress link
+    // (Public\MatchmakingProgressController::respondToProposal()) instead
+    // of a separate per-proposal link. Calling this from anywhere reachable
+    // today would throw — it isn't, since the web UI stopped calling it in
+    // the same change that removed the route.
     public static function proposalLink(MatchProposal $proposal): ?string
     {
         if (!$proposal->sent_at || !$proposal->link_token) {

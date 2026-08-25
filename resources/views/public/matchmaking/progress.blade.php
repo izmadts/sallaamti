@@ -43,8 +43,8 @@
                 </div>
             </div>
 
-            @if (session('status'))
-            <div class="p-4 bg-green-50 text-green-700 rounded-lg text-sm text-center">{{ session('status') }}</div>
+            @if ($status ?? session('status'))
+            <div class="p-4 bg-green-50 text-green-700 rounded-lg text-sm text-center">{{ $status ?? session('status') }}</div>
             @endif
 
             @php $pendingConsents = $lead->consentRequests->where('status', 'pending'); @endphp
@@ -145,8 +145,73 @@
                     <div class="px-3 py-2 bg-gray-50 text-xs font-semibold text-gray-600">
                         Batch #{{ $batch->batch_number }} — {{ $batch->sent_at?->format('d M Y') }}
                     </div>
-                    <div class="p-3 space-y-2">
+                    <div class="p-3 space-y-3">
                         @foreach ($batch->proposals as $proposal)
+                        @if (!$proposal->response)
+                        {{-- Pending — full detail card + response buttons, replaces what used to be a separate per-candidate link --}}
+                        <div class="border border-gray-200 rounded-lg overflow-hidden">
+                            <div class="h-28 bg-gradient-to-br {{ $proposal->candidate->user?->gender === 'female' ? 'from-pink-100 to-rose-200' : 'from-blue-100 to-indigo-200' }} relative flex items-center justify-center">
+                                <div class="w-20 h-20 rounded-full bg-white shadow flex items-center justify-center text-3xl border-4 border-white">
+                                    {{ $proposal->candidate->user?->gender === 'female' ? '👩' : '👨' }}
+                                </div>
+                                <span class="absolute top-2 left-2 flex items-center gap-1 bg-green-500 text-white text-xs font-semibold px-2.5 py-1 rounded-full shadow">✅ Verified</span>
+                            </div>
+                            <div class="p-4">
+                                <h5 class="font-bold text-gray-800 text-center">
+                                    {{ $proposal->candidate->age }} yrs, {{ $proposal->candidate->city }}
+                                    @if ($proposal->candidate->country && $proposal->candidate->country !== 'Pakistan') · {{ $proposal->candidate->country }} @endif
+                                </h5>
+                                <p class="text-gray-500 text-sm text-center mt-0.5">
+                                    {{ ucfirst(str_replace('_', ' ', $proposal->candidate->marital_status)) }}
+                                    @if ($proposal->candidate->sect) · {{ $proposal->candidate->sect }} @endif
+                                </p>
+
+                                @if ($proposal->match_reasons)
+                                <div class="mt-3 pt-3 border-t">
+                                    <p class="text-xs font-semibold text-gray-500 mb-1">Why your matchmaker suggested this / آپ کے میچ میکر نے یہ کیوں تجویز کیا</p>
+                                    <ul class="text-xs text-gray-600 space-y-0.5 list-disc list-inside">
+                                        @foreach ($proposal->match_reasons as $reason)
+                                        @if (trim($reason) !== '')
+                                        <li>{{ $reason }}</li>
+                                        @endif
+                                        @endforeach
+                                    </ul>
+                                </div>
+                                @endif
+
+                                <dl class="text-xs mt-3 pt-3 border-t space-y-1">
+                                    @if ($proposal->candidate->height)
+                                    <div class="flex justify-between"><dt class="text-gray-400">Height</dt><dd class="text-gray-700">{{ $proposal->candidate->height }}</dd></div>
+                                    @endif
+                                    @if ($proposal->candidate->education)
+                                    <div class="flex justify-between"><dt class="text-gray-400">Education</dt><dd class="text-gray-700">{{ $proposal->candidate->education }}</dd></div>
+                                    @endif
+                                    @if ($proposal->candidate->profession)
+                                    <div class="flex justify-between"><dt class="text-gray-400">Profession</dt><dd class="text-gray-700">{{ $proposal->candidate->profession }}</dd></div>
+                                    @endif
+                                    @if ($proposal->candidate->family_type)
+                                    <div class="flex justify-between"><dt class="text-gray-400">Family Type</dt><dd class="text-gray-700">{{ $proposal->candidate->family_type }}</dd></div>
+                                    @endif
+                                </dl>
+
+                                @if ($proposal->candidate->about)
+                                <p class="text-xs text-gray-600 leading-relaxed mt-3 pt-3 border-t">{{ $proposal->candidate->about }}</p>
+                                @endif
+
+                                <div class="mt-4 pt-4 border-t text-center">
+                                    <p class="text-sm font-semibold text-gray-700 mb-1">What do you think of this match?</p>
+                                    <p class="text-xs text-gray-400 mb-3" dir="rtl">اس رشتے کے بارے میں آپ کی کیا رائے ہے؟</p>
+                                    <form method="POST" action="{{ route('public.matchmaking.progress.proposals.respond', ['lead' => $lead->id, 'proposal' => $proposal->id, 't' => $lead->progress_link_token]) }}" class="flex flex-wrap justify-center gap-2">
+                                        @csrf
+                                        <input type="hidden" name="last7" value="{{ $last7 ?? '' }}">
+                                        <button name="response" value="interested" class="bg-green-500 hover:bg-green-600 text-white text-xs font-semibold px-4 py-2.5 rounded-lg transition">👍 Interested / دلچسپی ہے</button>
+                                        <button name="response" value="maybe" class="bg-amber-400 hover:bg-amber-500 text-white text-xs font-semibold px-4 py-2.5 rounded-lg transition">🤔 Maybe / شاید</button>
+                                        <button name="response" value="not_interested" class="bg-gray-200 hover:bg-gray-300 text-gray-700 text-xs font-semibold px-4 py-2.5 rounded-lg transition">🙏 Not Interested / دلچسپی نہیں</button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                        @else
                         <div class="flex items-center justify-between text-sm border-b last:border-0 pb-2 last:pb-0">
                             <div>
                                 <p class="font-medium text-gray-800">{{ $proposal->candidate->age }} yrs, {{ $proposal->candidate->city }}</p>
@@ -161,9 +226,10 @@
                                     'maybe' => 'bg-amber-100 text-amber-800',
                                     default => 'bg-gray-100 text-gray-600',
                                 } }}">
-                                {{ $proposal->response ? ucfirst(str_replace('_', ' ', $proposal->response)) : ($proposal->status === 'viewed' ? 'Awaiting your response' : ucfirst($proposal->status)) }}
+                                {{ ucfirst(str_replace('_', ' ', $proposal->response)) }}
                             </span>
                         </div>
+                        @endif
                         @endforeach
                     </div>
                 </div>

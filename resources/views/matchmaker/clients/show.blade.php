@@ -470,7 +470,7 @@
                             </span>
                         </div>
                         @if ($batch->status === 'draft' && $batch->proposals->isNotEmpty())
-                        <form method="POST" action="{{ route('matchmaker.clients.batches.send', [$lead, $batch]) }}" onsubmit="return confirm('Mark this batch as sent? You\'ll get a link per candidate to copy and send to {{ $lead->name }} yourself.')">
+                        <form method="POST" action="{{ route('matchmaker.clients.batches.send', [$lead, $batch]) }}" onsubmit="return confirm('Mark this batch as sent? {{ $lead->name }} will see these candidates on their own progress link and can respond there.')">
                             @csrf
                             <button class="text-xs font-semibold px-3 py-1.5 rounded-lg text-white hover:opacity-90" style="background: var(--mm-plum-dark);">Mark as Sent →</button>
                         </form>
@@ -518,18 +518,8 @@
                                 @method('DELETE')
                                 <button class="text-xs text-red-500 px-2 py-1">Remove</button>
                             </form>
-                            @elseif ($proposal->sent_at)
-                            @php $link = \App\Http\Controllers\Matchmaker\ClientController::proposalLink($proposal); @endphp
-                            <div class="flex items-center gap-2 flex-wrap justify-end">
-                                <input type="text" readonly value="{{ $link }}" class="text-xs border-gray-200 rounded-lg w-56 bg-gray-50" onclick="this.select()" id="link-{{ $proposal->id }}">
-                                <button type="button" onclick="navigator.clipboard.writeText(document.getElementById('link-{{ $proposal->id }}').value); this.textContent = 'Copied!'; setTimeout(() => this.textContent = 'Copy Link', 1500);" class="text-xs font-semibold px-2 py-1.5 rounded-lg text-white hover:opacity-90" style="background: var(--mm-plum);">Copy Link</button>
-                                @if ($proposal->status !== 'responded')
-                                <form method="POST" action="{{ route('matchmaker.clients.batches.proposals.regenerate-link', [$lead, $batch, $proposal]) }}" onsubmit="return confirm('Generate a new link for this candidate? The old link will stop working immediately, even if it was already sent.')">
-                                    @csrf
-                                    <button class="text-xs font-semibold px-2 py-1.5 rounded-lg border" style="border-color: var(--mm-plum); color: var(--mm-plum);">↻ Regenerate</button>
-                                </form>
-                                @endif
-                            </div>
+                            @elseif ($proposal->sent_at && !$proposal->response)
+                            <span class="text-xs text-gray-400">Waiting for {{ $lead->name }} to respond on their progress link</span>
                             @endif
                         </div>
                         @empty

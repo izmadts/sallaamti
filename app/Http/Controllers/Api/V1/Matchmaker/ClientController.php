@@ -417,6 +417,14 @@ class ClientController extends Controller
         return response()->json(['batch' => $this->batchPayload($batch->fresh('proposals.candidate.user'))]);
     }
 
+    // STALE (2026-08-25): the web side retired the standalone per-proposal
+    // public link this generates a URL for — Public\MatchmakingActionController
+    // and its routes are gone, so WebClientController::proposalLink() below
+    // now points at a 404. Responses live on the client's one progress link
+    // instead (Public\MatchmakingProgressController::respondToProposal()).
+    // This endpoint (and sendBatch()'s link_token seeding above) needs the
+    // same rework before the Flutter app resumes — left as-is for now since
+    // that app is paused and this is unreachable in the meantime.
     public function regenerateLink(Lead $lead, ProposalBatch $batch, MatchProposal $proposal): JsonResponse
     {
         $this->authorizeClient($lead);

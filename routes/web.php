@@ -722,7 +722,6 @@ Route::middleware(['auth', 'matchmaker'])->prefix('matchmaker')->name('matchmake
     Route::post('/clients/{lead}/proposal-batches/{batch}/proposals', [\App\Http\Controllers\Matchmaker\ClientController::class, 'addProposal'])->name('clients.batches.proposals.add');
     Route::delete('/clients/{lead}/proposal-batches/{batch}/proposals/{proposal}', [\App\Http\Controllers\Matchmaker\ClientController::class, 'removeProposal'])->name('clients.batches.proposals.remove');
     Route::post('/clients/{lead}/proposal-batches/{batch}/send', [\App\Http\Controllers\Matchmaker\ClientController::class, 'sendBatch'])->name('clients.batches.send');
-    Route::post('/clients/{lead}/proposal-batches/{batch}/proposals/{proposal}/regenerate-link', [\App\Http\Controllers\Matchmaker\ClientController::class, 'regenerateLink'])->name('clients.batches.proposals.regenerate-link');
     Route::post('/clients/{lead}/progress-link', [\App\Http\Controllers\Matchmaker\ClientController::class, 'regenerateProgressLink'])->name('clients.progress-link.regenerate');
     Route::post('/clients/{lead}/consents', [\App\Http\Controllers\Matchmaker\ClientController::class, 'recordConsent'])->name('clients.consents.record');
     Route::post('/clients/{lead}/consents/request', [\App\Http\Controllers\Matchmaker\ClientController::class, 'requestConsent'])->name('clients.consents.request');
@@ -730,15 +729,6 @@ Route::middleware(['auth', 'matchmaker'])->prefix('matchmaker')->name('matchmake
 
     Route::get('/commissions', [\App\Http\Controllers\Matchmaker\CommissionController::class, 'index'])->name('commissions.index');
     Route::get('/performance', [\App\Http\Controllers\Matchmaker\PerformanceController::class, 'index'])->name('performance.index');
-});
-
-// Public, no-login signed-link actions — reachable only via a link a
-// matchmaker sends the client directly (WhatsApp/SMS/read aloud), not
-// through the website's normal navigation. See
-// Public\MatchmakingActionController's class docblock.
-Route::middleware('signed')->prefix('m')->name('public.matchmaking.')->group(function () {
-    Route::get('/proposal/{proposal}', [\App\Http\Controllers\Public\MatchmakingActionController::class, 'showProposal'])->name('proposal.show');
-    Route::post('/proposal/{proposal}/respond', [\App\Http\Controllers\Public\MatchmakingActionController::class, 'respondProposal'])->name('proposal.respond');
 });
 
 // The client's one standing link (Public\MatchmakingProgressController) —
@@ -753,6 +743,7 @@ Route::prefix('p')->name('public.matchmaking.progress.')->group(function () {
     Route::post('/{lead}/verify', [\App\Http\Controllers\Public\MatchmakingProgressController::class, 'verify'])->name('verify')->middleware('throttle:10,1');
     Route::post('/{lead}/documents', [\App\Http\Controllers\Public\MatchmakingProgressController::class, 'uploadDocuments'])->name('documents')->middleware('throttle:10,1');
     Route::post('/{lead}/consents/{consentRequest}', [\App\Http\Controllers\Public\MatchmakingProgressController::class, 'respondToConsent'])->name('consents.respond')->middleware('throttle:10,1');
+    Route::post('/{lead}/proposals/{proposal}/respond', [\App\Http\Controllers\Public\MatchmakingProgressController::class, 'respondToProposal'])->name('proposals.respond')->middleware('throttle:10,1');
 });
 
 // Nikah Counselor Agreement + NDA acceptance. Auth is the app-issued

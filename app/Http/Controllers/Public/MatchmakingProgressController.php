@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Public;
 
+use App\Http\Controllers\Concerns\SendsNikahInterest;
 use App\Http\Controllers\Concerns\ValidatesNikahProfile;
 use App\Http\Controllers\Controller;
 use App\Models\Lead;
@@ -9,6 +10,7 @@ use App\Models\MatchmakingConsent;
 use App\Models\MatchmakingConsentRequest;
 use App\Models\MatchmakingLinkAccess;
 use App\Models\MatchmakingTimelineEvent;
+use App\Models\MatchProposal;
 use App\Models\User;
 use App\Notifications\MatchmakerConsentResponded;
 use App\Notifications\NewNikahVerificationDocumentsSubmitted;
@@ -27,12 +29,15 @@ use Illuminate\View\View;
 // This is deliberately the ONE link a matchmaker ever sends a client — see
 // project_matchmaker_hiring_document's "no CNIC over WhatsApp" rule and the
 // user's explicit "don't disturb the customer with multiple links" steer.
-// A remotely-registered profile's document upload (uploadDocuments()) and
-// any pending consent confirmations (respondToConsent()) both live on this
-// same page rather than minting separate links for each.
+// A remotely-registered profile's document upload (uploadDocuments()),
+// any pending consent confirmations (respondToConsent()), and responding
+// to a proposed match (respondToProposal()) all live on this same page
+// rather than minting separate links for each — the last of those used to
+// be its own signed link per proposal (Public\MatchmakingActionController,
+// retired 2026-08-25) until this consolidation.
 class MatchmakingProgressController extends Controller
 {
-    use ValidatesNikahProfile;
+    use SendsNikahInterest, ValidatesNikahProfile;
 
     public function show(Request $request, Lead $lead)
     {
@@ -178,6 +183,66 @@ class MatchmakingProgressController extends Controller
         }
 
         return $this->unlockedView($lead)->with('status', $statusMessage);
+    }
+
+    // Folds what used to be a separate per-proposal signed link
+    // (Public\MatchmakingActionController, retired) into this same page —
+    // see this class's own docblock on the "ONE link" rule. Logic mirrors
+    // that controller's respondProposal() exactly (same interested->real
+    // mutual-interest bridge via SendsNikahInterest, same batch-status
+    // rollup), just re-authenticated through the lead's own last-7-digits
+    // check instead of the proposal's now-removed token.
+    public function respondToProposal(Request $request, Lead $lead, MatchProposal $proposal)
+    {
+        $this->assertValidToken($request, $lead);
+        abort_unless($proposal->batch->lead_id === $lead->id, 404);
+
+        if (!$this->reverifyLast7($lead, $request)) {
+            MatchmakingLinkAccess::record($proposal, 'proposal_response', $request, 'failed');
+
+            return $this->lockedView($lead, 'Your verification expired — please enter the last 7 digits again.', 'آپ کی تصدیق ختم ہو گئی — براہ کرم آخری 7 ہندسے دوبارہ درج کریں۔');
+        }
+
+        abort_if($proposal->status === 'responded', 422, 'This request has already been responded to.');
+
+        $validated = $request->validate([
+            'response' => ['required', 'in:interested,not_interested,maybe'],
+        ]);
+
+        $interestId = null;
+        $bridgeNote = '';
+
+        if ($validated['response'] === 'interested') {
+            $result = $this->sendInterestBetweenProfiles($proposal->batch->nikahProfile, $proposal->candidate);
+            $interestId = $result['interest']?->id;
+            $bridgeNote = match ($result['error']) {
+                'not_eligible' => ' Their interest could not yet be forwarded to the candidate — the client\'s own profile needs to be verified and payment confirmed first.',
+                'blocked' => ' Their interest could not be forwarded — contact between these two profiles is blocked.',
+                'previously_declined' => ' Their interest was not forwarded — the candidate previously declined an interest from this client.',
+                default => ' Their interest was forwarded to the candidate.',
+            };
+        }
+
+        $proposal->update([
+            'status' => 'responded',
+            'response' => $validated['response'],
+            'responded_at' => now(),
+            'nikah_interest_id' => $interestId,
+        ]);
+
+        $batch = $proposal->batch;
+        if ($batch->proposals()->where('status', '!=', 'responded')->doesntExist()) {
+            $batch->update(['status' => 'completed']);
+        } elseif ($batch->status !== 'partially_responded') {
+            $batch->update(['status' => 'partially_responded']);
+        }
+
+        $label = str_replace('_', ' ', $validated['response']);
+        MatchmakingTimelineEvent::log($lead, $batch->nikahProfile, 'proposal_response', "Client responded \"{$label}\" to a candidate in Proposal Batch #{$batch->batch_number}.{$bridgeNote}");
+
+        MatchmakingLinkAccess::record($proposal, 'proposal_response', $request, $validated['response']);
+
+        return $this->unlockedView($lead)->with('status', 'Thank you — your response has been recorded.');
     }
 
     private function reverifyLast7(Lead $lead, Request $request): bool
