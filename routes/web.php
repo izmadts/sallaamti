@@ -748,6 +748,8 @@ Route::prefix('p')->name('public.matchmaking.progress.')->group(function () {
     Route::post('/{lead}/consents/{consentRequest}', [\App\Http\Controllers\Public\MatchmakingProgressController::class, 'respondToConsent'])->name('consents.respond')->middleware('throttle:10,1');
     Route::post('/{lead}/proposals/{proposal}/respond', [\App\Http\Controllers\Public\MatchmakingProgressController::class, 'respondToProposal'])->name('proposals.respond')->middleware('throttle:10,1');
     Route::post('/{lead}/package', [\App\Http\Controllers\Public\MatchmakingProgressController::class, 'selectPackage'])->name('package')->middleware('throttle:10,1');
+    Route::post('/{lead}/account', [\App\Http\Controllers\Public\MatchmakingProgressController::class, 'registerAccount'])->name('account.register')->middleware('throttle:10,1');
+    Route::post('/{lead}/account/skip', [\App\Http\Controllers\Public\MatchmakingProgressController::class, 'skipAccountSetup'])->name('account.skip')->middleware('throttle:10,1');
 });
 
 // Nikah Counselor Agreement + NDA acceptance. Auth is the app-issued

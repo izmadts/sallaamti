@@ -33,6 +33,7 @@ class Lead extends Model
         'package_payment_screenshot',
         'package_payment_status',
         'package_payment_rejection_reason',
+        'account_setup_skipped_at',
         'created_by',
     ];
 
@@ -43,6 +44,7 @@ class Lead extends Model
             'package_price' => 'decimal:2',
             'package_started_at' => 'date',
             'package_expires_at' => 'date',
+            'account_setup_skipped_at' => 'datetime',
         ];
     }
 

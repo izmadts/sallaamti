@@ -9,6 +9,7 @@ use App\Models\OtpCode;
 use App\Models\User;
 use App\Notifications\OtpCodeMail;
 use App\Rules\ValidPhoneNumber;
+use App\Support\DeviceTrust;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -100,6 +101,13 @@ class OtpController extends Controller
         }
 
         Auth::login($user);
+        // A verified OTP proves phone ownership at least as strongly as a
+        // password — this device can use the PIN shortcut afterward too
+        // (see App\Support\DeviceTrust). This is also the only real path
+        // a client who set up a PIN via their progress link has to get
+        // into their account from a brand-new device later, since that
+        // account's actual password is never shown to them anywhere.
+        DeviceTrust::trust($user, $request);
 
         session()->forget('otp_pending');
         session()->flash('conversion_event', $pending['purpose'] === 'registration' ? 'user_registered' : 'user_login');

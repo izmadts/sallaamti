@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Public;
 
+use App\Http\Controllers\Auth\Concerns\RegistersMinimalUsers;
 use App\Http\Controllers\Concerns\SendsNikahInterest;
 use App\Http\Controllers\Concerns\ValidatesNikahProfile;
 use App\Http\Controllers\Controller;
@@ -17,6 +18,7 @@ use App\Notifications\MatchmakerConsentResponded;
 use App\Notifications\NewNikahVerificationDocumentsSubmitted;
 use App\Notifications\NewPackagePaymentSubmitted;
 use App\Services\ImageOptimizer;
+use App\Support\DeviceTrust;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
 
@@ -39,7 +41,7 @@ use Illuminate\View\View;
 // retired 2026-08-25) until this consolidation.
 class MatchmakingProgressController extends Controller
 {
-    use SendsNikahInterest, ValidatesNikahProfile;
+    use RegistersMinimalUsers, SendsNikahInterest, ValidatesNikahProfile;
 
     public function show(Request $request, Lead $lead)
     {
@@ -367,6 +369,18 @@ class MatchmakingProgressController extends Controller
             }
         }
 
+        // A one-time, skippable offer — not a hard requirement to keep
+        // using this link (everything above and below already works via
+        // the last-7-digits check alone), just a chance to get a real,
+        // loggable-in-later account. Shown once things have settled
+        // (after package, before the ongoing proposal cycle) so it
+        // doesn't compete with anything more urgent, and never resurfaces
+        // once they either set it up or say "not now" — see
+        // linkedAccount()/registerAccount().
+        if (!$lead->account_setup_skipped_at && !$this->linkedAccount($lead)?->pin) {
+            $queue->push(['type' => 'account_setup', 'data' => null]);
+        }
+
         foreach ($lead->proposalBatches->where('status', '!=', 'draft') as $batch) {
             $pending = $batch->proposals->whereNull('response');
             if ($pending->isNotEmpty()) {
@@ -375,6 +389,86 @@ class MatchmakingProgressController extends Controller
         }
 
         return $queue;
+    }
+
+    // A lead may already have a real User behind it (the matchmaker's own
+    // walk-in wizard already creates one via RegistersMinimalUsers — just
+    // with a random, never-shown password the client has no way to use)
+    // — this finds that account rather than creating a duplicate. Falls
+    // back to matching by phone (already the verified identifier on this
+    // page) if no NikahProfile/user link exists yet.
+    private function linkedAccount(Lead $lead): ?User
+    {
+        return $lead->nikahProfile?->user ?: User::where('phone', $lead->phone)->first();
+    }
+
+    // Sets a real PIN the client actually knows on their (existing or
+    // newly-created) account — this is the one moment a Lead becomes a
+    // real, loggable-in-later User rather than just a record only the
+    // matchmaker/admin can see. The device they're using right now
+    // already proved phone ownership via the last-7-digits check to even
+    // reach this page, and is the device they're actively setting this up
+    // on, so it's trusted immediately (see App\Support\DeviceTrust) —
+    // any OTHER device still needs the account's real password, which is
+    // never shown to a client whose account pre-existed via the walk-in
+    // wizard, or is freshly random for one created here — Auth\
+    // OtpController::verify() also calls DeviceTrust::trust() for exactly
+    // this reason, so once that flow is unhidden, a client can bootstrap
+    // trust on a new device via a phone-verified code instead of a
+    // password they've never seen. Until then, cross-device access is a
+    // real, known gap.
+    public function registerAccount(Request $request, Lead $lead)
+    {
+        $this->assertValidToken($request, $lead);
+
+        if (!$this->reverifyLast7($lead, $request)) {
+            MatchmakingLinkAccess::record($lead, 'account_setup', $request, 'failed');
+
+            return $this->lockedView($lead, 'Your verification expired — please enter the last 7 digits again.', 'آپ کی تصدیق ختم ہو گئی — براہ کرم آخری 7 ہندسے دوبارہ درج کریں۔');
+        }
+
+        $validated = $request->validate([
+            'pin' => ['required', 'digits:4', 'confirmed'],
+        ]);
+
+        $user = $this->linkedAccount($lead);
+        $isNewAccount = !$user;
+
+        if (!$user) {
+            try {
+                $user = $this->createMinimalUser($lead->name, $lead->email, $lead->phone);
+            } catch (\Illuminate\Database\QueryException $e) {
+                // users.phone is uniquely constrained — a concurrent
+                // submission (double-click, two tabs) can lose this race
+                // between linkedAccount()'s check above and this insert.
+                // Whoever won it already created the real account; use it
+                // instead of surfacing a 500 for what's really a duplicate
+                // click, not an actual error.
+                $user = User::where('phone', $lead->phone)->first();
+                abort_unless($user, 500);
+                $isNewAccount = false;
+            }
+        }
+
+        $user->update(['pin' => $validated['pin']]);
+        DeviceTrust::trust($user, $request);
+
+        MatchmakingTimelineEvent::log($lead, $lead->nikahProfile, 'account_setup', $isNewAccount ? 'Client created a Sallaamti account with a login PIN.' : 'Client set up a login PIN for their existing Sallaamti account.');
+
+        return $this->unlockedView($lead)->with('status', 'You\'re all set — this device can now use your PIN to check your status anytime at sallaamti.com. / آپ تیار ہیں — اب یہ ڈیوائس sallaamti.com پر آپ کا PIN استعمال کر کے آپ کی صورتحال کبھی بھی دیکھ سکتی ہے۔');
+    }
+
+    public function skipAccountSetup(Request $request, Lead $lead)
+    {
+        $this->assertValidToken($request, $lead);
+
+        if (!$this->reverifyLast7($lead, $request)) {
+            return $this->lockedView($lead, 'Your verification expired — please enter the last 7 digits again.', 'آپ کی تصدیق ختم ہو گئی — براہ کرم آخری 7 ہندسے دوبارہ درج کریں۔');
+        }
+
+        $lead->update(['account_setup_skipped_at' => now()]);
+
+        return $this->unlockedView($lead);
     }
 
     private function assertValidToken(Request $request, Lead $lead): void

@@ -219,6 +219,51 @@
                 </div>
                 @break
 
+                @case('account_setup')
+                <div class="bg-white rounded-xl shadow-sm p-6">
+                    <div class="text-center mb-4">
+                        <div class="w-14 h-14 mx-auto rounded-full flex items-center justify-center text-2xl mb-3" style="background: var(--teal-light, #e0f2f1)">🔐</div>
+                        <h4 class="font-semibold text-gray-700 mb-1">Set Up Quick Access</h4>
+                        <p class="text-xs text-gray-400 mb-3" dir="rtl">🔐 فوری رسائی ترتیب دیں</p>
+                    </div>
+                    <p class="text-sm text-gray-600 mb-1">Optional — create a 4-digit PIN so you can check your status anytime at sallaamti.com, not just this link. You'll still be able to use everything on this page either way.</p>
+                    <p class="text-sm text-gray-600 mb-4" dir="rtl">اختیاری — ایک 4 ہندسوں کا PIN بنائیں تاکہ آپ کبھی بھی sallaamti.com پر اپنی صورتحال دیکھ سکیں، نہ صرف اس لنک سے۔ آپ اس صفحے کی ہر سہولت بہرحال استعمال کر سکیں گے۔</p>
+
+                    @if ($errors->any())
+                    <div class="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">
+                        <ul class="list-disc list-inside">
+                            @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                    @endif
+
+                    <form method="POST" action="{{ route('public.matchmaking.progress.account.register', ['lead' => $lead->id, 't' => $lead->progress_link_token]) }}" class="space-y-3">
+                        @csrf
+                        <input type="hidden" name="last7" value="{{ $last7 ?? '' }}">
+                        <div class="flex justify-center gap-3 flex-wrap">
+                            <div>
+                                <label class="text-xs text-gray-500 block mb-1 text-center">4-Digit PIN</label>
+                                <input type="text" name="pin" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" required
+                                    class="border-gray-300 rounded-lg text-center text-lg tracking-widest w-32">
+                            </div>
+                            <div>
+                                <label class="text-xs text-gray-500 block mb-1 text-center">Confirm PIN</label>
+                                <input type="text" name="pin_confirmation" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" required
+                                    class="border-gray-300 rounded-lg text-center text-lg tracking-widest w-32">
+                            </div>
+                        </div>
+                        <button class="w-full text-white text-sm font-semibold px-5 py-2.5 rounded-lg hover:opacity-90 transition" style="background: #0d6b6b">Set Up My PIN / میرا PIN ترتیب دیں</button>
+                    </form>
+                    <form method="POST" action="{{ route('public.matchmaking.progress.account.skip', ['lead' => $lead->id, 't' => $lead->progress_link_token]) }}" class="mt-2 text-center">
+                        @csrf
+                        <input type="hidden" name="last7" value="{{ $last7 ?? '' }}">
+                        <button class="text-xs text-gray-400 hover:text-gray-600 underline">Not now / ابھی نہیں</button>
+                    </form>
+                </div>
+                @break
+
                 @case('proposal_batch')
                 @php $batch = $currentStep['data']; $pendingProposals = $currentStep['pending']; @endphp
                 <div>
