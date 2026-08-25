@@ -81,6 +81,15 @@
                     </div>
                     <button class="text-sm font-semibold px-4 py-2 rounded-lg border border-red-300 text-red-600 hover:bg-red-50">Reject Application</button>
                 </form>
+
+                <form method="POST" action="{{ route('admin.matchmaker-applications.withdraw', $application) }}" class="mt-3 flex gap-2 items-end" onsubmit="return confirm('Mark this application as withdrawn? Use this only if the applicant themselves asked to withdraw — otherwise use Reject above.')">
+                    @csrf
+                    <div class="flex-1">
+                        <label class="text-xs text-gray-500 block mb-1">Withdrawal Notes (optional)</label>
+                        <input type="text" name="notes" class="border-gray-300 rounded-md text-sm w-full" placeholder="e.g. applicant asked to withdraw by phone">
+                    </div>
+                    <button class="text-sm font-semibold px-4 py-2 rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-50">Mark as Withdrawn</button>
+                </form>
             </div>
             @endunless
 
@@ -146,6 +155,52 @@
                         @endif
                     </div>
                 </div>
+
+                {{-- Same numbers the counselor's own Performance page shows them — previously invisible to admin, so a manual level override or judging an auto-promotion (Console\Commands\PromoteEligibleCounselors) had nothing to go on. --}}
+                @if ($performance)
+                <div class="mt-4 pt-4 border-t">
+                    <p class="text-xs font-semibold text-gray-500 uppercase mb-2">Performance</p>
+                    <div class="grid sm:grid-cols-4 gap-3 text-sm mb-3">
+                        <div class="bg-gray-50 rounded-lg p-3 text-center">
+                            <p class="text-lg font-bold text-gray-800">{{ $performance['stats']['verified'] }}</p>
+                            <p class="text-xs text-gray-400">Verified Profiles</p>
+                        </div>
+                        <div class="bg-gray-50 rounded-lg p-3 text-center">
+                            <p class="text-lg font-bold text-gray-800">{{ $performance['score']['overall'] ?? '—' }}{{ $performance['score']['overall'] !== null ? '%' : '' }}</p>
+                            <p class="text-xs text-gray-400">Quality Score</p>
+                        </div>
+                        <div class="bg-gray-50 rounded-lg p-3 text-center">
+                            <p class="text-lg font-bold text-gray-800">{{ $application->tenureDays() ?? '—' }}</p>
+                            <p class="text-xs text-gray-400">Days Certified</p>
+                        </div>
+                        <div class="bg-gray-50 rounded-lg p-3 text-center">
+                            <p class="text-lg font-bold text-gray-800">Rs. {{ number_format($performance['commission_earned'], 0) }}</p>
+                            <p class="text-xs text-gray-400">Commission Earned</p>
+                        </div>
+                    </div>
+
+                    @if ($levelProgress)
+                    <p class="text-xs text-gray-500 mb-2">Progress toward auto-promotion to <strong>{{ $levelProgress['next_level_label'] }}</strong>:</p>
+                    <div class="space-y-2">
+                        @foreach ([
+                            ['Verified Profiles', $levelProgress['verified'], ''],
+                            ['Quality Score', $levelProgress['quality_score'], '%'],
+                            ['Days Certified', $levelProgress['tenure_days'], ' days'],
+                        ] as $req)
+                        <div class="flex items-center gap-2 text-xs">
+                            <span class="w-32 text-gray-500 shrink-0">{{ $req[0] }}</span>
+                            <div class="flex-1 bg-gray-100 rounded-full h-1.5">
+                                <div class="h-1.5 rounded-full {{ $req[1]['met'] ? 'bg-green-500' : '' }}" style="width: {{ min(100, $req[1]['needed'] > 0 ? round($req[1]['current'] / $req[1]['needed'] * 100) : 100) }}%; {{ $req[1]['met'] ? '' : 'background: #b8962e' }}"></div>
+                            </div>
+                            <span class="{{ $req[1]['met'] ? 'text-green-600 font-semibold' : 'text-gray-600' }} shrink-0">{{ $req[1]['current'] }}{{ $req[2] }} / {{ $req[1]['needed'] }}{{ $req[2] }}</span>
+                        </div>
+                        @endforeach
+                    </div>
+                    @else
+                    <p class="text-xs text-gray-400">Already at the highest level.</p>
+                    @endif
+                </div>
+                @endif
             </div>
             @endif
 

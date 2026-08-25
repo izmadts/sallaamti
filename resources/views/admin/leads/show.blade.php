@@ -199,6 +199,97 @@
             </div>
             @endif
 
+            {{-- Rejected package payment — the review card above only shows while status is 'submitted', so a rejection otherwise vanishes from this page entirely except a buried timeline line. This keeps it visible until the client resubmits (package_payment_status flips back to 'submitted') or a new package activates. --}}
+            @if ($lead->package_payment_status === 'rejected')
+            <div class="bg-white rounded-xl shadow-sm p-6" style="border-left: 4px solid #dc2626">
+                <h3 class="font-semibold text-gray-700 mb-2 border-b pb-2">❌ Package Payment Rejected</h3>
+                <p class="text-sm text-gray-600"><span class="text-gray-500">Package:</span> {{ $lead->pendingPackage?->name }}</p>
+                <p class="text-sm text-gray-600 mt-1"><span class="text-gray-500">Reason:</span> {{ $lead->package_payment_rejection_reason }}</p>
+                <p class="text-xs text-gray-400 mt-2">Waiting on the client to resubmit from their own progress link — nothing for admin to do until they do.</p>
+            </div>
+            @endif
+
+            {{-- Consent — mirrors what the client's own progress link already shows them; without this, admin had no visibility into consent at all. --}}
+            <div class="bg-white rounded-xl shadow-sm p-6">
+                <h3 class="font-semibold text-gray-700 mb-3 border-b pb-2">✅ Consent ({{ $lead->consents->count() }})</h3>
+
+                @if ($lead->consentRequests->where('status', 'pending')->isNotEmpty())
+                <div class="space-y-1.5 mb-3">
+                    @foreach ($lead->consentRequests->where('status', 'pending') as $req)
+                    <div class="text-xs bg-blue-50 text-blue-800 rounded-lg px-3 py-2">
+                        ⏳ Waiting on {{ $lead->name }} to confirm: <strong>{{ explode(' — ', \App\Models\MatchmakingConsent::TYPES[$req->consent_type])[0] }}</strong>
+                        <span class="text-blue-500"> · requested by {{ $req->requestedBy?->name ?? '—' }}, {{ $req->requested_at->diffForHumans() }}</span>
+                    </div>
+                    @endforeach
+                </div>
+                @endif
+
+                @forelse ($lead->consents as $consent)
+                <div class="flex items-center justify-between text-sm border-b last:border-0 py-2">
+                    <div>
+                        <p class="font-medium text-gray-800">{{ explode(' — ', \App\Models\MatchmakingConsent::TYPES[$consent->consent_type] ?? $consent->consent_type)[0] }}</p>
+                        <p class="text-xs text-gray-400">
+                            {{ ucfirst($consent->method ?? 'unknown') }} · recorded by {{ $consent->recordedBy?->name ?? '—' }}, {{ $consent->granted_at?->format('d M Y') }}
+                            @if ($consent->revoked_at)
+                            · revoked by {{ $consent->revokedBy?->name ?? '—' }}, {{ $consent->revoked_at->format('d M Y') }}
+                            @endif
+                        </p>
+                    </div>
+                    <span class="text-xs px-2 py-0.5 rounded-full {{ $consent->revoked_at ? 'bg-red-100 text-red-700' : 'bg-green-100 text-green-800' }}">
+                        {{ $consent->revoked_at ? 'Revoked' : 'Active' }}
+                    </span>
+                </div>
+                @empty
+                @if ($lead->consentRequests->where('status', 'pending')->isEmpty())
+                <p class="text-sm text-gray-400">No consent on file yet.</p>
+                @endif
+                @endforelse
+            </div>
+
+            {{-- Proposal Batches — candidates the matchmaker has proposed and how the client responded (or hasn't yet). Previously invisible to admin entirely. --}}
+            <div class="bg-white rounded-xl shadow-sm p-6">
+                <h3 class="font-semibold text-gray-700 mb-3 border-b pb-2">💌 Proposal Batches ({{ $lead->proposalBatches->count() }})</h3>
+
+                @forelse ($lead->proposalBatches as $batch)
+                <div class="mb-3 last:mb-0 border border-gray-100 rounded-lg overflow-hidden">
+                    <div class="flex justify-between items-center px-3 py-2 bg-gray-50 text-xs font-semibold text-gray-600">
+                        <span>Batch #{{ $batch->batch_number }} @if($batch->sent_at) — sent {{ $batch->sent_at->format('d M Y') }} @endif</span>
+                        <span class="px-2 py-0.5 rounded-full
+                            {{ match($batch->status) {
+                                'draft' => 'bg-gray-100 text-gray-600',
+                                'ready' => 'bg-blue-100 text-blue-800',
+                                'sent' => 'bg-amber-100 text-amber-800',
+                                'partially_responded' => 'bg-purple-100 text-purple-800',
+                                'completed' => 'bg-green-100 text-green-800',
+                                'expired' => 'bg-gray-100 text-gray-500',
+                                'cancelled' => 'bg-red-100 text-red-700',
+                                default => 'bg-gray-100 text-gray-600',
+                            } }}">
+                            {{ ucfirst(str_replace('_', ' ', $batch->status)) }}
+                        </span>
+                    </div>
+                    <div class="p-3 space-y-1.5">
+                        @foreach ($batch->proposals as $proposal)
+                        <div class="flex items-center justify-between text-sm border-b last:border-0 pb-1.5 last:pb-0">
+                            <span class="text-gray-700">{{ $proposal->candidate->user?->name ?? 'Deleted account' }} <span class="text-xs text-gray-400">({{ $proposal->candidate->age }} yrs, {{ $proposal->candidate->city }})</span></span>
+                            <span class="text-xs px-2 py-0.5 rounded-full
+                                {{ match($proposal->response) {
+                                    'interested' => 'bg-green-100 text-green-800',
+                                    'not_interested' => 'bg-red-100 text-red-700',
+                                    'maybe' => 'bg-amber-100 text-amber-800',
+                                    default => 'bg-gray-100 text-gray-600',
+                                } }}">
+                                {{ $proposal->response ? ucfirst(str_replace('_', ' ', $proposal->response)) : ucfirst($proposal->status) }}
+                            </span>
+                        </div>
+                        @endforeach
+                    </div>
+                </div>
+                @empty
+                <p class="text-sm text-gray-400">No proposal batches yet.</p>
+                @endforelse
+            </div>
+
             {{-- Shortlist --}}
             <div class="bg-white rounded-xl shadow-sm p-6">
                 <h3 class="font-semibold text-gray-700 mb-3 border-b pb-2">💌 Shortlist ({{ $lead->shortlistItems->count() }})</h3>

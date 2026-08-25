@@ -102,7 +102,7 @@ class MatchmakerApplication extends Model
         'consent_accepted', 'terms_accepted',
         'ip_address', 'user_agent', 'device_city',
         'status', 'level', 'notes', 'reviewed_by',
-        'counselor_code', 'certified_at', 'rejected_at',
+        'counselor_code', 'certified_at', 'rejected_at', 'withdrawn_at',
         'agreement_link_token', 'agreement_accepted_at', 'agreement_ip',
         'nda_accepted_at', 'nda_ip',
     ];
@@ -121,6 +121,7 @@ class MatchmakerApplication extends Model
             'nda_accepted_at' => 'datetime',
             'certified_at' => 'datetime',
             'rejected_at' => 'datetime',
+            'withdrawn_at' => 'datetime',
         ];
     }
 

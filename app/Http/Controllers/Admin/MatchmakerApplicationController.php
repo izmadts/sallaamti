@@ -41,11 +41,20 @@ class MatchmakerApplicationController extends Controller
         return view('admin.matchmaker-applications.index', compact('applications', 'directRoleUsers'));
     }
 
-    public function show(MatchmakerApplication $matchmakerApplication)
+    public function show(MatchmakerApplication $matchmakerApplication, \App\Services\Matchmaking\CounselorPerformanceCalculator $calculator)
     {
         $matchmakerApplication->load('user', 'reviewedBy');
 
-        return view('admin.matchmaker-applications.show', ['application' => $matchmakerApplication]);
+        // Same numbers the counselor's own Performance page shows them —
+        // admin previously had no visibility into this at all when
+        // overriding a level manually, or judging whether an auto-promotion
+        // (Console\Commands\PromoteEligibleCounselors) made sense.
+        $performance = $matchmakerApplication->isCertified()
+            ? $calculator->calculate($matchmakerApplication->user_id)
+            : null;
+        $levelProgress = $performance ? $matchmakerApplication->nextLevelProgress($performance['score'], $performance['stats']) : null;
+
+        return view('admin.matchmaker-applications.show', ['application' => $matchmakerApplication, 'performance' => $performance, 'levelProgress' => $levelProgress]);
     }
 
     public function updateStatus(Request $request, MatchmakerApplication $matchmakerApplication)
@@ -123,6 +132,31 @@ class MatchmakerApplicationController extends Controller
         ]);
 
         return back()->with('status', 'Application rejected.');
+    }
+
+    // 'withdrawn' has been in STATUSES/TERMINAL_EXIT_STATUSES since this
+    // pipeline was built, but was never actually reachable — updateStatus()
+    // only accepts STEPS values and reject() hard-codes 'rejected'. This is
+    // the applicant's own choice to leave (they said so, on a call or in
+    // writing), distinct from reject() being Sallaamti's decision that
+    // they're not suitable — same terminal outcome, different reason on
+    // record.
+    public function withdraw(Request $request, MatchmakerApplication $matchmakerApplication)
+    {
+        abort_if($matchmakerApplication->isTerminal(), 422, 'This application was already rejected or withdrawn.');
+
+        $validated = $request->validate([
+            'notes' => ['nullable', 'string', 'max:1000'],
+        ]);
+
+        $matchmakerApplication->update([
+            'status' => 'withdrawn',
+            'withdrawn_at' => now(),
+            'reviewed_by' => auth()->id(),
+            'notes' => $validated['notes'] ?? $matchmakerApplication->notes,
+        ]);
+
+        return back()->with('status', 'Application marked as withdrawn.');
     }
 
     // Generates (or regenerates, if suspected leaked) the signed link the

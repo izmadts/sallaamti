@@ -130,7 +130,12 @@ class LeadController extends Controller
     {
         $this->authorize_();
 
-        $lead->load(['assignedTo', 'createdBy', 'nikahProfile.user', 'nikahPackage', 'shortlistItems.nikahProfile.user', 'shortlistItems.createdBy', 'timelineEvents.matchmaker']);
+        $lead->load([
+            'assignedTo', 'createdBy', 'nikahProfile.user', 'nikahPackage', 'pendingPackage',
+            'shortlistItems.nikahProfile.user', 'shortlistItems.createdBy', 'timelineEvents.matchmaker',
+            'consents.recordedBy', 'consents.revokedBy', 'consentRequests.requestedBy',
+            'proposalBatches.proposals.candidate.user',
+        ]);
         $matchmakers = User::role(['admin', 'matchmaker'])->orderBy('name')->get();
         // One-time packages (e.g. "Sallaamti Verified") aren't a real
         // matchmaking service a counselor assigns — every profile already
