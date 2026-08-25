@@ -464,6 +464,15 @@ return [
     'Your CNIC and payment details are never shown publicly' => 'آپ کا شناختی کارڈ اور ادائیگی کی تفصیلات کبھی عوامی طور پر ظاہر نہیں کی جاتیں',
     "This is our small way of helping the Pakistani community make Nikah easy, honest, and safe — Insha'Allah." => 'یہ ہماری چھوٹی سی کوشش ہے تاکہ پاکستانی کمیونٹی کے لیے نکاح آسان، ایماندار اور محفوظ بن سکے — ان شاء اللہ۔',
 
+    // ---- Nikah packages page ----
+    'Nikah Matchmaking Packages' => 'نکاح میچ میکنگ پیکجز',
+    'Whether you want to manage your own search or have a dedicated consultant do the work for you — choose the level of support that fits you.'
+        => 'چاہے آپ خود اپنی تلاش سنبھالنا چاہیں یا کسی مخصوص کنسلٹنٹ سے یہ کام کروانا چاہیں — وہ سطح منتخب کریں جو آپ کے لیے موزوں ہو۔',
+    'one-time' => 'ایک بار',
+    ':days days' => ':days دن',
+    'Proposal counts are a cap on how many candidates our consultants review and share with you, based on database availability and compatibility with your requirements — not a guarantee of matches. Prices and package details may be updated from time to time.'
+        => 'رشتوں کی تعداد اس بات کی زیادہ سے زیادہ حد ہے کہ ہمارے کنسلٹنٹ کتنے امیدواروں کا جائزہ لے کر آپ کے ساتھ شیئر کریں گے، یہ ڈیٹا بیس کی دستیابی اور آپ کی ضروریات سے مطابقت پر منحصر ہے — یہ رشتہ طے ہونے کی ضمانت نہیں۔ قیمتیں اور پیکج کی تفصیلات وقتاً فوقتاً تبدیل ہو سکتی ہیں۔',
+
     // ---- Registration: interest picker ----
     'What brings you to Sallaamti?' => 'آپ سلامتی پر کس لیے آئے ہیں؟',
     "Pick one or more — we'll take you straight there after you sign up." => 'ایک یا زیادہ چُنیں — رجسٹریشن کے بعد ہم آپ کو سیدھا وہاں لے جائیں گے۔',
