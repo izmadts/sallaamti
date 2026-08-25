@@ -744,13 +744,17 @@ Route::middleware('signed')->prefix('m')->name('public.matchmaking.')->group(fun
     Route::post('/progress/{lead}/consents/{consentRequest}', [\App\Http\Controllers\Public\MatchmakingProgressController::class, 'respondToConsent'])->name('progress.consents.respond');
 });
 
-// Nikah Counselor Agreement + NDA acceptance — same signed-link pattern as
-// above, but scoped to MatchmakerApplication (no Lead/account exists yet
-// at this stage of onboarding).
-Route::middleware('signed')->prefix('nikah-counselor-agreement')->name('public.matchmaker-agreement.')->group(function () {
+// Nikah Counselor Agreement + NDA acceptance. Auth is the app-issued
+// agreement_link_token (checked in assertValidToken(), tied to one
+// specific application) plus the last-7-digits-of-mobile step — that's
+// already a full authentication chain, so this deliberately skips
+// Laravel's signed-URL middleware to keep the shareable link short and
+// clean (no &signature=... hash) for social/WhatsApp sharing. Throttled
+// since there's no separate rate limit on the last-7-digits guess.
+Route::prefix('nda-agreement')->name('public.matchmaker-agreement.')->group(function () {
     Route::get('/{matchmakerApplication}', [\App\Http\Controllers\Public\MatchmakerAgreementController::class, 'show'])->name('show');
-    Route::post('/{matchmakerApplication}/verify', [\App\Http\Controllers\Public\MatchmakerAgreementController::class, 'verify'])->name('verify');
-    Route::post('/{matchmakerApplication}/accept', [\App\Http\Controllers\Public\MatchmakerAgreementController::class, 'accept'])->name('accept');
+    Route::post('/{matchmakerApplication}/verify', [\App\Http\Controllers\Public\MatchmakerAgreementController::class, 'verify'])->name('verify')->middleware('throttle:10,1');
+    Route::post('/{matchmakerApplication}/accept', [\App\Http\Controllers\Public\MatchmakerAgreementController::class, 'accept'])->name('accept')->middleware('throttle:10,1');
 });
 
 // Public Nikah Counselor Code of Conduct — a static, generic page (unlike

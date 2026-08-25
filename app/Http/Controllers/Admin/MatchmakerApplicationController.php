@@ -10,7 +10,6 @@ use App\Models\User;
 use App\Notifications\NikahCounselorCertified;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Facades\URL;
 use Illuminate\Support\Str;
 
 class MatchmakerApplicationController extends Controller
@@ -131,7 +130,11 @@ class MatchmakerApplicationController extends Controller
     // Agreement + NDA themselves — see Public\MatchmakerAgreementController.
     public function sendAgreementLink(MatchmakerApplication $matchmakerApplication)
     {
-        $matchmakerApplication->update(['agreement_link_token' => Str::random(40)]);
+        // 24 random alnum chars (~142 bits of entropy) is already far more
+        // than enough for a single-use, database-checked secret — kept
+        // shorter than the old 40 chars so the shareable link stays clean
+        // for WhatsApp/social use instead of looking like a spam link.
+        $matchmakerApplication->update(['agreement_link_token' => Str::random(24)]);
 
         return back()->with('status', 'Agreement link ready — copy it below and send it to ' . $matchmakerApplication->full_name . '. They\'ll need the last 7 digits of their mobile number to open it, every time.');
     }
@@ -142,7 +145,7 @@ class MatchmakerApplicationController extends Controller
             return null;
         }
 
-        return URL::signedRoute('public.matchmaker-agreement.show', ['matchmakerApplication' => $application->id, 'token' => $application->agreement_link_token]);
+        return route('public.matchmaker-agreement.show', ['matchmakerApplication' => $application->id, 't' => $application->agreement_link_token]);
     }
 
     // Creates the account (if the applicant didn't already have one),
