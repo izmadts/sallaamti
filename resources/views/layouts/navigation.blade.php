@@ -135,24 +135,16 @@
  </x-dropdown>
  @endrole
 
+ {{-- Was a dropdown duplicating three links already in the Match Maker
+ Desk's own sidebar (components/matchmaker-layout.blade.php) — one of
+ them ("My Leads") pointed at admin.leads.index, which a plain
+ matchmaker without the separate leads.manage permission gets a 403
+ on. One entry point in, everything else lives inside the desk itself. --}}
  @role('matchmaker')
- <x-dropdown align="left" width="48">
- <x-slot name="trigger">
- <button class="inline-flex items-center px-3 py-2 rounded-md text-sm font-medium text-white hover:bg-teal-600 focus:outline-none transition
- {{ request()->routeIs('admin.leads*') || request()->routeIs('matchmaker.*') ? 'bg-teal-800' : '' }}">
- 💍 {{ __('db.Matchmaking') }}
- <svg class="ms-1 h-4 w-4 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">
- <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
- </svg>
- </button>
- </x-slot>
- <x-slot name="content">
- <x-dropdown-link :href="route('dashboard.matchmaker')">🏠 {{ __('db.Matchmaker Dashboard') }}</x-dropdown-link>
- <x-dropdown-link :href="route('admin.leads.index')">📞 {{ __('db.My Leads') }}</x-dropdown-link>
- <x-dropdown-link :href="route('matchmaker.nikah.index')">🔍 {{ __('db.Browse Profiles') }}</x-dropdown-link>
- <x-dropdown-link :href="route('matchmaker.nikah.requests')">🤝 {{ __('db.My Contact Requests') }}</x-dropdown-link>
- </x-slot>
- </x-dropdown>
+ <x-nav-link :href="route('dashboard.matchmaker')" :active="request()->routeIs('dashboard.matchmaker') || request()->routeIs('matchmaker.*')"
+ class="text-white hover:bg-teal-600 px-3 py-2 rounded-md text-sm">
+ 💍 {{ __('db.Matchmaker Dashboard') }}
+ </x-nav-link>
  @endrole
 
  @hasanyrole(['manager', 'blogger'])
@@ -422,12 +414,11 @@
  <x-responsive-nav-link :href="route('teacher.groups.index')" class="text-white">👥 My Class Groups</x-responsive-nav-link>
  @endrole
 
+ {{-- Same fix as the desktop dropdown above — one entry point into the
+ Match Maker Desk, not duplicate/broken links to what's already in its
+ own sidebar. --}}
  @role('matchmaker')
- <div class="px-3 py-1 text-xs text-teal-300 font-semibold uppercase tracking-wider mt-2">Matchmaking</div>
- <x-responsive-nav-link :href="route('dashboard.matchmaker')" class="text-white">🏠 Matchmaker Dashboard</x-responsive-nav-link>
- <x-responsive-nav-link :href="route('admin.leads.index')" class="text-white">📞 My Leads</x-responsive-nav-link>
- <x-responsive-nav-link :href="route('matchmaker.nikah.index')" class="text-white">🔍 Browse Profiles</x-responsive-nav-link>
- <x-responsive-nav-link :href="route('matchmaker.nikah.requests')" class="text-white">🤝 My Contact Requests</x-responsive-nav-link>
+ <x-responsive-nav-link :href="route('dashboard.matchmaker')" class="text-white">💍 Matchmaker Dashboard</x-responsive-nav-link>
  @endrole
 
  @hasanyrole(['manager', 'blogger'])
