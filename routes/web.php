@@ -475,6 +475,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::post('/leads/{lead}/shortlist', [\App\Http\Controllers\Admin\LeadController::class, 'addToShortlist'])->name('leads.shortlist.add');
     Route::post('/leads/{lead}/shortlist/{item}/sent', [\App\Http\Controllers\Admin\LeadController::class, 'markShortlistSent'])->name('leads.shortlist.sent');
     Route::delete('/leads/{lead}/shortlist/{item}', [\App\Http\Controllers\Admin\LeadController::class, 'removeFromShortlist'])->name('leads.shortlist.remove');
+    Route::post('/leads/{lead}/progress-link', [\App\Http\Controllers\Admin\LeadController::class, 'regenerateProgressLink'])->name('leads.progress-link.regenerate');
     Route::middleware('admin.only')->group(function () {
         Route::get('/nikah-contact-requests', [NikahVerificationController::class, 'contactRequests'])->name('nikah.contact-requests');
         Route::post('/nikah-contact-requests/{contactRequest}/approve', [NikahVerificationController::class, 'approveContactRequest'])->name('nikah.contact-requests.approve');
@@ -723,6 +724,7 @@ Route::middleware(['auth', 'matchmaker'])->prefix('matchmaker')->name('matchmake
     Route::post('/clients/{lead}/proposal-batches/{batch}/send', [\App\Http\Controllers\Matchmaker\ClientController::class, 'sendBatch'])->name('clients.batches.send');
     Route::post('/clients/{lead}/proposal-batches/{batch}/proposals/{proposal}/regenerate-link', [\App\Http\Controllers\Matchmaker\ClientController::class, 'regenerateLink'])->name('clients.batches.proposals.regenerate-link');
     Route::post('/clients/{lead}/progress-link', [\App\Http\Controllers\Matchmaker\ClientController::class, 'regenerateProgressLink'])->name('clients.progress-link.regenerate');
+    Route::get('/clients/{lead}/progress-link/send/{channel}', [\App\Http\Controllers\Matchmaker\ClientController::class, 'sendLinkVia'])->name('clients.progress-link.send')->whereIn('channel', ['whatsapp', 'sms']);
     Route::post('/clients/{lead}/consents', [\App\Http\Controllers\Matchmaker\ClientController::class, 'recordConsent'])->name('clients.consents.record');
     Route::post('/clients/{lead}/consents/request', [\App\Http\Controllers\Matchmaker\ClientController::class, 'requestConsent'])->name('clients.consents.request');
     Route::post('/clients/{lead}/consents/{consent}/revoke', [\App\Http\Controllers\Matchmaker\ClientController::class, 'revokeConsent'])->name('clients.consents.revoke');

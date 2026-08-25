@@ -29,7 +29,7 @@
         <div class="bg-white rounded-xl shadow-sm p-6 flex flex-wrap justify-between items-start gap-4">
             <div>
                 <h2 class="text-xl font-bold text-gray-800">{{ $lead->name }}</h2>
-                <p class="text-sm text-gray-500">{{ $lead->phone ?: '— no phone —' }} · {{ $lead->email ?: '— no email —' }}</p>
+                <p class="text-sm text-gray-500">{{ $lead->maskedPhone() ?: '— no phone —' }} · {{ $lead->email ?: '— no email —' }}</p>
                 <span class="inline-block mt-2 text-xs px-2 py-0.5 rounded-full
                     {{ match($lead->status) {
                         'new' => 'bg-blue-100 text-blue-800',
@@ -109,7 +109,8 @@
                     <div class="grid grid-cols-2 gap-4">
                         <div>
                             <x-input-label for="phone" value="Phone / WhatsApp" />
-                            <x-text-input id="phone" name="phone" type="text" class="w-full mt-1" :value="$lead->phone" />
+                            <x-text-input id="phone" name="phone" type="text" class="w-full mt-1" value="" placeholder="{{ $lead->maskedPhone() ?: 'Not on file yet' }} — leave blank to keep" />
+                            <p class="text-xs text-gray-400 mt-1">Hidden for privacy. Type a new number here only to correct it — use Send via WhatsApp/SMS below to actually reach {{ $lead->name }}.</p>
                         </div>
                         <div>
                             <x-input-label for="email" value="Email" />
@@ -173,11 +174,13 @@
                     @endphp
                     @if ($progressLink)
                     <p class="text-xs font-semibold text-gray-600 mb-2">🔗 {{ $linkTitle }}</p>
+                    <p class="text-xs text-gray-400 mb-2">The link itself isn't shown here — use the actions below. Only admin can see the raw link.</p>
                     @endif
                     <div class="flex flex-wrap items-center gap-2">
                         @if ($progressLink)
-                        <input type="text" readonly value="{{ $progressLink }}" class="text-xs border-gray-200 rounded-lg flex-1 min-w-[16rem] bg-gray-50" onclick="this.select()" id="progress-link">
-                        <button type="button" onclick="navigator.clipboard.writeText(document.getElementById('progress-link').value); this.textContent = 'Copied!'; setTimeout(() => this.textContent = 'Copy Link', 1500);" class="text-xs font-semibold px-2 py-1.5 rounded-lg text-white hover:opacity-90" style="background: var(--mm-plum);">Copy Link</button>
+                        <button type="button" data-link="{{ $progressLink }}" onclick="navigator.clipboard.writeText(this.dataset.link); this.textContent = '✅ Copied!'; setTimeout(() => this.textContent = '📋 Copy Link', 1500);" class="text-xs font-semibold px-3 py-1.5 rounded-lg text-white hover:opacity-90" style="background: var(--mm-plum);">📋 Copy Link</button>
+                        <a href="{{ route('matchmaker.clients.progress-link.send', [$lead, 'whatsapp']) }}" class="text-xs font-semibold px-3 py-1.5 rounded-lg text-white hover:opacity-90 bg-green-600">💬 Send via WhatsApp</a>
+                        <a href="{{ route('matchmaker.clients.progress-link.send', [$lead, 'sms']) }}" class="text-xs font-semibold px-3 py-1.5 rounded-lg text-white hover:opacity-90 bg-blue-500">✉️ Send via SMS</a>
                         @endif
                         <form method="POST" action="{{ route('matchmaker.clients.progress-link.regenerate', $lead) }}" @if($progressLink) onsubmit="return confirm('Generate a new progress link? The old one will stop working immediately.')" @endif>
                             @csrf

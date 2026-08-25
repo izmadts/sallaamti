@@ -253,6 +253,29 @@
                 </details>
             </div>
 
+            {{-- Progress page link — admin sees the raw link and phone; the matchmaker's own view only gets action buttons (Copy/WhatsApp/SMS), never the link text or number itself. --}}
+            <div class="bg-white rounded-xl shadow-sm p-6">
+                <h3 class="font-semibold text-gray-700 mb-1 border-b pb-2">🔗 Client Progress Page Link</h3>
+                <p class="text-xs text-gray-500 mt-2 mb-3">The one standing link {{ $lead->name }} uses for everything — status, documents, consents, proposals. Only admin sees the raw link and phone number here; the assigned counselor only gets Copy/Send buttons.</p>
+
+                @php $adminProgressLink = \App\Http\Controllers\Matchmaker\ClientController::progressLink($lead); @endphp
+                <div class="flex flex-wrap items-center gap-2">
+                    @if ($adminProgressLink)
+                    <input type="text" readonly value="{{ $adminProgressLink }}" class="text-xs border-gray-200 rounded-lg flex-1 min-w-[16rem] bg-gray-50" onclick="this.select()" id="admin-progress-link">
+                    <button type="button" onclick="navigator.clipboard.writeText(document.getElementById('admin-progress-link').value); this.textContent = 'Copied!'; setTimeout(() => this.textContent = 'Copy Link', 1500);" class="text-xs font-semibold px-2 py-1.5 rounded-lg bg-gray-800 text-white hover:opacity-90">Copy Link</button>
+                    @else
+                    <p class="text-sm text-gray-400">No link generated yet — the assigned counselor generates it from their own Client page, or add a phone number and regenerate here.</p>
+                    @endif
+                    <form method="POST" action="{{ route('admin.leads.progress-link.regenerate', $lead) }}" @if($adminProgressLink) onsubmit="return confirm('Generate a new progress link? The old one will stop working immediately.')" @endif>
+                        @csrf
+                        <button class="text-xs font-semibold px-2 py-1.5 rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-50">{{ $adminProgressLink ? '↻ Regenerate' : '+ Generate Link' }}</button>
+                    </form>
+                </div>
+                @unless ($lead->phone)
+                <p class="text-xs text-amber-700 mt-2">Add a phone number above first.</p>
+                @endunless
+            </div>
+
             {{-- Timeline --}}
             <div class="bg-white rounded-xl shadow-sm p-6">
                 <h3 class="font-semibold text-gray-700 mb-3 border-b pb-2">🕓 Activity Timeline ({{ $lead->timelineEvents->count() }})</h3>

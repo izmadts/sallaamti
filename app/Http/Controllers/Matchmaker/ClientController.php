@@ -196,12 +196,12 @@ class ClientController extends Controller
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'gender' => ['nullable', 'in:male,female'],
-            // A live progress_link_token means the client unlocks their
-            // progress page with the last 7 digits of this exact phone —
-            // clearing it here would silently and permanently lock them
-            // out, with no clue as to why. Once a token exists, phone can
-            // be changed but never blanked.
-            'phone' => [$lead->progress_link_token ? 'required' : 'nullable', 'string', 'max:30'],
+            // The matchmaker's own phone field is never pre-filled with
+            // the real number (see Lead::maskedPhone()) — blank on submit
+            // means "leave it as-is", not "clear it", same as changing a
+            // password without re-typing the old one. Only a non-empty
+            // submission actually touches the stored value (see below).
+            'phone' => ['nullable', 'string', 'max:30'],
             'email' => ['nullable', 'email', 'max:255'],
             'looking_for' => ['nullable', 'in:self,family_member'],
             'source' => ['required', 'in:facebook,instagram,whatsapp,website,phone,referral,manual,other'],
@@ -213,6 +213,10 @@ class ClientController extends Controller
 
         if (!$canManageTeam || empty($validated['assigned_to'])) {
             unset($validated['assigned_to']);
+        }
+
+        if (!$request->filled('phone')) {
+            unset($validated['phone']);
         }
 
         $reassigned = isset($validated['assigned_to']) && $validated['assigned_to'] != $lead->assigned_to;
@@ -569,7 +573,42 @@ class ClientController extends Controller
 
         MatchmakingTimelineEvent::log($lead, $lead->nikahProfile, 'progress_link_regenerated', 'Progress page link was ' . ($hadTokenAlready ? 'regenerated — the old copy no longer works' : 'generated') . '.');
 
-        return back()->with('status', 'Progress link ready — copy it below and send it to ' . $lead->name . '. They\'ll need the last 7 digits of the WhatsApp number on file to view it, every time.');
+        return back()->with('status', 'Progress link ready — use Copy Link or Send via WhatsApp/SMS below. ' . $lead->name . ' will need the last 7 digits of the WhatsApp number on file to view it, every time.');
+    }
+
+    // The matchmaker never sees or types the client's real phone number
+    // (see Lead::maskedPhone()) — this builds the WhatsApp/SMS deep link
+    // server-side and redirects straight there, so the number only ever
+    // exists in the destination app's own address bar, never rendered as
+    // readable text anywhere on a Sallaamti page. Kept as a GET (not a
+    // form) since it's just an outbound redirect, matching how mailto:/
+    // tel: actions are normally wired up.
+    public function sendLinkVia(Lead $lead, string $channel)
+    {
+        $this->authorizeClient($lead);
+        abort_unless(in_array($channel, ['whatsapp', 'sms'], true), 404);
+        abort_unless($lead->phone, 422, 'Add a phone number for this client first.');
+
+        $link = static::progressLink($lead);
+        abort_unless($link, 422, 'Generate the progress link first.');
+
+        $message = "Assalamualaikum {$lead->name}, here is your secure Sallaamti link: {$link}";
+
+        MatchmakingTimelineEvent::log($lead, $lead->nikahProfile, 'progress_link_sent', 'Progress link sent to client via ' . ($channel === 'whatsapp' ? 'WhatsApp' : 'SMS') . '.');
+
+        if ($channel === 'whatsapp') {
+            $digits = preg_replace('/\D/', '', $lead->phone);
+            // wa.me needs a full international number — a local 03xxxxxxxxx
+            // Pakistani number needs its leading 0 swapped for the country
+            // code, same normalization WhatsappNotifier applies.
+            if (str_starts_with($digits, '0')) {
+                $digits = '92' . substr($digits, 1);
+            }
+
+            return redirect()->away('https://wa.me/' . $digits . '?text=' . rawurlencode($message));
+        }
+
+        return redirect()->away('sms:' . $lead->phone . '?body=' . rawurlencode($message));
     }
 
     public static function progressLink(Lead $lead): ?string
