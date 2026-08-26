@@ -4,23 +4,23 @@
 
 <head>
 
-    <title>Sallaamti Newsletter</title>
+    <title>{{ __('db.Sallaamti Newsletter') }}</title>
 
 </head>
 
 <body>
 
-    <h2>Assalamu Alaikum</h2>
+    <h2>{{ __('db.Assalamu Alaikum') }}</h2>
 
     <p>
 
-        Thank you for subscribing to Sallaamti.
+        {{ __('db.Thank you for subscribing to Sallaamti.') }}
 
     </p>
 
     <p>
 
-        Please click below to verify your email.
+        {{ __('db.Please click below to verify your email.') }}
 
     </p>
 
@@ -28,7 +28,7 @@
 
         <a href="{{ route('subscriber.verify',$subscriber->verification_token) }}">
 
-            Verify Subscription
+            {{ __('db.Verify Subscription') }}
 
         </a>
 
@@ -36,13 +36,13 @@
 
     <p>
 
-        JazakAllahu Khairah
+        {{ __('db.JazakAllahu Khairah') }}
 
     </p>
 
     <p style="font-size: 12px; color: #888;">
 
-        <a href="{{ route('subscriber.unsubscribe', $subscriber->unsubscribe_token) }}" style="color: #888;">Unsubscribe</a>
+        <a href="{{ route('subscriber.unsubscribe', $subscriber->unsubscribe_token) }}" style="color: #888;">{{ __('db.Unsubscribe') }}</a>
 
     </p>
 

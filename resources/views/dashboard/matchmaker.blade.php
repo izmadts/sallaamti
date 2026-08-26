@@ -6,12 +6,12 @@
 
     <div class="max-w-6xl mx-auto space-y-6">
 
-        <div class="rounded-xl p-4 flex items-start gap-3" style="background: var(--teal-light); border: 1px solid #0d6b6b33">
+        <!-- <div class="rounded-xl p-4 flex items-start gap-3" style="background: var(--teal-light); border: 1px solid #0d6b6b33">
             <span class="text-xl">🛡️</span>
             <p class="text-sm text-gray-700">
                 Contact details, CNIC, and photos stay hidden everywhere in this workspace. Proposal links you send are logged (time, device, approximate location) for everyone's safety.
             </p>
-        </div>
+        </div> -->
 
         <a href="{{ route('guide.index') }}" class="rounded-xl p-4 flex items-center gap-3 bg-white border border-gray-200 hover:border-teal-300 hover:shadow-sm transition group">
             <span class="text-2xl">📘</span>

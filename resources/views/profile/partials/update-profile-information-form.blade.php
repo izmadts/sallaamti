@@ -18,7 +18,7 @@
  @csrf
  @method('patch')
  <div>
- <x-input-label for=" avatar" value="Profile Photo" />
+ <x-input-label for=" avatar" value="{{ __('db.Profile Photo') }}" />
  <div class="flex items-center gap-4 mt-2">
  <img src="{{ $user->avatarUrl() }}" class="w-16 h-16 rounded-full object-cover">
  <input type="file" id="avatar" name="avatar" accept="image/*" class="text-sm">
@@ -83,17 +83,17 @@
  </div>
 
  <div class="border-t pt-6 mt-2">
- <h3 class="text-sm font-semibold text-gray-700 mb-1">Public Author Profile</h3>
- <p class="text-xs text-gray-500 mb-4">Shown on any Community Post you publish, and on your public author page — only relevant if you write one.</p>
+ <h3 class="text-sm font-semibold text-gray-700 mb-1">{{ __('db.Public Author Profile') }}</h3>
+ <p class="text-xs text-gray-500 mb-4">{{ __('db.Shown on any Community Post you publish, and on your public author page — only relevant if you write one.') }}</p>
  <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
  <div>
- <x-input-label for="username" value="Public Username (optional)" />
+ <x-input-label for="username" value="{{ __('db.Public Username (optional)') }}" />
  <x-text-input id="username" name="username" type="text" class="mt-1 block w-full" :value="old('username', $user->username)"
- placeholder="e.g. yourname" title="Auto-generated from your name the first time you publish a post, if left blank. Letters, numbers, - and _ only." />
+ placeholder="{{ __('db.e.g. yourname') }}" title="{{ __('db.Auto-generated from your name the first time you publish a post, if left blank. Letters, numbers, - and _ only.') }}" />
  <x-input-error class="mt-2" :messages="$errors->get('username')" />
  </div>
  <div>
- <x-input-label for="public_bio" value="Short Public Bio (optional)" />
+ <x-input-label for="public_bio" value="{{ __('db.Short Public Bio (optional)') }}" />
  <x-text-input id="public_bio" name="public_bio" type="text" class="mt-1 block w-full" :value="old('public_bio', $user->public_bio)" maxlength="300" />
  <x-input-error class="mt-2" :messages="$errors->get('public_bio')" />
  </div>

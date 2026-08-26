@@ -60,15 +60,15 @@
                                 }
                             @endphp
                             <div>
-                                <x-input-label for="height" value="Height" />
+                                <x-input-label for="height" :value="__('db.Height')" />
                                 <x-searchable-select name="height" :options="$heightOptions" :value="old('height', $profile->height)"
                                     placeholder="{{ __('db.Type to search, scroll, or pick from the list') }}" title="{{ __('db.Optional — a fixed list keeps this consistent for matching, but you can type any value.') }}" />
                             </div>
                             <div>
-                                <x-input-label for="marital_status" value="Marital Status" />
+                                <x-input-label for="marital_status" :value="__('db.Marital Status')" />
                                 <select id="marital_status" name="marital_status" required x-model="maritalStatus" class="border-gray-300 rounded-md shadow-sm w-full mt-1"
                                     title="{{ __('db.Please be honest — this matters for compatibility and is checked against your CNIC where relevant.') }}">
-                                    @foreach (['never_married' => 'Never Married', 'divorced' => 'Divorced', 'widowed' => 'Widowed', 'separated' => 'Separated', 'married' => 'Married (Second Wife)'] as $val => $label)
+                                    @foreach (['never_married' => __('db.Never Married'), 'divorced' => __('db.Divorced'), 'widowed' => __('db.Widowed'), 'separated' => __('db.Separated'), 'married' => __('db.Married (Second Wife)')] as $val => $label)
                                     <option value="{{ $val }}" {{ $ms === $val ? 'selected' : '' }}>{{ $label }}</option>
                                     @endforeach
                                 </select>
@@ -105,22 +105,22 @@
                                 $isOtherSect = $currentSect && !in_array($currentSect, $knownSects);
                             @endphp
                             <div x-data="{ sect: '{{ $isOtherSect ? 'Other' : $currentSect }}' }">
-                                <x-input-label for="sect" value="Sect" />
+                                <x-input-label for="sect" :value="__('db.Sect')" />
                                 <select id="sect" name="sect" x-model="sect" required class="border-gray-300 rounded-md shadow-sm w-full mt-1"
                                     title="{{ __('db.Your school of thought — helps us match you with someone compatible.') }}">
-                                    <option value="">Select Sect</option>
-                                    <option value="Sunni">Sunni</option>
-                                    <option value="Shia">Shia</option>
-                                    <option value="Ahle Hadith">Ahle Hadith</option>
-                                    <option value="Deobandi">Deobandi</option>
-                                    <option value="Other">Other</option>
+                                    <option value="">{{ __('db.Select Sect') }}</option>
+                                    <option value="Sunni">{{ __('db.Sunni') }}</option>
+                                    <option value="Shia">{{ __('db.Shia') }}</option>
+                                    <option value="Ahle Hadith">{{ __('db.Ahle Hadith') }}</option>
+                                    <option value="Deobandi">{{ __('db.Deobandi') }}</option>
+                                    <option value="Other">{{ __('db.Other') }}</option>
                                 </select>
                                 <div x-show="sect === 'Other'" x-cloak class="mt-2">
-                                    <x-text-input name="sect_other" type="text" class="w-full" placeholder="Please specify your sect" :value="old('sect_other', $isOtherSect ? $currentSect : '')" />
+                                    <x-text-input name="sect_other" type="text" class="w-full" placeholder="{{ __('db.Please specify your sect') }}" :value="old('sect_other', $isOtherSect ? $currentSect : '')" />
                                 </div>
                             </div>
                             <div>
-                                <x-input-label for="caste" value="Caste (optional)" />
+                                <x-input-label for="caste" :value="__('db.Caste (optional)')" />
                                 <x-text-input id="caste" name="caste" type="text" class="w-full mt-1" :value="old('caste', $profile->caste)"
                                     placeholder="{{ __('db.e.g. Rajput, Sheikh, Syed') }}" title="{{ __('db.Only if caste/biradari matters to your family — leave blank if not.') }}" />
                             </div>
@@ -128,48 +128,48 @@
                         <div class="mt-4 flex items-center gap-2">
                             <input type="checkbox" id="open_to_polygamy" name="open_to_polygamy" value="1" {{ old('open_to_polygamy', $profile->open_to_polygamy) ? 'checked' : '' }} class="rounded"
                                 title="{{ __('db.Only check this if it genuinely applies to you — visible to everyone who views your profile.') }}">
-                            <x-input-label for="open_to_polygamy" value="I am open to a polygamous marriage (e.g. as/marrying a second wife)" />
+                            <x-input-label for="open_to_polygamy" :value="__('db.I am open to a polygamous marriage (e.g. as/marrying a second wife)')" />
                         </div>
                     </x-nikah-section>
 
                     <x-nikah-section :title="__('db.Deen & Lifestyle')" icon="🕌" color="emerald">
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
-                                <x-input-label for="prayer_frequency" value="Prayer (Salah) Regularity" />
+                                <x-input-label for="prayer_frequency" :value="__('db.Prayer (Salah) Regularity')" />
                                 <select id="prayer_frequency" name="prayer_frequency" class="border-gray-300 rounded-md shadow-sm w-full mt-1"
                                     title="{{ __('db.How regularly you pray — helps match people at a similar stage of practice.') }}">
-                                    <option value="">Prefer not to say</option>
-                                    @foreach (['always' => 'Always — 5 times a day', 'usually' => 'Usually', 'sometimes' => 'Sometimes', 'rarely' => 'Rarely'] as $val => $label)
+                                    <option value="">{{ __('db.Prefer not to say') }}</option>
+                                    @foreach (['always' => __('db.Always — 5 times a day'), 'usually' => __('db.Usually'), 'sometimes' => __('db.Sometimes'), 'rarely' => __('db.Rarely')] as $val => $label)
                                     <option value="{{ $val }}" {{ old('prayer_frequency', $profile->prayer_frequency) === $val ? 'selected' : '' }}>{{ $label }}</option>
                                     @endforeach
                                 </select>
                             </div>
                             <div>
-                                <x-input-label for="hijab_or_beard" value="Hijab (for sisters) / Beard (for brothers)" />
+                                <x-input-label for="hijab_or_beard" :value="__('db.Hijab (for sisters) / Beard (for brothers)')" />
                                 <select id="hijab_or_beard" name="hijab_or_beard" class="border-gray-300 rounded-md shadow-sm w-full mt-1"
                                     title="{{ __('db.Sisters: do you wear hijab? Brothers: do you keep a beard?') }}">
-                                    <option value="">Prefer not to say</option>
-                                    @foreach (['yes' => 'Yes', 'sometimes' => 'Sometimes', 'no' => 'No'] as $val => $label)
+                                    <option value="">{{ __('db.Prefer not to say') }}</option>
+                                    @foreach (['yes' => __('db.Yes'), 'sometimes' => __('db.Sometimes'), 'no' => __('db.No')] as $val => $label)
                                     <option value="{{ $val }}" {{ old('hijab_or_beard', $profile->hijab_or_beard) === $val ? 'selected' : '' }}>{{ $label }}</option>
                                     @endforeach
                                 </select>
                             </div>
                             <div>
-                                <x-input-label for="smokes" value="Smoking" />
+                                <x-input-label for="smokes" :value="__('db.Smoking')" />
                                 <select id="smokes" name="smokes" class="border-gray-300 rounded-md shadow-sm w-full mt-1"
                                     title="{{ __('db.Be honest — many members filter matches by this.') }}">
-                                    <option value="">Prefer not to say</option>
-                                    @foreach (['no' => 'No', 'occasionally' => 'Occasionally', 'yes' => 'Yes'] as $val => $label)
+                                    <option value="">{{ __('db.Prefer not to say') }}</option>
+                                    @foreach (['no' => __('db.No'), 'occasionally' => __('db.Occasionally'), 'yes' => __('db.Yes')] as $val => $label)
                                     <option value="{{ $val }}" {{ old('smokes', $profile->smokes) === $val ? 'selected' : '' }}>{{ $label }}</option>
                                     @endforeach
                                 </select>
                             </div>
                             <div>
-                                <x-input-label for="diet" value="Diet" />
+                                <x-input-label for="diet" :value="__('db.Diet')" />
                                 <select id="diet" name="diet" class="border-gray-300 rounded-md shadow-sm w-full mt-1"
                                     title="{{ __('db.How strict you are about halal food.') }}">
-                                    <option value="">Prefer not to say</option>
-                                    @foreach (['halal_only' => 'Halal only', 'halal_mostly' => 'Halal, mostly', 'no_restriction' => 'No restriction'] as $val => $label)
+                                    <option value="">{{ __('db.Prefer not to say') }}</option>
+                                    @foreach (['halal_only' => __('db.Halal only'), 'halal_mostly' => __('db.Halal, mostly'), 'no_restriction' => __('db.No restriction')] as $val => $label)
                                     <option value="{{ $val }}" {{ old('diet', $profile->diet) === $val ? 'selected' : '' }}>{{ $label }}</option>
                                     @endforeach
                                 </select>
@@ -181,17 +181,17 @@
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             @php $educationLevels = ['Matric / O-Levels', 'Intermediate / A-Levels', "Bachelor's", "Master's", 'MPhil / MS', 'PhD', 'Madrassah / Islamic Education']; @endphp
                             <div>
-                                <x-input-label for="education" value="Education" />
+                                <x-input-label for="education" :value="__('db.Education')" />
                                 <x-searchable-select name="education" :options="$educationLevels" :value="old('education', $profile->education)"
                                     placeholder="{{ __('db.Type to search, scroll, or pick from the list') }}" title="{{ __('db.Start typing to filter, scroll the list, or click one to pick it — you can also type something not listed.') }}" />
                             </div>
                             <div>
-                                <x-input-label for="profession" value="Profession" />
+                                <x-input-label for="profession" :value="__('db.Profession')" />
                                 <x-text-input id="profession" name="profession" type="text" class="w-full mt-1" :value="old('profession', $profile->profession)"
                                     placeholder="{{ __('db.e.g. Software Engineer, Teacher, Doctor') }}" title="{{ __('db.What you currently do for work.') }}" />
                             </div>
                             <div>
-                                <x-input-label for="city" value="City" />
+                                <x-input-label for="city" :value="__('db.City')" />
                                 <x-text-input id="city" name="city" type="text" class="w-full mt-1" :value="old('city', $profile->city ?: auth()->user()->city)" required
                                     placeholder="{{ __('db.e.g. Karachi, Lahore, Islamabad') }}" title="{{ __('db.The city you currently live in.') }}" />
                             </div>
@@ -200,8 +200,8 @@
                                 :state-value="old('state', $profile->state)"
                                 :all-states="$countryStates" />
                             <div>
-                                <x-input-label for="ethnicity" value="Ethnicity (optional)" />
-                                <x-text-input id="ethnicity" name="ethnicity" type="text" class="w-full mt-1" :value="old('ethnicity', $profile->ethnicity)" placeholder="e.g. Punjabi, Pashtun, Sindhi, Muhajir"
+                                <x-input-label for="ethnicity" :value="__('db.Ethnicity (optional)')" />
+                                <x-text-input id="ethnicity" name="ethnicity" type="text" class="w-full mt-1" :value="old('ethnicity', $profile->ethnicity)" placeholder="{{ __('db.e.g. Punjabi, Pashtun, Sindhi, Muhajir') }}"
                                     title="{{ __('db.Your ethnic background, if you\'d like to share it.') }}" />
                             </div>
                             @php
@@ -216,7 +216,7 @@
                                 }
                             @endphp
                             <div class="sm:col-span-2" x-data="{ other: {{ $otherLanguageText ? 'true' : 'false' }} }">
-                                <x-input-label value="Language(s) Spoken (optional)" />
+                                <x-input-label :value="__('db.Language(s) Spoken (optional)')" />
                                 <div class="flex flex-wrap gap-2 mt-1">
                                     @foreach ($commonLanguages as $lang)
                                     <label class="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1.5 rounded-full border cursor-pointer transition hover:bg-gray-50" style="border-color: #d1d5db">
@@ -240,23 +240,23 @@
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             @php $familyTypeOptions = ['Joint Family', 'Nuclear Family', 'Living with In-Laws']; @endphp
                             <div>
-                                <x-input-label for="family_type" value="Family Type" />
+                                <x-input-label for="family_type" :value="__('db.Family Type')" />
                                 <x-searchable-select name="family_type" :options="$familyTypeOptions" :value="old('family_type', $profile->family_type)"
                                     placeholder="{{ __('db.Type to search, scroll, or pick from the list') }}" title="{{ __('db.Do you live in a joint family or on your own as a separate household?') }}" />
                             </div>
                             @php $guardianRelOptions = ['Self', 'Father', 'Mother', 'Brother', 'Sister', 'Uncle', 'Aunt', 'Grandfather', 'Grandmother']; @endphp
                             <div>
-                                <x-input-label for="guardian_relation" value="Guardian Relation" />
+                                <x-input-label for="guardian_relation" :value="__('db.Guardian Relation')" />
                                 <x-searchable-select name="guardian_relation" :options="$guardianRelOptions" :value="old('guardian_relation', $profile->guardian_relation)"
                                     placeholder="{{ __('db.Type to search, scroll, or pick from the list') }}" title="{{ __('db.Your relationship to the guardian named below — pick Self if you\'re acting as your own guardian.') }}" />
                             </div>
                             <div>
-                                <x-input-label for="guardian_name" value="Guardian Name" />
+                                <x-input-label for="guardian_name" :value="__('db.Guardian Name')" />
                                 <x-text-input id="guardian_name" name="guardian_name" type="text" class="w-full mt-1" :value="old('guardian_name', $profile->guardian_name)" required
                                     placeholder="{{ __('db.e.g. Muhammad Ahmed') }}" title="{{ __('db.Your Wali/guardian\'s full name — so we can involve your family in the process.') }}" />
                             </div>
                             <div>
-                                <x-input-label for="guardian_contact" value="Guardian Contact" />
+                                <x-input-label for="guardian_contact" :value="__('db.Guardian Contact')" />
                                 <x-text-input id="guardian_contact" name="guardian_contact" type="text" class="w-full mt-1" :value="old('guardian_contact', $profile->guardian_contact)" required
                                     placeholder="{{ __('db.e.g. 03001234567') }}" title="{{ __('db.A number where we or an interested family can reach your guardian.') }}" />
                             </div>
@@ -266,13 +266,13 @@
                     <x-nikah-section :title="__('db.About')" icon="💬" color="purple">
                         <div class="space-y-4">
                             <div>
-                                <x-input-label for="about" value="About Yourself" />
+                                <x-input-label for="about" :value="__('db.About Yourself')" />
                                 <textarea id="about" name="about" rows="3" class="border-gray-300 rounded-md shadow-sm w-full mt-1"
                                     placeholder="{{ __('db.Tell us about your personality, values, daily routine, and what makes you, you...') }}"
                                     title="{{ __('db.This is what other members read first — a few honest sentences go a long way.') }}">{{ old('about', $profile->about) }}</textarea>
                             </div>
                             <div>
-                                <x-input-label for="expectations" value="Looking For" />
+                                <x-input-label for="expectations" :value="__('db.Looking For')" />
                                 <textarea id="expectations" name="expectations" rows="3" class="border-gray-300 rounded-md shadow-sm w-full mt-1"
                                     placeholder="{{ __('db.e.g. Someone practicing, family-oriented, kind-hearted...') }}"
                                     title="{{ __('db.What qualities matter most to you in a spouse.') }}">{{ old('expectations', $profile->expectations) }}</textarea>

@@ -15,7 +15,7 @@
     <div class="flex items-start gap-2 mb-3">
         <p class="font-bold text-gray-800 text-lg flex-1">{{ $i + 1 }}. {{ $q->question }}</p>
         <button type="button" onclick="speakQuizText({{ Js::from($q->question) }})"
-            class="flex-shrink-0 w-9 h-9 rounded-full flex items-center justify-center text-lg hover:bg-teal-50" style="background: var(--teal-light)" title="Read aloud">
+            class="flex-shrink-0 w-9 h-9 rounded-full flex items-center justify-center text-lg hover:bg-teal-50" style="background: var(--teal-light)" title="{{ __('db.Read aloud') }}"
             🔊
         </button>
     </div>

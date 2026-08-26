@@ -1,9 +1,9 @@
 <x-app-layout>
     <x-slot name="header">
         <div class="flex items-center justify-between">
-            <h2 class="font-semibold text-xl text-gray-800 leading-tight">My Learning</h2>
+            <h2 class="font-semibold text-xl text-gray-800 leading-tight">{{ __('db.My Learning') }}</h2>
             @if (auth()->user()->current_streak > 0)
-            <span class="text-sm font-bold px-3 py-1 rounded-full" style="background: var(--teal-light); color: var(--teal)">🔥 {{ auth()->user()->current_streak }} day streak</span>
+            <span class="text-sm font-bold px-3 py-1 rounded-full" style="background: var(--teal-light); color: var(--teal)">🔥 {{ __('db.:days day streak', ['days' => auth()->user()->current_streak]) }}</span>
             @endif
         </div>
     </x-slot>
@@ -22,7 +22,7 @@
                 <x-lesson-stars :total="$item['course']->lessons_count" :completed="$item['completed']" />
             </a>
             @empty
-            <p class="text-gray-500">You haven't enrolled in any courses yet. <a href="{{ route('courses.index') }}" class="text-pink-600 underline">Browse courses</a></p>
+            <p class="text-gray-500">{{ __("db.You haven't enrolled in any courses yet.") }} <a href="{{ route('courses.index') }}" class="text-pink-600 underline">{{ __('db.Browse courses') }}</a></p>
             @endforelse
         </div>
     </div>

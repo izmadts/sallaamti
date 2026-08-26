@@ -4,10 +4,10 @@
             <h2 class="font-semibold text-xl text-gray-800">{{ __('db.Check Profiles') }}</h2>
             <div class="flex gap-2">
                 <a href="{{ route('nikah.saved') }}" class="text-sm bg-white border border-gray-200 px-3 py-1.5 rounded-lg hover:bg-gray-50">
-                    ★ Saved Profiles
+                    ★ {{ __('db.Saved Profiles') }}
                 </a>
                 <a href="{{ route('nikah.interests') }}" class="text-sm bg-white border border-gray-200 px-3 py-1.5 rounded-lg hover:bg-gray-50">
-                    💌 My Interests
+                    💌 {{ __('db.My Interests') }}
                 </a>
             </div>
         </div>

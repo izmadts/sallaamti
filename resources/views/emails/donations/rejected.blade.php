@@ -2,17 +2,17 @@
 
 @section('content')
 
-<h2>Donation Verification</h2>
+<h2>{{ __('db.Donation Verification') }}</h2>
 
 <p>
 
-    Unfortunately we could not verify your payment.
+    {{ __('db.Unfortunately we could not verify your payment.') }}
 
 </p>
 
 <p>
 
-    Reason:
+    {{ __('db.Reason:') }}
 
 </p>
 
@@ -24,7 +24,7 @@
 
 <p>
 
-    Please submit your payment again or contact us.
+    {{ __('db.Please submit your payment again or contact us.') }}
 
 </p>
 

@@ -2,13 +2,13 @@
 
 @section('content')
 
-<h2>Alhamdulillah!</h2>
+<h2>{{ __('db.Alhamdulillah!') }}</h2>
 
-<p>Your donation has been successfully verified.</p>
+<p>{{ __('db.Your donation has been successfully verified.') }}</p>
 
 <p>
 
-    Amount:
+    {{ __('db.Amount:') }}
     <strong>
 
         Rs. {{ number_format($donation->amount,2) }}
@@ -19,7 +19,7 @@
 
 <p>
 
-    May Allah accept your charity and reward you abundantly.
+    {{ __('db.May Allah accept your charity and reward you abundantly.') }}
 
 </p>
 
