@@ -16,9 +16,9 @@
     {{-- Photo --}}
     <div class="relative h-52 bg-gradient-to-br from-teal-50 to-gray-100 flex items-center justify-center overflow-hidden">
         @if ($profile->photos->first())
-        <img src="{{ route('nikah.photos.show', $profile->photos->first()) }}" alt="Profile photo (blurred until you connect)" class="w-full h-full object-cover blur-md scale-105 group-hover:scale-110 transition duration-500">
+        <img src="{{ route('nikah.photos.show', $profile->photos->first()) }}" alt="{{ __('db.Profile photo (blurred until you connect)') }}" class="w-full h-full object-cover blur-md scale-105 group-hover:scale-110 transition duration-500">
         <div class="absolute inset-0 flex items-center justify-center text-white text-sm font-medium bg-black/10">
-            <span class="bg-black/40 backdrop-blur-sm px-3 py-1 rounded-full">🔒 Photo hidden</span>
+            <span class="bg-black/40 backdrop-blur-sm px-3 py-1 rounded-full">🔒 {{ __('db.Photo hidden') }}</span>
         </div>
         @else
         <div class="text-6xl opacity-30">👤</div>
@@ -33,31 +33,31 @@
             <div class="absolute end-0 mt-1 bg-white border rounded-lg shadow-lg z-10 w-36 overflow-hidden">
                 <form method="POST" action="{{ route('nikah.block', $profile) }}">
                     @csrf
-                    <button class="w-full text-left text-xs px-3 py-2 hover:bg-gray-50 text-gray-600">🚫 Block</button>
+                    <button class="w-full text-left text-xs px-3 py-2 hover:bg-gray-50 text-gray-600">🚫 {{ __('db.Block') }}</button>
                 </form>
-                <button onclick="document.getElementById('report-{{ $profile->id }}').classList.toggle('hidden')" class="w-full text-left text-xs px-3 py-2 hover:bg-gray-50 text-red-500">⚑ Report</button>
+                <button onclick="document.getElementById('report-{{ $profile->id }}').classList.toggle('hidden')" class="w-full text-left text-xs px-3 py-2 hover:bg-gray-50 text-red-500">⚑ {{ __('db.Report') }}</button>
             </div>
         </details>
 
         {{-- Trust badge stack — independently-earned signals instead of one binary "Verified" --}}
         <div class="absolute top-2 start-2 flex flex-col gap-1 items-start">
             @if ($badges['cnic'])
-            <span class="text-[11px] font-semibold bg-emerald-500 text-white px-2 py-0.5 rounded-full shadow flex items-center gap-1" title="CNIC verified by our team">🪪 CNIC Verified</span>
+            <span class="text-[11px] font-semibold bg-emerald-500 text-white px-2 py-0.5 rounded-full shadow flex items-center gap-1" title="{{ __('db.CNIC verified by our team') }}">🪪 {{ __('db.CNIC Verified') }}</span>
             @endif
             @if ($badges['payment'])
-            <span class="text-[11px] font-semibold bg-blue-500 text-white px-2 py-0.5 rounded-full shadow flex items-center gap-1" title="Verification fee payment confirmed">💳 Payment Verified</span>
+            <span class="text-[11px] font-semibold bg-blue-500 text-white px-2 py-0.5 rounded-full shadow flex items-center gap-1" title="{{ __('db.Verification fee payment confirmed') }}">💳 {{ __('db.Payment Verified') }}</span>
             @endif
             @if ($badges['guardian'])
-            <span class="text-[11px] font-semibold bg-purple-500 text-white px-2 py-0.5 rounded-full shadow flex items-center gap-1" title="Guardian contact confirmed by our team">👨‍👩‍👦 Guardian Verified</span>
+            <span class="text-[11px] font-semibold bg-purple-500 text-white px-2 py-0.5 rounded-full shadow flex items-center gap-1" title="{{ __('db.Guardian contact confirmed by our team') }}">👨‍👩‍👦 {{ __('db.Guardian Verified') }}</span>
             @endif
             @if (!$badges['cnic'] && !$badges['payment'] && !$badges['guardian'])
-            <span class="text-[11px] font-semibold bg-gray-500/90 text-white px-2 py-0.5 rounded-full shadow flex items-center gap-1" title="Our team hasn't finished reviewing this profile yet">⏳ Verification Pending</span>
+            <span class="text-[11px] font-semibold bg-gray-500/90 text-white px-2 py-0.5 rounded-full shadow flex items-center gap-1" title="{{ __(\"db.Our team hasn't finished reviewing this profile yet\") }}">⏳ {{ __('db.Verification Pending') }}</span>
             @endif
         </div>
 
         {{-- New badge --}}
         @if ($profile->created_at->gt(now()->subDays(14)))
-        <span class="absolute bottom-2 start-2 text-[11px] font-bold text-white px-2 py-0.5 rounded-full shadow" style="background: var(--gold)">✨ New</span>
+        <span class="absolute bottom-2 start-2 text-[11px] font-bold text-white px-2 py-0.5 rounded-full shadow" style="background: var(--gold)">✨ {{ __('db.New') }}</span>
         @endif
 
         {{-- Match % badge --}}
@@ -65,7 +65,7 @@
         <div class="absolute bottom-2 end-2 rounded-full px-2.5 py-1 text-xs font-bold shadow text-white
                     {{ $profile->match_percentage >= 80 ? 'bg-emerald-500' :
                        ($profile->match_percentage >= 50 ? 'bg-amber-500' : 'bg-gray-500') }}">
-            {{ $profile->match_percentage }}% match
+            {{ __('db.:percent% match', ['percent' => $profile->match_percentage]) }}
         </div>
         @endif
     </div>
@@ -75,7 +75,7 @@
         @if ($profile->match_percentage > 0)
         <div class="mb-3">
             <div class="flex justify-between text-xs text-gray-500 mb-1">
-                <span>Match Score</span>
+                <span>{{ __('db.Match Score') }}</span>
                 <span>{{ $profile->match_percentage }}%</span>
             </div>
             <div class="w-full bg-gray-200 rounded-full h-1.5">
@@ -86,7 +86,7 @@
             </div>
             @if (!empty($profile->match_criteria))
             <details class="relative z-10 mt-1">
-                <summary class="text-xs font-medium cursor-pointer" style="color: var(--teal)">Why {{ $profile->match_percentage }}%?</summary>
+                <summary class="text-xs font-medium cursor-pointer" style="color: var(--teal)">{{ __('db.Why :percent%?', ['percent' => $profile->match_percentage]) }}</summary>
                 <ul class="mt-1 space-y-0.5">
                     @foreach ($profile->match_criteria as $c)
                     <li class="text-xs {{ $c['matched'] ? 'text-emerald-600' : 'text-gray-400' }}">
@@ -101,7 +101,7 @@
 
         <div>
             <div class="flex items-center gap-1.5">
-                <h4 class="font-bold text-gray-800 text-lg group-hover:text-[--teal] transition">{{ $profile->age }} yrs · {{ $profile->city }}</h4>
+                <h4 class="font-bold text-gray-800 text-lg group-hover:text-[--teal] transition">{{ __('db.:age yrs · :city', ['age' => $profile->age, 'city' => $profile->city]) }}</h4>
                 @if ($profile->user?->gender)
                 <span class="text-[11px] font-semibold px-1.5 py-0.5 rounded-full {{ $profile->user->gender === 'female' ? 'bg-pink-50 text-pink-500' : 'bg-blue-50 text-blue-500' }}">
                     {{ $profile->user->gender === 'female' ? '♀ ' . __('db.Female') : '♂ ' . __('db.Male') }}
@@ -118,9 +118,9 @@
                 <span class="text-xs font-medium px-2 py-0.5 rounded-full bg-gray-100 text-gray-500">{{ ucfirst(str_replace('_', ' ', $profile->marital_status)) }}</span>
                 <span class="text-xs text-gray-400">
                     @if ($profile->last_active_at && $profile->last_active_at->gt(now()->subDays(7)))
-                    <span class="text-emerald-600 font-medium">● Active {{ $profile->last_active_at->diffForHumans(null, true) }} ago</span>
+                    <span class="text-emerald-600 font-medium">● {{ __('db.Active :time ago', ['time' => $profile->last_active_at->diffForHumans(null, true)]) }}</span>
                     @else
-                    Member since {{ $profile->created_at->format('M Y') }}
+                    {{ __('db.Member since :date', ['date' => $profile->created_at->format('M Y')]) }}
                     @endif
                 </span>
             </div>
@@ -130,11 +130,11 @@
         <div class="relative z-10 mt-3 flex gap-2">
             {{-- Express Interest --}}
             @if (in_array($profile->id, $sentInterestIds))
-            <button disabled class="flex-1 bg-gray-100 text-gray-400 text-sm font-medium py-2 rounded-lg">Sent ✓</button>
+            <button disabled class="flex-1 bg-gray-100 text-gray-400 text-sm font-medium py-2 rounded-lg">{{ __('db.Sent') }} ✓</button>
             @else
             <form method="POST" action="{{ route('nikah.interest.send', $profile) }}" class="flex-1">
                 @csrf
-                <button class="w-full text-white text-sm font-semibold py-2 rounded-lg shadow-sm transition hover:shadow-md hover:brightness-110" style="background: linear-gradient(135deg, #e11d78, #be185d)">💌 Express Interest</button>
+                <button class="w-full text-white text-sm font-semibold py-2 rounded-lg shadow-sm transition hover:shadow-md hover:brightness-110" style="background: linear-gradient(135deg, #e11d78, #be185d)">💌 {{ __('db.Express Interest') }}</button>
             </form>
             @endif
 
@@ -150,8 +150,8 @@
         <div id="report-{{ $profile->id }}" class="relative z-10 hidden mt-2">
             <form method="POST" action="{{ route('nikah.report', $profile) }}" class="text-xs space-y-1">
                 @csrf
-                <input type="text" name="reason" placeholder="Reason" class="border rounded w-full px-2 py-1 text-xs" required>
-                <button class="bg-red-600 text-white px-2 py-1 rounded text-xs w-full">Submit Report</button>
+                <input type="text" name="reason" placeholder="{{ __('db.Reason') }}" class="border rounded w-full px-2 py-1 text-xs" required>
+                <button class="bg-red-600 text-white px-2 py-1 rounded text-xs w-full">{{ __('db.Submit Report') }}</button>
             </form>
         </div>
     </div>

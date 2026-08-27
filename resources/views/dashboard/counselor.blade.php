@@ -36,7 +36,7 @@
                     <a href="{{ route('counselor.bookings.show', $booking) }}" class="py-3 flex justify-between items-center hover:bg-gray-50 -mx-2 px-2 rounded">
                         <div>
                             <p class="text-sm font-medium text-gray-800">{{ $booking->scheduled_at->format('d M Y, h:i A') }} @if($booking->isUrgent()) <span class="text-red-600">🚨</span>@endif</p>
-                            <p class="text-xs text-gray-500">{{ $booking->isAnonymous() ? '🎭 Anonymous member' : $booking->member->name }}</p>
+                            <p class="text-xs text-gray-500">{{ $booking->isAnonymous() ? '🎭 '.__('db.Anonymous member') : $booking->member->name }}</p>
                         </div>
                         <span class="text-xs px-2 py-1 rounded-full bg-{{ $booking->statusColor() }}-100 text-{{ $booking->statusColor() }}-700">
                             {{ ucfirst(str_replace('_', ' ', $booking->status)) }}

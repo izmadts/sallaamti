@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800">My Weekly Schedule</h2>
+        <h2 class="font-semibold text-xl text-gray-800">{{ __('db.My Weekly Schedule') }}</h2>
     </x-slot>
     <div class="py-12">
         <div class="max-w-4xl mx-auto sm:px-6 lg:px-8 space-y-4">
@@ -12,12 +12,12 @@
                 <div class="flex justify-between items-center border rounded p-3 mb-2">
                     <div>
                         <p class="font-medium text-sm">{{ $group->course->title }} — {{ $group->group_name }}</p>
-                        <p class="text-xs text-gray-500">{{ $group->class_time }} | {{ $group->activeStudents->count() }} students</p>
+                        <p class="text-xs text-gray-500">{{ $group->class_time }} | {{ $group->activeStudents->count() }} {{ __('db.students') }}</p>
                     </div>
-                    <a href="{{ route('teacher.groups.show', $group) }}" class="text-xs text-teal-600">Open →</a>
+                    <a href="{{ route('teacher.groups.show', $group) }}" class="text-xs text-teal-600">{{ __('db.Open') }} →</a>
                 </div>
                 @empty
-                <p class="text-xs text-gray-400">No class this day</p>
+                <p class="text-xs text-gray-400">{{ __('db.No class this day') }}</p>
                 @endforelse
             </div>
             @endforeach

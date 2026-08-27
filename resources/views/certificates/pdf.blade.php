@@ -192,18 +192,18 @@
             @endif
 
             @if ($certificate->type === 'course')
-            <div class="english-title">Certificate of Completion</div>
+            <div class="english-title">{{ __('db.Certificate of Completion') }}</div>
             @else
             <div class="english-title">{{ $certificate->title }}</div>
             @endif
 
             <div class="divider">❖ ─────────── ❖</div>
 
-            <div class="presented-to">This certificate is proudly presented to</div>
+            <div class="presented-to">{{ __('db.This certificate is proudly presented to') }}</div>
             <div class="recipient-name">{{ $certificate->user->name }}</div>
 
             @if ($certificate->type === 'course')
-            <div class="course-line">for successfully completing the course</div>
+            <div class="course-line">{{ __('db.for successfully completing the course') }}</div>
             <div class="course-title">{{ $certificate->course?->title }}</div>
             @endif
 
@@ -213,29 +213,29 @@
                         @if (file_exists(public_path('images/signature-director.png')))
                         <img src="{{ public_path('images/signature-director.png') }}" class="signature-img"><br>
                         @endif
-                        <div class="signature-line">Director, Sallaamti</div>
+                        <div class="signature-line">{{ __('db.Director, Sallaamti') }}</div>
                     </td>
                     <td class="qr">
                         <img src="{{ $certificate->qrCodeBase64() }}">
-                        <div class="qr-label">Scan to verify</div>
+                        <div class="qr-label">{{ __('db.Scan to verify') }}</div>
                     </td>
                     <td>
                         @if ($certificate->type === 'course')
                         @if (file_exists(public_path('images/signature-instructor.png')))
                         <img src="{{ public_path('images/signature-instructor.png') }}" class="signature-img"><br>
                         @endif
-                        <div class="signature-line">Course Instructor</div>
+                        <div class="signature-line">{{ __('db.Course Instructor') }}</div>
                         @else
-                        <div class="signature-line">Sallaamti Administration</div>
+                        <div class="signature-line">{{ __('db.Sallaamti Administration') }}</div>
                         @endif
                     </td>
                 </tr>
             </table>
 
             <div class="meta-footer">
-                Issued on {{ $certificate->issued_at->format('d F Y') }} &nbsp;|&nbsp; www.sallaamti.com
+                {{ __('db.Issued on :date', ['date' => $certificate->issued_at->format('d F Y')]) }} &nbsp;|&nbsp; www.sallaamti.com
             </div>
-            <div class="cert-id">Certificate ID: {{ $certificate->certificate_number }}</div>
+            <div class="cert-id">{{ __('db.Certificate ID: :number', ['number' => $certificate->certificate_number]) }}</div>
 
             @if (file_exists(public_path('images/gold-seal.png')))
             <img src="{{ public_path('images/gold-seal.png') }}" class="seal">

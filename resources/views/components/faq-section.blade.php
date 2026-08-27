@@ -10,7 +10,7 @@
     <div class="max-w-3xl mx-auto px-4 sm:px-6">
         <div class="text-center mb-6">
             <span class="inline-flex items-center justify-center w-12 h-12 rounded-full bg-[--gold,#b8962e]/10 text-2xl mb-2">❓</span>
-            <h2 class="text-2xl font-extrabold text-gray-800">{{ $title ?? ($locale === 'ur' ? 'اکثر پوچھے گئے سوالات' : 'Frequently Asked Questions') }}</h2>
+            <h2 class="text-2xl font-extrabold text-gray-800">{{ $title ?? ($locale === 'ur' ? 'اکثر پوچھے گئے سوالات' : __('db.Frequently Asked Questions')) }}</h2>
         </div>
 
         <div class="space-y-3" x-data="{ open: 0 }">
@@ -34,8 +34,8 @@
         </div>
 
         <p class="text-center text-sm text-gray-400 mt-6">
-            {{ $locale === 'ur' ? 'مزید سوال ہے؟' : 'Still have a question?' }}
-            <a href="{{ url('/contact') }}" class="text-[--teal,#0d6b6b] font-medium hover:underline">{{ $locale === 'ur' ? 'ہم سے رابطہ کریں' : 'Contact us' }}</a>
+            {{ $locale === 'ur' ? 'مزید سوال ہے؟' : __('db.Still have a question?') }}
+            <a href="{{ url('/contact') }}" class="text-[--teal,#0d6b6b] font-medium hover:underline">{{ $locale === 'ur' ? 'ہم سے رابطہ کریں' : __('db.Contact us') }}</a>
         </p>
     </div>
 </section>

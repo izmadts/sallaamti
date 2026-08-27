@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">My Contact Requests</h2>
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight">{{ __('db.My Contact Requests') }}</h2>
     </x-slot>
 
     <div class="py-12">
@@ -14,11 +14,11 @@
                 <table class="min-w-full text-sm">
                     <thead class="bg-gray-50 text-gray-500 text-xs uppercase">
                         <tr>
-                            <th class="px-4 py-3 text-left">Profile</th>
-                            <th class="px-4 py-3 text-left">Status</th>
-                            <th class="px-4 py-3 text-left">Requested</th>
-                            <th class="px-4 py-3 text-left">Decided</th>
-                            <th class="px-4 py-3 text-left">Notes</th>
+                            <th class="px-4 py-3 text-left">{{ __('db.Profile') }}</th>
+                            <th class="px-4 py-3 text-left">{{ __('db.Status') }}</th>
+                            <th class="px-4 py-3 text-left">{{ __('db.Requested') }}</th>
+                            <th class="px-4 py-3 text-left">{{ __('db.Decided') }}</th>
+                            <th class="px-4 py-3 text-left">{{ __('db.Notes') }}</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-gray-100">
@@ -26,7 +26,7 @@
                         <tr class="hover:bg-gray-50">
                             <td class="px-4 py-3">
                                 <a href="{{ route('matchmaker.nikah.show', $req->nikah_profile_id) }}" class="text-teal-700 hover:underline font-medium">
-                                    {{ $req->profile?->age }} yrs, {{ ucfirst($req->profile?->user?->gender ?? '—') }} · {{ $req->profile?->city }}
+                                    {{ __('db.:age yrs, :gender · :city', ['age' => $req->profile?->age, 'gender' => ucfirst($req->profile?->user?->gender ?? '—'), 'city' => $req->profile?->city]) }}
                                 </a>
                             </td>
                             <td class="px-4 py-3">
@@ -46,7 +46,7 @@
                         @empty
                         <tr>
                             <td colspan="5" class="px-4 py-8 text-center text-gray-400">
-                                No requests yet. <a href="{{ route('matchmaker.nikah.index') }}" class="text-teal-600 hover:underline">Browse profiles</a> to request contact for a good match.
+                                {{ __('db.No requests yet.') }} <a href="{{ route('matchmaker.nikah.index') }}" class="text-teal-600 hover:underline">{{ __('db.Browse profiles') }}</a> {{ __('db.to request contact for a good match.') }}
                             </td>
                         </tr>
                         @endforelse

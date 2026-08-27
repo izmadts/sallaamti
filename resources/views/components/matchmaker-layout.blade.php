@@ -14,7 +14,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ config('app.name') }} — Match Maker</title>
+    <title>{{ config('app.name') }} — {{ __('db.Match Maker') }}</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     <style>
@@ -58,8 +58,8 @@
                 <div class="w-8 h-8 bg-pink-600 rounded-full flex items-center justify-center text-xs font-bold">S</div>
                 @endif
                 <div>
-                    <p class="font-bold text-white leading-none">Sallaamti</p>
-                    <p class="text-pink-300 text-xs">Match Maker Desk</p>
+                    <p class="font-bold text-white leading-none">{{ __('db.Sallaamti') }}</p>
+                    <p class="text-pink-300 text-xs">{{ __('db.Match Maker Desk') }}</p>
                 </div>
             </div>
 
@@ -69,61 +69,61 @@
                 <a href="{{ route('dashboard.matchmaker') }}"
                     class="flex items-center gap-3 px-3 py-2 rounded-lg transition
                           {{ request()->routeIs('dashboard.matchmaker') ? 'bg-pink-700 text-white' : 'text-pink-100 hover:bg-pink-800' }}">
-                    <span class="text-base">🏠</span> Dashboard
+                    <span class="text-base">🏠</span> {{ __('db.Dashboard') }}
                 </a>
 
-                <p class="text-pink-400 text-xs uppercase tracking-widest px-3 pt-4 pb-1">Clients</p>
+                <p class="text-pink-400 text-xs uppercase tracking-widest px-3 pt-4 pb-1">{{ __('db.Clients') }}</p>
 
                 <a href="{{ route('matchmaker.clients.index') }}"
                     class="flex items-center gap-3 px-3 py-2 rounded-lg transition
                           {{ request()->routeIs('matchmaker.clients.*') ? 'bg-pink-700 text-white' : 'text-pink-100 hover:bg-pink-800' }}">
-                    <span class="text-base">🗂️</span> My Clients
+                    <span class="text-base">🗂️</span> {{ __('db.My Clients') }}
                 </a>
                 <a href="{{ route('matchmaker.clients.create') }}"
                     class="flex items-center gap-3 px-3 py-2 rounded-lg transition
                           {{ request()->routeIs('matchmaker.clients.create') ? 'bg-pink-700 text-white' : 'text-pink-100 hover:bg-pink-800' }}">
-                    <span class="text-base">➕</span> Add Client
+                    <span class="text-base">➕</span> {{ __('db.Add Client') }}
                 </a>
 
-                <p class="text-pink-400 text-xs uppercase tracking-widest px-3 pt-4 pb-1">Nikah Profiles</p>
+                <p class="text-pink-400 text-xs uppercase tracking-widest px-3 pt-4 pb-1">{{ __('db.Nikah Profiles') }}</p>
 
                 <a href="{{ route('matchmaker.nikah.index') }}"
                     class="flex items-center gap-3 px-3 py-2 rounded-lg transition
                           {{ request()->routeIs('matchmaker.nikah.index') || request()->routeIs('matchmaker.nikah.show') ? 'bg-pink-700 text-white' : 'text-pink-100 hover:bg-pink-800' }}">
-                    <span class="text-base">🔎</span> Browse Profiles
+                    <span class="text-base">🔎</span> {{ __('db.Browse Profiles') }}
                 </a>
                 <a href="{{ route('matchmaker.nikah.requests') }}"
                     class="flex items-center gap-3 px-3 py-2 rounded-lg transition
                           {{ request()->routeIs('matchmaker.nikah.requests') ? 'bg-pink-700 text-white' : 'text-pink-100 hover:bg-pink-800' }}">
-                    <span class="text-base">📨</span> My Contact Requests
+                    <span class="text-base">📨</span> {{ __('db.My Contact Requests') }}
                 </a>
                 @if (auth()->user()->can('nikah.create-profile') || auth()->user()->can('nikah.manage'))
                 <a href="{{ route('matchmaker.nikah.profiles.create') }}"
                     class="flex items-center gap-3 px-3 py-2 rounded-lg transition
                           {{ request()->routeIs('matchmaker.nikah.profiles.create*') ? 'bg-pink-700 text-white' : 'text-pink-100 hover:bg-pink-800' }}">
-                    <span class="text-base">🚶</span> Register Walk-in Client
+                    <span class="text-base">🚶</span> {{ __('db.Register Walk-in Client') }}
                 </a>
                 @endif
                 <a href="{{ route('nikah.packages') }}" target="_blank"
                     class="flex items-center gap-3 px-3 py-2 rounded-lg transition text-pink-100 hover:bg-pink-800">
-                    <span class="text-base">💳</span> Nikah Packages
+                    <span class="text-base">💳</span> {{ __('db.Nikah Packages') }}
                 </a>
                 <a href="{{ route('matchmaker.commissions.index') }}"
                     class="flex items-center gap-3 px-3 py-2 rounded-lg transition
                           {{ request()->routeIs('matchmaker.commissions*') ? 'bg-pink-700 text-white' : 'text-pink-100 hover:bg-pink-800' }}">
-                    <span class="text-base">💰</span> My Commissions
+                    <span class="text-base">💰</span> {{ __('db.My Commissions') }}
                 </a>
                 <a href="{{ route('matchmaker.performance.index') }}"
                     class="flex items-center gap-3 px-3 py-2 rounded-lg transition
                           {{ request()->routeIs('matchmaker.performance*') ? 'bg-pink-700 text-white' : 'text-pink-100 hover:bg-pink-800' }}">
-                    <span class="text-base">📊</span> My Performance
+                    <span class="text-base">📊</span> {{ __('db.My Performance') }}
                 </a>
 
-                <p class="text-pink-400 text-xs uppercase tracking-widest px-3 pt-4 pb-1">Help</p>
+                <p class="text-pink-400 text-xs uppercase tracking-widest px-3 pt-4 pb-1">{{ __('db.Help') }}</p>
                 <a href="{{ route('guide.index') }}"
                     class="flex items-center gap-3 px-3 py-2 rounded-lg transition
                           {{ request()->routeIs('guide.*') ? 'bg-pink-700 text-white' : 'text-pink-100 hover:bg-pink-800' }}">
-                    <span class="text-base">📘</span> Match Maker Guide
+                    <span class="text-base">📘</span> {{ __('db.Match Maker Guide') }}
                 </a>
             </nav>
 
@@ -131,12 +131,12 @@
             <div class="px-3 py-4 border-t border-pink-700 space-y-1">
                 <a href="{{ route('dashboard') }}"
                     class="flex items-center gap-3 px-3 py-2 rounded-lg text-pink-300 hover:bg-pink-800 text-sm transition">
-                    <span class="text-base">↩️</span> Back to Site
+                    <span class="text-base">↩️</span> {{ __('db.Back to Site') }}
                 </a>
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
                     <button class="w-full flex items-center gap-3 px-3 py-2 rounded-lg text-pink-300 hover:bg-pink-800 text-sm transition text-left">
-                        <span class="text-base">🚪</span> Logout
+                        <span class="text-base">🚪</span> {{ __('db.Logout') }}
                     </button>
                 </form>
             </div>
@@ -185,7 +185,7 @@
                 @if (isset($errors) && $errors->any())
                 <div class="mb-6">
                     <x-alert type="error">
-                        <strong>Please fix the following before saving:</strong>
+                        <strong>{{ __('db.Please fix the following before saving:') }}</strong>
                         <ul class="list-disc ms-5 mt-1">
                             @foreach ($errors->all() as $error)
                             <li>{{ $error }}</li>

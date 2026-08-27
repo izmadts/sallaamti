@@ -1,7 +1,7 @@
 <x-matchmaker-layout>
     <x-slot name="header">
         <div class="flex items-center gap-2 text-sm">
-            <a href="{{ route('matchmaker.clients.index') }}" class="text-gray-400 hover:text-gray-600">My Clients</a>
+            <a href="{{ route('matchmaker.clients.index') }}" class="text-gray-400 hover:text-gray-600">{{ __('db.My Clients') }}</a>
             <span class="text-gray-300">›</span>
             <span class="text-gray-700 font-semibold">{{ $lead->name }}</span>
         </div>
@@ -29,7 +29,7 @@
         <div class="bg-white rounded-xl shadow-sm p-6 flex flex-wrap justify-between items-start gap-4">
             <div>
                 <h2 class="text-xl font-bold text-gray-800">{{ $lead->name }}</h2>
-                <p class="text-sm text-gray-500">{{ $lead->maskedPhone() ?: '— no phone —' }} · {{ $lead->email ?: '— no email —' }}</p>
+                <p class="text-sm text-gray-500">{{ $lead->maskedPhone() ?: __('db.— no phone —') }} · {{ $lead->email ?: __('db.— no email —') }}</p>
                 <span class="inline-block mt-2 text-xs px-2 py-0.5 rounded-full
                     {{ match($lead->status) {
                         'new' => 'bg-blue-100 text-blue-800',
@@ -43,13 +43,13 @@
             </div>
             <div class="flex gap-2">
                 @if ($lead->isConverted())
-                <a href="{{ route(auth()->user()->can('nikah.view') ? 'admin.nikah.show' : 'matchmaker.nikah.show', $lead->nikah_profile_id) }}" class="text-sm font-semibold px-3 py-2 rounded-lg text-white hover:opacity-90" style="background: var(--mm-plum);">View Nikah Profile →</a>
+                <a href="{{ route(auth()->user()->can('nikah.view') ? 'admin.nikah.show' : 'matchmaker.nikah.show', $lead->nikah_profile_id) }}" class="text-sm font-semibold px-3 py-2 rounded-lg text-white hover:opacity-90" style="background: var(--mm-plum);">{{ __('db.View Nikah Profile') }} →</a>
                 @else
                 <form method="POST" action="{{ route('matchmaker.clients.convert', $lead) }}">
                     @csrf
                     <button class="text-sm font-semibold px-3 py-2 rounded-lg text-white hover:opacity-90" style="background: #be185d"
-                        onclick="return confirm('Start registering {{ $lead->name }} as a real Sallaamti account? You\'ll continue in the walk-in wizard with their details pre-filled.')">
-                        Convert to Registered Profile →
+                        onclick="return confirm({{ Js::from(__('db.Start registering :name as a real Sallaamti account? You\'ll continue in the walk-in wizard with their details pre-filled.', ['name' => $lead->name])) }})">
+                        {{ __('db.Convert to Registered Profile') }} →
                     </button>
                 </form>
                 @endif
@@ -59,22 +59,22 @@
         {{-- Tabs --}}
         <div class="bg-white rounded-xl shadow-sm">
             <div class="flex flex-wrap border-b overflow-x-auto">
-                <button @click="tab = 'overview'" :class="tab === 'overview' ? 'border-b-2 font-semibold' : 'text-gray-500'" style="border-color: var(--mm-plum);" class="px-4 py-3 text-sm whitespace-nowrap">Overview</button>
-                <button @click="tab = 'requirements'" :class="tab === 'requirements' ? 'border-b-2 font-semibold' : 'text-gray-500'" style="border-color: var(--mm-plum);" class="px-4 py-3 text-sm whitespace-nowrap">Requirements</button>
-                <button @click="tab = 'shortlist'" :class="tab === 'shortlist' ? 'border-b-2 font-semibold' : 'text-gray-500'" style="border-color: var(--mm-plum);" class="px-4 py-3 text-sm whitespace-nowrap">Shortlist ({{ $lead->shortlistItems->count() }})</button>
-                <button @click="tab = 'batches'" :class="tab === 'batches' ? 'border-b-2 font-semibold' : 'text-gray-500'" style="border-color: var(--mm-plum);" class="px-4 py-3 text-sm whitespace-nowrap">Proposal Batches ({{ $lead->proposalBatches->count() }})</button>
-                <button @click="tab = 'timeline'" :class="tab === 'timeline' ? 'border-b-2 font-semibold' : 'text-gray-500'" style="border-color: var(--mm-plum);" class="px-4 py-3 text-sm whitespace-nowrap">Timeline ({{ $lead->timelineEvents->count() }})</button>
+                <button @click="tab = 'overview'" :class="tab === 'overview' ? 'border-b-2 font-semibold' : 'text-gray-500'" style="border-color: var(--mm-plum);" class="px-4 py-3 text-sm whitespace-nowrap">{{ __('db.Overview') }}</button>
+                <button @click="tab = 'requirements'" :class="tab === 'requirements' ? 'border-b-2 font-semibold' : 'text-gray-500'" style="border-color: var(--mm-plum);" class="px-4 py-3 text-sm whitespace-nowrap">{{ __('db.Requirements') }}</button>
+                <button @click="tab = 'shortlist'" :class="tab === 'shortlist' ? 'border-b-2 font-semibold' : 'text-gray-500'" style="border-color: var(--mm-plum);" class="px-4 py-3 text-sm whitespace-nowrap">{{ __('db.Shortlist (:count)', ['count' => $lead->shortlistItems->count()]) }}</button>
+                <button @click="tab = 'batches'" :class="tab === 'batches' ? 'border-b-2 font-semibold' : 'text-gray-500'" style="border-color: var(--mm-plum);" class="px-4 py-3 text-sm whitespace-nowrap">{{ __('db.Proposal Batches (:count)', ['count' => $lead->proposalBatches->count()]) }}</button>
+                <button @click="tab = 'timeline'" :class="tab === 'timeline' ? 'border-b-2 font-semibold' : 'text-gray-500'" style="border-color: var(--mm-plum);" class="px-4 py-3 text-sm whitespace-nowrap">{{ __('db.Timeline (:count)', ['count' => $lead->timelineEvents->count()]) }}</button>
             </div>
 
             {{-- === OVERVIEW === --}}
             <div x-show="tab === 'overview'" class="p-6 space-y-4">
                 @unless ($lead->isConverted())
                 <div class="p-3 bg-amber-50 border border-amber-200 rounded-lg text-xs text-amber-800">
-                    Not registered yet. Already have a profile for them (started separately)?
+                    {{ __('db.Not registered yet. Already have a profile for them (started separately)?') }}
                     <form method="POST" action="{{ route('matchmaker.clients.link-profile', $lead) }}" class="inline-flex items-center gap-2 mt-1">
                         @csrf
-                        <input type="number" name="nikah_profile_id" placeholder="Profile ID" class="border-gray-300 rounded text-xs w-24 py-1" required>
-                        <button class="text-xs text-white px-2 py-1 rounded" style="background: var(--mm-plum);">Link it</button>
+                        <input type="number" name="nikah_profile_id" placeholder="{{ __('db.Profile ID') }}" class="border-gray-300 rounded text-xs w-24 py-1" required>
+                        <button class="text-xs text-white px-2 py-1 rounded" style="background: var(--mm-plum);">{{ __('db.Link it') }}</button>
                     </form>
                 </div>
                 @endunless
@@ -84,13 +84,13 @@
                     @method('PUT')
                     <div class="grid grid-cols-2 gap-4">
                         <div>
-                            <x-input-label for="name" value="Name" />
+                            <x-input-label for="name" :value="__('db.Name')" />
                             <x-text-input id="name" name="name" type="text" class="w-full mt-1" :value="$lead->name" required />
                         </div>
                         <div>
-                            <x-input-label for="status" value="Status" />
+                            <x-input-label for="status" :value="__('db.Status')" />
                             <select id="status" name="status" required class="border-gray-300 rounded-md shadow-sm w-full mt-1">
-                                @foreach (['new' => 'New', 'contacted' => 'Contacted', 'interested' => 'Interested', 'registered' => 'Registered', 'not_interested' => 'Not Interested', 'closed' => 'Closed'] as $value => $label)
+                                @foreach (['new' => __('db.New'), 'contacted' => __('db.Contacted'), 'interested' => __('db.Interested'), 'registered' => __('db.Registered'), 'not_interested' => __('db.Not Interested'), 'closed' => __('db.Closed')] as $value => $label)
                                 <option value="{{ $value }}" {{ $lead->status === $value ? 'selected' : '' }}>{{ $label }}</option>
                                 @endforeach
                             </select>
@@ -98,7 +98,7 @@
                     </div>
                     @if ($canManageTeam)
                     <div>
-                        <x-input-label for="assigned_to" value="Assigned To" />
+                        <x-input-label for="assigned_to" :value="__('db.Assigned To')" />
                         <select id="assigned_to" name="assigned_to" class="border-gray-300 rounded-md shadow-sm w-full mt-1">
                             @foreach ($matchmakers as $mm)
                             <option value="{{ $mm->id }}" {{ $lead->assigned_to === $mm->id ? 'selected' : '' }}>{{ $mm->name }}</option>
@@ -108,44 +108,44 @@
                     @endif
                     <div class="grid grid-cols-2 gap-4">
                         <div>
-                            <x-input-label for="phone" value="Phone / WhatsApp" />
-                            <x-text-input id="phone" name="phone" type="text" class="w-full mt-1" value="" placeholder="{{ $lead->maskedPhone() ?: 'Not on file yet' }} — leave blank to keep" />
-                            <p class="text-xs text-gray-400 mt-1">Hidden for privacy. Type a new number here only to correct it — use Send via WhatsApp/SMS below to actually reach {{ $lead->name }}.</p>
+                            <x-input-label for="phone" :value="__('db.Phone / WhatsApp')" />
+                            <x-text-input id="phone" name="phone" type="text" class="w-full mt-1" value="" placeholder="{{ $lead->maskedPhone() ?: __('db.Not on file yet') }} — {{ __('db.leave blank to keep') }}" />
+                            <p class="text-xs text-gray-400 mt-1">{{ __('db.Hidden for privacy. Type a new number here only to correct it — use Send via WhatsApp/SMS below to actually reach :name.', ['name' => $lead->name]) }}</p>
                         </div>
                         <div>
-                            <x-input-label for="email" value="Email" />
+                            <x-input-label for="email" :value="__('db.Email')" />
                             <x-text-input id="email" name="email" type="email" class="w-full mt-1" :value="$lead->email" />
                         </div>
                     </div>
                     <div class="grid grid-cols-3 gap-4">
                         <div>
-                            <x-input-label for="gender" value="Gender" />
+                            <x-input-label for="gender" :value="__('db.Gender')" />
                             <select id="gender" name="gender" class="border-gray-300 rounded-md shadow-sm w-full mt-1">
-                                <option value="">Unknown</option>
-                                <option value="male" {{ $lead->gender === 'male' ? 'selected' : '' }}>Male</option>
-                                <option value="female" {{ $lead->gender === 'female' ? 'selected' : '' }}>Female</option>
+                                <option value="">{{ __('db.Unknown') }}</option>
+                                <option value="male" {{ $lead->gender === 'male' ? 'selected' : '' }}>{{ __('db.Male') }}</option>
+                                <option value="female" {{ $lead->gender === 'female' ? 'selected' : '' }}>{{ __('db.Female') }}</option>
                             </select>
                         </div>
                         <div>
-                            <x-input-label for="source" value="Source" />
+                            <x-input-label for="source" :value="__('db.Source')" />
                             <select id="source" name="source" required class="border-gray-300 rounded-md shadow-sm w-full mt-1">
-                                @foreach (['facebook' => 'Facebook', 'instagram' => 'Instagram', 'whatsapp' => 'WhatsApp', 'website' => 'Website', 'phone' => 'Phone', 'referral' => 'Referral', 'manual' => 'Manual', 'other' => 'Other'] as $value => $label)
+                                @foreach (['facebook' => __('db.Facebook'), 'instagram' => __('db.Instagram'), 'whatsapp' => __('db.WhatsApp'), 'website' => __('db.Website'), 'phone' => __('db.Phone'), 'referral' => __('db.Referral'), 'manual' => __('db.Manual'), 'other' => __('db.Other')] as $value => $label)
                                 <option value="{{ $value }}" {{ $lead->source === $value ? 'selected' : '' }}>{{ $label }}</option>
                                 @endforeach
                             </select>
                         </div>
                         <div>
-                            <x-input-label for="next_follow_up_at" value="Next Follow-up" />
+                            <x-input-label for="next_follow_up_at" :value="__('db.Next Follow-up')" />
                             <x-text-input id="next_follow_up_at" name="next_follow_up_at" type="date" class="w-full mt-1" :value="$lead->next_follow_up_at?->toDateString()" />
                         </div>
                     </div>
                     <div>
-                        <x-input-label for="notes" value="Notes" />
+                        <x-input-label for="notes" :value="__('db.Notes')" />
                         <textarea id="notes" name="notes" rows="3" class="border-gray-300 rounded-md shadow-sm w-full mt-1">{{ $lead->notes }}</textarea>
                     </div>
                     <div class="flex justify-between items-center pt-2">
-                        <p class="text-xs text-gray-400">Added {{ $lead->created_at->format('d M Y') }} by {{ $lead->createdBy?->name ?? '—' }}</p>
-                        <button class="text-white text-sm font-semibold px-5 py-2.5 rounded-lg hover:opacity-90 hover:-translate-y-0.5 transition shadow-sm" style="background: var(--mm-plum);">Save Changes</button>
+                        <p class="text-xs text-gray-400">{{ __('db.Added :date by :name', ['date' => $lead->created_at->format('d M Y'), 'name' => $lead->createdBy?->name ?? '—']) }}</p>
+                        <button class="text-white text-sm font-semibold px-5 py-2.5 rounded-lg hover:opacity-90 hover:-translate-y-0.5 transition shadow-sm" style="background: var(--mm-plum);">{{ __('db.Save Changes') }}</button>
                     </div>
                 </form>
 
@@ -164,43 +164,43 @@
 
                 {{-- Progress page link — a standing link the client can revisit to see their own status/timeline/proposals, gated by their WhatsApp number's last 7 digits each visit --}}
                 <div class="mt-6 pt-6 border-t">
-                    <h4 class="font-semibold text-gray-700 mb-1">🔗 Client Progress Page</h4>
-                    <p class="text-xs text-gray-500 mb-3">A standing link {{ $lead->name }} can revisit any time to see their status, timeline, and proposal history. They'll enter the last 7 digits of the phone number above to unlock it — every time, nothing is remembered.</p>
+                    <h4 class="font-semibold text-gray-700 mb-1">🔗 {{ __('db.Client Progress Page') }}</h4>
+                    <p class="text-xs text-gray-500 mb-3">{{ __("db.A standing link :name can revisit any time to see their status, timeline, and proposal history. They'll enter the last 7 digits of the phone number above to unlock it — every time, nothing is remembered.", ['name' => $lead->name]) }}</p>
 
                     @php
                         $progressLink = \App\Http\Controllers\Matchmaker\ClientController::progressLink($lead);
                         $initials = collect(preg_split('/\s+/', trim($lead->name)))->filter()->map(fn ($part) => mb_strtoupper(mb_substr($part, 0, 1)))->take(2)->implode('');
-                        $linkTitle = $initials . ' — Link Generated by ' . ($lead->assignedTo->name ?? auth()->user()->name);
+                        $linkTitle = $initials . ' — ' . __('db.Link Generated by :name', ['name' => $lead->assignedTo->name ?? auth()->user()->name]);
                     @endphp
                     @if ($progressLink)
                     <p class="text-xs font-semibold text-gray-600 mb-2">🔗 {{ $linkTitle }}</p>
-                    <p class="text-xs text-gray-400 mb-2">The link itself isn't shown here — copy it and paste it into WhatsApp, Messenger, SMS, or wherever you're already talking to {{ $lead->name }}. Only admin can see the raw link.</p>
+                    <p class="text-xs text-gray-400 mb-2">{{ __("db.The link itself isn't shown here — copy it and paste it into WhatsApp, Messenger, SMS, or wherever you're already talking to :name. Only admin can see the raw link.", ['name' => $lead->name]) }}</p>
                     @endif
                     <div class="flex flex-wrap items-center gap-2">
                         @if ($progressLink)
-                        <button type="button" data-link="{{ $progressLink }}" onclick="navigator.clipboard.writeText(this.dataset.link); this.textContent = '✅ Copied!'; setTimeout(() => this.textContent = '📋 Copy Link', 1500);" class="text-xs font-semibold px-3 py-1.5 rounded-lg text-white hover:opacity-90" style="background: var(--mm-plum);">📋 Copy Link</button>
+                        <button type="button" data-link="{{ $progressLink }}" onclick="navigator.clipboard.writeText(this.dataset.link); this.textContent = '✅ {{ __('db.Copied!') }}'; setTimeout(() => this.textContent = '📋 {{ __('db.Copy Link') }}', 1500);" class="text-xs font-semibold px-3 py-1.5 rounded-lg text-white hover:opacity-90" style="background: var(--mm-plum);">📋 {{ __('db.Copy Link') }}</button>
                         @endif
-                        <form method="POST" action="{{ route('matchmaker.clients.progress-link.regenerate', $lead) }}" @if($progressLink) onsubmit="return confirm('Generate a new progress link? The old one will stop working immediately.')" @endif>
+                        <form method="POST" action="{{ route('matchmaker.clients.progress-link.regenerate', $lead) }}" @if($progressLink) onsubmit="return confirm({{ Js::from(__('db.Generate a new progress link? The old one will stop working immediately.')) }})" @endif>
                             @csrf
-                            <button class="text-xs font-semibold px-2 py-1.5 rounded-lg border" style="border-color: var(--mm-plum); color: var(--mm-plum);">{{ $progressLink ? '↻ Regenerate' : '+ Generate Link' }}</button>
+                            <button class="text-xs font-semibold px-2 py-1.5 rounded-lg border" style="border-color: var(--mm-plum); color: var(--mm-plum);">{{ $progressLink ? '↻ ' . __('db.Regenerate') : '+ ' . __('db.Generate Link') }}</button>
                         </form>
                     </div>
                     @unless ($lead->phone)
-                    <p class="text-xs text-amber-700 mt-2">Add a phone number above first — that's what {{ $lead->name }} will enter to unlock the page.</p>
+                    <p class="text-xs text-amber-700 mt-2">{{ __("db.Add a phone number above first — that's what :name will enter to unlock the page.", ['name' => $lead->name]) }}</p>
                     @endunless
                 </div>
 
                 {{-- Consent — see App\Models\MatchmakingConsent. Matchmaking Participation gates sending proposal batches. --}}
                 <div class="mt-6 pt-6 border-t">
-                    <h4 class="font-semibold text-gray-700 mb-1">✅ Consent</h4>
-                    <p class="text-xs text-gray-500 mb-3">Best way: ask them to confirm it themselves through their secure link — the system asks them directly, no guesswork about what they actually agreed to. If that's not possible, you can still record consent you got verbally, by phone, or in person. An active <strong>Matchmaking Participation</strong> consent is required before you can send this client any proposals.</p>
+                    <h4 class="font-semibold text-gray-700 mb-1">✅ {{ __('db.Consent') }}</h4>
+                    <p class="text-xs text-gray-500 mb-3">{!! __("db.Best way: ask them to confirm it themselves through their secure link — the system asks them directly, no guesswork about what they actually agreed to. If that's not possible, you can still record consent you got verbally, by phone, or in person. An active :participation consent is required before you can send this client any proposals.", ['participation' => '<strong>' . __('db.Matchmaking Participation') . '</strong>']) !!}</p>
 
                     @if ($lead->consentRequests->where('status', 'pending')->isNotEmpty())
                     <div class="space-y-1.5 mb-3">
                         @foreach ($lead->consentRequests->where('status', 'pending') as $req)
                         <div class="text-xs bg-blue-50 text-blue-800 rounded-lg px-3 py-2">
-                            ⏳ Waiting on {{ $lead->name }} to confirm: <strong>{{ explode(' — ', \App\Models\MatchmakingConsent::TYPES[$req->consent_type])[0] }}</strong>
-                            <span class="text-blue-500"> · requested {{ $req->requested_at->diffForHumans() }}</span>
+                            ⏳ {{ __('db.Waiting on :name to confirm:', ['name' => $lead->name]) }} <strong>{{ explode(' — ', \App\Models\MatchmakingConsent::TYPES[$req->consent_type])[0] }}</strong>
+                            <span class="text-blue-500"> · {{ __('db.requested :time', ['time' => $req->requested_at->diffForHumans()]) }}</span>
                         </div>
                         @endforeach
                     </div>
@@ -212,15 +212,15 @@
                         <div class="flex items-center justify-between text-xs bg-gray-50 rounded-lg px-3 py-2">
                             <div>
                                 <span class="font-medium {{ $consent->isActive() ? 'text-gray-800' : 'text-gray-400 line-through' }}">{{ explode(' — ', \App\Models\MatchmakingConsent::TYPES[$consent->consent_type])[0] }}</span>
-                                <span class="text-gray-400"> · {{ \App\Models\MatchmakingConsent::METHODS[$consent->method] ?? $consent->method }} · {{ $consent->granted_at->format('d M Y') }} · by {{ $consent->recordedBy?->name ?? '—' }}</span>
+                                <span class="text-gray-400"> · {{ \App\Models\MatchmakingConsent::METHODS[$consent->method] ?? $consent->method }} · {{ $consent->granted_at->format('d M Y') }} · {{ __('db.by :name', ['name' => $consent->recordedBy?->name ?? '—']) }}</span>
                                 @if (!$consent->isActive())
-                                <span class="text-red-500"> · revoked {{ $consent->revoked_at->format('d M Y') }} by {{ $consent->revokedBy?->name ?? '—' }}</span>
+                                <span class="text-red-500"> · {{ __('db.revoked :date by :name', ['date' => $consent->revoked_at->format('d M Y'), 'name' => $consent->revokedBy?->name ?? '—']) }}</span>
                                 @endif
                             </div>
                             @if ($consent->isActive())
-                            <form method="POST" action="{{ route('matchmaker.clients.consents.revoke', [$lead, $consent]) }}" onsubmit="return confirm('Revoke this consent?')">
+                            <form method="POST" action="{{ route('matchmaker.clients.consents.revoke', [$lead, $consent]) }}" onsubmit="return confirm({{ Js::from(__('db.Revoke this consent?')) }})">
                                 @csrf
-                                <button class="text-red-500 hover:underline">Revoke</button>
+                                <button class="text-red-500 hover:underline">{{ __('db.Revoke') }}</button>
                             </form>
                             @endif
                         </div>
@@ -231,25 +231,25 @@
                     <form method="POST" action="{{ route('matchmaker.clients.consents.request', $lead) }}" class="flex flex-wrap gap-2 items-end mb-3">
                         @csrf
                         <div>
-                            <label class="text-xs text-gray-500">Type</label>
+                            <label class="text-xs text-gray-500">{{ __('db.Type') }}</label>
                             <select name="consent_type" required class="border-gray-300 rounded text-sm block">
                                 @foreach (\App\Models\MatchmakingConsent::TYPES as $value => $label)
                                 <option value="{{ $value }}" title="{{ $label }}">{{ explode(' — ', $label)[0] }}</option>
                                 @endforeach
                             </select>
                         </div>
-                        <button class="text-xs font-semibold px-3 py-1.5 rounded-lg border" style="border-color: var(--mm-plum); color: var(--mm-plum);">🔗 Ask Them to Confirm via Link</button>
+                        <button class="text-xs font-semibold px-3 py-1.5 rounded-lg border" style="border-color: var(--mm-plum); color: var(--mm-plum);">🔗 {{ __('db.Ask Them to Confirm via Link') }}</button>
                         @unless ($lead->phone)
-                        <span class="text-xs text-amber-700">Add a phone number above first.</span>
+                        <span class="text-xs text-amber-700">{{ __('db.Add a phone number above first.') }}</span>
                         @endunless
                     </form>
 
-                    <p class="text-xs text-gray-400 mb-2">— or, if you already got it verbally, by phone, or in person —</p>
+                    <p class="text-xs text-gray-400 mb-2">{{ __('db.— or, if you already got it verbally, by phone, or in person —') }}</p>
 
                     <form method="POST" action="{{ route('matchmaker.clients.consents.record', $lead) }}" class="flex flex-wrap gap-2 items-end">
                         @csrf
                         <div>
-                            <label class="text-xs text-gray-500">Type</label>
+                            <label class="text-xs text-gray-500">{{ __('db.Type') }}</label>
                             <select name="consent_type" required class="border-gray-300 rounded text-sm block">
                                 @foreach (\App\Models\MatchmakingConsent::TYPES as $value => $label)
                                 <option value="{{ $value }}" title="{{ $label }}">{{ explode(' — ', $label)[0] }}</option>
@@ -257,7 +257,7 @@
                             </select>
                         </div>
                         <div>
-                            <label class="text-xs text-gray-500">How obtained</label>
+                            <label class="text-xs text-gray-500">{{ __('db.How obtained') }}</label>
                             <select name="method" required class="border-gray-300 rounded text-sm block">
                                 @foreach (\App\Models\MatchmakingConsent::METHODS as $value => $label)
                                 <option value="{{ $value }}">{{ $label }}</option>
@@ -265,10 +265,10 @@
                             </select>
                         </div>
                         <div class="flex-1 min-w-[10rem]">
-                            <label class="text-xs text-gray-500">Notes (optional)</label>
+                            <label class="text-xs text-gray-500">{{ __('db.Notes (optional)') }}</label>
                             <input type="text" name="notes" class="border-gray-300 rounded text-sm block w-full">
                         </div>
-                        <button class="text-xs font-semibold px-3 py-1.5 rounded-lg text-white hover:opacity-90" style="background: var(--mm-plum);">Record Consent</button>
+                        <button class="text-xs font-semibold px-3 py-1.5 rounded-lg text-white hover:opacity-90" style="background: var(--mm-plum);">{{ __('db.Record Consent') }}</button>
                     </form>
                 </div>
             </div>
@@ -280,7 +280,7 @@
                     addRow() { this.items.push({ requirement_type: 'city', requirement_value: '', priority: 'preferred', notes: '' }) },
                     removeRow(i) { this.items.splice(i, 1) },
                 }">
-                <p class="text-sm text-gray-500 mb-4">What this client is looking for in a match — used to guide candidate search. Saving replaces the full list below.</p>
+                <p class="text-sm text-gray-500 mb-4">{{ __('db.What this client is looking for in a match — used to guide candidate search. Saving replaces the full list below.') }}</p>
 
                 <form method="POST" action="{{ route('matchmaker.clients.requirements.save', $lead) }}" class="space-y-4">
                     @csrf
@@ -292,27 +292,27 @@
                                     <option value="{{ $value }}">{{ $label }}</option>
                                     @endforeach
                                 </select>
-                                <input type="text" :name="'items[' + i + '][requirement_value]'" x-model="item.requirement_value" placeholder="Value (e.g. Lahore, 25-32 yrs)" class="border-gray-300 rounded text-sm flex-1 min-w-[10rem]" required>
+                                <input type="text" :name="'items[' + i + '][requirement_value]'" x-model="item.requirement_value" placeholder="{{ __('db.Value (e.g. Lahore, 25-32 yrs)') }}" class="border-gray-300 rounded text-sm flex-1 min-w-[10rem]" required>
                                 <select :name="'items[' + i + '][priority]'" x-model="item.priority" class="border-gray-300 rounded text-sm">
-                                    <option value="must_have">Must Have</option>
-                                    <option value="preferred">Preferred</option>
-                                    <option value="flexible">Flexible</option>
+                                    <option value="must_have">{{ __('db.Must Have') }}</option>
+                                    <option value="preferred">{{ __('db.Preferred') }}</option>
+                                    <option value="flexible">{{ __('db.Flexible') }}</option>
                                 </select>
-                                <input type="text" :name="'items[' + i + '][notes]'" x-model="item.notes" placeholder="Notes (optional)" class="border-gray-300 rounded text-sm flex-1 min-w-[8rem]">
-                                <button type="button" @click="removeRow(i)" class="text-red-500 text-xs px-2 py-1.5">Remove</button>
+                                <input type="text" :name="'items[' + i + '][notes]'" x-model="item.notes" placeholder="{{ __('db.Notes (optional)') }}" class="border-gray-300 rounded text-sm flex-1 min-w-[8rem]">
+                                <button type="button" @click="removeRow(i)" class="text-red-500 text-xs px-2 py-1.5">{{ __('db.Remove') }}</button>
                             </div>
                         </template>
                     </div>
 
-                    <button type="button" @click="addRow()" class="text-sm font-semibold px-3 py-1.5 rounded-lg border" style="border-color: var(--mm-plum); color: var(--mm-plum);">+ Add Requirement</button>
+                    <button type="button" @click="addRow()" class="text-sm font-semibold px-3 py-1.5 rounded-lg border" style="border-color: var(--mm-plum); color: var(--mm-plum);">+ {{ __('db.Add Requirement') }}</button>
 
                     <div>
-                        <x-input-label for="req_notes" value="General Notes" />
+                        <x-input-label for="req_notes" :value="__('db.General Notes')" />
                         <textarea id="req_notes" name="notes" rows="2" class="border-gray-300 rounded-md shadow-sm w-full mt-1">{{ $lead->requirement?->notes }}</textarea>
                     </div>
 
                     <div class="flex justify-end pt-2">
-                        <button class="text-white text-sm font-semibold px-5 py-2.5 rounded-lg hover:opacity-90 hover:-translate-y-0.5 transition shadow-sm" style="background: var(--mm-plum);">Save Requirements</button>
+                        <button class="text-white text-sm font-semibold px-5 py-2.5 rounded-lg hover:opacity-90 hover:-translate-y-0.5 transition shadow-sm" style="background: var(--mm-plum);">{{ __('db.Save Requirements') }}</button>
                     </div>
                 </form>
             </div>
@@ -322,31 +322,31 @@
 
                 {{-- Suggested matches — ranked against the saved Requirements, see App\Services\Matchmaking\CompatibilityScorer --}}
                 <div class="mb-6">
-                    <h4 class="text-sm font-semibold text-gray-700 mb-2">🎯 Suggested Matches</h4>
+                    <h4 class="text-sm font-semibold text-gray-700 mb-2">🎯 {{ __('db.Suggested Matches') }}</h4>
                     @if (!$lead->requirement || $lead->requirement->items->isEmpty())
-                    <p class="text-sm text-gray-400">Save <a href="#" @click.prevent="tab = 'requirements'" class="hover:underline" style="color: var(--mm-plum);">Requirements</a> first — suggestions are ranked against what's saved there.</p>
+                    <p class="text-sm text-gray-400">{{ __('db.Save') }} <a href="#" @click.prevent="tab = 'requirements'" class="hover:underline" style="color: var(--mm-plum);">{{ __('db.Requirements') }}</a> {{ __("db.first — suggestions are ranked against what's saved there.") }}</p>
                     @elseif ($suggestions->isEmpty())
-                    <p class="text-sm text-gray-400">No strong matches against the saved requirements right now — try widening them, or search manually below.</p>
+                    <p class="text-sm text-gray-400">{{ __('db.No strong matches against the saved requirements right now — try widening them, or search manually below.') }}</p>
                     @else
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-2">
                         @foreach ($suggestions as $row)
                         @php $profile = $row['profile']; $result = $row['result']; @endphp
                         <div class="border border-gray-100 rounded-lg p-3">
                             <div class="flex items-center justify-between gap-2">
-                                <p class="text-sm font-medium text-gray-800">{{ $profile->user?->name ?? 'Deleted account' }}</p>
+                                <p class="text-sm font-medium text-gray-800">{{ $profile->user?->name ?? __('db.Deleted account') }}</p>
                                 <span class="text-xs font-semibold px-2 py-0.5 rounded-full shrink-0 whitespace-nowrap
                                     {{ $result['score'] >= 70 ? 'bg-green-100 text-green-800' : ($result['score'] >= 40 ? 'bg-amber-100 text-amber-800' : 'bg-gray-100 text-gray-600') }}">
-                                    {{ $result['score'] >= 70 ? '🟢 High' : ($result['score'] >= 40 ? '🟡 Medium' : '⚪ Low') }} · {{ $result['score'] }}%
+                                    {{ $result['score'] >= 70 ? '🟢 ' . __('db.High') : ($result['score'] >= 40 ? '🟡 ' . __('db.Medium') : '⚪ ' . __('db.Low')) }} · {{ $result['score'] }}%
                                 </span>
                             </div>
                             <p class="text-xs text-gray-500">{{ $profile->user?->gender ? ucfirst($profile->user->gender) . ', ' : '' }}{{ $profile->age }} yrs, {{ $profile->city }} @if($profile->sect) · {{ $profile->sect }} @endif</p>
                             @if ($result['matched']->isNotEmpty())
-                            <p class="text-xs text-green-700 mt-1">✓ Matches: {{ $result['matched']->pluck('requirement_type')->map(fn($t) => \App\Models\MatchmakingRequirementItem::TYPES[$t] ?? $t)->implode(', ') }}</p>
+                            <p class="text-xs text-green-700 mt-1">✓ {{ __('db.Matches: :list', ['list' => $result['matched']->pluck('requirement_type')->map(fn($t) => \App\Models\MatchmakingRequirementItem::TYPES[$t] ?? $t)->implode(', ')]) }}</p>
                             @endif
                             <form method="POST" action="{{ route('matchmaker.clients.shortlist.add', $lead) }}" class="mt-2">
                                 @csrf
                                 <input type="hidden" name="nikah_profile_id" value="{{ $profile->id }}">
-                                <button class="text-xs text-white px-2 py-1 rounded" style="background: var(--mm-plum);">+ Add to Shortlist</button>
+                                <button class="text-xs text-white px-2 py-1 rounded" style="background: var(--mm-plum);">+ {{ __('db.Add to Shortlist') }}</button>
                             </form>
                         </div>
                         @endforeach
@@ -355,24 +355,24 @@
                 </div>
 
                 @if ($lead->shortlistItems->isEmpty())
-                <p class="text-sm text-gray-400 mb-4">Nothing shortlisted yet — search below to add candidates.</p>
+                <p class="text-sm text-gray-400 mb-4">{{ __('db.Nothing shortlisted yet — search below to add candidates.') }}</p>
                 @else
                 <div class="space-y-2 mb-6">
                     @foreach ($lead->shortlistItems as $item)
                     <div class="flex items-center justify-between bg-gray-50 rounded-lg p-3">
                         <div>
                             <p class="font-medium text-gray-800">
-                                <a href="{{ route('matchmaker.nikah.show', $item->nikah_profile_id) }}" class="hover:underline">{{ $item->nikahProfile->user?->name ?? 'Deleted account' }}</a>
-                                <span class="text-xs text-gray-400 ml-1">{{ $item->nikahProfile->age }} yrs, {{ $item->nikahProfile->city }}</span>
+                                <a href="{{ route('matchmaker.nikah.show', $item->nikah_profile_id) }}" class="hover:underline">{{ $item->nikahProfile->user?->name ?? __('db.Deleted account') }}</a>
+                                <span class="text-xs text-gray-400 ml-1">{{ __('db.:age yrs, :city', ['age' => $item->nikahProfile->age, 'city' => $item->nikahProfile->city]) }}</span>
                             </p>
                             @if ($item->note)
                             <p class="text-xs text-gray-500 mt-0.5">{{ $item->note }}</p>
                             @endif
                         </div>
-                        <form method="POST" action="{{ route('matchmaker.clients.shortlist.remove', [$lead, $item]) }}" onsubmit="return confirm('Remove from shortlist?')">
+                        <form method="POST" action="{{ route('matchmaker.clients.shortlist.remove', [$lead, $item]) }}" onsubmit="return confirm({{ Js::from(__('db.Remove from shortlist?')) }})">
                             @csrf
                             @method('DELETE')
-                            <button class="text-xs text-red-500 px-2 py-1">Remove</button>
+                            <button class="text-xs text-red-500 px-2 py-1">{{ __('db.Remove') }}</button>
                         </form>
                     </div>
                     @endforeach
@@ -380,25 +380,25 @@
                 @endif
 
                 <details class="mt-2" {{ request()->hasAny(['search_city', 'search_gender', 'search_sect']) ? 'open' : '' }}>
-                    <summary class="text-sm font-medium cursor-pointer" style="color: var(--mm-plum);">+ Search verified profiles to add</summary>
+                    <summary class="text-sm font-medium cursor-pointer" style="color: var(--mm-plum);">+ {{ __('db.Search verified profiles to add') }}</summary>
                     <form method="GET" action="{{ route('matchmaker.clients.show', $lead) }}#shortlist" class="flex flex-wrap gap-3 items-end mt-3 mb-3">
                         <div>
-                            <label class="text-xs text-gray-500">Gender</label>
+                            <label class="text-xs text-gray-500">{{ __('db.Gender') }}</label>
                             <select name="search_gender" class="border-gray-300 rounded text-sm block">
-                                <option value="">Any</option>
-                                <option value="male" {{ request('search_gender') === 'male' ? 'selected' : '' }}>Male</option>
-                                <option value="female" {{ request('search_gender') === 'female' ? 'selected' : '' }}>Female</option>
+                                <option value="">{{ __('db.Any') }}</option>
+                                <option value="male" {{ request('search_gender') === 'male' ? 'selected' : '' }}>{{ __('db.Male') }}</option>
+                                <option value="female" {{ request('search_gender') === 'female' ? 'selected' : '' }}>{{ __('db.Female') }}</option>
                             </select>
                         </div>
                         <div>
-                            <label class="text-xs text-gray-500">City</label>
+                            <label class="text-xs text-gray-500">{{ __('db.City') }}</label>
                             <input type="text" name="search_city" value="{{ request('search_city') }}" class="border-gray-300 rounded text-sm block w-40">
                         </div>
                         <div>
-                            <label class="text-xs text-gray-500">Sect</label>
+                            <label class="text-xs text-gray-500">{{ __('db.Sect') }}</label>
                             <input type="text" name="search_sect" value="{{ request('search_sect') }}" class="border-gray-300 rounded text-sm block w-40">
                         </div>
-                        <button class="text-white text-sm px-4 py-2 rounded" style="background: var(--mm-plum-dark);">Search</button>
+                        <button class="text-white text-sm px-4 py-2 rounded" style="background: var(--mm-plum-dark);">{{ __('db.Search') }}</button>
                     </form>
 
                     @if ($searchResults->isNotEmpty())
@@ -406,19 +406,19 @@
                         @foreach ($searchResults as $profile)
                         <div class="flex items-center justify-between border border-gray-100 rounded-lg p-3">
                             <div>
-                                <p class="text-sm font-medium text-gray-800">{{ $profile->user?->name ?? 'Deleted account' }}</p>
-                                <p class="text-xs text-gray-500">{{ $profile->age }} yrs, {{ $profile->city }} @if($profile->sect) · {{ $profile->sect }} @endif</p>
+                                <p class="text-sm font-medium text-gray-800">{{ $profile->user?->name ?? __('db.Deleted account') }}</p>
+                                <p class="text-xs text-gray-500">{{ __('db.:age yrs, :city', ['age' => $profile->age, 'city' => $profile->city]) }} @if($profile->sect) · {{ $profile->sect }} @endif</p>
                             </div>
                             <form method="POST" action="{{ route('matchmaker.clients.shortlist.add', $lead) }}">
                                 @csrf
                                 <input type="hidden" name="nikah_profile_id" value="{{ $profile->id }}">
-                                <button class="text-xs text-white px-2 py-1 rounded" style="background: var(--mm-plum);">+ Add</button>
+                                <button class="text-xs text-white px-2 py-1 rounded" style="background: var(--mm-plum);">+ {{ __('db.Add') }}</button>
                             </form>
                         </div>
                         @endforeach
                     </div>
                     @elseif (request()->hasAny(['search_city', 'search_gender', 'search_sect']))
-                    <p class="text-sm text-gray-400">No matching profiles found.</p>
+                    <p class="text-sm text-gray-400">{{ __('db.No matching profiles found.') }}</p>
                     @endif
                 </details>
             </div>
@@ -429,24 +429,24 @@
                 <div class="text-xs px-3 py-2 rounded-lg {{ $lead->packageExpired() ? 'bg-red-50 text-red-700' : 'bg-gray-50 text-gray-600' }}">
                     📦 {{ $lead->nikahPackage->name }}
                     @if ($lead->packageExpired())
-                    — <strong>expired</strong> {{ $lead->package_expires_at->format('d M Y') }}
+                    — <strong>{{ __('db.expired') }}</strong> {{ $lead->package_expires_at->format('d M Y') }}
                     @elseif ($lead->package_expires_at)
-                    — active until {{ $lead->package_expires_at->format('d M Y') }}
+                    — {{ __('db.active until :date', ['date' => $lead->package_expires_at->format('d M Y')]) }}
                     @endif
                     @if ($lead->nikahPackage->proposal_limit)
-                    · {{ $lead->remainingProposalAllowance() }} of {{ $lead->nikahPackage->proposal_limit }} proposals remaining
+                    · {{ __('db.:remaining of :limit proposals remaining', ['remaining' => $lead->remainingProposalAllowance(), 'limit' => $lead->nikahPackage->proposal_limit]) }}
                     @endif
                 </div>
                 @endif
 
                 @unless ($lead->nikah_profile_id)
-                <p class="text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded-lg p-3">Link or register this client's Nikah profile before you can send them a proposal batch.</p>
+                <p class="text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded-lg p-3">{{ __("db.Link or register this client's Nikah profile before you can send them a proposal batch.") }}</p>
                 @elseif (!$lead->hasActiveConsent('matchmaking_participation'))
-                <p class="text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded-lg p-3">Record this client's <strong>Matchmaking Participation</strong> consent (see the Consent section on Overview) before you can send them a proposal batch.</p>
+                <p class="text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded-lg p-3">{!! __("db.Record this client's :participation consent (see the Consent section on Overview) before you can send them a proposal batch.", ['participation' => '<strong>' . __('db.Matchmaking Participation') . '</strong>']) !!}</p>
                 @else
                 <form method="POST" action="{{ route('matchmaker.clients.batches.create', $lead) }}">
                     @csrf
-                    <button class="text-sm font-semibold px-4 py-2.5 rounded-lg text-white hover:opacity-90 hover:-translate-y-0.5 transition shadow-sm" style="background: var(--mm-plum);">➕ Start New Proposal Batch</button>
+                    <button class="text-sm font-semibold px-4 py-2.5 rounded-lg text-white hover:opacity-90 hover:-translate-y-0.5 transition shadow-sm" style="background: var(--mm-plum);">➕ {{ __('db.Start New Proposal Batch') }}</button>
                 </form>
                 @endunless
 
@@ -454,7 +454,7 @@
                 <div class="border border-gray-100 rounded-xl overflow-hidden">
                     <div class="flex flex-wrap justify-between items-center gap-2 px-4 py-3 bg-gray-50">
                         <div>
-                            <span class="font-semibold text-gray-800">Batch #{{ $batch->batch_number }}</span>
+                            <span class="font-semibold text-gray-800">{{ __('db.Batch #:number', ['number' => $batch->batch_number]) }}</span>
                             <span class="text-xs px-2 py-0.5 rounded-full ml-2
                                 {{ match($batch->status) {
                                     'draft' => 'bg-gray-100 text-gray-600',
@@ -470,9 +470,9 @@
                             </span>
                         </div>
                         @if ($batch->status === 'draft' && $batch->proposals->isNotEmpty())
-                        <form method="POST" action="{{ route('matchmaker.clients.batches.send', [$lead, $batch]) }}" onsubmit="return confirm('Mark this batch as sent? {{ $lead->name }} will see these candidates on their own progress link and can respond there.')">
+                        <form method="POST" action="{{ route('matchmaker.clients.batches.send', [$lead, $batch]) }}" onsubmit="return confirm({{ Js::from(__('db.Mark this batch as sent? :name will see these candidates on their own progress link and can respond there.', ['name' => $lead->name])) }})">
                             @csrf
-                            <button class="text-xs font-semibold px-3 py-1.5 rounded-lg text-white hover:opacity-90" style="background: var(--mm-plum-dark);">Mark as Sent →</button>
+                            <button class="text-xs font-semibold px-3 py-1.5 rounded-lg text-white hover:opacity-90" style="background: var(--mm-plum-dark);">{{ __('db.Mark as Sent') }} →</button>
                         </form>
                         @endif
                     </div>
@@ -481,8 +481,8 @@
                         @forelse ($batch->proposals as $proposal)
                         <div class="flex flex-wrap items-start justify-between gap-3 border-b last:border-0 pb-3 last:pb-0">
                             <div class="flex-1 min-w-[12rem]">
-                                <p class="font-medium text-gray-800 text-sm">{{ $proposal->candidate->user?->name ?? 'Deleted account' }}</p>
-                                <p class="text-xs text-gray-400">{{ $proposal->candidate->age }} yrs, {{ $proposal->candidate->city }}</p>
+                                <p class="font-medium text-gray-800 text-sm">{{ $proposal->candidate->user?->name ?? __('db.Deleted account') }}</p>
+                                <p class="text-xs text-gray-400">{{ __('db.:age yrs, :city', ['age' => $proposal->candidate->age, 'city' => $proposal->candidate->city]) }}</p>
                                 @if ($proposal->match_reasons)
                                 <p class="text-xs text-gray-500 mt-1">{{ implode(' · ', $proposal->match_reasons) }}</p>
                                 @endif
@@ -504,9 +504,9 @@
                                         default => 'bg-blue-100 text-blue-800',
                                     } }}">
                                     {{ match($proposal->nikahInterest->status) {
-                                        'accepted' => '💞 Mutual Interest!',
-                                        'declined' => 'Candidate Declined',
-                                        default => 'Awaiting Candidate',
+                                        'accepted' => '💞 ' . __('db.Mutual Interest!'),
+                                        'declined' => __('db.Candidate Declined'),
+                                        default => __('db.Awaiting Candidate'),
                                     } }}
                                 </span>
                                 @endif
@@ -516,44 +516,44 @@
                             <form method="POST" action="{{ route('matchmaker.clients.batches.proposals.remove', [$lead, $batch, $proposal]) }}">
                                 @csrf
                                 @method('DELETE')
-                                <button class="text-xs text-red-500 px-2 py-1">Remove</button>
+                                <button class="text-xs text-red-500 px-2 py-1">{{ __('db.Remove') }}</button>
                             </form>
                             @elseif ($proposal->sent_at && !$proposal->response)
-                            <span class="text-xs text-gray-400">Waiting for {{ $lead->name }} to respond on their progress link</span>
+                            <span class="text-xs text-gray-400">{{ __('db.Waiting for :name to respond on their progress link', ['name' => $lead->name]) }}</span>
                             @endif
                         </div>
                         @empty
-                        <p class="text-sm text-gray-400">No candidates added yet.</p>
+                        <p class="text-sm text-gray-400">{{ __('db.No candidates added yet.') }}</p>
                         @endforelse
 
                         @if ($batch->status === 'draft')
                         <form method="POST" action="{{ route('matchmaker.clients.batches.proposals.add', [$lead, $batch]) }}" class="flex flex-wrap gap-2 items-end pt-2">
                             @csrf
                             <div class="flex-1 min-w-[12rem]">
-                                <label class="text-xs text-gray-500">Add from shortlist</label>
+                                <label class="text-xs text-gray-500">{{ __('db.Add from shortlist') }}</label>
                                 <select name="candidate_profile_id" required class="border-gray-300 rounded text-sm w-full">
-                                    <option value="">Choose a candidate…</option>
+                                    <option value="">{{ __('db.Choose a candidate…') }}</option>
                                     @foreach ($lead->shortlistItems as $item)
                                     @unless ($batch->proposals->pluck('candidate_profile_id')->contains($item->nikah_profile_id))
-                                    <option value="{{ $item->nikah_profile_id }}">{{ $item->nikahProfile->user?->name ?? 'Deleted account' }} — {{ $item->nikahProfile->age }} yrs, {{ $item->nikahProfile->city }}</option>
+                                    <option value="{{ $item->nikah_profile_id }}">{{ $item->nikahProfile->user?->name ?? __('db.Deleted account') }} — {{ __('db.:age yrs, :city', ['age' => $item->nikahProfile->age, 'city' => $item->nikahProfile->city]) }}</option>
                                     @endunless
                                     @endforeach
                                 </select>
                             </div>
                             <div class="flex-1 min-w-[12rem]">
-                                <label class="text-xs text-gray-500">Why this match (optional)</label>
-                                <input type="text" name="match_reasons[]" class="border-gray-300 rounded text-sm w-full" placeholder="Same city, similar age…">
+                                <label class="text-xs text-gray-500">{{ __('db.Why this match (optional)') }}</label>
+                                <input type="text" name="match_reasons[]" class="border-gray-300 rounded text-sm w-full" placeholder="{{ __('db.Same city, similar age…') }}">
                             </div>
-                            <button class="text-xs font-semibold px-3 py-1.5 rounded-lg text-white hover:opacity-90" style="background: var(--mm-plum);">+ Add Candidate</button>
+                            <button class="text-xs font-semibold px-3 py-1.5 rounded-lg text-white hover:opacity-90" style="background: var(--mm-plum);">+ {{ __('db.Add Candidate') }}</button>
                         </form>
                         @if ($lead->shortlistItems->isEmpty())
-                        <p class="text-xs text-gray-400">Shortlist a profile first (see the Shortlist tab) — batches are built from shortlisted candidates.</p>
+                        <p class="text-xs text-gray-400">{{ __('db.Shortlist a profile first (see the Shortlist tab) — batches are built from shortlisted candidates.') }}</p>
                         @endif
                         @endif
                     </div>
                 </div>
                 @empty
-                <p class="text-sm text-gray-400">No proposal batches yet.</p>
+                <p class="text-sm text-gray-400">{{ __('db.No proposal batches yet.') }}</p>
                 @endforelse
             </div>
 
@@ -577,7 +577,7 @@
                     </div>
                 </div>
                 @empty
-                <p class="text-sm text-gray-400">No activity logged yet.</p>
+                <p class="text-sm text-gray-400">{{ __('db.No activity logged yet.') }}</p>
                 @endforelse
             </div>
         </div>

@@ -1,4 +1,4 @@
-<x-guest-layout title="Nikah Counselor Agreement — Sallaamti" description="Review and accept your Sallaamti Nikah Counselor Agreement and confidentiality agreement.">
+<x-guest-layout :title="__('db.Nikah Counselor Agreement — Sallaamti')" :description="__('db.Review and accept your Sallaamti Nikah Counselor Agreement and confidentiality agreement.')">
 
     <div class="py-12 bg-cream">
         <div class="max-w-2xl mx-auto sm:px-6 lg:px-8 space-y-6">
@@ -7,9 +7,9 @@
 
             <div class="bg-white rounded-xl shadow-sm p-8 text-center">
                 <div class="w-16 h-16 mx-auto rounded-full flex items-center justify-center text-3xl mb-4" style="background: var(--cream);">🔒</div>
-                <h3 class="text-lg font-bold text-gray-800 mb-1">Nikah Counselor Agreement</h3>
+                <h3 class="text-lg font-bold text-gray-800 mb-1">{{ __('db.Nikah Counselor Agreement') }}</h3>
                 <p class="text-sm text-gray-500 mb-1" dir="rtl">نکاح کاؤنسلر معاہدہ</p>
-                <p class="text-sm text-gray-500 mb-1">Hello {{ $application->full_name }} — enter the <strong>last 7 digits</strong> of the mobile number on your application to review and accept your agreement.</p>
+                <p class="text-sm text-gray-500 mb-1">{!! __('db.Hello :name — enter the :last7 of the mobile number on your application to review and accept your agreement.', ['name' => $application->full_name, 'last7' => '<strong>' . __('db.last 7 digits') . '</strong>']) !!}</p>
                 <p class="text-sm text-gray-500 mb-6" dir="rtl">السلام علیکم {{ $application->full_name }} — اپنے معاہدے کو پڑھنے اور قبول کرنے کے لیے اپنی درخواست میں دیے گئے موبائل نمبر کے <strong>آخری 7 ہندسے</strong> درج کریں۔</p>
 
                 @if (($error ?? null) || $errors->any())
@@ -23,9 +23,9 @@
 
                 <form method="POST" action="{{ $verifyUrl }}" class="flex flex-col items-center gap-3">
                     @csrf
-                    <input type="text" name="last7" inputmode="numeric" pattern="[0-9]{7}" maxlength="7" minlength="7" required placeholder="e.g. 3001234"
+                    <input type="text" name="last7" inputmode="numeric" pattern="[0-9]{7}" maxlength="7" minlength="7" required placeholder="{{ __('db.e.g. 3001234') }}"
                         class="border-gray-300 rounded-lg text-center text-lg tracking-widest w-48" autofocus>
-                    <button class="text-white text-sm font-semibold px-6 py-3 rounded-lg hover:opacity-90 transition" style="background: #0d6b6b">Unlock Agreement / معاہدہ کھولیں</button>
+                    <button class="text-white text-sm font-semibold px-6 py-3 rounded-lg hover:opacity-90 transition" style="background: #0d6b6b">{{ __('db.Unlock Agreement') }} / معاہدہ کھولیں</button>
                 </form>
             </div>
 
@@ -35,7 +35,7 @@
                 <span class="text-xl">📜</span>
                 <div>
                     <p class="text-sm text-gray-700">
-                        Hello {{ $application->full_name }} — please read this carefully before accepting. This is a real agreement between you and Sallaamti.
+                        {{ __('db.Hello :name — please read this carefully before accepting. This is a real agreement between you and Sallaamti.', ['name' => $application->full_name]) }}
                     </p>
                     <p class="text-sm text-gray-700 mt-1" dir="rtl">
                         السلام علیکم {{ $application->full_name }} — قبول کرنے سے پہلے یہ معاہدہ غور سے پڑھیں۔ یہ آپ اور سلامتی کے درمیان ایک حقیقی اور پابند معاہدہ ہے۔
@@ -55,17 +55,17 @@
 
             {{-- Plain-language summary --}}
             <div class="bg-white rounded-xl shadow-sm p-6">
-                <h4 class="font-semibold text-gray-700 mb-1 border-b pb-2">📋 In Plain Words</h4>
+                <h4 class="font-semibold text-gray-700 mb-1 border-b pb-2">📋 {{ __('db.In Plain Words') }}</h4>
                 <p class="text-xs text-gray-400 mb-3" dir="rtl">📋 آسان الفاظ میں</p>
                 <ul class="text-sm text-gray-600 space-y-3 list-disc list-inside">
                     @foreach ([
-                        ['You represent Sallaamti — you introduce people and help them register, you don\'t personally decide or guarantee any match.', 'آپ سلامتی کی نمائندگی کرتے ہیں — آپ لوگوں کا تعارف کراتے اور رجسٹریشن میں مدد دیتے ہیں، رشتہ طے کرنے یا اس کی ضمانت دینے کا اختیار آپ کے پاس نہیں۔'],
-                        ['You\'re paid commission by Sallaamti according to its published rates — you never collect cash from a client yourself.', 'سلامتی آپ کو اپنی مقرر کردہ شرح کے مطابق کمیشن ادا کرتی ہے — آپ کبھی بھی کسی کلائنٹ سے خود نقد رقم وصول نہیں کرتے۔'],
-                        ['You never collect a client\'s CNIC or documents over WhatsApp — everything goes through Sallaamti\'s secure system.', 'آپ کبھی بھی کسی کلائنٹ کا شناختی کارڈ یا دستاویزات واٹس ایپ پر نہیں مانگتے — ہر چیز سلامتی کے محفوظ نظام کے ذریعے جاتی ہے۔'],
-                        ['Client information is confidential — no personal spreadsheets, no private database, no sharing outside Sallaamti.', 'کلائنٹ کی معلومات خفیہ ہیں — کوئی ذاتی فہرست، نجی ڈیٹا بیس، یا سلامتی سے باہر شیئرنگ کی اجازت نہیں۔'],
-                        ['Every client you bring in belongs to Sallaamti, not to you personally — if you ever leave, Sallaamti keeps the relationship.', 'آپ جو بھی کلائنٹ لاتے ہیں وہ سلامتی کی ملکیت ہوتا ہے، آپ کی ذاتی نہیں — اگر آپ کبھی چھوڑ دیں تو وہ تعلق سلامتی کے پاس ہی رہتا ہے۔'],
-                        ['You\'re never paid for recruiting other counselors — commission is only for your own verified work.', 'دوسرے کاؤنسلرز کو بھرتی کرنے پر آپ کو کبھی کمیشن نہیں ملتا — کمیشن صرف آپ کے اپنے تصدیق شدہ کام پر ملتا ہے۔'],
-                        ['This agreement can be ended by either side, and you must stop using the Sallaamti name and return/delete any client data immediately after.', 'یہ معاہدہ کسی بھی فریق کی طرف سے ختم کیا جا سکتا ہے، اور ختم ہونے کے فوراً بعد آپ کو سلامتی کا نام استعمال کرنا بند کرنا اور تمام کلائنٹ ڈیٹا واپس/ڈیلیٹ کرنا ہوگا۔'],
+                        [__("db.You represent Sallaamti — you introduce people and help them register, you don't personally decide or guarantee any match."), 'آپ سلامتی کی نمائندگی کرتے ہیں — آپ لوگوں کا تعارف کراتے اور رجسٹریشن میں مدد دیتے ہیں، رشتہ طے کرنے یا اس کی ضمانت دینے کا اختیار آپ کے پاس نہیں۔'],
+                        [__("db.You're paid commission by Sallaamti according to its published rates — you never collect cash from a client yourself."), 'سلامتی آپ کو اپنی مقرر کردہ شرح کے مطابق کمیشن ادا کرتی ہے — آپ کبھی بھی کسی کلائنٹ سے خود نقد رقم وصول نہیں کرتے۔'],
+                        [__("db.You never collect a client's CNIC or documents over WhatsApp — everything goes through Sallaamti's secure system."), 'آپ کبھی بھی کسی کلائنٹ کا شناختی کارڈ یا دستاویزات واٹس ایپ پر نہیں مانگتے — ہر چیز سلامتی کے محفوظ نظام کے ذریعے جاتی ہے۔'],
+                        [__('db.Client information is confidential — no personal spreadsheets, no private database, no sharing outside Sallaamti.'), 'کلائنٹ کی معلومات خفیہ ہیں — کوئی ذاتی فہرست، نجی ڈیٹا بیس، یا سلامتی سے باہر شیئرنگ کی اجازت نہیں۔'],
+                        [__('db.Every client you bring in belongs to Sallaamti, not to you personally — if you ever leave, Sallaamti keeps the relationship.'), 'آپ جو بھی کلائنٹ لاتے ہیں وہ سلامتی کی ملکیت ہوتا ہے، آپ کی ذاتی نہیں — اگر آپ کبھی چھوڑ دیں تو وہ تعلق سلامتی کے پاس ہی رہتا ہے۔'],
+                        [__("db.You're never paid for recruiting other counselors — commission is only for your own verified work."), 'دوسرے کاؤنسلرز کو بھرتی کرنے پر آپ کو کبھی کمیشن نہیں ملتا — کمیشن صرف آپ کے اپنے تصدیق شدہ کام پر ملتا ہے۔'],
+                        [__('db.This agreement can be ended by either side, and you must stop using the Sallaamti name and return/delete any client data immediately after.'), 'یہ معاہدہ کسی بھی فریق کی طرف سے ختم کیا جا سکتا ہے، اور ختم ہونے کے فوراً بعد آپ کو سلامتی کا نام استعمال کرنا بند کرنا اور تمام کلائنٹ ڈیٹا واپس/ڈیلیٹ کرنا ہوگا۔'],
                     ] as $point)
                     <li>
                         <p>{{ $point[0] }}</p>
@@ -77,7 +77,7 @@
 
             {{-- Full agreement --}}
             <div class="bg-white rounded-xl shadow-sm p-6">
-                <h4 class="font-semibold text-gray-700 mb-1 border-b pb-2">Nikah Counselor Agreement</h4>
+                <h4 class="font-semibold text-gray-700 mb-1 border-b pb-2">{{ __('db.Nikah Counselor Agreement') }}</h4>
                 <p class="text-xs text-gray-400 mb-3" dir="rtl">نکاح کاؤنسلر معاہدہ</p>
                 <div class="text-sm text-gray-600 space-y-5 leading-relaxed">
                     @foreach ([
@@ -104,7 +104,7 @@
 
             {{-- NDA --}}
             <div class="bg-white rounded-xl shadow-sm p-6">
-                <h4 class="font-semibold text-gray-700 mb-1 border-b pb-2">Confidentiality / NDA</h4>
+                <h4 class="font-semibold text-gray-700 mb-1 border-b pb-2">{{ __('db.Confidentiality / NDA') }}</h4>
                 <p class="text-xs text-gray-400 mb-3" dir="rtl">رازداری کا معاہدہ (NDA)</p>
                 <div class="text-sm text-gray-600 space-y-5 leading-relaxed">
                     @foreach ([
@@ -123,7 +123,7 @@
             </div>
 
             <div class="text-center">
-                <p class="text-xs text-gray-400">Sallaamti Nikah Counselor onboarding — full details available in the Nikah Counselor Code of Conduct.</p>
+                <p class="text-xs text-gray-400">{{ __('db.Sallaamti Nikah Counselor onboarding — full details available in the Nikah Counselor Code of Conduct.') }}</p>
                 <p class="text-xs text-gray-400 mt-1" dir="rtl">سلامتی نکاح کاؤنسلر آن بورڈنگ — مکمل تفصیلات نکاح کاؤنسلر ضابطہ اخلاق میں دستیاب ہیں۔</p>
             </div>
 
@@ -136,19 +136,19 @@
                     <label class="flex items-start gap-3 cursor-pointer">
                         <input type="checkbox" name="agreement_accepted" value="1" required class="mt-0.5">
                         <span class="text-white text-sm">
-                            I have read and accept the Nikah Counselor Agreement above.
+                            {{ __('db.I have read and accept the Nikah Counselor Agreement above.') }}
                             <span class="block text-white/80 mt-0.5" dir="rtl">میں نے مذکورہ بالا نکاح کاؤنسلر معاہدہ پڑھ لیا ہے اور اسے قبول کرتا ہوں۔</span>
                         </span>
                     </label>
                     <label class="flex items-start gap-3 cursor-pointer">
                         <input type="checkbox" name="nda_accepted" value="1" required class="mt-0.5">
                         <span class="text-white text-sm">
-                            I have read and accept the Confidentiality / NDA terms above.
+                            {{ __('db.I have read and accept the Confidentiality / NDA terms above.') }}
                             <span class="block text-white/80 mt-0.5" dir="rtl">میں نے مذکورہ بالا رازداری کے معاہدے (NDA) کی شرائط پڑھ لی ہیں اور انہیں قبول کرتا ہوں۔</span>
                         </span>
                     </label>
 
-                    <button class="w-full bg-white text-gray-800 font-semibold py-3 rounded-lg hover:opacity-90 transition">I Accept — Submit / میں قبول کرتا ہوں — جمع کروائیں</button>
+                    <button class="w-full bg-white text-gray-800 font-semibold py-3 rounded-lg hover:opacity-90 transition">{{ __('db.I Accept — Submit') }} / میں قبول کرتا ہوں — جمع کروائیں</button>
                 </form>
             </div>
 

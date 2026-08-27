@@ -1,7 +1,7 @@
 <x-matchmaker-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">My Clients</h2>
-        <p class="text-sm text-gray-500">{{ $canManageTeam ? 'Everyone across the team — filter by matchmaker below.' : 'Everyone currently assigned to you.' }}</p>
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight">{{ __('db.My Clients') }}</h2>
+        <p class="text-sm text-gray-500">{{ $canManageTeam ? __('db.Everyone across the team — filter by matchmaker below.') : __('db.Everyone currently assigned to you.') }}</p>
     </x-slot>
 
     <div class="max-w-6xl mx-auto space-y-6">
@@ -10,22 +10,22 @@
             <div class="grid grid-cols-2 sm:grid-cols-4 gap-3 flex-1">
                 <div class="bg-white rounded-xl shadow-sm p-3 text-center border-t-4 border-blue-400">
                     <p class="text-xl font-bold text-blue-600">{{ $stats['new'] }}</p>
-                    <p class="text-xs text-gray-500">New</p>
+                    <p class="text-xs text-gray-500">{{ __('db.New') }}</p>
                 </div>
                 <div class="bg-white rounded-xl shadow-sm p-3 text-center border-t-4 border-amber-400">
                     <p class="text-xl font-bold text-amber-600">{{ $stats['contacted'] }}</p>
-                    <p class="text-xs text-gray-500">Contacted</p>
+                    <p class="text-xs text-gray-500">{{ __('db.Contacted') }}</p>
                 </div>
                 <div class="bg-white rounded-xl shadow-sm p-3 text-center border-t-4 border-green-400">
                     <p class="text-xl font-bold text-green-600">{{ $stats['registered'] }}</p>
-                    <p class="text-xs text-gray-500">Registered</p>
+                    <p class="text-xs text-gray-500">{{ __('db.Registered') }}</p>
                 </div>
                 <div class="bg-white rounded-xl shadow-sm p-3 text-center border-t-4 border-red-400">
                     <p class="text-xl font-bold text-red-600">{{ $stats['follow_ups_due'] }}</p>
-                    <p class="text-xs text-gray-500">Follow-ups Due</p>
+                    <p class="text-xs text-gray-500">{{ __('db.Follow-ups Due') }}</p>
                 </div>
             </div>
-            <a href="{{ route('matchmaker.clients.create') }}" class="text-white text-sm font-semibold px-4 py-2.5 rounded-lg hover:opacity-90 hover:-translate-y-0.5 transition shadow-sm whitespace-nowrap" style="background: var(--mm-plum);">➕ Add Client</a>
+            <a href="{{ route('matchmaker.clients.create') }}" class="text-white text-sm font-semibold px-4 py-2.5 rounded-lg hover:opacity-90 hover:-translate-y-0.5 transition shadow-sm whitespace-nowrap" style="background: var(--mm-plum);">➕ {{ __('db.Add Client') }}</a>
         </div>
 
         @if (session('status'))
@@ -35,19 +35,19 @@
         <div class="bg-white rounded-xl shadow-sm p-4">
             <form method="GET" class="flex flex-wrap gap-3 items-end">
                 <div>
-                    <label class="text-xs font-semibold text-gray-500 block mb-1">Status</label>
+                    <label class="text-xs font-semibold text-gray-500 block mb-1">{{ __('db.Status') }}</label>
                     <select name="status" class="border-gray-300 rounded-lg text-sm">
-                        <option value="">Any</option>
-                        @foreach (['new' => 'New', 'contacted' => 'Contacted', 'interested' => 'Interested', 'registered' => 'Registered', 'not_interested' => 'Not Interested', 'closed' => 'Closed'] as $value => $label)
+                        <option value="">{{ __('db.Any') }}</option>
+                        @foreach (['new' => __('db.New'), 'contacted' => __('db.Contacted'), 'interested' => __('db.Interested'), 'registered' => __('db.Registered'), 'not_interested' => __('db.Not Interested'), 'closed' => __('db.Closed')] as $value => $label)
                         <option value="{{ $value }}" {{ request('status') === $value ? 'selected' : '' }}>{{ $label }}</option>
                         @endforeach
                     </select>
                 </div>
                 @if ($canManageTeam)
                 <div>
-                    <label class="text-xs font-semibold text-gray-500 block mb-1">Matchmaker</label>
+                    <label class="text-xs font-semibold text-gray-500 block mb-1">{{ __('db.Matchmaker') }}</label>
                     <select name="assigned_to" class="border-gray-300 rounded-lg text-sm">
-                        <option value="">Everyone</option>
+                        <option value="">{{ __('db.Everyone') }}</option>
                         @foreach ($matchmakers as $mm)
                         <option value="{{ $mm->id }}" {{ (string) request('assigned_to') === (string) $mm->id ? 'selected' : '' }}>{{ $mm->name }}</option>
                         @endforeach
@@ -55,12 +55,12 @@
                 </div>
                 @endif
                 <div>
-                    <label class="text-xs font-semibold text-gray-500 block mb-1">Search</label>
-                    <input type="text" name="search" value="{{ request('search') }}" placeholder="Name, phone, email…" class="border-gray-300 rounded-lg text-sm w-56">
+                    <label class="text-xs font-semibold text-gray-500 block mb-1">{{ __('db.Search') }}</label>
+                    <input type="text" name="search" value="{{ request('search') }}" placeholder="{{ __('db.Name, phone, email…') }}" class="border-gray-300 rounded-lg text-sm w-56">
                 </div>
-                <button class="text-sm font-semibold px-4 py-2 rounded-lg text-white hover:opacity-90" style="background: var(--mm-plum);">Filter</button>
+                <button class="text-sm font-semibold px-4 py-2 rounded-lg text-white hover:opacity-90" style="background: var(--mm-plum);">{{ __('db.Filter') }}</button>
                 @if (request()->hasAny(['status', 'search', 'assigned_to']))
-                <a href="{{ route('matchmaker.clients.index') }}" class="text-sm text-gray-500 px-2 py-2 hover:underline">Clear</a>
+                <a href="{{ route('matchmaker.clients.index') }}" class="text-sm text-gray-500 px-2 py-2 hover:underline">{{ __('db.Clear') }}</a>
                 @endif
             </form>
         </div>
@@ -70,12 +70,12 @@
                 <table class="w-full text-sm">
                     <thead>
                         <tr class="text-left text-xs uppercase tracking-wide text-gray-500 border-b bg-gray-50">
-                            <th class="px-4 py-3">Client</th>
-                            <th class="px-4 py-3">Status</th>
-                            <th class="px-4 py-3">Follow-up</th>
-                            <th class="px-4 py-3">Linked Profile</th>
+                            <th class="px-4 py-3">{{ __('db.Client') }}</th>
+                            <th class="px-4 py-3">{{ __('db.Status') }}</th>
+                            <th class="px-4 py-3">{{ __('db.Follow-up') }}</th>
+                            <th class="px-4 py-3">{{ __('db.Linked Profile') }}</th>
                             @if ($canManageTeam)
-                            <th class="px-4 py-3">Matchmaker</th>
+                            <th class="px-4 py-3">{{ __('db.Matchmaker') }}</th>
                             @endif
                             <th class="px-4 py-3"></th>
                         </tr>
@@ -107,16 +107,16 @@
                             </td>
                             @if ($canManageTeam)
                             <td class="px-4 py-3 text-xs text-gray-500">
-                                {{ $lead->assignedTo?->name ?? 'Unassigned' }}
+                                {{ $lead->assignedTo?->name ?? __('db.Unassigned') }}
                             </td>
                             @endif
                             <td class="px-4 py-3 text-right">
-                                <a href="{{ route('matchmaker.clients.show', $lead) }}" class="text-sm font-semibold hover:underline" style="color: var(--mm-plum);">Open →</a>
+                                <a href="{{ route('matchmaker.clients.show', $lead) }}" class="text-sm font-semibold hover:underline" style="color: var(--mm-plum);">{{ __('db.Open') }} →</a>
                             </td>
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="{{ $canManageTeam ? 6 : 5 }}" class="px-4 py-8 text-center text-gray-400 text-sm">No clients yet. <a href="{{ route('matchmaker.clients.create') }}" class="hover:underline" style="color: var(--mm-plum);">Add your first one</a>.</td>
+                            <td colspan="{{ $canManageTeam ? 6 : 5 }}" class="px-4 py-8 text-center text-gray-400 text-sm">{{ __('db.No clients yet.') }} <a href="{{ route('matchmaker.clients.create') }}" class="hover:underline" style="color: var(--mm-plum);">{{ __('db.Add your first one') }}</a>.</td>
                         </tr>
                         @endforelse
                     </tbody>

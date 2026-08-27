@@ -11,10 +11,10 @@
             <div class="rounded-2xl p-5 text-center" style="background: {{ $bestAttempt->passed ? '#f0fdf4' : 'var(--teal-light)' }}; border: 2px solid {{ $bestAttempt->passed ? '#86efac' : 'var(--teal)' }}">
                 @if ($bestAttempt->passed)
                 <p class="text-2xl mb-1" style="animation: celebrate-bounce 0.6s ease">🎉</p>
-                <p class="font-bold text-green-700">Great job! You passed with {{ $bestAttempt->score_percentage }}%!</p>
+                <p class="font-bold text-green-700">{{ __('db.Great job! You passed with :score%!', ['score' => $bestAttempt->score_percentage]) }}</p>
                 @else
                 <p class="text-2xl mb-1">💪</p>
-                <p class="font-bold text-gray-700">Almost there — you scored {{ $bestAttempt->score_percentage }}%. Try again, you need {{ $quiz->passing_percentage }}%!</p>
+                <p class="font-bold text-gray-700">{{ __('db.Almost there — you scored :score%. Try again, you need :passing%!', ['score' => $bestAttempt->score_percentage, 'passing' => $quiz->passing_percentage]) }}</p>
                 @endif
             </div>
             @endif
@@ -23,7 +23,7 @@
                 @csrf
                 @include('quiz._questions')
 
-                <x-primary-button>Submit Quiz</x-primary-button>
+                <x-primary-button>{{ __('db.Submit Quiz') }}</x-primary-button>
             </form>
 
         </div>

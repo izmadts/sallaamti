@@ -213,7 +213,7 @@
  <button type="button"
  @click="mobileOpen = !mobileOpen"
  class="border-0 shadow-none p-2 focus:outline-none"
- aria-label="Toggle navigation menu"
+ aria-label="{{ __('db.Toggle navigation menu') }}"
  :aria-expanded="mobileOpen.toString()"
  aria-controls="mobile-menu">
  <svg class="h-6 w-6" stroke="currentColor" fill="none" viewBox="0 0 24 24" aria-hidden="true">
@@ -224,7 +224,7 @@
  class="hidden" stroke-linecap="round" stroke-linejoin="round"
  stroke-width="2" d="M6 18L18 6M6 6l12 12" />
  </svg>
- <span class="sr-only">Toggle menu</span>
+ <span class="sr-only">{{ __('db.Toggle menu') }}</span>
  </button>
  </div>
  </nav>

@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800">My Progress</h2>
+        <h2 class="font-semibold text-xl text-gray-800">{{ __('db.My Progress') }}</h2>
     </x-slot>
 
     <div class="py-12">
@@ -13,7 +13,7 @@
                 <a href="{{ route('quran-live.my-progress', ['child' => $gs->id]) }}"
                     class="text-sm px-4 py-2 rounded-full font-medium {{ $gs->id === $current->id ? 'text-white' : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50' }}"
                     @if ($gs->id === $current->id) style="background: #0d6b6b" @endif>
-                    {{ $gs->admission?->student_name ?? $gs->user?->name ?? 'Unknown' }}
+                    {{ $gs->admission?->student_name ?? $gs->user?->name ?? __('db.Unknown') }}
                 </a>
                 @endforeach
             </div>
@@ -21,7 +21,7 @@
 
             {{-- Assessments --}}
             <div class="bg-white rounded-lg shadow-sm p-6">
-                <h3 class="font-semibold text-gray-700 mb-4">Assessment Results</h3>
+                <h3 class="font-semibold text-gray-700 mb-4">{{ __('db.Assessment Results') }}</h3>
                 @forelse ($assessments as $a)
                 <div class="flex justify-between items-center border-b py-2 last:border-0 text-sm">
                     <div>
@@ -39,13 +39,13 @@
                 <p class="text-xs text-gray-400 pb-2">{{ $a->remarks }}</p>
                 @endif
                 @empty
-                <p class="text-gray-400 text-sm">No assessments recorded yet.</p>
+                <p class="text-gray-400 text-sm">{{ __('db.No assessments recorded yet.') }}</p>
                 @endforelse
             </div>
 
             {{-- Progress Reports --}}
             <div class="bg-white rounded-lg shadow-sm p-6">
-                <h3 class="font-semibold text-gray-700 mb-4">Monthly Progress Reports</h3>
+                <h3 class="font-semibold text-gray-700 mb-4">{{ __('db.Monthly Progress Reports') }}</h3>
                 @forelse ($progressReports as $report)
                 <div class="border rounded-lg p-4 mb-4">
                     <div class="flex justify-between items-center mb-2">
@@ -58,17 +58,17 @@
                         </span>
                     </div>
                     <div class="text-sm space-y-1 text-gray-600">
-                        <p>Attendance: <strong>{{ $report->classes_attended }}/{{ $report->classes_total }} classes</strong></p>
-                        @if ($report->quran_progress)<p>Quran Progress: {{ $report->quran_progress }}</p>@endif
-                        @if ($report->behavior)<p>Behavior: {{ $report->behavior }}</p>@endif
-                        @if ($report->homework_completion)<p>Homework: {{ $report->homework_completion }}</p>@endif
+                        <p>{{ __('db.Attendance:') }} <strong>{{ $report->classes_attended }}/{{ $report->classes_total }} {{ __('db.classes') }}</strong></p>
+                        @if ($report->quran_progress)<p>{{ __('db.Quran Progress:') }} {{ $report->quran_progress }}</p>@endif
+                        @if ($report->behavior)<p>{{ __('db.Behavior:') }} {{ $report->behavior }}</p>@endif
+                        @if ($report->homework_completion)<p>{{ __('db.Homework:') }} {{ $report->homework_completion }}</p>@endif
                         @if ($report->teacher_comments)
                         <p class="mt-2 italic text-gray-500">"{{ $report->teacher_comments }}"</p>
                         @endif
                     </div>
                 </div>
                 @empty
-                <p class="text-gray-400 text-sm">No progress reports yet.</p>
+                <p class="text-gray-400 text-sm">{{ __('db.No progress reports yet.') }}</p>
                 @endforelse
             </div>
 

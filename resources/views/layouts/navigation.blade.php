@@ -256,7 +256,7 @@
  <p class="text-xs text-gray-500">{{ Auth::user()?->email }}</p>
  </div>
  <x-dropdown-link :href="route('profile.edit')">👤 {{ __('db.My Profile') }}</x-dropdown-link>
- <x-dropdown-link :href="route('guide.index')">📘 User Guide</x-dropdown-link>
+ <x-dropdown-link :href="route('guide.index')">📘 {{ __('db.User Guide') }}</x-dropdown-link>
  @if (Auth::user()->quran_module_enabled || Auth::user()->skills_module_enabled)
  <x-dropdown-link :href="route('courses.my-learning')">📚 {{ __('db.My Learning') }}</x-dropdown-link>
  @endif
@@ -337,7 +337,7 @@
  </div>
 
  <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')" class="text-white">
- 🏠 Dashboard
+ 🏠 {{ __('db.Dashboard') }}
  </x-responsive-nav-link>
 
  {{-- Nikah — prominent gold block, one place for every Nikah action --}}
@@ -370,60 +370,60 @@
  </div>
  @endif
 
- <div class="px-3 py-1 text-xs text-teal-300 font-semibold uppercase tracking-wider mt-2">Website</div>
- <x-responsive-nav-link :href="route('index')" class="text-white">🏡 Home Page</x-responsive-nav-link>
- <x-responsive-nav-link :href="url('/about')" class="text-white">ℹ️ About Us</x-responsive-nav-link>
- <x-responsive-nav-link :href="route('blog.index')" class="text-white">📰 Blog</x-responsive-nav-link>
- <x-responsive-nav-link :href="route('posts.index')" class="text-white">📝 Community Posts</x-responsive-nav-link>
- <x-responsive-nav-link :href="route('posts.mine')" class="text-white">✍️ My Posts</x-responsive-nav-link>
- <x-responsive-nav-link :href="route('testimonials.mine')" class="text-white">⭐ My Testimonials</x-responsive-nav-link>
- <x-responsive-nav-link :href="url('/team')" class="text-white">👥 Our Team</x-responsive-nav-link>
- <x-responsive-nav-link :href="url('/contact')" class="text-white">✉️ Contact</x-responsive-nav-link>
+ <div class="px-3 py-1 text-xs text-teal-300 font-semibold uppercase tracking-wider mt-2">{{ __('db.Website') }}</div>
+ <x-responsive-nav-link :href="route('index')" class="text-white">🏡 {{ __('db.Home Page') }}</x-responsive-nav-link>
+ <x-responsive-nav-link :href="url('/about')" class="text-white">ℹ️ {{ __('db.About Us') }}</x-responsive-nav-link>
+ <x-responsive-nav-link :href="route('blog.index')" class="text-white">📰 {{ __('db.Blog') }}</x-responsive-nav-link>
+ <x-responsive-nav-link :href="route('posts.index')" class="text-white">📝 {{ __('db.Community Posts') }}</x-responsive-nav-link>
+ <x-responsive-nav-link :href="route('posts.mine')" class="text-white">✍️ {{ __('db.My Posts') }}</x-responsive-nav-link>
+ <x-responsive-nav-link :href="route('testimonials.mine')" class="text-white">⭐ {{ __('db.My Testimonials') }}</x-responsive-nav-link>
+ <x-responsive-nav-link :href="url('/team')" class="text-white">👥 {{ __('db.Our Team') }}</x-responsive-nav-link>
+ <x-responsive-nav-link :href="url('/contact')" class="text-white">✉️ {{ __('db.Contact') }}</x-responsive-nav-link>
 
  @if (Auth::user()->quran_module_enabled)
- <div class="px-3 py-1 text-xs text-teal-300 font-semibold uppercase tracking-wider mt-2">Quran Learning</div>
- <x-responsive-nav-link :href="route('courses.index')" class="text-white">📖 Browse Courses</x-responsive-nav-link>
- <x-responsive-nav-link :href="route('courses.my-learning')" class="text-white">📚 My Learning</x-responsive-nav-link>
- <x-responsive-nav-link :href="route('quran-live.index')" class="text-white">🎥 Live Classes</x-responsive-nav-link>
- <x-responsive-nav-link :href="route('quran-live.my-class')" class="text-white">📡 My Quran Class</x-responsive-nav-link>
- <x-responsive-nav-link :href="route('quran-live.my-progress')" class="text-white">📊 My Progress</x-responsive-nav-link>
+ <div class="px-3 py-1 text-xs text-teal-300 font-semibold uppercase tracking-wider mt-2">{{ __('db.Quran Learning') }}</div>
+ <x-responsive-nav-link :href="route('courses.index')" class="text-white">📖 {{ __('db.Browse Courses') }}</x-responsive-nav-link>
+ <x-responsive-nav-link :href="route('courses.my-learning')" class="text-white">📚 {{ __('db.My Learning') }}</x-responsive-nav-link>
+ <x-responsive-nav-link :href="route('quran-live.index')" class="text-white">🎥 {{ __('db.Live Classes') }}</x-responsive-nav-link>
+ <x-responsive-nav-link :href="route('quran-live.my-class')" class="text-white">📡 {{ __('db.My Quran Class') }}</x-responsive-nav-link>
+ <x-responsive-nav-link :href="route('quran-live.my-progress')" class="text-white">📊 {{ __('db.My Progress') }}</x-responsive-nav-link>
  @endif
 
  @if (Auth::user()->skills_module_enabled)
- <div class="px-3 py-1 text-xs text-teal-300 font-semibold uppercase tracking-wider mt-2">Digital Skills</div>
- <x-responsive-nav-link :href="route('skills.index')" class="text-white">💻 Browse Skills</x-responsive-nav-link>
+ <div class="px-3 py-1 text-xs text-teal-300 font-semibold uppercase tracking-wider mt-2">{{ __('db.Digital Skills') }}</div>
+ <x-responsive-nav-link :href="route('skills.index')" class="text-white">💻 {{ __('db.Browse Skills') }}</x-responsive-nav-link>
  @unless (Auth::user()->quran_module_enabled)
- <x-responsive-nav-link :href="route('courses.my-learning')" class="text-white">📚 My Learning</x-responsive-nav-link>
+ <x-responsive-nav-link :href="route('courses.my-learning')" class="text-white">📚 {{ __('db.My Learning') }}</x-responsive-nav-link>
  @endunless
  @endif
 
- <div class="px-3 py-1 text-xs text-teal-300 font-semibold uppercase tracking-wider mt-2">More</div>
- <x-responsive-nav-link :href="route('volunteer.create')" class="text-white">🤝 Volunteer</x-responsive-nav-link>
- <x-responsive-nav-link :href="route('donate.create')" class="text-white">💝 Donate</x-responsive-nav-link>
+ <div class="px-3 py-1 text-xs text-teal-300 font-semibold uppercase tracking-wider mt-2">{{ __('db.More') }}</div>
+ <x-responsive-nav-link :href="route('volunteer.create')" class="text-white">🤝 {{ __('db.Volunteer') }}</x-responsive-nav-link>
+ <x-responsive-nav-link :href="route('donate.create')" class="text-white">💝 {{ __('db.Donate') }}</x-responsive-nav-link>
  @if (Auth::user()->quran_module_enabled)
- <x-responsive-nav-link :href="route('certificate.index')" class="text-white">🎓 My Certificates</x-responsive-nav-link>
+ <x-responsive-nav-link :href="route('certificate.index')" class="text-white">🎓 {{ __('db.My Certificates') }}</x-responsive-nav-link>
  @endif
  @role('admin')
- <div class="px-3 py-1 text-xs text-teal-300 font-semibold uppercase tracking-wider mt-2">Admin</div>
- <x-responsive-nav-link :href="route('admin.dashboard')" class="text-white">⚙️ Admin Dashboard</x-responsive-nav-link>
+ <div class="px-3 py-1 text-xs text-teal-300 font-semibold uppercase tracking-wider mt-2">{{ __('db.Admin') }}</div>
+ <x-responsive-nav-link :href="route('admin.dashboard')" class="text-white">⚙️ {{ __('db.Admin Dashboard') }}</x-responsive-nav-link>
  @endrole
 
  @role('teacher')
- <div class="px-3 py-1 text-xs text-teal-300 font-semibold uppercase tracking-wider mt-2">Teacher</div>
- <x-responsive-nav-link :href="route('teacher.courses.index')" class="text-white">📚 My Courses</x-responsive-nav-link>
- <x-responsive-nav-link :href="route('teacher.groups.index')" class="text-white">👥 My Class Groups</x-responsive-nav-link>
+ <div class="px-3 py-1 text-xs text-teal-300 font-semibold uppercase tracking-wider mt-2">{{ __('db.Teacher') }}</div>
+ <x-responsive-nav-link :href="route('teacher.courses.index')" class="text-white">📚 {{ __('db.My Courses') }}</x-responsive-nav-link>
+ <x-responsive-nav-link :href="route('teacher.groups.index')" class="text-white">👥 {{ __('db.My Class Groups') }}</x-responsive-nav-link>
  @endrole
 
  {{-- Same fix as the desktop dropdown above — one entry point into the
  Match Maker Desk, not duplicate/broken links to what's already in its
  own sidebar. --}}
  @role('matchmaker')
- <x-responsive-nav-link :href="route('dashboard.matchmaker')" class="text-white">💍 Matchmaker Dashboard</x-responsive-nav-link>
+ <x-responsive-nav-link :href="route('dashboard.matchmaker')" class="text-white">💍 {{ __('db.Matchmaker Dashboard') }}</x-responsive-nav-link>
  @endrole
 
  @hasanyrole(['manager', 'blogger'])
- <div class="px-3 py-1 text-xs text-teal-300 font-semibold uppercase tracking-wider mt-2">Blog</div>
- <x-responsive-nav-link :href="route('admin.blog-posts.index')" class="text-white">📝 Blog Posts</x-responsive-nav-link>
+ <div class="px-3 py-1 text-xs text-teal-300 font-semibold uppercase tracking-wider mt-2">{{ __('db.Blog') }}</div>
+ <x-responsive-nav-link :href="route('admin.blog-posts.index')" class="text-white">📝 {{ __('db.Blog Posts') }}</x-responsive-nav-link>
  @endhasanyrole
  </div>
 
@@ -439,15 +439,15 @@
  </div>
  </div>
  <div class="space-y-1 px-2">
- <x-responsive-nav-link :href="route('profile.edit')" class="text-white">👤 My Profile</x-responsive-nav-link>
- <x-responsive-nav-link :href="route('guide.index')" class="text-white">📘 User Guide</x-responsive-nav-link>
- <x-responsive-nav-link :href="route('donate.my')" class="text-white">💝 My Donations</x-responsive-nav-link>
+ <x-responsive-nav-link :href="route('profile.edit')" class="text-white">👤 {{ __('db.My Profile') }}</x-responsive-nav-link>
+ <x-responsive-nav-link :href="route('guide.index')" class="text-white">📘 {{ __('db.User Guide') }}</x-responsive-nav-link>
+ <x-responsive-nav-link :href="route('donate.my')" class="text-white">💝 {{ __('db.My Donations') }}</x-responsive-nav-link>
  <form method="POST" action="{{ route('logout') }}">
  @csrf
  <x-responsive-nav-link :href="route('logout')"
  onclick="event.preventDefault(); this.closest('form').submit();"
  class="text-white">
- 🚪 Log Out
+ 🚪 {{ __('db.Log Out') }}
  </x-responsive-nav-link>
  </form>
  </div>

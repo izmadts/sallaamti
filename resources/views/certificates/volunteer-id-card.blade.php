@@ -152,24 +152,24 @@
                 @endif
                 <span class="brand">SALLAAMTI</span>
             </div>
-            <div class="kicker">Volunteer Identity Card</div>
+            <div class="kicker">{{ __('db.Volunteer Identity Card') }}</div>
             <div class="divider"></div>
 
             <table class="body-table">
                 <tr>
                     <td class="id-cell">
                         <div class="name">{{ $certificate->user->name }}</div>
-                        <div class="role">Certified Volunteer</div>
-                        <div class="id-number">ID: {{ $certificate->certificate_number }}</div>
+                        <div class="role">{{ __('db.Certified Volunteer') }}</div>
+                        <div class="id-number">{{ __('db.ID: :number', ['number' => $certificate->certificate_number]) }}</div>
                     </td>
                     <td class="qr-cell">
                         <img src="{{ $certificate->qrCodeBase64() }}">
-                        <div class="qr-label">SCAN TO VERIFY</div>
+                        <div class="qr-label">{{ __('db.SCAN TO VERIFY') }}</div>
                     </td>
                 </tr>
             </table>
 
-            <div class="footer">Issued {{ $certificate->issued_at->format('d M Y') }} &nbsp;·&nbsp; www.sallaamti.com</div>
+            <div class="footer">{{ __('db.Issued :date', ['date' => $certificate->issued_at->format('d M Y')]) }} &nbsp;·&nbsp; www.sallaamti.com</div>
         </div>
     </div>
 </body>

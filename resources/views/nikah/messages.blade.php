@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800">Guardian Messages</h2>
+        <h2 class="font-semibold text-xl text-gray-800">{{ __('db.Guardian Messages') }}</h2>
     </x-slot>
 
     <div class="py-12">
@@ -8,9 +8,9 @@
 
 
             <div class="bg-yellow-50 border border-yellow-200 rounded p-3 text-sm text-yellow-800 flex items-center justify-between gap-3">
-                <span>ℹ️ This is a guardian-mediated channel. Please keep all communication respectful and Islamic in conduct.</span>
+                <span>ℹ️ {{ __('db.This is a guardian-mediated channel. Please keep all communication respectful and Islamic in conduct.') }}</span>
                 <button type="button" onclick="document.getElementById('report-conversation-modal').classList.remove('hidden')" class="shrink-0 text-red-600 hover:underline text-xs font-medium">
-                    Report this conversation
+                    {{ __('db.Report this conversation') }}
                 </button>
             </div>
 
@@ -24,41 +24,41 @@
                     </div>
                 </div>
                 @empty
-                <p class="text-gray-400 text-sm text-center">No messages yet. Send the first message below.</p>
+                <p class="text-gray-400 text-sm text-center">{{ __('db.No messages yet. Send the first message below.') }}</p>
                 @endforelse
             </div>
 
             <form method="POST" action="{{ route('nikah.messages.store', $interest) }}" class="bg-white rounded-lg shadow-sm p-4">
                 @csrf
                 <div class="flex gap-3">
-                    <textarea name="message" rows="2" class="flex-1 border-gray-300 rounded-md text-sm" placeholder="Write a message..." required></textarea>
-                    <x-primary-button class="self-end">Send</x-primary-button>
+                    <textarea name="message" rows="2" class="flex-1 border-gray-300 rounded-md text-sm" placeholder="{{ __('db.Write a message...') }}" required></textarea>
+                    <x-primary-button class="self-end">{{ __('db.Send') }}</x-primary-button>
                 </div>
             </form>
 
-            <a href="{{ route('nikah.interests') }}" class="text-sm text-gray-500 hover:underline">← Back to Interests</a>
+            <a href="{{ route('nikah.interests') }}" class="text-sm text-gray-500 hover:underline">← {{ __('db.Back to Interests') }}</a>
         </div>
     </div>
 
     <div id="report-conversation-modal" class="hidden fixed inset-0 bg-black/40 flex items-center justify-center p-4 z-50">
         <div class="bg-white rounded-lg shadow-lg max-w-sm w-full p-5">
-            <h3 class="font-semibold text-gray-800 mb-3">Report this conversation</h3>
+            <h3 class="font-semibold text-gray-800 mb-3">{{ __('db.Report this conversation') }}</h3>
             <form method="POST" action="{{ route('nikah.report', $otherProfileId) }}">
                 @csrf
                 <input type="hidden" name="nikah_interest_id" value="{{ $interest->id }}">
-                <label class="block text-sm text-gray-600 mb-1" for="report-reason">Reason</label>
+                <label class="block text-sm text-gray-600 mb-1" for="report-reason">{{ __('db.Reason') }}</label>
                 <select id="report-reason" name="reason" class="w-full border-gray-300 rounded-md text-sm mb-3" required>
-                    <option value="">Select a reason</option>
-                    <option value="Harassment or inappropriate messages">Harassment or inappropriate messages</option>
-                    <option value="Misleading profile information">Misleading profile information</option>
-                    <option value="Requesting money or personal financial details">Requesting money or personal financial details</option>
-                    <option value="Other">Other</option>
+                    <option value="">{{ __('db.Select a reason') }}</option>
+                    <option value="Harassment or inappropriate messages">{{ __('db.Harassment or inappropriate messages') }}</option>
+                    <option value="Misleading profile information">{{ __('db.Misleading profile information') }}</option>
+                    <option value="Requesting money or personal financial details">{{ __('db.Requesting money or personal financial details') }}</option>
+                    <option value="Other">{{ __('db.Other') }}</option>
                 </select>
-                <label class="block text-sm text-gray-600 mb-1" for="report-details">Details (optional)</label>
-                <textarea id="report-details" name="details" rows="3" class="w-full border-gray-300 rounded-md text-sm mb-4" placeholder="Anything our team should know"></textarea>
+                <label class="block text-sm text-gray-600 mb-1" for="report-details">{{ __('db.Details (optional)') }}</label>
+                <textarea id="report-details" name="details" rows="3" class="w-full border-gray-300 rounded-md text-sm mb-4" placeholder="{{ __('db.Anything our team should know') }}"></textarea>
                 <div class="flex justify-end gap-2">
-                    <button type="button" onclick="document.getElementById('report-conversation-modal').classList.add('hidden')" class="px-3 py-2 text-sm text-gray-600">Cancel</button>
-                    <button type="submit" class="px-3 py-2 text-sm bg-red-600 text-white rounded-md hover:bg-red-700">Submit report</button>
+                    <button type="button" onclick="document.getElementById('report-conversation-modal').classList.add('hidden')" class="px-3 py-2 text-sm text-gray-600">{{ __('db.Cancel') }}</button>
+                    <button type="submit" class="px-3 py-2 text-sm bg-red-600 text-white rounded-md hover:bg-red-700">{{ __('db.Submit report') }}</button>
                 </div>
             </form>
         </div>

@@ -187,11 +187,11 @@
             <img src="{{ public_path('images/sallaamti-logo.png') }}" class="logo"><br>
             @endif
 
-            <div class="partner-badge">Presented by IZMA Digital Technology &amp; Security</div>
+            <div class="partner-badge">{{ __('db.Presented by IZMA Digital Technology & Security') }}</div>
 
             <div class="english-title">
                 @if ($certificate->type === 'course')
-                Certificate of Completion
+                {{ __('db.Certificate of Completion') }}
                 @else
                 {{ $certificate->title }}
                 @endif
@@ -199,11 +199,11 @@
 
             <div class="divider"></div>
 
-            <div class="presented-to">This certificate is proudly presented to</div>
+            <div class="presented-to">{{ __('db.This certificate is proudly presented to') }}</div>
             <div class="recipient-name">{{ $certificate->user->name }}</div>
 
             @if ($certificate->type === 'course')
-            <div class="course-line">for successfully completing the digital skills course</div>
+            <div class="course-line">{{ __('db.for successfully completing the digital skills course') }}</div>
             <div class="course-title">{{ $certificate->course?->title }}</div>
             @endif
 
@@ -213,23 +213,23 @@
                         @if (file_exists(public_path('images/signature-director.png')))
                         <img src="{{ public_path('images/signature-director.png') }}" class="signature-img"><br>
                         @endif
-                        <div class="signature-line">Director, Sallaamti</div>
+                        <div class="signature-line">{{ __('db.Director, Sallaamti') }}</div>
                     </td>
                     <td class="qr">
                         <img src="{{ $certificate->qrCodeBase64() }}">
-                        <div class="qr-label">SCAN TO VERIFY</div>
+                        <div class="qr-label">{{ __('db.SCAN TO VERIFY') }}</div>
                     </td>
                     <td>
-                        <div class="signature-line">Sallaamti &amp; IZMA Digital Technology &amp; Security</div>
+                        <div class="signature-line">{{ __('db.Sallaamti & IZMA Digital Technology & Security') }}</div>
                     </td>
                 </tr>
             </table>
 
             <div class="meta-footer">
-                Issued on {{ $certificate->issued_at->format('d F Y') }} &nbsp;|&nbsp; www.sallaamti.com
+                {{ __('db.Issued on :date', ['date' => $certificate->issued_at->format('d F Y')]) }} &nbsp;|&nbsp; www.sallaamti.com
             </div>
-            <div class="cert-id">Certificate ID: {{ $certificate->certificate_number }}</div>
-            <div class="izma-footer">In partnership with IZMA Digital Technology &amp; Security &nbsp;|&nbsp; izmadts.com</div>
+            <div class="cert-id">{{ __('db.Certificate ID: :number', ['number' => $certificate->certificate_number]) }}</div>
+            <div class="izma-footer">{{ __('db.In partnership with IZMA Digital Technology & Security') }} &nbsp;|&nbsp; izmadts.com</div>
 
         </div>
     </div>

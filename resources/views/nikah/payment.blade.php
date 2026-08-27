@@ -44,14 +44,14 @@
             </div>
 
             <div class="bg-white rounded-lg shadow-sm p-6">
-                <h3 class="font-semibold text-gray-700 mb-2">{{ __('db.Fee Amount:') }} Rs. {{ number_format($feeAmount) }}</h3>
+                <h3 class="font-semibold text-gray-700 mb-2">{{ __('db.Fee Amount:') }} {{ __('db.Rs. :amount', ['amount' => number_format($feeAmount)]) }}</h3>
                 <p class="text-sm text-gray-500 mb-4">{{ __('db.Send this amount via JazzCash or Bank Transfer to the details below, then either submit your receipt on this page or send it to us directly on WhatsApp — whichever is easier for you.') }}</p>
 
                 <div class="bg-gray-50 border border-gray-200 rounded p-4 text-sm mb-6 space-y-4">
                     @if (setting('jazzcash_number'))
                     <div>
                         <p class="font-bold mb-1" style="color: var(--gold)">📱 {{ __('db.JazzCash') }}</p>
-                        <img src="{{ asset('images/jazzcash.png') }}" alt="JazzCash" class="h-8 w-auto mb-1">
+                        <img src="{{ asset('images/jazzcash.png') }}" alt="{{ __('db.JazzCash') }}" class="h-8 w-auto mb-1">
                         <p class="text-gray-600 mb-0 flex items-center gap-1">
                             {{ setting('jazzcash_number') }}
                             <x-copy-button :value="setting('jazzcash_number')" />
@@ -62,7 +62,7 @@
                     @if (setting('bank_name'))
                     <div>
                         <p class="font-bold mb-1" style="color: var(--gold)">🏦 {{ __('db.Bank Transfer') }}</p>
-                        <img src="{{ asset('images/meezan.png') }}" alt="Bank" class="h-16 w-auto mb-1">
+                        <img src="{{ asset('images/meezan.png') }}" alt="{{ __('db.Bank') }}" class="h-16 w-auto mb-1">
                         <p class="text-gray-600 text-sm mb-0">{{ __('db.Bank:') }} {{ setting('bank_name') }}</p>
                         <p class="text-gray-600 text-sm mb-0">{{ __('db.Account Title:') }} {{ setting('bank_account_title') }}</p>
                         <p class="text-gray-600 text-sm mb-0 flex items-center gap-1">
