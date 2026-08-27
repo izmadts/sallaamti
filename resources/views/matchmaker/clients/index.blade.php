@@ -72,6 +72,7 @@
                         <tr class="text-left text-xs uppercase tracking-wide text-gray-500 border-b bg-gray-50">
                             <th class="px-4 py-3">{{ __('db.Client') }}</th>
                             <th class="px-4 py-3">{{ __('db.Status') }}</th>
+                            <th class="px-4 py-3">{{ __('db.Progress') }}</th>
                             <th class="px-4 py-3">{{ __('db.Follow-up') }}</th>
                             <th class="px-4 py-3">{{ __('db.Linked Profile') }}</th>
                             @if ($canManageTeam)
@@ -99,6 +100,15 @@
                                     {{ ucfirst(str_replace('_', ' ', $lead->status)) }}
                                 </span>
                             </td>
+                            <td class="px-4 py-3">
+                                @php $completed = \App\Support\LeadJourney::completedCount($lead); @endphp
+                                <div class="flex items-center gap-2 w-24">
+                                    <div class="flex-1 h-1.5 rounded-full bg-gray-100 overflow-hidden">
+                                        <div class="h-full rounded-full" style="width: {{ $completed / 7 * 100 }}%; background: var(--mm-plum);"></div>
+                                    </div>
+                                    <span class="text-xs text-gray-400 whitespace-nowrap">{{ $completed }}/7</span>
+                                </div>
+                            </td>
                             <td class="px-4 py-3 text-xs {{ $lead->next_follow_up_at && $lead->next_follow_up_at->isPast() ? 'text-red-600 font-semibold' : 'text-gray-500' }}">
                                 {{ $lead->next_follow_up_at?->format('d M Y') ?? '—' }}
                             </td>
@@ -116,7 +126,7 @@
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="{{ $canManageTeam ? 6 : 5 }}" class="px-4 py-8 text-center text-gray-400 text-sm">{{ __('db.No clients yet.') }} <a href="{{ route('matchmaker.clients.create') }}" class="hover:underline" style="color: var(--mm-plum);">{{ __('db.Add your first one') }}</a>.</td>
+                            <td colspan="{{ $canManageTeam ? 7 : 6 }}" class="px-4 py-8 text-center text-gray-400 text-sm">{{ __('db.No clients yet.') }} <a href="{{ route('matchmaker.clients.create') }}" class="hover:underline" style="color: var(--mm-plum);">{{ __('db.Add your first one') }}</a>.</td>
                         </tr>
                         @endforelse
                     </tbody>

@@ -7,7 +7,13 @@
         </div>
     </x-slot>
 
-    <div class="max-w-6xl mx-auto space-y-6" x-data="{ tab: 'overview' }">
+    @php
+        $journey = \App\Support\LeadJourney::forLead($lead);
+        $currentStageKey = \App\Support\LeadJourney::currentStage($lead);
+        $nextActionText = \App\Support\LeadJourney::nextActionText($lead);
+    @endphp
+
+    <div class="max-w-6xl mx-auto space-y-6" x-data="{ tab: '{{ \App\Support\LeadJourney::STAGES[$currentStageKey]['tab'] ?? 'overview' }}' }">
 
         @if (session('status'))
         <div class="p-4 bg-green-50 text-green-700 rounded-lg text-sm">{{ session('status') }}</div>
@@ -29,7 +35,7 @@
         <div class="bg-white rounded-xl shadow-sm p-6 flex flex-wrap justify-between items-start gap-4">
             <div>
                 <h2 class="text-xl font-bold text-gray-800">{{ $lead->name }}</h2>
-                <p class="text-sm text-gray-500">{{ $lead->maskedPhone() ?: __('db.— no phone —') }} · {{ $lead->email ?: __('db.— no email —') }}</p>
+                <p class="text-sm text-gray-500">{{ $lead->visiblePhoneFor(auth()->user()) ?: __('db.— no phone —') }} · {{ $lead->email ?: __('db.— no email —') }}</p>
                 <span class="inline-block mt-2 text-xs px-2 py-0.5 rounded-full
                     {{ match($lead->status) {
                         'new' => 'bg-blue-100 text-blue-800',
@@ -56,13 +62,49 @@
             </div>
         </div>
 
+        {{-- Journey stepper — same 7 steps documented in the Nikah Counselor
+             Guide, made visible instead of something you have to already
+             know. Clicking a step jumps straight to its tab. --}}
+        <div class="bg-white rounded-xl shadow-sm p-5">
+            <div class="flex items-center justify-between overflow-x-auto pb-1">
+                @foreach ($journey as $i => $stage)
+                <div class="flex items-center {{ $i < count($journey) - 1 ? 'flex-1' : '' }}">
+                    <button type="button" @click="tab = '{{ $stage['tab'] }}'" class="flex flex-col items-center gap-1 shrink-0 group">
+                        <span class="w-8 h-8 rounded-full flex items-center justify-center text-sm font-semibold border-2 transition
+                            {{ $stage['done'] ? 'text-white' : ($stage['key'] === $currentStageKey ? 'bg-white' : 'bg-gray-50 border-gray-200 text-gray-300') }}"
+                            style="{{ $stage['done'] ? 'background: var(--mm-plum); border-color: var(--mm-plum);' : ($stage['key'] === $currentStageKey ? 'border-color: var(--mm-plum); color: var(--mm-plum);' : '') }}">
+                            {{ $stage['done'] ? '✓' : $stage['icon'] }}
+                        </span>
+                        <span class="text-[11px] font-medium text-center leading-tight w-16 {{ $stage['key'] === $currentStageKey ? 'text-gray-800' : 'text-gray-400' }} group-hover:text-gray-700">
+                            {{ $stage['label'] }}
+                        </span>
+                    </button>
+                    @if ($i < count($journey) - 1)
+                    <div class="flex-1 h-0.5 mx-1 {{ $stage['done'] ? '' : 'bg-gray-100' }}" style="{{ $stage['done'] ? 'background: var(--mm-plum);' : '' }}"></div>
+                    @endif
+                </div>
+                @endforeach
+            </div>
+            @if ($nextActionText)
+            <div class="mt-4 pt-4 border-t flex items-center gap-2 text-sm">
+                <span class="font-semibold" style="color: var(--mm-plum);">{{ __('db.Next:') }}</span>
+                <span class="text-gray-600">{{ __('db.' . $nextActionText) }}</span>
+            </div>
+            @else
+            <div class="mt-4 pt-4 border-t text-sm text-green-700">
+                🎉 {{ __('db.Every step is done for this client.') }}
+            </div>
+            @endif
+        </div>
+
         {{-- Tabs --}}
         <div class="bg-white rounded-xl shadow-sm">
             <div class="flex flex-wrap border-b overflow-x-auto">
                 <button @click="tab = 'overview'" :class="tab === 'overview' ? 'border-b-2 font-semibold' : 'text-gray-500'" style="border-color: var(--mm-plum);" class="px-4 py-3 text-sm whitespace-nowrap">{{ __('db.Overview') }}</button>
                 <button @click="tab = 'requirements'" :class="tab === 'requirements' ? 'border-b-2 font-semibold' : 'text-gray-500'" style="border-color: var(--mm-plum);" class="px-4 py-3 text-sm whitespace-nowrap">{{ __('db.Requirements') }}</button>
                 <button @click="tab = 'shortlist'" :class="tab === 'shortlist' ? 'border-b-2 font-semibold' : 'text-gray-500'" style="border-color: var(--mm-plum);" class="px-4 py-3 text-sm whitespace-nowrap">{{ __('db.Shortlist (:count)', ['count' => $lead->shortlistItems->count()]) }}</button>
-                <button @click="tab = 'batches'" :class="tab === 'batches' ? 'border-b-2 font-semibold' : 'text-gray-500'" style="border-color: var(--mm-plum);" class="px-4 py-3 text-sm whitespace-nowrap">{{ __('db.Proposal Batches (:count)', ['count' => $lead->proposalBatches->count()]) }}</button>
+                <button @click="tab = 'consent'" :class="tab === 'consent' ? 'border-b-2 font-semibold' : 'text-gray-500'" style="border-color: var(--mm-plum);" class="px-4 py-3 text-sm whitespace-nowrap">{{ __('db.Consent') }}</button>
+                <button @click="tab = 'batches'" :class="tab === 'batches' ? 'border-b-2 font-semibold' : 'text-gray-500'" style="border-color: var(--mm-plum);" class="px-4 py-3 text-sm whitespace-nowrap">{{ __('db.Proposals (:count)', ['count' => $lead->proposalBatches->count()]) }}</button>
                 <button @click="tab = 'timeline'" :class="tab === 'timeline' ? 'border-b-2 font-semibold' : 'text-gray-500'" style="border-color: var(--mm-plum);" class="px-4 py-3 text-sm whitespace-nowrap">{{ __('db.Timeline (:count)', ['count' => $lead->timelineEvents->count()]) }}</button>
             </div>
 
@@ -107,10 +149,21 @@
                     </div>
                     @endif
                     <div class="grid grid-cols-2 gap-4">
-                        <div>
+                        <div x-data="{ editingPhone: false }">
                             <x-input-label for="phone" :value="__('db.Phone / WhatsApp')" />
+                            @if ($lead->created_by === auth()->id() && $lead->phone)
+                            <div x-show="!editingPhone" class="flex items-center gap-2 mt-1">
+                                <span class="text-sm font-medium text-gray-800 border border-gray-200 rounded-md px-3 py-2 flex-1 bg-gray-50">{{ $lead->phone }}</span>
+                                <button type="button" @click="editingPhone = true" class="text-xs font-semibold px-2 py-2 whitespace-nowrap" style="color: var(--mm-plum);">{{ __('db.Edit') }}</button>
+                            </div>
+                            <div x-show="editingPhone" x-cloak>
+                                <x-text-input id="phone" name="phone" type="text" class="w-full mt-1" value="" placeholder="{{ __('db.leave blank to keep') }} {{ $lead->phone }}" />
+                            </div>
+                            <p class="text-xs text-gray-400 mt-1">{{ __("db.You entered this number yourself when adding :name, so it's shown here — it stays hidden from every other counselor.", ['name' => $lead->name]) }}</p>
+                            @else
                             <x-text-input id="phone" name="phone" type="text" class="w-full mt-1" value="" placeholder="{{ $lead->maskedPhone() ?: __('db.Not on file yet') }} — {{ __('db.leave blank to keep') }}" />
                             <p class="text-xs text-gray-400 mt-1">{{ __('db.Hidden for privacy. Type a new number here only to correct it — use Send via WhatsApp/SMS below to actually reach :name.', ['name' => $lead->name]) }}</p>
+                            @endif
                         </div>
                         <div>
                             <x-input-label for="email" :value="__('db.Email')" />
@@ -178,7 +231,7 @@
                     @endif
                     <div class="flex flex-wrap items-center gap-2">
                         @if ($progressLink)
-                        <button type="button" data-link="{{ $progressLink }}" onclick="navigator.clipboard.writeText(this.dataset.link); this.textContent = '✅ {{ __('db.Copied!') }}'; setTimeout(() => this.textContent = '📋 {{ __('db.Copy Link') }}', 1500);" class="text-xs font-semibold px-3 py-1.5 rounded-lg text-white hover:opacity-90" style="background: var(--mm-plum);">📋 {{ __('db.Copy Link') }}</button>
+                        <button type="button" data-link="{{ $progressLink }}" onclick="navigator.clipboard.writeText(this.dataset.link); this.textContent = {{ Js::from('✅ ' . __('db.Copied!')) }}; setTimeout(() => this.textContent = {{ Js::from('📋 ' . __('db.Copy Link')) }}, 1500);" class="text-xs font-semibold px-3 py-1.5 rounded-lg text-white hover:opacity-90" style="background: var(--mm-plum);">📋 {{ __('db.Copy Link') }}</button>
                         @endif
                         <form method="POST" action="{{ route('matchmaker.clients.progress-link.regenerate', $lead) }}" @if($progressLink) onsubmit="return confirm({{ Js::from(__('db.Generate a new progress link? The old one will stop working immediately.')) }})" @endif>
                             @csrf
@@ -188,88 +241,6 @@
                     @unless ($lead->phone)
                     <p class="text-xs text-amber-700 mt-2">{{ __("db.Add a phone number above first — that's what :name will enter to unlock the page.", ['name' => $lead->name]) }}</p>
                     @endunless
-                </div>
-
-                {{-- Consent — see App\Models\MatchmakingConsent. Matchmaking Participation gates sending proposal batches. --}}
-                <div class="mt-6 pt-6 border-t">
-                    <h4 class="font-semibold text-gray-700 mb-1">✅ {{ __('db.Consent') }}</h4>
-                    <p class="text-xs text-gray-500 mb-3">{!! __("db.Best way: ask them to confirm it themselves through their secure link — the system asks them directly, no guesswork about what they actually agreed to. If that's not possible, you can still record consent you got verbally, by phone, or in person. An active :participation consent is required before you can send this client any proposals.", ['participation' => '<strong>' . __('db.Nikah Counseling Participation') . '</strong>']) !!}</p>
-
-                    @if ($lead->consentRequests->where('status', 'pending')->isNotEmpty())
-                    <div class="space-y-1.5 mb-3">
-                        @foreach ($lead->consentRequests->where('status', 'pending') as $req)
-                        <div class="text-xs bg-blue-50 text-blue-800 rounded-lg px-3 py-2">
-                            ⏳ {{ __('db.Waiting on :name to confirm:', ['name' => $lead->name]) }} <strong>{{ explode(' — ', \App\Models\MatchmakingConsent::TYPES[$req->consent_type])[0] }}</strong>
-                            <span class="text-blue-500"> · {{ __('db.requested :time', ['time' => $req->requested_at->diffForHumans()]) }}</span>
-                        </div>
-                        @endforeach
-                    </div>
-                    @endif
-
-                    @if ($lead->consents->isNotEmpty())
-                    <div class="space-y-1.5 mb-3">
-                        @foreach ($lead->consents as $consent)
-                        <div class="flex items-center justify-between text-xs bg-gray-50 rounded-lg px-3 py-2">
-                            <div>
-                                <span class="font-medium {{ $consent->isActive() ? 'text-gray-800' : 'text-gray-400 line-through' }}">{{ explode(' — ', \App\Models\MatchmakingConsent::TYPES[$consent->consent_type])[0] }}</span>
-                                <span class="text-gray-400"> · {{ \App\Models\MatchmakingConsent::METHODS[$consent->method] ?? $consent->method }} · {{ $consent->granted_at->format('d M Y') }} · {{ __('db.by :name', ['name' => $consent->recordedBy?->name ?? '—']) }}</span>
-                                @if (!$consent->isActive())
-                                <span class="text-red-500"> · {{ __('db.revoked :date by :name', ['date' => $consent->revoked_at->format('d M Y'), 'name' => $consent->revokedBy?->name ?? '—']) }}</span>
-                                @endif
-                            </div>
-                            @if ($consent->isActive())
-                            <form method="POST" action="{{ route('matchmaker.clients.consents.revoke', [$lead, $consent]) }}" onsubmit="return confirm({{ Js::from(__('db.Revoke this consent?')) }})">
-                                @csrf
-                                <button class="text-red-500 hover:underline">{{ __('db.Revoke') }}</button>
-                            </form>
-                            @endif
-                        </div>
-                        @endforeach
-                    </div>
-                    @endif
-
-                    <form method="POST" action="{{ route('matchmaker.clients.consents.request', $lead) }}" class="flex flex-wrap gap-2 items-end mb-3">
-                        @csrf
-                        <div>
-                            <label class="text-xs text-gray-500">{{ __('db.Type') }}</label>
-                            <select name="consent_type" required class="border-gray-300 rounded text-sm block">
-                                @foreach (\App\Models\MatchmakingConsent::TYPES as $value => $label)
-                                <option value="{{ $value }}" title="{{ $label }}">{{ explode(' — ', $label)[0] }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <button class="text-xs font-semibold px-3 py-1.5 rounded-lg border" style="border-color: var(--mm-plum); color: var(--mm-plum);">🔗 {{ __('db.Ask Them to Confirm via Link') }}</button>
-                        @unless ($lead->phone)
-                        <span class="text-xs text-amber-700">{{ __('db.Add a phone number above first.') }}</span>
-                        @endunless
-                    </form>
-
-                    <p class="text-xs text-gray-400 mb-2">{{ __('db.— or, if you already got it verbally, by phone, or in person —') }}</p>
-
-                    <form method="POST" action="{{ route('matchmaker.clients.consents.record', $lead) }}" class="flex flex-wrap gap-2 items-end">
-                        @csrf
-                        <div>
-                            <label class="text-xs text-gray-500">{{ __('db.Type') }}</label>
-                            <select name="consent_type" required class="border-gray-300 rounded text-sm block">
-                                @foreach (\App\Models\MatchmakingConsent::TYPES as $value => $label)
-                                <option value="{{ $value }}" title="{{ $label }}">{{ explode(' — ', $label)[0] }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div>
-                            <label class="text-xs text-gray-500">{{ __('db.How obtained') }}</label>
-                            <select name="method" required class="border-gray-300 rounded text-sm block">
-                                @foreach (\App\Models\MatchmakingConsent::METHODS as $value => $label)
-                                <option value="{{ $value }}">{{ $label }}</option>
-                                @endforeach
-                            </select>
-                        </div>
-                        <div class="flex-1 min-w-[10rem]">
-                            <label class="text-xs text-gray-500">{{ __('db.Notes (optional)') }}</label>
-                            <input type="text" name="notes" class="border-gray-300 rounded text-sm block w-full">
-                        </div>
-                        <button class="text-xs font-semibold px-3 py-1.5 rounded-lg text-white hover:opacity-90" style="background: var(--mm-plum);">{{ __('db.Record Consent') }}</button>
-                    </form>
                 </div>
             </div>
 
@@ -423,7 +394,89 @@
                 </details>
             </div>
 
-            {{-- === PROPOSAL BATCHES === --}}
+            {{-- === CONSENT === --}}
+            <div x-show="tab === 'consent'" class="p-6">
+                <h4 class="font-semibold text-gray-700 mb-1">✅ {{ __('db.Consent') }}</h4>
+                <p class="text-xs text-gray-500 mb-3">{!! __("db.Best way: ask them to confirm it themselves through their secure link — the system asks them directly, no guesswork about what they actually agreed to. If that's not possible, you can still record consent you got verbally, by phone, or in person. An active :participation consent is required before you can send this client any proposals.", ['participation' => '<strong>' . __('db.Nikah Counseling Participation') . '</strong>']) !!}</p>
+
+                @if ($lead->consentRequests->where('status', 'pending')->isNotEmpty())
+                <div class="space-y-1.5 mb-3">
+                    @foreach ($lead->consentRequests->where('status', 'pending') as $req)
+                    <div class="text-xs bg-blue-50 text-blue-800 rounded-lg px-3 py-2">
+                        ⏳ {{ __('db.Waiting on :name to confirm:', ['name' => $lead->name]) }} <strong>{{ explode(' — ', \App\Models\MatchmakingConsent::TYPES[$req->consent_type])[0] }}</strong>
+                        <span class="text-blue-500"> · {{ __('db.requested :time', ['time' => $req->requested_at->diffForHumans()]) }}</span>
+                    </div>
+                    @endforeach
+                </div>
+                @endif
+
+                @if ($lead->consents->isNotEmpty())
+                <div class="space-y-1.5 mb-3">
+                    @foreach ($lead->consents as $consent)
+                    <div class="flex items-center justify-between text-xs bg-gray-50 rounded-lg px-3 py-2">
+                        <div>
+                            <span class="font-medium {{ $consent->isActive() ? 'text-gray-800' : 'text-gray-400 line-through' }}">{{ explode(' — ', \App\Models\MatchmakingConsent::TYPES[$consent->consent_type])[0] }}</span>
+                            <span class="text-gray-400"> · {{ \App\Models\MatchmakingConsent::METHODS[$consent->method] ?? $consent->method }} · {{ $consent->granted_at->format('d M Y') }} · {{ __('db.by :name', ['name' => $consent->recordedBy?->name ?? '—']) }}</span>
+                            @if (!$consent->isActive())
+                            <span class="text-red-500"> · {{ __('db.revoked :date by :name', ['date' => $consent->revoked_at->format('d M Y'), 'name' => $consent->revokedBy?->name ?? '—']) }}</span>
+                            @endif
+                        </div>
+                        @if ($consent->isActive())
+                        <form method="POST" action="{{ route('matchmaker.clients.consents.revoke', [$lead, $consent]) }}" onsubmit="return confirm({{ Js::from(__('db.Revoke this consent?')) }})">
+                            @csrf
+                            <button class="text-red-500 hover:underline">{{ __('db.Revoke') }}</button>
+                        </form>
+                        @endif
+                    </div>
+                    @endforeach
+                </div>
+                @endif
+
+                <form method="POST" action="{{ route('matchmaker.clients.consents.request', $lead) }}" class="flex flex-wrap gap-2 items-end mb-3">
+                    @csrf
+                    <div>
+                        <label class="text-xs text-gray-500">{{ __('db.Type') }}</label>
+                        <select name="consent_type" required class="border-gray-300 rounded text-sm block">
+                            @foreach (\App\Models\MatchmakingConsent::TYPES as $value => $label)
+                            <option value="{{ $value }}" title="{{ $label }}">{{ explode(' — ', $label)[0] }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <button class="text-xs font-semibold px-3 py-1.5 rounded-lg border" style="border-color: var(--mm-plum); color: var(--mm-plum);">🔗 {{ __('db.Ask Them to Confirm via Link') }}</button>
+                    @unless ($lead->phone)
+                    <span class="text-xs text-amber-700">{{ __('db.Add a phone number above first.') }}</span>
+                    @endunless
+                </form>
+
+                <p class="text-xs text-gray-400 mb-2">{{ __('db.— or, if you already got it verbally, by phone, or in person —') }}</p>
+
+                <form method="POST" action="{{ route('matchmaker.clients.consents.record', $lead) }}" class="flex flex-wrap gap-2 items-end">
+                    @csrf
+                    <div>
+                        <label class="text-xs text-gray-500">{{ __('db.Type') }}</label>
+                        <select name="consent_type" required class="border-gray-300 rounded text-sm block">
+                            @foreach (\App\Models\MatchmakingConsent::TYPES as $value => $label)
+                            <option value="{{ $value }}" title="{{ $label }}">{{ explode(' — ', $label)[0] }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-xs text-gray-500">{{ __('db.How obtained') }}</label>
+                        <select name="method" required class="border-gray-300 rounded text-sm block">
+                            @foreach (\App\Models\MatchmakingConsent::METHODS as $value => $label)
+                            <option value="{{ $value }}">{{ $label }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="flex-1 min-w-[10rem]">
+                        <label class="text-xs text-gray-500">{{ __('db.Notes (optional)') }}</label>
+                        <input type="text" name="notes" class="border-gray-300 rounded text-sm block w-full">
+                    </div>
+                    <button class="text-xs font-semibold px-3 py-1.5 rounded-lg text-white hover:opacity-90" style="background: var(--mm-plum);">{{ __('db.Record Consent') }}</button>
+                </form>
+            </div>
+
+            {{-- === PROPOSALS (proposal batches) === --}}
             <div x-show="tab === 'batches'" class="p-6 space-y-6">
                 @if ($lead->nikah_package_id)
                 <div class="text-xs px-3 py-2 rounded-lg {{ $lead->packageExpired() ? 'bg-red-50 text-red-700' : 'bg-gray-50 text-gray-600' }}">
@@ -437,12 +490,14 @@
                     · {{ __('db.:remaining of :limit proposals remaining', ['remaining' => $lead->remainingProposalAllowance(), 'limit' => $lead->nikahPackage->proposal_limit]) }}
                     @endif
                 </div>
+                @else
+                <p class="text-sm text-gray-500 bg-gray-50 rounded-lg p-3">{{ __("db.No package active yet — the client chooses and pays for their own package on their progress link; nothing for you to assign here.") }}</p>
                 @endif
 
                 @unless ($lead->nikah_profile_id)
                 <p class="text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded-lg p-3">{{ __("db.Link or register this client's Nikah profile before you can send them a proposal batch.") }}</p>
                 @elseif (!$lead->hasActiveConsent('matchmaking_participation'))
-                <p class="text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded-lg p-3">{!! __("db.Record this client's :participation consent (see the Consent section on Overview) before you can send them a proposal batch.", ['participation' => '<strong>' . __('db.Nikah Counseling Participation') . '</strong>']) !!}</p>
+                <p class="text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded-lg p-3">{!! __("db.Record this client's :participation consent (see the Consent tab) before you can send them a proposal batch.", ['participation' => '<strong>' . __('db.Nikah Counseling Participation') . '</strong>']) !!}</p>
                 @else
                 <form method="POST" action="{{ route('matchmaker.clients.batches.create', $lead) }}">
                     @csrf

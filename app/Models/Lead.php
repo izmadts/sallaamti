@@ -72,6 +72,20 @@ class Lead extends Model
         return mb_substr($this->phone, 0, 2) . str_repeat('•', $length - 4) . mb_substr($this->phone, -2);
     }
 
+    // The one exception to "a matchmaker never sees the real phone": the
+    // counselor who personally typed this number in when creating the lead
+    // already knows it — masking it back at them just forces re-entry from
+    // memory/notes. Anyone else (reassigned, or another counselor entirely)
+    // still only ever gets maskedPhone().
+    public function visiblePhoneFor(User $user): ?string
+    {
+        if ($this->phone && $this->created_by === $user->id) {
+            return $this->phone;
+        }
+
+        return $this->maskedPhone();
+    }
+
     public function createdBy()
     {
         return $this->belongsTo(User::class, 'created_by');

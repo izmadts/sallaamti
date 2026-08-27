@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\QuranClassGroup;
 use App\Models\QuranGroupStudent;
 use App\Models\QuranLiveCourse;
+use App\Support\LeadJourney;
 use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
@@ -86,11 +87,20 @@ class DashboardController extends Controller
             ->take(6)
             ->get();
 
+        // "Needs Your Attention" — the dashboard's reminder panel. Scoped to
+        // open leads only (closed/not_interested aren't anyone's open task);
+        // relations eager-loaded since LeadJourney checks each one per lead.
+        $activeLeads = (clone $myLeads)
+            ->whereNotIn('status', ['not_interested', 'closed'])
+            ->with(['requirement.items', 'shortlistItems', 'proposalBatches'])
+            ->get();
+
         return [
             'stats' => $stats,
             'followUps' => $followUps,
             'recentLeads' => $recentLeads,
             'recentActivity' => $recentActivity,
+            'attentionGroups' => LeadJourney::needsAttention($activeLeads),
         ];
     }
 

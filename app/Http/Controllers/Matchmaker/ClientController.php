@@ -68,7 +68,8 @@ class ClientController extends Controller
                 ->orWhere('email', 'like', "%{$search}%"));
         }
 
-        $clients = $query->orderByDesc('created_at')->paginate(15)->withQueryString();
+        $clients = $query->with(['requirement.items', 'shortlistItems', 'proposalBatches'])
+            ->orderByDesc('created_at')->paginate(15)->withQueryString();
 
         $mine = $this->baseQuery();
         $stats = [
