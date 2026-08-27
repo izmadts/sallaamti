@@ -35,7 +35,8 @@
 
                 <div>
                     <x-input-label value="Description / Outcome" />
-                    <textarea name="outcome" rows="2" class="border-gray-300 rounded-md w-full mt-1">{{ old('outcome', $course->outcome) }}</textarea>
+                    <input id="trix-outcome" type="hidden" name="outcome" value="{{ old('outcome', $course->outcome) }}">
+                    <trix-editor input="trix-outcome"></trix-editor>
                 </div>
 
                 <div>

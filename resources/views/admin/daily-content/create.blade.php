@@ -33,7 +33,8 @@
             </div>
             <div>
                 <x-input-label value="Translation" />
-                <textarea name="translation" rows="3" required class="w-full mt-1 border-gray-300 rounded-md shadow-sm" placeholder="The English translation/text shown to members">{{ old('translation') }}</textarea>
+                <input id="trix-translation" type="hidden" name="translation" value="{{ old('translation') }}">
+                <trix-editor input="trix-translation" placeholder="The English translation/text shown to members"></trix-editor>
             </div>
             <div>
                 <x-input-label value="Reference" />

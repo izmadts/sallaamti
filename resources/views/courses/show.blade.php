@@ -56,7 +56,7 @@
 
 
             <div class="bg-white rounded-lg shadow-sm p-6">
-                <p class="text-gray-600">{{ $course->description }}</p>
+                <div class="prose prose-sm sm:prose-base max-w-none text-gray-600">{!! $course->description !!}</div>
                 @if ($course->min_age || $course->max_age)
                 <span class="inline-flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full mt-2" style="background: var(--teal-light); color: var(--teal)">
                     🎂 {{ __('db.Ages') }} {{ $course->min_age ?? '0' }}{{ $course->max_age ? '–'.$course->max_age : '+' }}

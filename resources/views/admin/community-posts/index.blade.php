@@ -53,7 +53,7 @@
                     @if ($post->event_at)
                     <p class="text-xs text-gray-400 mb-1">🗓️ {{ $post->event_at->format('d M Y, g:i A') }}</p>
                     @endif
-                    <p class="text-sm text-gray-600 line-clamp-2">{{ $post->body }}</p>
+                    <p class="text-sm text-gray-600 line-clamp-2">{{ Str::limit(strip_tags($post->body), 150) }}</p>
                     @if (!empty($post->tags))
                     <div class="flex flex-wrap gap-1 mt-1">
                         @foreach ($post->tags as $tag)

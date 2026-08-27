@@ -34,7 +34,7 @@
                     </div>
 
                     @if ($package->localizedDescription())
-                    <p class="text-sm text-gray-600 mt-4 leading-relaxed">{{ $package->localizedDescription() }}</p>
+                    <div class="prose prose-sm max-w-none text-gray-600 mt-4 leading-relaxed">{!! $package->localizedDescription() !!}</div>
                     @endif
 
                     @if (!empty($package->localizedFeatures()))

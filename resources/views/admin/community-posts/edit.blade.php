@@ -38,7 +38,8 @@
 
             <div>
                 <x-input-label value="Body" />
-                <textarea name="body" rows="6" class="w-full mt-1 border-gray-300 rounded-lg text-sm" required>{{ old('body', $post->body) }}</textarea>
+                <input id="trix-body" type="hidden" name="body" value="{{ old('body', $post->body) }}">
+                <trix-editor input="trix-body"></trix-editor>
             </div>
 
             <div>

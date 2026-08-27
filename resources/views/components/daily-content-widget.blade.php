@@ -7,7 +7,7 @@
         @if ($dailyContent->arabic_text)
         <p class="text-lg text-gray-800 mt-2 leading-relaxed" dir="rtl">{{ $dailyContent->arabic_text }}</p>
         @endif
-        <p class="text-sm text-gray-700 mt-2 leading-relaxed">{{ $dailyContent->translation }}</p>
+        <div class="prose prose-sm max-w-none text-gray-700 mt-2 leading-relaxed">{!! $dailyContent->translation !!}</div>
         <p class="text-xs text-gray-400 mt-2 font-medium">— {{ $dailyContent->reference }}</p>
     </div>
 </div>

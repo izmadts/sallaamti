@@ -59,7 +59,7 @@
  'name' => setting('site_name', 'Sallaamti'),
  'url' => config('app.url'),
  'logo' => asset('img/logo.png'),
- 'description' => setting('about_text', 'Islamic education platform offering Quran courses, live classes and matrimonial services.'),
+ 'description' => strip_tags(setting('about_text', 'Islamic education platform offering Quran courses, live classes and matrimonial services.')),
  'contactPoint' => [
  '@type' => 'ContactPoint',
  'telephone' => setting('site_phone', ''),

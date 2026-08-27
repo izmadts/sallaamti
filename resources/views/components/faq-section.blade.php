@@ -26,8 +26,8 @@
                     x-transition:enter="transition ease-out duration-150"
                     x-transition:enter-start="opacity-0 -translate-y-1"
                     x-transition:enter-end="opacity-100 translate-y-0"
-                    class="px-5 pb-4 text-gray-600 text-sm leading-relaxed whitespace-pre-line">
-                    {{ $faq->answer($locale) }}
+                    class="px-5 pb-4 prose prose-sm max-w-none text-gray-600 leading-relaxed">
+                    {!! $faq->answer($locale) !!}
                 </div>
             </div>
             @endforeach

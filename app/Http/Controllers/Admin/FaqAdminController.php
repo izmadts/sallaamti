@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Faq;
+use App\Support\HtmlSanitizer;
 use Illuminate\Http\Request;
 
 class FaqAdminController extends Controller
@@ -77,6 +78,8 @@ class FaqAdminController extends Controller
 
         $validated['sort_order'] = $validated['sort_order'] ?? 0;
         $validated['is_active'] = $request->has('is_active');
+        $validated['answer_en'] = HtmlSanitizer::clean($validated['answer_en']);
+        $validated['answer_ur'] = HtmlSanitizer::clean($validated['answer_ur'] ?? null);
 
         return $validated;
     }

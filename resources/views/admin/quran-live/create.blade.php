@@ -38,7 +38,8 @@
 
                 <div>
                     <x-input-label value="Description / Outcome" />
-                    <textarea name="outcome" rows="2" class="border-gray-300 rounded-md w-full mt-1" placeholder="Student will be able to..."></textarea>
+                    <input id="trix-outcome" type="hidden" name="outcome" value="{{ old('outcome') }}">
+                    <trix-editor input="trix-outcome" placeholder="Student will be able to..."></trix-editor>
                 </div>
 
                 <div>

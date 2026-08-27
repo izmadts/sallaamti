@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Testimonial;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Support\HtmlSanitizer;
 use Illuminate\Support\Facades\Storage;
 
 class TestimonialController extends Controller
@@ -93,12 +94,20 @@ class TestimonialController extends Controller
 
     private function validateTestimonial(Request $request): array
     {
-        return $request->validate([
+        $validated = $request->validate([
             'name' => ['required', 'string', 'max:100'],
             'location' => ['nullable', 'string', 'max:100'],
             'content' => ['required', 'string', 'max:2000'],
             'rating' => ['required', 'integer', 'min:1', 'max:5'],
             'photo' => ['nullable', 'image', 'max:2048'],
         ]);
+
+        // Trix's UI only controls what a well-behaved browser sends — a
+        // direct POST can still carry raw <script>/onerror payloads, so the
+        // real boundary is here, not the editor. Same sanitizer already
+        // guarding blog/lesson/community-post content elsewhere.
+        $validated['content'] = HtmlSanitizer::clean($validated['content']);
+
+        return $validated;
     }
 }

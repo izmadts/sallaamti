@@ -23,7 +23,7 @@
                                 <span style="color: var(--gold)">★</span>
                             @endfor
                         </div>
-                        <p class="text-sm text-gray-600 line-clamp-2">{{ $testimonial->content }}</p>
+                        <p class="text-sm text-gray-600 line-clamp-2">{{ Str::limit(strip_tags($testimonial->content), 150) }}</p>
                         @if ($testimonial->status === 'rejected' && $testimonial->rejection_reason)
                         <p class="text-xs text-red-600 mt-1.5">{{ __('db.Reason: :reason', ['reason' => $testimonial->rejection_reason]) }}</p>
                         @endif

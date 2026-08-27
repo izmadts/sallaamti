@@ -46,7 +46,8 @@
             </div>
             <div>
                 <x-input-label value="Answer (English)" />
-                <textarea name="answer_en" rows="4" class="w-full mt-1 border-gray-300 rounded-lg focus:border-teal-500 focus:ring-teal-500" required>{{ old('answer_en') }}</textarea>
+                <input id="trix-answer_en" type="hidden" name="answer_en" value="{{ old('answer_en') }}">
+                <trix-editor input="trix-answer_en"></trix-editor>
             </div>
 
             <hr>
@@ -58,7 +59,8 @@
             </div>
             <div>
                 <x-input-label value="Answer (Urdu)" />
-                <textarea name="answer_ur" rows="4" dir="rtl" class="w-full mt-1 border-gray-300 rounded-lg focus:border-teal-500 focus:ring-teal-500">{{ old('answer_ur') }}</textarea>
+                <input id="trix-answer_ur" type="hidden" name="answer_ur" value="{{ old('answer_ur') }}">
+                <trix-editor input="trix-answer_ur" dir="rtl"></trix-editor>
                 <p class="text-xs text-gray-400 mt-1">Leave blank to fall back to the English text for Urdu-locale visitors.</p>
             </div>
 

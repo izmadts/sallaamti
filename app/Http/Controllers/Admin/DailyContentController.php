@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\DailyContent;
+use App\Support\HtmlSanitizer;
 use Illuminate\Http\Request;
 
 class DailyContentController extends Controller
@@ -29,6 +30,7 @@ class DailyContentController extends Controller
         ]);
 
         $validated['is_active'] = $request->has('is_active');
+        $validated['translation'] = HtmlSanitizer::clean($validated['translation']);
 
         DailyContent::create($validated);
 
@@ -50,6 +52,7 @@ class DailyContentController extends Controller
         ]);
 
         $validated['is_active'] = $request->has('is_active');
+        $validated['translation'] = HtmlSanitizer::clean($validated['translation']);
 
         $daily_content->update($validated);
 

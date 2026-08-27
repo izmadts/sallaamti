@@ -74,15 +74,18 @@
                     </div>
                     <div>
                         <x-input-label value="About Text" />
-                        <textarea name="about_text" rows="4" class="border-gray-300 rounded-md w-full mt-1">{{ $settings['about_text'] ?? '' }}</textarea>
+                        <input id="trix-about_text" type="hidden" name="about_text" value="{{ $settings['about_text'] ?? '' }}">
+                        <trix-editor input="trix-about_text"></trix-editor>
                     </div>
                     <div>
                         <x-input-label value="Vision Text" />
-                        <textarea name="vision_text" rows="3" class="border-gray-300 rounded-md w-full mt-1">{{ $settings['vision_text'] ?? '' }}</textarea>
+                        <input id="trix-vision_text" type="hidden" name="vision_text" value="{{ $settings['vision_text'] ?? '' }}">
+                        <trix-editor input="trix-vision_text"></trix-editor>
                     </div>
                     <div>
                         <x-input-label value="Mission Text" />
-                        <textarea name="mission_text" rows="3" class="border-gray-300 rounded-md w-full mt-1">{{ $settings['mission_text'] ?? '' }}</textarea>
+                        <input id="trix-mission_text" type="hidden" name="mission_text" value="{{ $settings['mission_text'] ?? '' }}">
+                        <trix-editor input="trix-mission_text"></trix-editor>
                     </div>
                     <div>
                         <x-input-label value="Donate Goal Text" />

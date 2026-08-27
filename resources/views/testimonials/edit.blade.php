@@ -48,7 +48,8 @@
 
                     <div>
                         <x-input-label for="content" :value="__('db.Your Story')" />
-                        <textarea id="content" name="content" rows="6" required maxlength="2000" class="border-gray-300 rounded-md w-full mt-1">{{ old('content', $testimonial->content) }}</textarea>
+                        <input id="trix-content" type="hidden" name="content" value="{{ old('content', $testimonial->content) }}">
+                        <trix-editor input="trix-content"></trix-editor>
                     </div>
                     <div>
                         <x-input-label for="photo" :value="__('db.Your Photo')" />

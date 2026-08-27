@@ -35,7 +35,8 @@
                     </div>
                     <div>
                         <x-input-label for="body" :value="__('db.Your Post')" />
-                        <textarea id="body" name="body" rows="10" required maxlength="20000" class="border-gray-300 rounded-md w-full mt-1">{{ old('body') }}</textarea>
+                        <input id="trix-body" type="hidden" name="body" value="{{ old('body') }}">
+                        <trix-editor input="trix-body"></trix-editor>
                     </div>
                     <div>
                         <x-input-label for="cover_image" :value="__('db.Cover Image (optional)')" />

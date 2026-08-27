@@ -80,7 +80,7 @@ class CourseAdminController extends Controller
 
     private function validateCourse(Request $request): array
     {
-        return $request->validate([
+        $validated = $request->validate([
             'title' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
             'category' => ['nullable', 'string', 'max:100'],
@@ -91,6 +91,10 @@ class CourseAdminController extends Controller
             'thumbnail' => ['nullable', 'image', 'max:2048'],
             'is_published' => ['nullable', 'boolean'],
         ]);
+
+        $validated['description'] = HtmlSanitizer::clean($validated['description'] ?? null);
+
+        return $validated;
     }
 
     // Lessons

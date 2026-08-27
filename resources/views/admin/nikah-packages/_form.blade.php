@@ -70,12 +70,14 @@
 
 <div>
     <x-input-label for="description" value="Description (shown on the public pricing page)" />
-    <textarea id="description" name="description" rows="3" class="border-gray-300 rounded-md shadow-sm w-full mt-1">{{ old('description', $package?->description) }}</textarea>
+    <input id="trix-description" type="hidden" name="description" value="{{ old('description', $package?->description) }}">
+    <trix-editor input="trix-description"></trix-editor>
 </div>
 
 <div>
     <x-input-label for="description_ur" value="Description (Urdu — optional, falls back to English if blank)" />
-    <textarea id="description_ur" name="description_ur" dir="rtl" rows="3" class="border-gray-300 rounded-md shadow-sm w-full mt-1">{{ old('description_ur', $package?->description_ur) }}</textarea>
+    <input id="trix-description_ur" type="hidden" name="description_ur" value="{{ old('description_ur', $package?->description_ur) }}">
+    <trix-editor input="trix-description_ur" dir="rtl"></trix-editor>
 </div>
 
 <div>

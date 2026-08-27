@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\CommissionRule;
 use App\Models\NikahPackage;
+use App\Support\HtmlSanitizer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -102,6 +103,9 @@ class NikahPackageController extends Controller
             ->values()
             ->all();
         unset($validated['features_text_ur']);
+
+        $validated['description'] = HtmlSanitizer::clean($validated['description'] ?? null);
+        $validated['description_ur'] = HtmlSanitizer::clean($validated['description_ur'] ?? null);
 
         $validated['currency'] = ($validated['currency'] ?? null) ?: 'PKR';
         $validated['sort_order'] = $validated['sort_order'] ?? 0;

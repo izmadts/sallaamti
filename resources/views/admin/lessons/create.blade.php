@@ -17,7 +17,8 @@
                 </div>
                 <div>
                     <x-input-label value="Content / Text" />
-                    <textarea name="content" rows="8" class="border-gray-300 rounded-md w-full mt-1"></textarea>
+                    <input id="trix-content" type="hidden" name="content" value="{{ old('content') }}">
+                    <trix-editor input="trix-content"></trix-editor>
                 </div>
                 <div>
                     <x-input-label value="Lesson File (optional — PDF, Word, PowerPoint or ZIP, max 10MB)" />

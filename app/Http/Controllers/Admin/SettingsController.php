@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\NikahProfile;
 use App\Models\Setting;
 use App\Models\User;
+use App\Support\HtmlSanitizer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -156,6 +157,12 @@ class SettingsController extends Controller
         // <title>/meta description on every guest page.
         $requiredKeys = ['site_name', 'nikah_verification_fee'];
 
+        // Trix-edited on the form (about/vision/mission text) — sanitized
+        // here since this loop saves from raw $request->input(), not the
+        // $request->validate() result above (that call's return value is
+        // never captured; it only guards format/length).
+        $richTextKeys = ['about_text', 'vision_text', 'mission_text'];
+
         foreach ($groups as $key => $group) {
             if (in_array($key, $checkboxKeys, true)) {
                 Setting::set($key, $request->has($key) ? '1' : '0', $group);
@@ -163,6 +170,10 @@ class SettingsController extends Controller
             }
 
             $value = $request->input($key, '');
+
+            if (in_array($key, $richTextKeys, true)) {
+                $value = HtmlSanitizer::clean($value);
+            }
 
             if (in_array($key, $requiredKeys, true) || filled($value)) {
                 Setting::set($key, $value, $group);

@@ -7,6 +7,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
+use App\Support\HtmlSanitizer;
 use Illuminate\Support\Str;
 
 class PostController extends Controller
@@ -158,11 +159,19 @@ class PostController extends Controller
 
     private function validatePost(Request $request): array
     {
-        return $request->validate([
+        $validated = $request->validate([
             'title' => ['required', 'string', 'max:150'],
             'excerpt' => ['nullable', 'string', 'max:300'],
             'body' => ['required', 'string', 'max:20000'],
             'cover_image' => ['nullable', 'image', 'max:4096'],
         ]);
+
+        // Trix's UI only controls what a well-behaved browser sends — a
+        // direct POST can still carry raw <script>/onerror payloads, so the
+        // real boundary is here, not the editor. Same sanitizer already
+        // guarding blog/lesson/community-post content elsewhere.
+        $validated['body'] = HtmlSanitizer::clean($validated['body']);
+
+        return $validated;
     }
 }

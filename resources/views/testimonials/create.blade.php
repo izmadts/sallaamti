@@ -41,8 +41,8 @@
 
                     <div>
                         <x-input-label for="content" :value="__('db.Your Story')" />
-                        <textarea id="content" name="content" rows="6" required maxlength="2000" class="border-gray-300 rounded-md w-full mt-1"
-                            placeholder="{{ __('db.What did Sallaamti help you with? What would you tell someone considering us?') }}">{{ old('content') }}</textarea>
+                        <input id="trix-content" type="hidden" name="content" value="{{ old('content') }}" placeholder="{{ __('db.What did Sallaamti help you with? What would you tell someone considering us?') }}">
+                        <trix-editor input="trix-content" placeholder="{{ __('db.What did Sallaamti help you with? What would you tell someone considering us?') }}"></trix-editor>
                     </div>
                     <div>
                         <x-input-label for="photo" :value="__('db.Your Photo (optional)')" />

@@ -37,6 +37,49 @@
 
  <!-- Scripts -->
  @vite(['resources/css/app.css', 'resources/js/app.js'])
+
+ {{-- Trix rich text editor (member-facing forms) — no file attachments: there's
+ no upload endpoint wired for public submissions, so drops are blocked below. --}}
+ <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/trix@2/dist/trix.css">
+ <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/trix@2/dist/trix.umd.min.js"></script>
+ <style>
+     trix-toolbar .trix-button-group--file-tools {
+         display: none;
+     }
+
+     trix-toolbar .trix-button-row {
+         flex-wrap: wrap;
+     }
+
+     trix-toolbar .trix-button {
+         border-color: #d1d5db;
+     }
+
+     trix-toolbar .trix-button.trix-active {
+         background: #0d6b6b;
+         color: #fff;
+     }
+
+     trix-editor {
+         border: 1px solid #d1d5db;
+         border-radius: 0 0 0.5rem 0.5rem;
+         min-height: 8rem;
+         padding: 0.75rem;
+     }
+
+     trix-toolbar {
+         border: 1px solid #d1d5db;
+         border-bottom: none;
+         border-radius: 0.5rem 0.5rem 0 0;
+         background: #f9fafb;
+         padding: 0.375rem;
+     }
+ </style>
+ <script>
+     document.addEventListener('trix-file-accept', function (event) {
+         event.preventDefault();
+     });
+ </script>
 </head>
 
 <body class="font-sans antialiased">

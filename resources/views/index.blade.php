@@ -117,9 +117,9 @@
     <section class="py-16 sm:py-20" style="background: var(--teal-light)">
         <div class="max-w-3xl mx-auto px-4 text-center">
             <span class="section-eyebrow">{{ setting('about_heading') ?: __('db.About Sallaamti') }}</span>
-            <p class="text-gray-700 text-base sm:text-lg leading-relaxed mt-3">
-                {{ setting('about_text') ?: __('db.Sallaamti brings Quran education, a halal matrimonial platform, family counseling, and community giving together in one trusted place — built for Muslims everywhere, and free to join.') }}
-            </p>
+            <div class="prose prose-sm sm:prose-base max-w-none mx-auto text-gray-700 leading-relaxed mt-3">
+                {!! setting('about_text') ?: __('db.Sallaamti brings Quran education, a halal matrimonial platform, family counseling, and community giving together in one trusted place — built for Muslims everywhere, and free to join.') !!}
+            </div>
             <a href="{{ url('/about') }}" class="btn-base btn-teal inline-flex items-center px-6 py-3 text-sm font-semibold mt-6">
                 {{ __('db.Read Our Full Story') }} <i class="fa fa-arrow-right ms-2"></i>
             </a>

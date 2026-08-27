@@ -7,6 +7,7 @@ use App\Models\QuranLiveCourse;
 use App\Models\QuranSubscription;
 use App\Models\User;
 use App\Rules\ApprovedTeacherRule;
+use App\Support\HtmlSanitizer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -107,15 +108,24 @@ class QuranLiveCourseAdminController extends Controller
 
     private function validateCourse(Request $request): array
     {
-        return $request->validate([
+        $validated = $request->validate([
             'title' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
+            // The form's actual "Description / Outcome" field posts as
+            // `outcome` — this was missing from validation entirely, so it
+            // was silently dropped on every save regardless of what an
+            // admin typed in.
+            'outcome' => ['nullable', 'string'],
             'teacher_id' => ['nullable', 'exists:users,id', new ApprovedTeacherRule()],
             'class_time' => ['nullable', 'string', 'max:50'],
             'min_age' => ['nullable', 'integer', 'min:1', 'max:120'],
             'max_age' => ['nullable', 'integer', 'min:1', 'max:120', 'gte:min_age'],
             'monthly_fee' => ['required', 'numeric', 'min:0'],
         ]);
+
+        $validated['outcome'] = HtmlSanitizer::clean($validated['outcome'] ?? null);
+
+        return $validated;
     }
     
     
