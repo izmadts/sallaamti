@@ -7,16 +7,16 @@
                 🧭
             </div>
 
-            <p class="text-sm font-semibold tracking-widest text-[--teal] uppercase mb-2">Error 404</p>
-            <h1 class="text-3xl font-extrabold text-gray-800 mb-3">Page Not Found</h1>
-            <p class="text-gray-500 mb-8">We couldn't find the page you were looking for. It may have moved, or the link might be out of date.</p>
+            <p class="text-sm font-semibold tracking-widest text-[--teal] uppercase mb-2">{{ __('db.Error 404') }}</p>
+            <h1 class="text-3xl font-extrabold text-gray-800 mb-3">{{ __('db.Page Not Found') }}</h1>
+            <p class="text-gray-500 mb-8">{{ __("db.We couldn't find the page you were looking for. It may have moved, or the link might be out of date.") }}</p>
 
             <div class="flex gap-3 justify-center flex-wrap">
                 <a href="{{ url('/') }}" class="btn-base btn-teal px-6 py-2.5 font-semibold">
-                    Back to Home
+                    {{ __('db.Back to Home') }}
                 </a>
                 <a href="{{ url('/contact') }}" class="btn-base btn-gold px-6 py-2.5 font-semibold">
-                    Contact Us
+                    {{ __('db.Contact Us') }}
                 </a>
             </div>
         </div>

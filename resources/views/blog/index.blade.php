@@ -1,5 +1,5 @@
 {{-- resources/views/blog/index.blade.php --}}
-<x-guest-layout title="Blog" description="Reflections, reminders and articles on Quran, Islamic living and community from Sallaamti.">
+<x-guest-layout :title="__('db.Blog')" :description="__('db.Reflections, reminders and articles on Quran, Islamic living and community from Sallaamti.')">
 
     {{-- ============================================================ --}}
     {{-- PAGE HERO --}}
@@ -7,15 +7,15 @@
     <section class="page-hero relative overflow-hidden flex items-center" style="min-height: 320px; background: linear-gradient(135deg, #0d6b6b 0%, #1a1a2e 100%);">
         <div class="absolute inset-0 opacity-5 text-white flex items-center justify-center" style="font-size: 20rem; pointer-events: none;">❖</div>
         <div class="max-w-7xl mx-auto px-4 py-20 relative z-10 text-center w-full">
-            <span class="section-eyebrow">Our Blog</span>
-            <h1 class="text-4xl md:text-5xl font-extrabold text-white mt-2 mb-4">Latest Blog</h1>
+            <span class="section-eyebrow">{{ __('db.Our Blog') }}</span>
+            <h1 class="text-4xl md:text-5xl font-extrabold text-white mt-2 mb-4">{{ __('db.Latest Blog') }}</h1>
             <p class="text-white/70 text-lg max-w-2xl mx-auto">
-                Reflections, reminders and articles on Quran, Islamic living and community.
+                {{ __('db.Reflections, reminders and articles on Quran, Islamic living and community.') }}
             </p>
             <nav class="flex justify-center gap-2 mt-6 text-sm text-white/50">
-                <a href="{{ url('/') }}" class="hover:text-white">Home</a>
+                <a href="{{ url('/') }}" class="hover:text-white">{{ __('db.Home') }}</a>
                 <span>/</span>
-                <span class="text-white">Blog</span>
+                <span class="text-white">{{ __('db.Blog') }}</span>
             </nav>
         </div>
     </section>
@@ -26,12 +26,12 @@
     <section class="py-20 bg-white">
         <div class="max-w-7xl mx-auto px-4">
             <div class="text-center mb-12">
-                <span class="section-eyebrow">Latest From</span>
-                <h2 class="section-title">Our Blog</h2>
+                <span class="section-eyebrow">{{ __('db.Latest From') }}</span>
+                <h2 class="section-title">{{ __('db.Our Blog') }}</h2>
             </div>
 
             @if ($posts->isEmpty())
-            <p class="text-center text-gray-500">No blog posts yet — check back soon.</p>
+            <p class="text-center text-gray-500">{{ __('db.No blog posts yet — check back soon.') }}</p>
             @else
             <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
                 @foreach ($posts as $post)
@@ -55,7 +55,7 @@
                         @if ($post->excerpt)
                         <p class="text-gray-500 text-sm leading-relaxed mb-4">{{ $post->excerpt }}</p>
                         @endif
-                        <a href="{{ route('blog.show', $post) }}" class="btn-base btn-teal inline-block text-sm px-5 py-2">More Details</a>
+                        <a href="{{ route('blog.show', $post) }}" class="btn-base btn-teal inline-block text-sm px-5 py-2">{{ __('db.More Details') }}</a>
                     </div>
                 </div>
                 @endforeach

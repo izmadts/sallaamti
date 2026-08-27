@@ -1,4 +1,4 @@
-<x-guest-layout :title="$user->name . ' — Sallaamti Community'" :description="$user->public_bio ?? ($user->name . '\'s posts on Sallaamti.')">
+<x-guest-layout :title="__('db.:name — Sallaamti Community', ['name' => $user->name])" :description="$user->public_bio ?? __('db.:name\'s posts on Sallaamti.', ['name' => $user->name])">
 
     <section class="page-hero relative overflow-hidden flex items-center" style="min-height: 220px; background: linear-gradient(135deg, #0d6b6b 0%, #1a1a2e 100%);">
         <div class="max-w-3xl mx-auto px-4 py-14 relative z-10 text-center w-full">
@@ -13,7 +13,7 @@
     <section class="py-14 bg-gray-50">
         <div class="max-w-5xl mx-auto px-4">
             @if ($posts->isEmpty())
-            <p class="text-center text-gray-500 py-10">No published posts from {{ $user->name }} yet.</p>
+            <p class="text-center text-gray-500 py-10">{{ __('db.No published posts from :name yet.', ['name' => $user->name]) }}</p>
             @else
             <div class="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
                 @foreach ($posts as $post)
@@ -35,7 +35,7 @@
             @endif
 
             <div class="mt-10 text-center">
-                <a href="{{ route('posts.index') }}" class="text-sm text-teal-700 hover:underline">← Browse all Community Posts</a>
+                <a href="{{ route('posts.index') }}" class="text-sm text-teal-700 hover:underline">{{ __('db.← Browse all Community Posts') }}</a>
             </div>
         </div>
     </section>

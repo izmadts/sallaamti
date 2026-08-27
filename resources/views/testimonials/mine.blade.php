@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800">⭐ My Testimonials</h2>
+        <h2 class="font-semibold text-xl text-gray-800">⭐ {{ __('db.My Testimonials') }}</h2>
     </x-slot>
 
     <div class="py-12">
@@ -11,7 +11,7 @@
             @endif
 
             <div class="flex justify-end">
-                <a href="{{ route('testimonials.create') }}" class="btn-base bg-teal-700 text-white text-sm px-4 py-2 rounded-md hover:bg-teal-800">+ Share Your Story</a>
+                <a href="{{ route('testimonials.create') }}" class="btn-base bg-teal-700 text-white text-sm px-4 py-2 rounded-md hover:bg-teal-800">+ {{ __('db.Share Your Story') }}</a>
             </div>
 
             <div class="bg-white rounded-lg shadow-sm divide-y">
@@ -25,7 +25,7 @@
                         </div>
                         <p class="text-sm text-gray-600 line-clamp-2">{{ $testimonial->content }}</p>
                         @if ($testimonial->status === 'rejected' && $testimonial->rejection_reason)
-                        <p class="text-xs text-red-600 mt-1.5">Reason: {{ $testimonial->rejection_reason }}</p>
+                        <p class="text-xs text-red-600 mt-1.5">{{ __('db.Reason: :reason', ['reason' => $testimonial->rejection_reason]) }}</p>
                         @endif
                         <p class="text-xs text-gray-400 mt-1.5">{{ $testimonial->created_at->format('d M Y') }}</p>
                     </div>
@@ -37,16 +37,16 @@
                             {{ ucfirst($testimonial->status) }}
                         </span>
                         <div class="flex gap-3 text-xs">
-                            <a href="{{ route('testimonials.edit', $testimonial) }}" class="text-teal-700 hover:underline">Edit</a>
-                            <form method="POST" action="{{ route('testimonials.destroy', $testimonial) }}" onsubmit="return confirm('Delete this testimonial permanently?')">
+                            <a href="{{ route('testimonials.edit', $testimonial) }}" class="text-teal-700 hover:underline">{{ __('db.Edit') }}</a>
+                            <form method="POST" action="{{ route('testimonials.destroy', $testimonial) }}" onsubmit="return confirm({{ Js::from(__('db.Delete this testimonial permanently?')) }})">
                                 @csrf @method('DELETE')
-                                <button class="text-red-500 hover:underline">Delete</button>
+                                <button class="text-red-500 hover:underline">{{ __('db.Delete') }}</button>
                             </form>
                         </div>
                     </div>
                 </div>
                 @empty
-                <p class="p-5 text-gray-500">You haven't shared a testimonial yet.</p>
+                <p class="p-5 text-gray-500">{{ __('db.You haven\'t shared a testimonial yet.') }}</p>
                 @endforelse
             </div>
 

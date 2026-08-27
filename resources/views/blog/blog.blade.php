@@ -3,10 +3,10 @@
     <section class="page-hero relative overflow-hidden flex items-center"
         style="min-height: 280px; background: linear-gradient(135deg, #0d6b6b 0%, #b8962e 100%);">
         <div class="max-w-7xl mx-auto px-4 py-16 relative z-10 text-center w-full">
-            <span class="section-eyebrow" style="color: rgba(255,255,255,0.7)">Knowledge & Insights</span>
-            <h1 class="text-4xl md:text-5xl font-extrabold text-white mt-2 mb-3">📰 Sallaamti Blog</h1>
+            <span class="section-eyebrow" style="color: rgba(255,255,255,0.7)">{{ __('db.Knowledge & Insights') }}</span>
+            <h1 class="text-4xl md:text-5xl font-extrabold text-white mt-2 mb-3">📰 {{ __('db.Sallaamti Blog') }}</h1>
             <p class="text-white/70 text-lg max-w-xl mx-auto">
-                Articles on Islamic education, parenting, marriage, community and contemporary Muslim life.
+                {{ __('db.Articles on Islamic education, parenting, marriage, community and contemporary Muslim life.') }}
             </p>
         </div>
     </section>
@@ -17,19 +17,19 @@
             {{-- Coming Soon --}}
             <div class="text-center py-12 mb-12">
                 <div class="text-6xl mb-4">✍️</div>
-                <h3 class="text-2xl font-bold text-gray-700 mb-3">Articles Coming Soon</h3>
+                <h3 class="text-2xl font-bold text-gray-700 mb-3">{{ __('db.Articles Coming Soon') }}</h3>
                 <p class="text-gray-500 max-w-lg mx-auto">
-                    Our scholars and educators are preparing in-depth articles on Islamic topics. Subscribe to be notified when we publish.
+                    {{ __('db.Our scholars and educators are preparing in-depth articles on Islamic topics. Subscribe to be notified when we publish.') }}
                 </p>
             </div>
 
             {{-- Topics preview --}}
             <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 @foreach ([
-                ['📖', 'Quran & Tafseer', 'Deep dives into Quranic verses and their meanings for modern Muslims.'],
-                ['💑', 'Marriage & Family', 'Practical Islamic guidance on building strong Muslim families.'],
-                ['👨‍👩‍👧', 'Parenting', 'Raising children with Islamic values in a modern world.'],
-                ['🌍', 'Community', 'Building strong Muslim communities and supporting each other.'],
+                ['📖', __('db.Quran & Tafseer'), __('db.Deep dives into Quranic verses and their meanings for modern Muslims.')],
+                ['💑', __('db.Marriage & Family'), __('db.Practical Islamic guidance on building strong Muslim families.')],
+                ['👨‍👩‍👧', __('db.Parenting'), __('db.Raising children with Islamic values in a modern world.')],
+                ['🌍', __('db.Community'), __('db.Building strong Muslim communities and supporting each other.')],
                 ] as $topic)
                 <div class="bg-white rounded-2xl p-5 shadow-sm text-center hover:shadow-md transition-shadow">
                     <div class="text-3xl mb-3">{{ $topic[0] }}</div>
@@ -44,9 +44,9 @@
 
     <section class="py-14 final-cta-section">
         <div class="max-w-3xl mx-auto px-4 text-center">
-            <h2 class="final-cta-title">Want to Contribute?</h2>
-            <p class="final-cta-sub">Are you a scholar, educator or writer? We welcome Islamic article contributions.</p>
-            <a href="{{ url('/contact') }}" class="btn-base btn-gold px-8 py-3 font-semibold mt-6 inline-block">Get In Touch</a>
+            <h2 class="final-cta-title">{{ __('db.Want to Contribute?') }}</h2>
+            <p class="final-cta-sub">{{ __('db.Are you a scholar, educator or writer? We welcome Islamic article contributions.') }}</p>
+            <a href="{{ url('/contact') }}" class="btn-base btn-gold px-8 py-3 font-semibold mt-6 inline-block">{{ __('db.Get In Touch') }}</a>
         </div>
     </section>
 </x-guest-layout>

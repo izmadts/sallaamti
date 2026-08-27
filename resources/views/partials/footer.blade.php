@@ -161,8 +161,8 @@
                 {{-- No posts yet — show placeholder --}}
                 <div class="flex flex-col gap-0">
                     @foreach ([
-                    ['📖', 'How to Learn Quran Effectively Online', '15 Jan 2025'],
-                    ['💍', 'Islamic Guide to Finding a Halal Spouse', '10 Jan 2025'],
+                    ['📖', __('db.How to Learn Quran Effectively Online'), __('db.15 Jan 2025')],
+                    ['💍', __('db.Islamic Guide to Finding a Halal Spouse'), __('db.10 Jan 2025')],
                     ] as $placeholder)
                     <div class="flex items-start gap-3 py-4 border-b border-gray-700 last:border-0 opacity-40">
                         <div class="flex-shrink-0 w-16 h-16 rounded-lg bg-gray-700 flex items-center justify-center text-2xl">
@@ -240,7 +240,7 @@
                     }
                 })
                 .catch(() => {
-                    msg.innerHTML = '<span class="text-red-400">Invalid email address.</span>';
+                    msg.innerHTML = '<span class="text-red-400">' + {{ Js::from(__('db.Invalid email address.')) }} + '</span>';
                 });
         });
     });

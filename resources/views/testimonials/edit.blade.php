@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800">⭐ Edit Your Story</h2>
+        <h2 class="font-semibold text-xl text-gray-800">⭐ {{ __('db.Edit Your Story') }}</h2>
     </x-slot>
 
     <div class="py-12">
@@ -9,11 +9,11 @@
 
                 @if ($testimonial->status === 'approved')
                 <p class="text-sm text-amber-600 bg-amber-50 rounded-lg p-3 mb-4">
-                    This testimonial is already live. Saving changes will send it back for review before it's visible again.
+                    {{ __('db.This testimonial is already live. Saving changes will send it back for review before it\'s visible again.') }}
                 </p>
                 @elseif ($testimonial->status === 'rejected' && $testimonial->rejection_reason)
                 <p class="text-sm text-red-600 bg-red-50 rounded-lg p-3 mb-4">
-                    Not approved: {{ $testimonial->rejection_reason }}
+                    {{ __('db.Not approved: :reason', ['reason' => $testimonial->rejection_reason]) }}
                 </p>
                 @endif
 
@@ -27,16 +27,16 @@
                     @csrf
                     @method('PUT')
                     <div>
-                        <x-input-label for="name" value="Your Name" />
+                        <x-input-label for="name" :value="__('db.Your Name')" />
                         <x-text-input id="name" name="name" class="w-full mt-1" :value="old('name', $testimonial->name)" required maxlength="100" />
                     </div>
                     <div>
-                        <x-input-label for="location" value="City / Location (optional)" />
+                        <x-input-label for="location" :value="__('db.City / Location (optional)')" />
                         <x-text-input id="location" name="location" class="w-full mt-1" :value="old('location', $testimonial->location)" maxlength="100" />
                     </div>
 
                     <div x-data="{ rating: {{ old('rating', $testimonial->rating) }} }">
-                        <x-input-label value="Your Rating" />
+                        <x-input-label :value="__('db.Your Rating')" />
                         <div class="flex gap-1 mt-1">
                             <template x-for="star in [1,2,3,4,5]" :key="star">
                                 <button type="button" @click="rating = star" class="text-3xl leading-none transition-transform hover:scale-110"
@@ -47,11 +47,11 @@
                     </div>
 
                     <div>
-                        <x-input-label for="content" value="Your Story" />
+                        <x-input-label for="content" :value="__('db.Your Story')" />
                         <textarea id="content" name="content" rows="6" required maxlength="2000" class="border-gray-300 rounded-md w-full mt-1">{{ old('content', $testimonial->content) }}</textarea>
                     </div>
                     <div>
-                        <x-input-label for="photo" value="Your Photo" />
+                        <x-input-label for="photo" :value="__('db.Your Photo')" />
                         @if ($testimonial->photo)
                         <div class="mt-1 mb-2">
                             <img src="{{ Storage::url($testimonial->photo) }}" class="w-16 h-16 rounded-full object-cover">
@@ -61,7 +61,7 @@
                     </div>
 
                     <div class="flex justify-end pt-2">
-                        <x-primary-button>Save Changes</x-primary-button>
+                        <x-primary-button>{{ __('db.Save Changes') }}</x-primary-button>
                     </div>
                 </form>
             </div>

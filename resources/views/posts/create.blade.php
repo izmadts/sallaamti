@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800">✍️ Share Your Story</h2>
+        <h2 class="font-semibold text-xl text-gray-800">✍️ {{ __('db.Share Your Story') }}</h2>
     </x-slot>
 
     <div class="py-12">
@@ -8,11 +8,11 @@
             <div class="bg-white rounded-lg shadow-sm p-6">
 
                 <p class="text-sm text-gray-500 mb-6">
-                    Write something worth sharing with the Sallaamti community — a story, a reflection, an announcement.
+                    {{ __('db.Write something worth sharing with the Sallaamti community — a story, a reflection, an announcement.') }}
                     @if (\App\Models\Post::isAutoPublishedFor(Auth::user()))
-                    It will be published immediately.
+                    {{ __('db.It will be published immediately.') }}
                     @else
-                    It'll go live once our team reviews it, and you'll be notified either way.
+                    {{ __('db.It\'ll go live once our team reviews it, and you\'ll be notified either way.') }}
                     @endif
                 </p>
 
@@ -25,25 +25,25 @@
                 <form method="POST" action="{{ route('posts.store') }}" enctype="multipart/form-data" class="space-y-4">
                     @csrf
                     <div>
-                        <x-input-label for="title" value="Title" />
+                        <x-input-label for="title" :value="__('db.Title')" />
                         <x-text-input id="title" name="title" class="w-full mt-1" :value="old('title')" required maxlength="150" />
                     </div>
                     <div>
-                        <x-input-label for="excerpt" value="Short Summary (optional)" />
+                        <x-input-label for="excerpt" :value="__('db.Short Summary (optional)')" />
                         <x-text-input id="excerpt" name="excerpt" class="w-full mt-1" :value="old('excerpt')" maxlength="300"
-                            placeholder="Shown on the posts list and when shared — auto-generated from your post if left blank." />
+                            placeholder="{{ __('db.Shown on the posts list and when shared — auto-generated from your post if left blank.') }}" />
                     </div>
                     <div>
-                        <x-input-label for="body" value="Your Post" />
+                        <x-input-label for="body" :value="__('db.Your Post')" />
                         <textarea id="body" name="body" rows="10" required maxlength="20000" class="border-gray-300 rounded-md w-full mt-1">{{ old('body') }}</textarea>
                     </div>
                     <div>
-                        <x-input-label for="cover_image" value="Cover Image (optional)" />
+                        <x-input-label for="cover_image" :value="__('db.Cover Image (optional)')" />
                         <input id="cover_image" name="cover_image" type="file" accept="image/*" class="w-full mt-1">
                     </div>
 
                     <div class="flex justify-end pt-2">
-                        <x-primary-button>{{ \App\Models\Post::isAutoPublishedFor(Auth::user()) ? 'Publish Post' : 'Submit for Review' }}</x-primary-button>
+                        <x-primary-button>{{ \App\Models\Post::isAutoPublishedFor(Auth::user()) ? __('db.Publish Post') : __('db.Submit for Review') }}</x-primary-button>
                     </div>
                 </form>
             </div>

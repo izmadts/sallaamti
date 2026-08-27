@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800">📝 My Posts</h2>
+        <h2 class="font-semibold text-xl text-gray-800">📝 {{ __('db.My Posts') }}</h2>
     </x-slot>
 
     <div class="py-12">
@@ -11,7 +11,7 @@
             @endif
 
             <div class="flex justify-end">
-                <a href="{{ route('posts.create') }}" class="btn-base bg-teal-700 text-white text-sm px-4 py-2 rounded-md hover:bg-teal-800">+ Write a Post</a>
+                <a href="{{ route('posts.create') }}" class="btn-base bg-teal-700 text-white text-sm px-4 py-2 rounded-md hover:bg-teal-800">+ {{ __('db.Write a Post') }}</a>
             </div>
 
             <div class="bg-white rounded-lg shadow-sm divide-y">
@@ -21,11 +21,11 @@
                         <p class="font-medium text-gray-800">{{ $post->title }}</p>
                         <p class="text-sm text-gray-500 mt-1 line-clamp-2">{{ $post->excerpt }}</p>
                         @if ($post->status === 'rejected' && $post->rejection_reason)
-                        <p class="text-xs text-red-600 mt-1.5">Reason: {{ $post->rejection_reason }}</p>
+                        <p class="text-xs text-red-600 mt-1.5">{{ __('db.Reason: :reason', ['reason' => $post->rejection_reason]) }}</p>
                         @endif
                         <p class="text-xs text-gray-400 mt-1.5">
                             {{ $post->created_at->format('d M Y') }}
-                            @if ($post->status === 'published') · {{ $post->views_count }} views @endif
+                            @if ($post->status === 'published') · {{ __('db.:count views', ['count' => $post->views_count]) }} @endif
                         </p>
                     </div>
 
@@ -37,18 +37,18 @@
                         </span>
                         <div class="flex gap-3 text-xs">
                             @if ($post->status === 'published')
-                            <a href="{{ route('posts.show', $post) }}" class="text-teal-700 hover:underline">View</a>
+                            <a href="{{ route('posts.show', $post) }}" class="text-teal-700 hover:underline">{{ __('db.View') }}</a>
                             @endif
-                            <a href="{{ route('posts.edit', $post) }}" class="text-teal-700 hover:underline">Edit</a>
-                            <form method="POST" action="{{ route('posts.destroy', $post) }}" onsubmit="return confirm('Delete this post permanently?')">
+                            <a href="{{ route('posts.edit', $post) }}" class="text-teal-700 hover:underline">{{ __('db.Edit') }}</a>
+                            <form method="POST" action="{{ route('posts.destroy', $post) }}" onsubmit="return confirm({{ Js::from(__('db.Delete this post permanently?')) }})">
                                 @csrf @method('DELETE')
-                                <button class="text-red-500 hover:underline">Delete</button>
+                                <button class="text-red-500 hover:underline">{{ __('db.Delete') }}</button>
                             </form>
                         </div>
                     </div>
                 </div>
                 @empty
-                <p class="p-5 text-gray-500">You haven't written any posts yet.</p>
+                <p class="p-5 text-gray-500">{{ __('db.You haven\'t written any posts yet.') }}</p>
                 @endforelse
             </div>
 

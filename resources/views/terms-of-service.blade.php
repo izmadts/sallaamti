@@ -1,7 +1,7 @@
 {{-- resources/views/terms-of-service.blade.php --}}
-<x-guest-layout title="Terms of Service" description="The terms and conditions for using Sallaamti's Quran courses, Digital Skills training, Nikah matchmaking, and family counseling services.">
-    @section('title', 'Terms of Service — Sallaamti')
-    @section('description', 'The terms and conditions for using Sallaamti.')
+<x-guest-layout :title="__('db.Terms of Service')" :description="__('db.The terms and conditions for using Sallaamti\'s Quran courses, Digital Skills training, Nikah matchmaking, and family counseling services.')">
+    @section('title', __('db.Terms of Service — Sallaamti'))
+    @section('description', __('db.The terms and conditions for using Sallaamti.'))
     @section('canonical', url('/terms-of-service'))
     @section('robots', 'index, follow')
 

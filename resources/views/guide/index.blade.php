@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800">📘 User Guide</h2>
+        <h2 class="font-semibold text-xl text-gray-800">📘 {{ __('db.User Guide') }}</h2>
     </x-slot>
 
     @php
@@ -19,7 +19,7 @@
 
             <div class="flex flex-wrap items-center justify-between gap-3 mb-6">
                 <p class="text-sm text-gray-500">
-                    Everything you need to know about using Sallaamti — tabs below only show for the roles your account actually holds.
+                    {{ __('db.Everything you need to know about using Sallaamti — tabs below only show for the roles your account actually holds.') }}
                 </p>
                 <div class="flex gap-1 bg-gray-100 rounded-lg p-1 flex-shrink-0">
                     <button type="button" @click="lang = 'en'" :class="lang === 'en' ? 'bg-white shadow-sm text-teal-700' : 'text-gray-500'" class="text-xs font-semibold px-3 py-1.5 rounded-md transition">English</button>

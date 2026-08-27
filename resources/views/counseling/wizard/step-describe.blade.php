@@ -46,7 +46,7 @@
 
                     <div class="flex items-center gap-2 bg-red-50 border border-red-100 rounded-lg p-3">
                         <input type="checkbox" id="is_urgent" name="is_urgent" value="1" {{ old('is_urgent', $data['is_urgent'] ?? false) ? 'checked' : '' }} class="rounded text-red-600">
-                        <x-input-label for="is_urgent" value="🚨 This is urgent, or a safety concern" class="text-red-700" />
+                        <x-input-label for="is_urgent" :value="'🚨 ' . __('db.This is urgent, or a safety concern')" class="text-red-700" />
                     </div>
                     <p class="text-xs text-gray-400 -mt-2">{{ __('db.Flagging this moves your request to the top of the queue. If you are in immediate danger, please contact local emergency services first.') }}</p>
 

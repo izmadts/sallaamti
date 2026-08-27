@@ -27,9 +27,9 @@
                         <a href="{{ route('counselor.bookings.show', $booking) }}" class="hover:opacity-75">
                             <p class="font-medium text-gray-800">{{ $booking->scheduled_at->format('d M Y, h:i A') }}</p>
                             <p class="text-sm text-gray-500">
-                                {{ $booking->isAnonymous() ? '🎭 Anonymous member' : $booking->member->name }} · {{ ucfirst(str_replace('_', ' ', $booking->contact_method)) }}
+                                {{ $booking->isAnonymous() ? '🎭 ' . __('db.Anonymous member') : $booking->member->name }} · {{ ucfirst(str_replace('_', ' ', $booking->contact_method)) }}
                                 @if ($booking->isUrgent())
-                                <span class="text-red-600 font-semibold">· 🚨 Urgent</span>
+                                <span class="text-red-600 font-semibold">· 🚨 {{ __('db.Urgent') }}</span>
                                 @endif
                             </p>
                             @if ($booking->supportQuery)
@@ -72,7 +72,7 @@
                 <a href="{{ route('counselor.bookings.show', $booking) }}" class="p-4 flex justify-between items-center hover:bg-gray-50">
                     <div>
                         <p class="font-medium text-gray-800">{{ $booking->scheduled_at->format('d M Y, h:i A') }}</p>
-                        <p class="text-sm text-gray-500">{{ $booking->isAnonymous() ? '🎭 Anonymous member' : $booking->member->name }}</p>
+                        <p class="text-sm text-gray-500">{{ $booking->isAnonymous() ? '🎭 ' . __('db.Anonymous member') : $booking->member->name }}</p>
                     </div>
                     <span class="text-xs px-2 py-1 rounded-full bg-{{ $booking->statusColor() }}-100 text-{{ $booking->statusColor() }}-700">
                         {{ ucfirst(str_replace('_', ' ', $booking->status)) }}

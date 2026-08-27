@@ -3,10 +3,10 @@
     <section class="page-hero relative overflow-hidden flex items-center"
         style="min-height: 280px; background: linear-gradient(135deg, #b8962e 0%, #0d6b6b 100%);">
         <div class="max-w-7xl mx-auto px-4 py-16 relative z-10 text-center w-full">
-            <span class="section-eyebrow" style="color: rgba(255,255,255,0.7)">What People Say</span>
-            <h1 class="text-4xl md:text-5xl font-extrabold text-white mt-2 mb-3">⭐ Testimonials</h1>
+            <span class="section-eyebrow" style="color: rgba(255,255,255,0.7)">{{ __('db.What People Say') }}</span>
+            <h1 class="text-4xl md:text-5xl font-extrabold text-white mt-2 mb-3">⭐ {{ __('db.Testimonials') }}</h1>
             <p class="text-white/70 text-lg max-w-xl mx-auto">
-                Real stories from our community — students, parents, and families who found value in Sallaamti.
+                {{ __('db.Real stories from our community — students, parents, and families who found value in Sallaamti.') }}
             </p>
         </div>
     </section>
@@ -17,10 +17,10 @@
 
             <div class="text-center mb-10">
                 @auth
-                <a href="{{ route('testimonials.create') }}" class="btn-base btn-gold px-6 py-3 font-semibold inline-block">⭐ Share Your Story</a>
-                <a href="{{ route('testimonials.mine') }}" class="text-sm text-gray-500 hover:text-[--teal] block mt-2">View your submissions →</a>
+                <a href="{{ route('testimonials.create') }}" class="btn-base btn-gold px-6 py-3 font-semibold inline-block">⭐ {{ __('db.Share Your Story') }}</a>
+                <a href="{{ route('testimonials.mine') }}" class="text-sm text-gray-500 hover:text-[--teal] block mt-2">{{ __('db.View your submissions →') }}</a>
                 @else
-                <a href="{{ route('login') }}" class="btn-base btn-gold px-6 py-3 font-semibold inline-block">⭐ Log In to Share Your Story</a>
+                <a href="{{ route('login') }}" class="btn-base btn-gold px-6 py-3 font-semibold inline-block">⭐ {{ __('db.Log In to Share Your Story') }}</a>
                 @endauth
             </div>
 
@@ -50,26 +50,26 @@
             @else
             <div class="text-center py-16">
                 <div class="text-6xl mb-4">⭐</div>
-                <h3 class="text-xl font-bold text-gray-700 mb-2">Testimonials Coming Soon</h3>
-                <p class="text-gray-500">We're collecting stories from our community members.</p>
+                <h3 class="text-xl font-bold text-gray-700 mb-2">{{ __('db.Testimonials Coming Soon') }}</h3>
+                <p class="text-gray-500">{{ __('db.We\'re collecting stories from our community members.') }}</p>
             </div>
             @endif
 
             <p class="text-center text-gray-400 text-sm mt-8">
-                <i class="fa fa-lock mr-1"></i> Some names and details may be changed to protect privacy.
+                <i class="fa fa-lock mr-1"></i> {{ __('db.Some names and details may be changed to protect privacy.') }}
             </p>
         </div>
     </section>
 
     <section class="py-14 final-cta-section">
         <div class="max-w-3xl mx-auto px-4 text-center">
-            <h2 class="final-cta-title">Join Thousands of Satisfied Members</h2>
-            <p class="final-cta-sub">Start your journey with Sallaamti today — free to join.</p>
+            <h2 class="final-cta-title">{{ __('db.Join Thousands of Satisfied Members') }}</h2>
+            <p class="final-cta-sub">{{ __('db.Start your journey with Sallaamti today — free to join.') }}</p>
             <div class="flex gap-3 justify-center flex-wrap mt-6">
                 @guest
-                <a href="{{ route('register') }}" class="btn-base btn-gold px-8 py-3 font-semibold">Register Free</a>
+                <a href="{{ route('register') }}" class="btn-base btn-gold px-8 py-3 font-semibold">{{ __('db.Register Free') }}</a>
                 @else
-                <a href="{{ route('dashboard') }}" class="btn-base btn-gold px-8 py-3 font-semibold">Go to Dashboard</a>
+                <a href="{{ route('dashboard') }}" class="btn-base btn-gold px-8 py-3 font-semibold">{{ __('db.Go to Dashboard') }}</a>
                 @endguest
             </div>
         </div>

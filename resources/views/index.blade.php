@@ -4,12 +4,12 @@
      its own first step (auth-check redirect to /dashboard for everyone
      else lives in routes/web.php). Full marketing content that used to
      live here has moved into resources/views/about.blade.php. --}}
-<x-guest-layout :description="'Quran education, halal matrimonial matching, and community programs for the Muslim Ummah — ' . setting('site_tagline')">
-    @section('title', 'Sallaamti — Learn Quran Online | Live Classes | Islamic Matrimonial')
-    @section('description', 'Join Sallaamti to learn Quran online with expert teachers. Self-paced Quran courses, live classes, free Digital Skills training, halal matrimonial platform and family counseling. Free to join.')
-    @section('keywords', 'learn quran online pakistan, online quran classes, quran teacher online, islamic matrimonial pakistan, nikah platform, free digital skills courses, web development graphic design digital marketing courses')
-    @section('og_title', 'Sallaamti — Learn Quran Online | Live Classes | Islamic Matrimonial')
-    @section('og_description', 'Learn Quran with expert teachers, free Digital Skills courses, and a halal matrimonial platform. Join thousands of Muslims worldwide.')
+<x-guest-layout :description="__('db.Quran education, halal matrimonial matching, and community programs for the Muslim Ummah — :tagline', ['tagline' => setting('site_tagline')])">
+    @section('title', __('db.Sallaamti — Learn Quran Online | Live Classes | Islamic Matrimonial'))
+    @section('description', __('db.Join Sallaamti to learn Quran online with expert teachers. Self-paced Quran courses, live classes, free Digital Skills training, halal matrimonial platform and family counseling. Free to join.'))
+    @section('keywords', __('db.learn quran online pakistan, online quran classes, quran teacher online, islamic matrimonial pakistan, nikah platform, free digital skills courses, web development graphic design digital marketing courses'))
+    @section('og_title', __('db.Sallaamti — Learn Quran Online | Live Classes | Islamic Matrimonial'))
+    @section('og_description', __('db.Learn Quran with expert teachers, free Digital Skills courses, and a halal matrimonial platform. Join thousands of Muslims worldwide.'))
     @section('og_image', asset('img/og-home.jpg'))
 
     @push('schema')

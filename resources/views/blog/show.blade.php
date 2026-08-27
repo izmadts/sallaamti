@@ -12,12 +12,12 @@
             @endif
             <h1 class="text-3xl md:text-4xl font-extrabold text-white mt-2 mb-4">{{ $post->title }}</h1>
             <p class="text-white/70 text-sm">
-                By {{ $post->author?->name ?? 'Sallaamti' }} — {{ $post->published_at?->format('d M Y') }}
+                {{ __('db.By :author — :date', ['author' => $post->author?->name ?? 'Sallaamti', 'date' => $post->published_at?->format('d M Y')]) }}
             </p>
             <nav class="flex justify-center gap-2 mt-6 text-sm text-white/50">
-                <a href="{{ url('/') }}" class="hover:text-white">Home</a>
+                <a href="{{ url('/') }}" class="hover:text-white">{{ __('db.Home') }}</a>
                 <span>/</span>
-                <a href="{{ route('blog.index') }}" class="hover:text-white">Blog</a>
+                <a href="{{ route('blog.index') }}" class="hover:text-white">{{ __('db.Blog') }}</a>
                 <span>/</span>
                 <span class="text-white">{{ $post->title }}</span>
             </nav>
@@ -38,7 +38,7 @@
             </div>
 
             <div class="mt-12 pt-6 border-t border-gray-100">
-                <a href="{{ route('blog.index') }}" class="btn-base btn-teal inline-block text-sm px-5 py-2">← Back to Blog</a>
+                <a href="{{ route('blog.index') }}" class="btn-base btn-teal inline-block text-sm px-5 py-2">{{ __('db.← Back to Blog') }}</a>
             </div>
         </div>
     </section>

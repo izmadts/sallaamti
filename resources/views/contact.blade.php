@@ -1,6 +1,6 @@
-<x-guest-layout title="Contact Us" description="Get in touch with Sallaamti — questions about courses, Nikah, volunteering or donations.">
-    @section('title', 'Contact Sallaamti — Get in Touch')
-    @section('description', 'Contact Sallaamti for questions about Quran courses, live classes, Nikah platform or volunteering. We reply within 24 hours, in sha Allah.')
+<x-guest-layout :title="__('db.Contact Us')" :description="__('db.Get in touch with Sallaamti — questions about courses, Nikah, volunteering or donations.')">
+    @section('title', __('db.Contact Sallaamti — Get in Touch'))
+    @section('description', __('db.Contact Sallaamti for questions about Quran courses, live classes, Nikah platform or volunteering. We reply within 24 hours, in sha Allah.'))
     @section('canonical', url('/contact'))
     {{-- ============================================================ --}}
     {{-- PAGE HERO --}}
@@ -10,15 +10,15 @@
         <div class="absolute inset-0 opacity-5 overflow-hidden flex items-center justify-center pointer-events-none"
             style="font-size: 18rem; color: #fff;">✉️</div>
         <div class="max-w-7xl mx-auto px-4 py-16 relative z-10 text-center w-full">
-            <span class="section-eyebrow" style="color: rgba(255,255,255,0.7)">We'd Love to Hear From You</span>
-            <h1 class="text-4xl md:text-5xl font-extrabold text-white mt-2 mb-3">Contact Sallaamti</h1>
+            <span class="section-eyebrow" style="color: rgba(255,255,255,0.7)">{{ __('db.We\'d Love to Hear From You') }}</span>
+            <h1 class="text-4xl md:text-5xl font-extrabold text-white mt-2 mb-3">{{ __('db.Contact Sallaamti') }}</h1>
             <p class="text-white/70 text-lg max-w-xl mx-auto">
-                Questions about our courses, Nikah platform, volunteering or donations? We're here to help.
+                {{ __('db.Questions about our courses, Nikah platform, volunteering or donations? We\'re here to help.') }}
             </p>
             <nav class="flex justify-center gap-2 mt-6 text-sm text-white/50">
-                <a href="{{ url('/') }}" class="hover:text-white transition-colors">Home</a>
+                <a href="{{ url('/') }}" class="hover:text-white transition-colors">{{ __('db.Home') }}</a>
                 <span>/</span>
-                <span class="text-white">Contact</span>
+                <span class="text-white">{{ __('db.Contact') }}</span>
             </nav>
         </div>
     </section>
@@ -30,10 +30,10 @@
         <div class="max-w-7xl mx-auto px-4">
             <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 -mt-10 relative z-10">
                 @foreach ([
-                ['📍', 'Our Address', setting('site_address', 'Karachi, Pakistan'), url('/contact'), 'Get Directions'],
-                ['📞', 'Phone & WhatsApp', setting('site_phone', '+92 314 616 3271'), 'https://wa.me/'.setting('social_whatsapp'), 'WhatsApp Us'],
-                ['✉️', 'Email Us', setting('site_email', 'info@sallaamti.com'), 'mailto:'.setting('site_email'), 'Send Email'],
-                ['🕐', 'Office Hours', 'Mon – Sat: 9AM – 8PM (PKT)', '#', 'We reply within 24hrs'],
+                ['📍', __('db.Our Address'), setting('site_address', 'Karachi, Pakistan'), url('/contact'), __('db.Get Directions')],
+                ['📞', __('db.Phone & WhatsApp'), setting('site_phone', '+92 314 616 3271'), 'https://wa.me/'.setting('social_whatsapp'), __('db.WhatsApp Us')],
+                ['✉️', __('db.Email Us'), setting('site_email', 'info@sallaamti.com'), 'mailto:'.setting('site_email'), __('db.Send Email')],
+                ['🕐', __('db.Office Hours'), __('db.Mon – Sat: 9AM – 8PM (PKT)'), '#', __('db.We reply within 24hrs')],
                 ] as $info)
                 <div class="bg-white rounded-2xl shadow-md p-6 text-center hover:shadow-lg transition-shadow duration-300 wow fadeInUp" data-wow-delay="0.1s">
                     <div class="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl mx-auto mb-4"
@@ -61,9 +61,9 @@
                 <div class="lg:col-span-2 wow fadeInLeft" data-wow-delay="0.1s">
 
                     <div class="mb-8">
-                        <span class="section-eyebrow">Send a Message</span>
-                        <h2 class="section-title">We'd Love to Hear From You</h2>
-                        <p class="text-gray-500 mt-2">Fill out the form below and our team will get back to you within 24 hours, in sha Allah.</p>
+                        <span class="section-eyebrow">{{ __('db.Send a Message') }}</span>
+                        <h2 class="section-title">{{ __('db.We\'d Love to Hear From You') }}</h2>
+                        <p class="text-gray-500 mt-2">{{ __('db.Fill out the form below and our team will get back to you within 24 hours, in sha Allah.') }}</p>
                     </div>
 
                     @if (session('contact_success'))
@@ -71,7 +71,7 @@
                         style="background: #f0fdf4; border: 1px solid #bbf7d0">
                         <i class="fa fa-check-circle text-green-600 text-xl flex-shrink-0 mt-0.5"></i>
                         <div>
-                            <p class="font-semibold text-green-800 mb-0.5">Message Sent Successfully!</p>
+                            <p class="font-semibold text-green-800 mb-0.5">{{ __('db.Message Sent Successfully!') }}</p>
                             <p class="text-green-700 text-sm mb-0">{{ session('contact_success') }}</p>
                         </div>
                     </div>
@@ -96,16 +96,16 @@
 
                         {{-- Subject tabs --}}
                         <div x-data="{ subject: '{{ old('subject_type', 'general') }}' }">
-                            <label class="auth-label mb-3">What is this about?</label>
+                            <label class="auth-label mb-3">{{ __('db.What is this about?') }}</label>
                             <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 mb-5">
                                 @foreach ([
-                                ['general', '💬', 'General Query'],
-                                ['quran', '📖', 'Quran Courses'],
-                                ['live_class', '🎥', 'Live Classes'],
-                                ['skills', '💻', 'Digital Skills'],
-                                ['nikah', '💍', 'Nikah Platform'],
-                                ['volunteer', '🤝', 'Volunteering'],
-                                ['donation', '💝', 'Donation'],
+                                ['general', '💬', __('db.General Query')],
+                                ['quran', '📖', __('db.Quran Courses')],
+                                ['live_class', '🎥', __('db.Live Classes')],
+                                ['skills', '💻', __('db.Digital Skills')],
+                                ['nikah', '💍', __('db.Nikah Platform')],
+                                ['volunteer', '🤝', __('db.Volunteering')],
+                                ['donation', '💝', __('db.Donation')],
                                 ] as $sub)
                                 <label class="cursor-pointer">
                                     <input type="radio" name="subject_type" value="{{ $sub[0] }}"
@@ -126,19 +126,19 @@
                             {{-- Name + Email --}}
                             <div class="grid sm:grid-cols-2 gap-4">
                                 <div>
-                                    <label class="auth-label">Full Name <span class="text-red-400">*</span></label>
+                                    <label class="auth-label">{{ __('db.Full Name') }} <span class="text-red-400">*</span></label>
                                     <div class="auth-input-wrap">
                                         <i class="fa fa-user auth-icon"></i>
                                         <input type="text" name="name"
                                             value="{{ old('name', auth()->user()?->name) }}"
                                             required
                                             class="auth-input @error('name') auth-input-error @enderror"
-                                            placeholder="Your full name">
+                                            placeholder="{{ __('db.Your full name') }}">
                                     </div>
                                     <x-input-error :messages="$errors->get('name')" class="mt-1" />
                                 </div>
                                 <div>
-                                    <label class="auth-label">Email Address <span class="text-red-400">*</span></label>
+                                    <label class="auth-label">{{ __('db.Email Address') }} <span class="text-red-400">*</span></label>
                                     <div class="auth-input-wrap">
                                         <i class="fa fa-envelope auth-icon"></i>
                                         <input type="email" name="email"
@@ -153,7 +153,7 @@
 
                             {{-- Phone --}}
                             <div class="mt-4">
-                                <label class="auth-label">Phone / WhatsApp <span class="text-gray-400 font-normal">(optional)</span></label>
+                                <label class="auth-label">{{ __('db.Phone / WhatsApp') }} <span class="text-gray-400 font-normal">({{ __('db.optional') }})</span></label>
                                 <div class="auth-input-wrap">
                                     <i class="fa fa-phone auth-icon"></i>
                                     <input type="text" name="phone"
@@ -165,25 +165,25 @@
 
                             {{-- Subject --}}
                             <div class="mt-4">
-                                <label class="auth-label">Subject <span class="text-red-400">*</span></label>
+                                <label class="auth-label">{{ __('db.Subject') }} <span class="text-red-400">*</span></label>
                                 <div class="auth-input-wrap">
                                     <i class="fa fa-tag auth-icon"></i>
                                     <input type="text" name="subject"
                                         value="{{ old('subject') }}"
                                         required
                                         class="auth-input @error('subject') auth-input-error @enderror"
-                                        placeholder="Brief subject of your message">
+                                        placeholder="{{ __('db.Brief subject of your message') }}">
                                 </div>
                                 <x-input-error :messages="$errors->get('subject')" class="mt-1" />
                             </div>
 
                             {{-- Message --}}
                             <div class="mt-4">
-                                <label class="auth-label">Your Message <span class="text-red-400">*</span></label>
+                                <label class="auth-label">{{ __('db.Your Message') }} <span class="text-red-400">*</span></label>
                                 <textarea name="message" rows="6" required
                                     class="auth-input w-full resize-none @error('message') auth-input-error @enderror"
                                     style="padding-left: 1rem; padding-top: 0.75rem"
-                                    placeholder="Tell us how we can help you...">{{ old('message') }}</textarea>
+                                    placeholder="{{ __('db.Tell us how we can help you...') }}">{{ old('message') }}</textarea>
                                 <x-input-error :messages="$errors->get('message')" class="mt-1" />
                             </div>
 
@@ -194,10 +194,10 @@
                             <div class="mt-6">
                                 <button type="submit"
                                     class="btn-base btn-teal w-full py-4 text-base font-bold">
-                                    Send Message <i class="fa fa-paper-plane ml-2"></i>
+                                    {{ __('db.Send Message') }} <i class="fa fa-paper-plane ml-2"></i>
                                 </button>
                                 <p class="text-center text-xs text-gray-400 mt-3">
-                                    We typically respond within 24 hours, in sha Allah.
+                                    {{ __('db.We typically respond within 24 hours, in sha Allah.') }}
                                 </p>
                             </div>
 
@@ -212,25 +212,25 @@
                     {{-- WhatsApp CTA --}}
                     <div class="rounded-2xl p-6 text-center" style="background: linear-gradient(135deg, #25D366 0%, #128C7E 100%)">
                         <div class="text-4xl mb-3">💬</div>
-                        <h5 class="font-bold text-white mb-2">Prefer WhatsApp?</h5>
-                        <p class="text-white/80 text-sm mb-4">Chat with us directly — faster responses for urgent queries.</p>
+                        <h5 class="font-bold text-white mb-2">{{ __('db.Prefer WhatsApp?') }}</h5>
+                        <p class="text-white/80 text-sm mb-4">{{ __('db.Chat with us directly — faster responses for urgent queries.') }}</p>
                         <a href="https://wa.me/{{ setting('social_whatsapp') }}" target="_blank"
                             class="btn-base inline-block px-6 py-2.5 font-semibold text-sm"
                             style="background: #fff; color: #128C7E; border-color: #fff; border-radius: 0.5rem;">
-                            <i class="fab fa-whatsapp mr-2"></i>Chat on WhatsApp
+                            <i class="fab fa-whatsapp mr-2"></i>{{ __('db.Chat on WhatsApp') }}
                         </a>
                     </div>
 
                     {{-- FAQ --}}
                     <div class="bg-white rounded-2xl shadow-sm p-6" x-data="{ open: null }">
-                        <h5 class="font-bold text-gray-800 mb-4">Frequently Asked Questions</h5>
+                        <h5 class="font-bold text-gray-800 mb-4">{{ __('db.Frequently Asked Questions') }}</h5>
                         <div class="space-y-3">
                             @foreach ([
-                            ['Is Sallaamti free to join?', 'Yes! Creating an account and browsing courses is completely free. Some programs like Nikah verification and Live Classes have a small fee.'],
-                            ['How do I enroll in a Quran course?', 'Register for a free account, go to Quran Courses, click Enroll, and start learning immediately.'],
-                            ['Is the Nikah platform safe?', 'Absolutely. Every profile is CNIC-verified by our team. Photos are private until mutual acceptance.'],
-                            ['Can I volunteer from abroad?', 'Yes! We welcome volunteers from any country. Most volunteering is done online.'],
-                            ['How long does donation confirmation take?', 'Our team confirms your payment within 24–48 hours after submission.'],
+                            [__('db.Is Sallaamti free to join?'), __('db.Yes! Creating an account and browsing courses is completely free. Some programs like Nikah verification and Live Classes have a small fee.')],
+                            [__('db.How do I enroll in a Quran course?'), __('db.Register for a free account, go to Quran Courses, click Enroll, and start learning immediately.')],
+                            [__('db.Is the Nikah platform safe?'), __('db.Absolutely. Every profile is CNIC-verified by our team. Photos are private until mutual acceptance.')],
+                            [__('db.Can I volunteer from abroad?'), __('db.Yes! We welcome volunteers from any country. Most volunteering is done online.')],
+                            [__('db.How long does donation confirmation take?'), __('db.Our team confirms your payment within 24–48 hours after submission.')],
                             ] as $i => $faq)
                             <div class="border border-gray-100 rounded-xl overflow-hidden">
                                 <button @click="open = open === {{ $i }} ? null : {{ $i }}"
@@ -250,13 +250,13 @@
 
                     {{-- Social Links --}}
                     <div class="bg-white rounded-2xl shadow-sm p-6">
-                        <h5 class="font-bold text-gray-800 mb-4">Follow Us</h5>
+                        <h5 class="font-bold text-gray-800 mb-4">{{ __('db.Follow Us') }}</h5>
                         <div class="grid grid-cols-2 gap-3">
                             @foreach ([
-                            ['fab fa-facebook-f', 'Facebook', setting('social_facebook', '#'), '#1877F2'],
-                            ['fab fa-instagram', 'Instagram', setting('social_instagram', '#'), '#E1306C'],
-                            ['fab fa-tiktok', 'TikTok', setting('social_tiktok', '#'), '#000'],
-                            ['fab fa-youtube', 'YouTube', setting('social_youtube', '#'), '#FF0000'],
+                            ['fab fa-facebook-f', __('db.Facebook'), setting('social_facebook', '#'), '#1877F2'],
+                            ['fab fa-instagram', __('db.Instagram'), setting('social_instagram', '#'), '#E1306C'],
+                            ['fab fa-tiktok', __('db.TikTok'), setting('social_tiktok', '#'), '#000'],
+                            ['fab fa-youtube', __('db.YouTube'), setting('social_youtube', '#'), '#FF0000'],
                             ] as $social)
                             <a href="{{ $social[2] }}" target="_blank"
                                 class="flex items-center gap-2 p-3 rounded-xl border border-gray-100 hover:shadow-sm transition-all text-sm font-medium text-gray-700 hover:border-gray-200">
@@ -280,12 +280,12 @@
             <div class="bg-white rounded-2xl shadow-sm overflow-hidden">
                 <div class="p-6 flex flex-wrap justify-between items-center gap-4 border-b border-gray-100">
                     <div>
-                        <h5 class="font-bold text-gray-800 mb-0.5">📍 Our Location</h5>
+                        <h5 class="font-bold text-gray-800 mb-0.5">📍 {{ __('db.Our Location') }}</h5>
                         <p class="text-gray-500 text-sm mb-0">{{ setting('site_address', 'Karachi, Sindh, Pakistan') }}</p>
                     </div>
                     <a href="https://maps.google.com/?q=Karachi+Pakistan" target="_blank"
                         class="btn-base btn-teal text-sm px-5 py-2">
-                        <i class="fa fa-map-marker-alt mr-2"></i>Get Directions
+                        <i class="fa fa-map-marker-alt mr-2"></i>{{ __('db.Get Directions') }}
                     </a>
                 </div>
                 <iframe
@@ -305,19 +305,19 @@
     <section class="py-16 final-cta-section">
         <div class="max-w-7xl mx-auto px-4 text-center">
             <div class="text-4xl mb-4">🤲</div>
-            <h2 class="final-cta-title">Ready to Join the Sallaamti Family?</h2>
-            <p class="final-cta-sub">Don't just reach out — become part of a global Muslim community learning, growing and connecting together.</p>
+            <h2 class="final-cta-title">{{ __('db.Ready to Join the Sallaamti Family?') }}</h2>
+            <p class="final-cta-sub">{{ __('db.Don\'t just reach out — become part of a global Muslim community learning, growing and connecting together.') }}</p>
             <div class="flex gap-4 justify-center flex-wrap mt-8">
                 @guest
                 <a href="{{ route('register') }}" class="btn-base btn-gold text-lg px-10 py-4 font-semibold">
-                    Register Free <i class="fa fa-arrow-right ml-2"></i>
+                    {{ __('db.Register Free') }} <i class="fa fa-arrow-right ml-2"></i>
                 </a>
                 <a href="{{ route('wall.index', ['tag' => 'Activity']) }}" class="btn-base btn-outline-light text-lg px-10 py-4">
-                    Explore Activities
+                    {{ __('db.Explore Activities') }}
                 </a>
                 @else
                 <a href="{{ route('dashboard') }}" class="btn-base btn-gold text-lg px-10 py-4 font-semibold">
-                    Go to Dashboard <i class="fa fa-arrow-right ml-2"></i>
+                    {{ __('db.Go to Dashboard') }} <i class="fa fa-arrow-right ml-2"></i>
                 </a>
                 @endguest
             </div>

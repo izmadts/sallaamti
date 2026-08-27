@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800">My Donations</h2>
+        <h2 class="font-semibold text-xl text-gray-800">{{ __('db.My Donations') }}</h2>
     </x-slot>
     <div class="py-12">
         <div class="max-w-3xl mx-auto sm:px-6 lg:px-8 space-y-3">
@@ -15,7 +15,7 @@
                 </span>
             </div>
             @empty
-            <p class="text-gray-500">You haven't made any donations yet. <a href="{{ route('donate.create') }}" class="text-pink-600 underline">Donate now</a></p>
+            <p class="text-gray-500">{{ __("db.You haven't made any donations yet.") }} <a href="{{ route('donate.create') }}" class="text-pink-600 underline">{{ __('db.Donate now') }}</a></p>
             @endforelse
         </div>
     </div>

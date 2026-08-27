@@ -7,22 +7,22 @@
                 🔒
             </div>
 
-            <p class="text-sm font-semibold tracking-widest text-[--teal] uppercase mb-2">Error 403</p>
-            <h1 class="text-3xl font-extrabold text-gray-800 mb-3">Access Restricted</h1>
-            <p class="text-gray-500 mb-8">{{ $exception->getMessage() ?: "You don't have permission to view this page." }}</p>
+            <p class="text-sm font-semibold tracking-widest text-[--teal] uppercase mb-2">{{ __('db.Error 403') }}</p>
+            <h1 class="text-3xl font-extrabold text-gray-800 mb-3">{{ __('db.Access Restricted') }}</h1>
+            <p class="text-gray-500 mb-8">{{ $exception->getMessage() ?: __("db.You don't have permission to view this page.") }}</p>
 
             <div class="flex gap-3 justify-center flex-wrap">
                 @auth
                 <a href="{{ route('dashboard') }}" class="btn-base btn-teal px-6 py-2.5 font-semibold">
-                    Go to Dashboard
+                    {{ __('db.Go to Dashboard') }}
                 </a>
                 @else
                 <a href="{{ url('/') }}" class="btn-base btn-teal px-6 py-2.5 font-semibold">
-                    Back to Home
+                    {{ __('db.Back to Home') }}
                 </a>
                 @endauth
                 <a href="{{ url('/contact') }}" class="btn-base btn-gold px-6 py-2.5 font-semibold">
-                    Contact Us
+                    {{ __('db.Contact Us') }}
                 </a>
             </div>
         </div>

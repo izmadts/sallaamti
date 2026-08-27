@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Something Went Wrong — Sallaamti</title>
+    <title>{{ __('db.Something Went Wrong — Sallaamti') }}</title>
     <style>
         :root {
             --teal: #0d6b6b;
@@ -77,12 +77,12 @@
 <body>
     <div class="card">
         <div class="icon">⚠️</div>
-        <p class="eyebrow">Error 500</p>
-        <h1>Something Went Wrong</h1>
-        <p>An unexpected error occurred on our end. Our team has been notified — please try again in a few minutes.</p>
+        <p class="eyebrow">{{ __('db.Error 500') }}</p>
+        <h1>{{ __('db.Something Went Wrong') }}</h1>
+        <p>{{ __('db.An unexpected error occurred on our end. Our team has been notified — please try again in a few minutes.') }}</p>
         <div class="actions">
-            <a href="/" class="btn btn-teal">Back to Home</a>
-            <a href="/contact" class="btn btn-gold">Contact Us</a>
+            <a href="/" class="btn btn-teal">{{ __('db.Back to Home') }}</a>
+            <a href="/contact" class="btn btn-gold">{{ __('db.Contact Us') }}</a>
         </div>
     </div>
 </body>

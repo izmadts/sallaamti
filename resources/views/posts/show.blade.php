@@ -4,12 +4,12 @@
         <div class="max-w-3xl mx-auto px-4 py-14 relative z-10 text-center w-full">
             @if ($post->status !== 'published')
             <span class="inline-block bg-yellow-400 text-yellow-900 text-xs font-bold px-3 py-1 rounded-full mb-3 uppercase tracking-wide">
-                Preview — {{ ucfirst($post->status) }}, not yet public
+                {{ __('db.Preview — :status, not yet public', ['status' => ucfirst($post->status)]) }}
             </span>
             @endif
             <h1 class="text-3xl md:text-4xl font-extrabold text-white mt-2 mb-3">{{ $post->title }}</h1>
             <p class="text-white/70 text-sm">
-                By <a href="{{ route('posts.by-author', $post->author) }}" class="underline hover:text-white">{{ $post->author->name }}</a>
+                {{ __('db.By') }} <a href="{{ route('posts.by-author', $post->author) }}" class="underline hover:text-white">{{ $post->author->name }}</a>
                 — {{ $post->published_at?->format('d M Y') ?? $post->created_at->format('d M Y') }}
             </p>
         </div>
@@ -28,10 +28,10 @@
             @auth
             @if (Auth::id() === $post->user_id || Auth::user()->can('posts.manage'))
             <div class="mt-8 flex gap-3 text-sm">
-                <a href="{{ route('posts.edit', $post) }}" class="text-teal-700 hover:underline">✏️ Edit</a>
-                <form method="POST" action="{{ route('posts.destroy', $post) }}" onsubmit="return confirm('Delete this post permanently?')">
+                <a href="{{ route('posts.edit', $post) }}" class="text-teal-700 hover:underline">✏️ {{ __('db.Edit') }}</a>
+                <form method="POST" action="{{ route('posts.destroy', $post) }}" onsubmit="return confirm({{ Js::from(__('db.Delete this post permanently?')) }})">
                     @csrf @method('DELETE')
-                    <button class="text-red-500 hover:underline">🗑️ Delete</button>
+                    <button class="text-red-500 hover:underline">🗑️ {{ __('db.Delete') }}</button>
                 </form>
             </div>
             @endif
@@ -39,19 +39,19 @@
 
             @if ($post->status === 'published')
             <div class="mt-10 bg-teal-50 border border-teal-100 rounded-lg p-5">
-                <h3 class="font-semibold text-gray-700 mb-3">📤 Share this Post</h3>
+                <h3 class="font-semibold text-gray-700 mb-3">📤 {{ __('db.Share this Post') }}</h3>
                 <div class="flex gap-2 items-center mb-3">
                     <input type="text" readonly value="{{ route('posts.show', $post) }}" id="post-share-link" class="flex-1 border-gray-300 rounded-md text-xs bg-white">
-                    <button type="button" onclick="navigator.clipboard.writeText(document.getElementById('post-share-link').value); this.innerText='✅ Copied'; setTimeout(() => this.innerText='Copy', 1500)"
-                        class="bg-gray-100 text-gray-700 text-xs px-3 py-2 rounded hover:bg-gray-200">Copy</button>
+                    <button type="button" onclick="navigator.clipboard.writeText(document.getElementById('post-share-link').value); this.innerText={{ Js::from('✅ ' . __('db.Copied')) }}; setTimeout(() => this.innerText={{ Js::from(__('db.Copy')) }}, 1500)"
+                        class="bg-gray-100 text-gray-700 text-xs px-3 py-2 rounded hover:bg-gray-200">{{ __('db.Copy') }}</button>
                 </div>
                 <div class="flex flex-wrap gap-2">
                     <a href="https://wa.me/?text={{ urlencode($post->title . ' — ' . route('posts.show', $post)) }}" target="_blank" rel="noopener"
-                        class="inline-flex items-center gap-2 bg-green-500 text-white text-sm px-4 py-2 rounded-lg hover:bg-green-600">WhatsApp</a>
+                        class="inline-flex items-center gap-2 bg-green-500 text-white text-sm px-4 py-2 rounded-lg hover:bg-green-600">{{ __('db.WhatsApp') }}</a>
                     <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode(route('posts.show', $post)) }}" target="_blank" rel="noopener"
-                        class="inline-flex items-center gap-2 bg-blue-600 text-white text-sm px-4 py-2 rounded-lg hover:bg-blue-700">Facebook</a>
+                        class="inline-flex items-center gap-2 bg-blue-600 text-white text-sm px-4 py-2 rounded-lg hover:bg-blue-700">{{ __('db.Facebook') }}</a>
                     <a href="https://twitter.com/intent/tweet?text={{ urlencode($post->title) }}&url={{ urlencode(route('posts.show', $post)) }}" target="_blank" rel="noopener"
-                        class="inline-flex items-center gap-2 bg-gray-800 text-white text-sm px-4 py-2 rounded-lg hover:bg-gray-900">X / Twitter</a>
+                        class="inline-flex items-center gap-2 bg-gray-800 text-white text-sm px-4 py-2 rounded-lg hover:bg-gray-900">{{ __('db.X / Twitter') }}</a>
                 </div>
             </div>
             @endif
@@ -64,13 +64,13 @@
                     @if ($post->author->public_bio)
                     <p class="text-sm text-gray-500 mt-1">{{ $post->author->public_bio }}</p>
                     @endif
-                    <a href="{{ route('posts.by-author', $post->author) }}" class="text-xs text-teal-700 hover:underline mt-1 inline-block">View all posts by {{ $post->author->name }} →</a>
+                    <a href="{{ route('posts.by-author', $post->author) }}" class="text-xs text-teal-700 hover:underline mt-1 inline-block">{{ __('db.View all posts by :name →', ['name' => $post->author->name]) }}</a>
                 </div>
             </div>
 
             @if ($morePosts->isNotEmpty())
             <div class="mt-10 pt-6 border-t border-gray-100">
-                <h3 class="font-semibold text-gray-700 mb-4">More from {{ $post->author->name }}</h3>
+                <h3 class="font-semibold text-gray-700 mb-4">{{ __('db.More from :name', ['name' => $post->author->name]) }}</h3>
                 <div class="grid sm:grid-cols-3 gap-4">
                     @foreach ($morePosts as $more)
                     <a href="{{ route('posts.show', $more) }}" class="text-sm text-gray-700 hover:text-teal-700 bg-gray-50 rounded-lg p-3">
@@ -82,7 +82,7 @@
             @endif
 
             <div class="mt-10">
-                <a href="{{ route('posts.index') }}" class="btn-base btn-teal inline-block text-sm px-5 py-2">← Back to Community Posts</a>
+                <a href="{{ route('posts.index') }}" class="btn-base btn-teal inline-block text-sm px-5 py-2">{{ __('db.← Back to Community Posts') }}</a>
             </div>
         </div>
     </section>

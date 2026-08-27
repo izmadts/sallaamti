@@ -1,7 +1,7 @@
 {{-- resources/views/privacy-policy.blade.php --}}
-<x-guest-layout title="Privacy Policy" description="How Sallaamti collects, uses, and protects your personal information across our Quran learning, Digital Skills, Nikah matchmaking, family counseling, volunteering, and donation services.">
-    @section('title', 'Privacy Policy — Sallaamti')
-    @section('description', 'How Sallaamti collects, uses, and protects your personal information.')
+<x-guest-layout :title="__('db.Privacy Policy')" :description="__('db.How Sallaamti collects, uses, and protects your personal information across our Quran learning, Digital Skills, Nikah matchmaking, family counseling, volunteering, and donation services.')">
+    @section('title', __('db.Privacy Policy — Sallaamti'))
+    @section('description', __('db.How Sallaamti collects, uses, and protects your personal information.'))
     @section('canonical', url('/privacy-policy'))
     @section('robots', 'index, follow')
 
@@ -53,7 +53,7 @@
                 <h2>{{ __('db.3. Third-Party Services') }}</h2>
                 <p>{{ __('db.We use a limited number of third-party services to operate Sallaamti:') }}</p>
                 <ul>
-                    <li><strong>Google &amp; Facebook Sign-In</strong> — {{ __('db.optional one-tap login. We only receive the profile fields these providers share with your consent.') }}</li>
+                    <li><strong>{{ __('db.Google & Facebook Sign-In') }}</strong> — {{ __('db.optional one-tap login. We only receive the profile fields these providers share with your consent.') }}</li>
                     <li><strong>{{ __('db.Analytics (e.g. Google Tag Manager)') }}</strong> — {{ __('db.helps us understand aggregate site usage. This may set cookies in your browser.') }}</li>
                     <li><strong>{{ __('db.Email delivery') }}</strong> — {{ __('db.used to send verification codes, notifications, and password resets.') }}</li>
                 </ul>

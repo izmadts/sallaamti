@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8">
-    <title>{{ setting('site_name') }} — Under Maintenance</title>
+    <title>{{ __('db.:site — Under Maintenance', ['site' => setting('site_name')]) }}</title>
     <style>
         body {
             font-family: sans-serif;
@@ -27,9 +27,9 @@
 
 <body>
     <h1>🌙 سلامتی</h1>
-    <h2>We'll be back soon</h2>
-    <p>{{ setting('site_name') }} is currently undergoing maintenance.</p>
-    <p>Please check back shortly — JazakAllah Khair for your patience.</p>
+    <h2>{{ __('db.We\'ll be back soon') }}</h2>
+    <p>{{ __('db.:site is currently undergoing maintenance.', ['site' => setting('site_name')]) }}</p>
+    <p>{{ __('db.Please check back shortly — JazakAllah Khair for your patience.') }}</p>
 </body>
 
 </html>

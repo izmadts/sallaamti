@@ -7,16 +7,16 @@
                 ⏳
             </div>
 
-            <p class="text-sm font-semibold tracking-widest text-[--teal] uppercase mb-2">Session Expired</p>
-            <h1 class="text-3xl font-extrabold text-gray-800 mb-3">Your Page Has Timed Out</h1>
-            <p class="text-gray-500 mb-8">For your security, this page expired after a period of inactivity. Nothing was saved — please go back and try again.</p>
+            <p class="text-sm font-semibold tracking-widest text-[--teal] uppercase mb-2">{{ __('db.Session Expired') }}</p>
+            <h1 class="text-3xl font-extrabold text-gray-800 mb-3">{{ __('db.Your Page Has Timed Out') }}</h1>
+            <p class="text-gray-500 mb-8">{{ __('db.For your security, this page expired after a period of inactivity. Nothing was saved — please go back and try again.') }}</p>
 
             <div class="flex gap-3 justify-center flex-wrap">
                 <a href="javascript:history.back()" class="btn-base btn-teal px-6 py-2.5 font-semibold">
-                    Go Back &amp; Retry
+                    {{ __('db.Go Back & Retry') }}
                 </a>
                 <a href="{{ url('/') }}" class="btn-base btn-gold px-6 py-2.5 font-semibold">
-                    Back to Home
+                    {{ __('db.Back to Home') }}
                 </a>
             </div>
         </div>

@@ -29,7 +29,7 @@
             <div class="bg-white rounded-2xl shadow-sm p-6">
                 <div class="flex justify-between items-start mb-4">
                     <div>
-                        <p class="font-semibold text-gray-800 text-lg">{{ $booking->isAnonymous() ? '🎭 Anonymous member' : $booking->member->name }}</p>
+                        <p class="font-semibold text-gray-800 text-lg">{{ $booking->isAnonymous() ? '🎭 ' . __('db.Anonymous member') : $booking->member->name }}</p>
                         <p class="text-sm text-gray-500">{{ $booking->scheduled_at->format('l, d M Y — h:i A') }} · {{ ucfirst(str_replace('_', ' ', $booking->contact_method)) }}</p>
                         @if ($booking->isUrgent())
                         <span class="text-xs font-bold text-red-700 bg-red-100 px-2 py-0.5 rounded-full inline-block mt-1">🚨 {{ __('db.Urgent / safety concern') }}</span>

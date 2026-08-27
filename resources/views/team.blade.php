@@ -3,17 +3,17 @@
     <section class="page-hero relative overflow-hidden flex items-center"
         style="min-height: 280px; background: linear-gradient(135deg, #0d6b6b 0%, #1a1a2e 100%);">
         <div class="max-w-7xl mx-auto px-4 py-16 relative z-10 text-center w-full">
-            <span class="section-eyebrow" style="color: rgba(255,255,255,0.7)">The People Behind Sallaamti</span>
-            <h1 class="text-4xl md:text-5xl font-extrabold text-white mt-2 mb-3">Our Team</h1>
+            <span class="section-eyebrow" style="color: rgba(255,255,255,0.7)">{{ __('db.The People Behind Sallaamti') }}</span>
+            <h1 class="text-4xl md:text-5xl font-extrabold text-white mt-2 mb-3">{{ __('db.Our Team') }}</h1>
             <p class="text-white/70 text-lg max-w-xl mx-auto">
-                Dedicated volunteers, qualified teachers and passionate individuals serving the Muslim Ummah.
+                {{ __('db.Dedicated volunteers, qualified teachers and passionate individuals serving the Muslim Ummah.') }}
             </p>
             <nav class="flex justify-center gap-2 mt-6 text-sm text-white/50">
-                <a href="{{ url('/') }}" class="hover:text-white">Home</a>
+                <a href="{{ url('/') }}" class="hover:text-white">{{ __('db.Home') }}</a>
                 <span>/</span>
-                <a href="{{ url('/about') }}" class="hover:text-white">About</a>
+                <a href="{{ url('/about') }}" class="hover:text-white">{{ __('db.About') }}</a>
                 <span>/</span>
-                <span class="text-white">Team</span>
+                <span class="text-white">{{ __('db.Team') }}</span>
             </nav>
         </div>
     </section>
@@ -29,8 +29,8 @@
             @if ($founder)
             {{-- Leadership --}}
             <div class="text-center mb-10">
-                <span class="section-eyebrow">Leadership</span>
-                <h2 class="section-title">Guiding Sallaamti's Vision</h2>
+                <span class="section-eyebrow">{{ __('db.Leadership') }}</span>
+                <h2 class="section-title">{{ __('db.Guiding Sallaamti\'s Vision') }}</h2>
             </div>
 
             <div class="grid lg:grid-cols-12 gap-8 mb-16 items-center max-w-4xl mx-auto">
@@ -69,8 +69,8 @@
 
             {{-- Team Grid --}}
             <div class="text-center mb-10">
-                <span class="section-eyebrow">Our Team</span>
-                <h2 class="section-title">Teachers, Counselors & Volunteers</h2>
+                <span class="section-eyebrow">{{ __('db.Our Team') }}</span>
+                <h2 class="section-title">{{ __('db.Teachers, Counselors & Volunteers') }}</h2>
             </div>
 
             @if ($otherMembers->isNotEmpty())
@@ -108,7 +108,7 @@
             @else
             <div class="text-center py-10">
                 <div class="text-4xl mb-3">👩‍🏫</div>
-                <p class="text-gray-500">Our team profiles are being set up. Check back soon.</p>
+                <p class="text-gray-500">{{ __('db.Our team profiles are being set up. Check back soon.') }}</p>
             </div>
             @endif
 
@@ -117,10 +117,10 @@
 
     <section class="py-16 final-cta-section">
         <div class="max-w-3xl mx-auto px-4 text-center">
-            <h2 class="final-cta-title">Join Our Team</h2>
-            <p class="final-cta-sub">Whether you're a teacher, counselor, developer or organizer — your skills are needed.</p>
+            <h2 class="final-cta-title">{{ __('db.Join Our Team') }}</h2>
+            <p class="final-cta-sub">{{ __('db.Whether you\'re a teacher, counselor, developer or organizer — your skills are needed.') }}</p>
             <a href="{{ route('volunteer.create') }}" class="btn-base btn-gold px-8 py-3 font-semibold mt-6 inline-block">
-                Apply as Volunteer →
+                {{ __('db.Apply as Volunteer →') }}
             </a>
         </div>
     </section>
