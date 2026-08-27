@@ -26,7 +26,7 @@
                     @if ($content->arabic_text)
                     <p class="text-gray-700 mt-1" dir="rtl">{{ $content->arabic_text }}</p>
                     @endif
-                    <p class="text-sm text-gray-600 mt-1 line-clamp-2">{{ $content->translation }}</p>
+                    <p class="text-sm text-gray-600 mt-1 line-clamp-2">{{ Str::limit(strip_tags($content->translation), 140) }}</p>
                 </div>
                 <div class="flex flex-col items-end gap-2 flex-shrink-0">
                     <span class="text-xs px-2 py-0.5 rounded-full {{ $content->is_active ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500' }}">

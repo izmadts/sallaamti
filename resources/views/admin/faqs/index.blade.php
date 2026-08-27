@@ -43,7 +43,7 @@
                             @endif
                         </div>
                         <p class="font-medium text-gray-800 mt-2">{{ $faq->question_en }}</p>
-                        <p class="text-sm text-gray-500 mt-1 line-clamp-2">{{ $faq->answer_en }}</p>
+                        <p class="text-sm text-gray-500 mt-1 line-clamp-2">{{ Str::limit(strip_tags($faq->answer_en), 140) }}</p>
                         @if ($faq->question_ur)
                         <p class="font-medium text-gray-700 mt-2" dir="rtl">{{ $faq->question_ur }}</p>
                         @endif

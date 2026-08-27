@@ -31,7 +31,7 @@
                         @endif
                     </p>
                     <p class="text-xs text-yellow-500 mb-1">{{ str_repeat('★', $t->rating) }}{{ str_repeat('☆', 5 - $t->rating) }}</p>
-                    <p class="text-sm text-gray-600 line-clamp-2">{{ $t->content }}</p>
+                    <p class="text-sm text-gray-600 line-clamp-2">{{ Str::limit(strip_tags($t->content), 140) }}</p>
                     @if ($t->status === 'rejected' && $t->rejection_reason)
                     <p class="text-xs text-red-600 mt-1">Rejected: {{ $t->rejection_reason }}</p>
                     @endif

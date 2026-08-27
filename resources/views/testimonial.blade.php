@@ -33,7 +33,7 @@
                             <i class="fas fa-star" style="color: var(--gold)"></i>
                             @endfor
                     </div>
-                    <p class="text-gray-600 text-sm italic leading-relaxed mb-4">"{{ $t->content }}"</p>
+                    <div class="prose prose-sm max-w-none text-gray-600 italic leading-relaxed mb-4">"{!! $t->content !!}"</div>
                     <div class="flex items-center gap-3 pt-4 border-t border-gray-100">
                         <img src="{{ $t->photo ? Storage::url($t->photo) : asset('img/testimonial-1.jpg') }}"
                             loading="lazy" class="w-12 h-12 rounded-full object-cover" alt="{{ $t->name }}">

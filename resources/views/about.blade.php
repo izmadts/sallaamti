@@ -766,9 +766,9 @@
                                         @endfor
                                 </div>
 
-                                <p class="text-white/90 text-lg md:text-xl leading-relaxed italic font-light mb-8">
-                                    "{{ $t->content }}"
-                                </p>
+                                <div class="prose prose-invert prose-lg max-w-none text-white/90 leading-relaxed italic font-light mb-8">
+                                    "{!! $t->content !!}"
+                                </div>
 
                                 <div class="w-12 h-px mx-auto mb-6" style="background: rgba(184,150,46,0.5)"></div>
 

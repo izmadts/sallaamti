@@ -7,7 +7,7 @@
             @if (session('status'))<div class="p-4 bg-green-50 text-green-700 rounded">{{ session('status') }}</div>@endif
 
             <div class="bg-white rounded-lg shadow-sm p-6">
-                <p class="text-gray-600">{{ $course->description }}</p>
+                <div class="prose prose-sm max-w-none text-gray-600">{!! $course->description !!}</div>
                 <p class="text-sm text-gray-500 mt-2">{{ __('db.Teacher: :teacher', ['teacher' => $course->teacher?->name ?? __('db.TBA')]) }} | {{ $course->class_time }}</p>
                 <p class="text-sm font-medium text-pink-600 mt-1">{{ __('db.Rs. :amount/month', ['amount' => number_format($course->monthly_fee)]) }}</p>
                 @if ($course->min_age || $course->max_age)

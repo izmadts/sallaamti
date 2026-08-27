@@ -161,7 +161,7 @@
                         {{-- Description --}}
                         @if ($course->description)
                         <p class="text-xs text-gray-500 mb-3 leading-relaxed line-clamp-2">
-                            {{ $course->description }}
+                            {{ Str::limit(strip_tags($course->description), 140) }}
                         </p>
                         @endif
 
