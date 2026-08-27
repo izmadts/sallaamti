@@ -292,7 +292,7 @@
                     <div class="bg-white rounded-2xl p-6 shadow-sm">
                         <h5 class="font-bold text-gray-800 mb-3">{{ __('db.Questions?') }}</h5>
                         <p class="text-gray-500 text-sm mb-4">{{ __('db.Reach out to us before applying if you have questions.') }}</p>
-                        <a href="https://wa.me/{{ setting('social_whatsapp') }}" target="_blank" class="btn-base btn-teal w-full py-2.5 text-sm text-center block">
+                        <a href="{{ whatsapp_link() }}" target="_blank" class="btn-base btn-teal w-full py-2.5 text-sm text-center block">
                             <i class="fab fa-whatsapp mr-2"></i>{{ __('db.WhatsApp Us') }}
                         </a>
                     </div>

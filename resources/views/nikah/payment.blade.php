@@ -81,7 +81,7 @@
                 </div>
 
                 @if (setting('social_whatsapp'))
-                <a href="https://wa.me/{{ setting('social_whatsapp') }}?text={{ urlencode($whatsappMessage) }}" target="_blank"
+                <a href="{{ whatsapp_link($whatsappMessage) }}" target="_blank"
                     class="flex items-center gap-3 rounded-xl p-4 mb-6 transition hover:shadow-md" style="background: #f0fdf4; border: 1px solid #bbf7d0">
                     <div class="w-12 h-12 rounded-xl flex items-center justify-center text-2xl shrink-0 bg-white">💬</div>
                     <div>

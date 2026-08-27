@@ -69,8 +69,17 @@
                         <span class="shrink-0 flex items-center justify-center w-12 h-12 bg-[--teal] mr-3">
                             <i class="fa fa-phone-alt text-white"></i>
                         </span>
-                        <a href="https://wa.me/{{ setting('social_whatsapp') }}" class="text-gray-300 hover:text-white" target="_blank">{{ setting('site_phone') }}</a>
+                        <a href="{{ whatsapp_link() }}" class="text-gray-300 hover:text-white" target="_blank">{{ setting('social_whatsapp', setting('site_phone')) }}</a>
                     </div>
+                    @if (setting('site_landline'))
+                    <h6 class="text-gray-400 mt-4 mb-0 text-sm">{{ __('db.Our Landline') }}</h6>
+                    <div class="flex items-center border-b border-gray-700 py-4">
+                        <span class="shrink-0 flex items-center justify-center w-12 h-12 bg-[--teal] mr-3">
+                            <i class="fa fa-phone text-white"></i>
+                        </span>
+                        <a href="tel:{{ setting('site_landline') }}" class="text-gray-300 hover:text-white">{{ setting('site_landline') }}</a>
+                    </div>
+                    @endif
                     <h6 class="text-gray-400 mt-4 mb-0 text-sm">{{ __('db.Our Email') }}</h6>
                     <div class="flex items-center py-4">
                         <span class="shrink-0 flex items-center justify-center w-12 h-12 bg-[--teal] mr-3">

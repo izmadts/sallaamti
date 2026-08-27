@@ -40,7 +40,7 @@
 
             <div class="bg-white rounded-2xl shadow-sm p-8 text-center">
                 <p class="text-sm text-gray-600 mb-4">{{ __('db.Something feel wrong? Tell us directly.') }}</p>
-                <a href="https://wa.me/{{ setting('social_whatsapp') }}" target="_blank" class="btn-base px-6 py-3 inline-block border border-gray-300 text-gray-700 hover:border-[--teal]">
+                <a href="{{ whatsapp_link() }}" target="_blank" class="btn-base px-6 py-3 inline-block border border-gray-300 text-gray-700 hover:border-[--teal]">
                     <i class="fab fa-whatsapp mr-2"></i>{{ __('db.Report a Concern') }}
                 </a>
             </div>

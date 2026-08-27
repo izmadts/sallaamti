@@ -569,7 +569,7 @@
                         <a href="{{ $founder->tiktok_url }}" class="social-btn" target="_blank"><i class="fab fa-tiktok"></i></a>
                         @endif
                         @if ($founder->whatsapp_number)
-                        <a href="https://wa.me/{{ $founder->whatsapp_number }}" class="social-btn" target="_blank"><i class="fab fa-whatsapp"></i></a>
+                        <a href="{{ whatsapp_link(null, $founder->whatsapp_number) }}" class="social-btn" target="_blank"><i class="fab fa-whatsapp"></i></a>
                         @endif
                     </div>
                 </div>
@@ -605,7 +605,7 @@
                             <a href="{{ $member->tiktok_url }}" target="_blank" class="social-btn social-btn-sm"><i class="fab fa-tiktok"></i></a>
                             @endif
                             @if ($member->whatsapp_number)
-                            <a href="https://wa.me/{{ $member->whatsapp_number }}" target="_blank" class="social-btn social-btn-sm"><i class="fab fa-whatsapp"></i></a>
+                            <a href="{{ whatsapp_link(null, $member->whatsapp_number) }}" target="_blank" class="social-btn social-btn-sm"><i class="fab fa-whatsapp"></i></a>
                             @endif
                         </div>
                     </div>

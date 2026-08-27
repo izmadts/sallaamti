@@ -42,8 +42,12 @@
                         <x-text-input name="site_email" type="email" class="w-full mt-1" :value="$settings['site_email'] ?? ''" />
                     </div>
                     <div>
-                        <x-input-label value="Contact Phone" />
-                        <x-text-input name="site_phone" class="w-full mt-1" :value="$settings['site_phone'] ?? ''" />
+                        <x-input-label value="Mobile Phone" />
+                        <x-text-input name="site_phone" class="w-full mt-1" :value="$settings['site_phone'] ?? ''" placeholder="+92 314 616 3271" />
+                    </div>
+                    <div>
+                        <x-input-label value="Landline Phone (optional)" />
+                        <x-text-input name="site_landline" class="w-full mt-1" :value="$settings['site_landline'] ?? ''" placeholder="021-1234567" />
                     </div>
                     <div class="sm:col-span-2">
                         <x-input-label value="Address" />
@@ -172,6 +176,7 @@
                     <div>
                         <x-input-label value="WhatsApp Number" />
                         <x-text-input name="social_whatsapp" class="w-full mt-1" :value="$settings['social_whatsapp'] ?? ''" placeholder="+92 3XX XXXXXXX" />
+                        <p class="text-xs text-gray-400 mt-1">Any format works (spaces, dashes, +) — every "Chat on WhatsApp" button on the site converts it automatically. A local number starting with 0 gets the 92 country code added.</p>
                     </div>
                     <div>
                         <x-input-label value="Facebook URL" />

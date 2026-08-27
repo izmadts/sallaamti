@@ -333,7 +333,7 @@
                     </div>
 
                     {{-- WhatsApp support --}}
-                    <a href="https://wa.me/{{ setting('social_whatsapp') }}" target="_blank"
+                    <a href="{{ whatsapp_link() }}" target="_blank"
                         class="flex items-center gap-3 bg-white rounded-2xl p-4 shadow-sm hover:shadow-md transition-shadow group">
                         <div class="w-12 h-12 rounded-xl flex items-center justify-center text-2xl flex-shrink-0"
                             style="background: #f0fdf4">💬</div>
