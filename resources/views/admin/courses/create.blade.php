@@ -13,7 +13,9 @@
                 </div>
                 <div>
                     <x-input-label value="Description" />
-                    <textarea name="description" rows="3" class="border-gray-300 rounded-md w-full mt-1"></textarea>
+                    <!-- <textarea name="description" rows="3" class="border-gray-300 rounded-md w-full mt-1"></textarea> -->
+                    <input id="trix-description" type="hidden" name="description" value="{{ old('description') }}">
+                    <trix-editor input="trix-description"></trix-editor>
                 </div>
                 <div class="grid grid-cols-2 gap-4">
                     <div>
