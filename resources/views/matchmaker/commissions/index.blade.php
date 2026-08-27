@@ -24,7 +24,7 @@
                 <div class="flex-1 min-w-[16rem] space-y-2">
                     <div class="flex flex-wrap items-center gap-2">
                         <input type="text" readonly value="{{ $referralLink }}" class="text-xs border-gray-200 rounded-lg flex-1 min-w-[14rem] bg-gray-50" onclick="this.select()" id="referral-link">
-                        <button type="button" onclick="navigator.clipboard.writeText(document.getElementById('referral-link').value); this.textContent = '{{ __('db.Copied!') }}'; setTimeout(() => this.textContent = '{{ __('db.Copy Link') }}', 1500);" class="text-xs font-semibold px-2 py-1.5 rounded-lg text-white hover:opacity-90" style="background: #0d6b6b">{{ __('db.Copy Link') }}</button>
+                        <button type="button" onclick="navigator.clipboard.writeText(document.getElementById('referral-link').value); this.textContent = {{ Js::from(__('db.Copied!')) }}; setTimeout(() => this.textContent = {{ Js::from(__('db.Copy Link')) }}, 1500);" class="text-xs font-semibold px-2 py-1.5 rounded-lg text-white hover:opacity-90" style="background: #0d6b6b">{{ __('db.Copy Link') }}</button>
                     </div>
                 </div>
                 @if ($referralQrCode)

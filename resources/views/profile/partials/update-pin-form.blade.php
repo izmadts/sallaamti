@@ -58,7 +58,7 @@
     </form>
 
     @if (Auth::user()->pin)
-    <form method="post" action="{{ route('pin.destroy') }}" class="mt-4" onsubmit="return confirm('{{ __('db.Remove your login PIN?') }}')">
+    <form method="post" action="{{ route('pin.destroy') }}" class="mt-4" onsubmit="return confirm({{ Js::from(__('db.Remove your login PIN?')) }})">
         @csrf
         @method('delete')
         <button type="submit" class="text-sm text-red-600 hover:text-red-800">{{ __('db.Remove PIN') }}</button>

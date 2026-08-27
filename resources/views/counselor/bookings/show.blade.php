@@ -113,7 +113,7 @@
                     <button class="text-sm text-orange-600 hover:underline">{{ __('db.Mark No-Show') }}</button>
                 </form>
                 @endif
-                <form method="POST" action="{{ route('counselor.bookings.cancel', $booking) }}" onsubmit="return confirm('{{ __('db.Cancel this session?') }}')">
+                <form method="POST" action="{{ route('counselor.bookings.cancel', $booking) }}" onsubmit="return confirm({{ Js::from(__('db.Cancel this session?')) }})">
                     @csrf
                     <button class="text-sm text-red-500 hover:underline">{{ __('db.Cancel Session') }}</button>
                 </form>

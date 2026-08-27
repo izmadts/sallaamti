@@ -17,7 +17,7 @@
                         <span class="text-sm text-gray-700">{{ __('db.' . $days[$slot->day_of_week]) }}: {{ \Illuminate\Support\Carbon::parse($slot->start_time)->format('h:i A') }} – {{ \Illuminate\Support\Carbon::parse($slot->end_time)->format('h:i A') }}
                             <span class="text-gray-400 text-xs">({{ $slot->slot_duration_minutes }} {{ __('db.min slots') }})</span>
                         </span>
-                        <form method="POST" action="{{ route('counselor.availability.destroy', $slot) }}" onsubmit="return confirm('{{ __('db.Remove this slot?') }}')">
+                        <form method="POST" action="{{ route('counselor.availability.destroy', $slot) }}" onsubmit="return confirm({{ Js::from(__('db.Remove this slot?')) }})">
                             @csrf @method('DELETE')
                             <button class="text-xs text-red-500 hover:underline">{{ __('db.Remove') }}</button>
                         </form>
@@ -34,7 +34,7 @@
                     @forelse ($overrides as $slot)
                     <div class="py-2 flex justify-between items-center">
                         <span class="text-sm text-gray-700">{{ $slot->specific_date->format('d M Y') }}: {{ \Illuminate\Support\Carbon::parse($slot->start_time)->format('h:i A') }} – {{ \Illuminate\Support\Carbon::parse($slot->end_time)->format('h:i A') }}</span>
-                        <form method="POST" action="{{ route('counselor.availability.destroy', $slot) }}" onsubmit="return confirm('{{ __('db.Remove this slot?') }}')">
+                        <form method="POST" action="{{ route('counselor.availability.destroy', $slot) }}" onsubmit="return confirm({{ Js::from(__('db.Remove this slot?')) }})">
                             @csrf @method('DELETE')
                             <button class="text-xs text-red-500 hover:underline">{{ __('db.Remove') }}</button>
                         </form>

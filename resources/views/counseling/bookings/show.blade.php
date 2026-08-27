@@ -78,7 +78,7 @@
                 @endif
 
                 @if (!in_array($booking->status, ['completed', 'cancelled']))
-                <form method="POST" action="{{ route('counseling.bookings.cancel', $booking) }}" class="mt-6" onsubmit="return confirm('{{ __('db.Cancel this session?') }}')">
+                <form method="POST" action="{{ route('counseling.bookings.cancel', $booking) }}" class="mt-6" onsubmit="return confirm({{ Js::from(__('db.Cancel this session?')) }})">
                     @csrf
                     <button class="text-sm text-red-600 hover:underline">{{ __('db.Cancel Session') }}</button>
                 </form>
