@@ -33,9 +33,13 @@ if (!function_exists('normalize_whatsapp_number')) {
 }
 
 if (!function_exists('whatsapp_link')) {
+    // The Mobile Phone number IS the WhatsApp number for this business —
+    // "WhatsApp Number" in settings is only an optional override for the
+    // rare case a WhatsApp Business line differs from the general mobile.
+    // Landline never applies here; it's call-only.
     function whatsapp_link(?string $message = null, ?string $number = null): string
     {
-        $digits = normalize_whatsapp_number($number ?? setting('social_whatsapp'));
+        $digits = normalize_whatsapp_number($number ?? (setting('social_whatsapp') ?: setting('site_phone')));
 
         $url = 'https://wa.me/' . $digits;
 

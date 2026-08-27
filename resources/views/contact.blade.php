@@ -31,7 +31,7 @@
             <div class="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 -mt-10 relative z-10">
                 @foreach ([
                 ['📍', __('db.Our Address'), setting('site_address', 'Karachi, Pakistan'), url('/contact'), __('db.Get Directions')],
-                ['💬', __('db.WhatsApp'), setting('social_whatsapp', '+92 314 616 3271'), whatsapp_link(), __('db.WhatsApp Us')],
+                ['💬', __('db.WhatsApp'), setting('social_whatsapp') ?: setting('site_phone', '+92 314 616 3271'), whatsapp_link(), __('db.WhatsApp Us')],
                 ['📞', __('db.Phone'), setting('site_landline') ?: setting('site_phone', '+92 314 616 3271'), 'tel:'.(setting('site_landline') ?: setting('site_phone', '')), __('db.Call Us')],
                 ['✉️', __('db.Email Us'), setting('site_email', 'info@sallaamti.com'), 'mailto:'.setting('site_email'), __('db.Send Email')],
                 ['🕐', __('db.Office Hours'), __('db.Mon – Sat: 9AM – 8PM (PKT)'), '#', __('db.We reply within 24hrs')],

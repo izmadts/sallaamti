@@ -110,8 +110,8 @@
                 <p>
                     {{ __('db.If you have questions about this Privacy Policy or your data, contact us at') }}
                     <a href="mailto:{{ setting('site_email') }}">{{ setting('site_email') }}</a>
-                    @if (setting('social_whatsapp'))
-                    {{ __('db.or') }} <a href="{{ whatsapp_link() }}">{{ setting('social_whatsapp') }}</a>.
+                    @if (setting('social_whatsapp') || setting('site_phone'))
+                    {{ __('db.or') }} <a href="{{ whatsapp_link() }}">{{ setting('social_whatsapp') ?: setting('site_phone') }}</a>.
                     @endif
                 </p>
 

@@ -43,9 +43,11 @@
                                 {{ __('db.Need Help?') }}
                             </p>
 
+                            @if (setting('site_phone') || setting('site_landline'))
                             <p style="margin:10px 0;">
-                                📞 +92 334 6145566
+                                📞 {{ setting('site_phone') ?: setting('site_landline') }}
                             </p>
+                            @endif
 
                             <p style="margin:0;">
                                 🌐 www.sallaamti.com
