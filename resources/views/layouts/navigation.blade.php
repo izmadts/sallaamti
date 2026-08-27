@@ -87,7 +87,7 @@
  <x-dropdown-link :href="route('nikah.interests')">💌 {{ __('db.My Interests') }}</x-dropdown-link>
  <x-dropdown-link :href="route('nikah.saved')">★ {{ __('db.Saved Profiles') }}</x-dropdown-link>
  <x-dropdown-link :href="route('nikah.blocked')">🚫 {{ __('db.Blocked Profiles') }}</x-dropdown-link>
- <x-dropdown-link :href="route('nikah.packages')">💳 {{ __('db.Matchmaking Packages') }}</x-dropdown-link>
+ <x-dropdown-link :href="route('nikah.packages')">💳 {{ __('db.Nikah Counseling Packages') }}</x-dropdown-link>
  </x-slot>
  </x-dropdown>
  @endif
@@ -143,7 +143,7 @@
  @role('matchmaker')
  <x-nav-link :href="route('dashboard.matchmaker')" :active="request()->routeIs('dashboard.matchmaker') || request()->routeIs('matchmaker.*')"
  class="text-white hover:bg-teal-600 px-3 py-2 rounded-md text-sm">
- 💍 {{ __('db.Matchmaker Dashboard') }}
+ 💍 {{ __('db.Nikah Counselor Dashboard') }}
  </x-nav-link>
  @endrole
 
@@ -211,7 +211,7 @@
  @method('patch')
  <p class="text-xs font-semibold text-gray-500 uppercase tracking-wide">{{ __('db.Show in my menu') }}</p>
  <label class="flex items-center gap-2 text-sm text-gray-700 cursor-pointer"
- title="{{ __('db.Turn this on and Nikah matchmaking shows in your menu. Turn it off and it stays hidden until you switch it back on — nothing is deleted either way.') }}">
+ title="{{ __('db.Turn this on and Nikah counseling shows in your menu. Turn it off and it stays hidden until you switch it back on — nothing is deleted either way.') }}">
  <input type="checkbox" name="nikah_module_enabled" value="1" {{ Auth::user()->nikah_module_enabled ? 'checked' : '' }} class="rounded border-gray-300 text-teal-600 focus:ring-teal-500">
  💍 {{ __('db.Nikah') }}
  </label>
@@ -418,7 +418,7 @@
  Match Maker Desk, not duplicate/broken links to what's already in its
  own sidebar. --}}
  @role('matchmaker')
- <x-responsive-nav-link :href="route('dashboard.matchmaker')" class="text-white">💍 {{ __('db.Matchmaker Dashboard') }}</x-responsive-nav-link>
+ <x-responsive-nav-link :href="route('dashboard.matchmaker')" class="text-white">💍 {{ __('db.Nikah Counselor Dashboard') }}</x-responsive-nav-link>
  @endrole
 
  @hasanyrole(['manager', 'blogger'])

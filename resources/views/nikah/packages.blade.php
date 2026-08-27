@@ -1,10 +1,10 @@
-<x-guest-layout title="Nikah Matchmaking Packages — Sallaamti" description="Compare Sallaamti's Nikah matchmaking packages, from self-service verification to fully dedicated personal matchmaking.">
+<x-guest-layout title="Nikah Counseling Packages — Sallaamti" description="Compare Sallaamti's Nikah counseling packages, from self-service verification to fully dedicated personal Nikah counseling.">
 
     <div class="py-8 sm:py-12 bg-cream">
         <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
 
             <div class="text-center mb-6 sm:mb-10">
-                <h1 class="text-2xl sm:text-3xl font-bold text-gray-800">{{ __('db.Nikah Matchmaking Packages') }}</h1>
+                <h1 class="text-2xl sm:text-3xl font-bold text-gray-800">{{ __('db.Nikah Counseling Packages') }}</h1>
                 <p class="text-sm sm:text-base text-gray-500 mt-2 max-w-2xl mx-auto">{{ __('db.Whether you want to manage your own search or have a dedicated consultant do the work for you — choose the level of support that fits you.') }}</p>
             </div>
 

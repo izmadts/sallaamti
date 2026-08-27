@@ -1,5 +1,5 @@
 {{-- resources/views/privacy-policy.blade.php --}}
-<x-guest-layout :title="__('db.Privacy Policy')" :description="__('db.How Sallaamti collects, uses, and protects your personal information across our Quran learning, Digital Skills, Nikah matchmaking, family counseling, volunteering, and donation services.')">
+<x-guest-layout :title="__('db.Privacy Policy')" :description="__('db.How Sallaamti collects, uses, and protects your personal information across our Quran learning, Digital Skills, Nikah counseling, family counseling, volunteering, and donation services.')">
     @section('title', __('db.Privacy Policy — Sallaamti'))
     @section('description', __('db.How Sallaamti collects, uses, and protects your personal information.'))
     @section('canonical', url('/privacy-policy'))

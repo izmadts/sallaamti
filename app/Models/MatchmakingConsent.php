@@ -11,7 +11,7 @@ class MatchmakingConsent extends Model
     // sets revoked_at rather than deleting the row, so the fact that
     // consent WAS once given (and later withdrawn) stays on the record.
     public const TYPES = [
-        'matchmaking_participation' => 'Matchmaking Participation — agrees to be shown prospective matches and have their own profile shared with candidates under review',
+        'matchmaking_participation' => 'Nikah Counseling Participation — agrees to be shown prospective matches and have their own profile shared with candidates under review',
         'contact_sharing' => 'Contact Sharing — agrees their contact details may be shared once a mutual match is confirmed',
         'photo_sharing' => 'Photo Sharing — agrees their photo may be shared with prospective matches',
     ];

@@ -6,7 +6,7 @@
     @php
         $tabs = collect([
             ['key' => 'member', 'label' => '👤 Member', 'show' => true],
-            ['key' => 'matchmaker', 'label' => '💍 Matchmaker', 'show' => $showMatchmaker],
+            ['key' => 'matchmaker', 'label' => '💍 Nikah Counselor', 'show' => $showMatchmaker],
             ['key' => 'teacher', 'label' => '🎓 Teacher', 'show' => $showTeacher],
             ['key' => 'counselor', 'label' => '🤝 Counselor', 'show' => $showCounselor],
             ['key' => 'content', 'label' => '📝 Content Manager', 'show' => $showContentManager],

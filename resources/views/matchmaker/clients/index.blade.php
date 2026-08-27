@@ -1,7 +1,7 @@
 <x-matchmaker-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">{{ __('db.My Clients') }}</h2>
-        <p class="text-sm text-gray-500">{{ $canManageTeam ? __('db.Everyone across the team — filter by matchmaker below.') : __('db.Everyone currently assigned to you.') }}</p>
+        <p class="text-sm text-gray-500">{{ $canManageTeam ? __('db.Everyone across the team — filter by Nikah Counselor below.') : __('db.Everyone currently assigned to you.') }}</p>
     </x-slot>
 
     <div class="max-w-6xl mx-auto space-y-6">
@@ -45,7 +45,7 @@
                 </div>
                 @if ($canManageTeam)
                 <div>
-                    <label class="text-xs font-semibold text-gray-500 block mb-1">{{ __('db.Matchmaker') }}</label>
+                    <label class="text-xs font-semibold text-gray-500 block mb-1">{{ __('db.Nikah Counselor') }}</label>
                     <select name="assigned_to" class="border-gray-300 rounded-lg text-sm">
                         <option value="">{{ __('db.Everyone') }}</option>
                         @foreach ($matchmakers as $mm)
@@ -75,7 +75,7 @@
                             <th class="px-4 py-3">{{ __('db.Follow-up') }}</th>
                             <th class="px-4 py-3">{{ __('db.Linked Profile') }}</th>
                             @if ($canManageTeam)
-                            <th class="px-4 py-3">{{ __('db.Matchmaker') }}</th>
+                            <th class="px-4 py-3">{{ __('db.Nikah Counselor') }}</th>
                             @endif
                             <th class="px-4 py-3"></th>
                         </tr>

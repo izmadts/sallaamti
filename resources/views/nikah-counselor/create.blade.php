@@ -251,7 +251,7 @@
                         <div class="space-y-3">
                             @foreach ([
                             ['🤲', __('db.Sadaqah Jariyah'), __('db.Help families find a halal spouse — a continuous reward, in this life and the next')],
-                            ['💰', __('db.Earn Commission'), __('db.Get paid for every verified profile and matchmaking service you help deliver')],
+                            ['💰', __('db.Earn Commission'), __('db.Get paid for every verified profile and Nikah counseling service you help deliver')],
                             ['📜', __('db.Official Certification'), __('db.A real Sallaamti Nikah Counselor ID, publicly verifiable — builds trust in your community')],
                             ['🌍', __('db.Build Your Standing'), __('db.Become the trusted representative for your area — respected work, not just a side hustle')],
                             ['📈', __('db.Grow With Us'), __('db.Certified counselors advance to Senior and Regional levels as they perform')],
@@ -272,8 +272,8 @@
                         <p class="text-xs text-gray-400 mb-4">{{ __('db.Commission-based — actual earnings depend on verified customer activity, service sales, and performance. Not a fixed salary.') }}</p>
                         <div class="space-y-2 text-sm">
                             <div class="flex justify-between border-b border-gray-100 pb-2"><span class="text-gray-600">{{ __('db.Verified Profile') }}</span><span class="font-semibold" style="color: #0d6b6b">{{ __('db.Commission per profile') }}</span></div>
-                            <div class="flex justify-between border-b border-gray-100 pb-2"><span class="text-gray-600">{{ __('db.Assisted Matchmaking') }}</span><span class="font-semibold" style="color: #0d6b6b">{{ __('db.% of package') }}</span></div>
-                            <div class="flex justify-between pb-1"><span class="text-gray-600">{{ __('db.Premium Matchmaking') }}</span><span class="font-semibold" style="color: #0d6b6b">{{ __('db.% of package') }}</span></div>
+                            <div class="flex justify-between border-b border-gray-100 pb-2"><span class="text-gray-600">{{ __('db.Assisted Nikah Counseling') }}</span><span class="font-semibold" style="color: #0d6b6b">{{ __('db.% of package') }}</span></div>
+                            <div class="flex justify-between pb-1"><span class="text-gray-600">{{ __('db.Premium Nikah Counseling') }}</span><span class="font-semibold" style="color: #0d6b6b">{{ __('db.% of package') }}</span></div>
                         </div>
                         <p class="text-xs text-gray-400 mt-4">{{ __("db.Exact rates are set by Sallaamti and shared during onboarding. Recognition bonuses exist for top performers — no MLM, ever: you're never paid for recruiting other counselors.") }}</p>
                     </div>

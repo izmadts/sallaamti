@@ -1,7 +1,7 @@
 <div x-show="lang === 'en'" x-cloak class="prose prose-sm max-w-none">
 
 <h3>Creating Your Account & Getting Started</h3>
-<p>You can register with email/password, Google, Facebook, TikTok, or a WhatsApp OTP (no email needed). During registration you pick which modules interest you — Nikah Matchmaking, Quran Learning, Digital Skills, Family Counseling — and land straight in that area. If you arrived from a shared link (e.g. someone's Nikah profile, a course page, a blog post) and had to log in or register first, you're sent right back to that exact page afterward.</p>
+<p>You can register with email/password, Google, Facebook, TikTok, or a WhatsApp OTP (no email needed). During registration you pick which modules interest you — Nikah Counseling, Quran Learning, Digital Skills, Family Counseling — and land straight in that area. If you arrived from a shared link (e.g. someone's Nikah profile, a course page, a blog post) and had to log in or register first, you're sent right back to that exact page afterward.</p>
 <p>Turn any module on or off anytime from <strong>Profile → Module Preferences</strong> — this only changes what shows in your navigation and dashboard, it never deletes anything you've already created there.</p>
 
 <h3>Dashboard</h3>
@@ -17,7 +17,7 @@
     <li><strong>Delete Account</strong>: permanently remove your account and data.</li>
 </ul>
 
-<h3>💍 Nikah Matchmaking</h3>
+<h3>💍 Nikah Counseling</h3>
 <p>Creating a profile is a 5-step guided wizard — you can save progress and finish later:</p>
 <ol>
     <li><strong>Basic Info</strong> — age, height, marital status, education, profession, city, country/state.</li>
@@ -28,7 +28,7 @@
 </ol>
 <ul>
     <li><strong>Verification is mandatory</strong> — your profile isn't visible to anyone until an admin verifies your CNIC and your one-time verification fee payment is confirmed (submit via JazzCash/Easypaisa/bank transfer + screenshot).</li>
-    <li><strong>Profile Visibility — four levels, your choice</strong>: <em>Anyone can find me</em> (shows in Browse and in Google search results); <em>Sallaamti members only</em> (shows in Browse, but not on Google); <em>Only my matchmaker can find me</em> (hidden from everyone browsing — a matchmaker assisting you can still find and suggest you); <em>Nobody can find me by searching</em> (fully hidden from all search/browse — only someone who already has your exact profile, like a matchmaker you've spoken to directly, can work with it). You can change this anytime from your profile's Edit page.</li>
+    <li><strong>Profile Visibility — four levels, your choice</strong>: <em>Anyone can find me</em> (shows in Browse and in Google search results); <em>Sallaamti members only</em> (shows in Browse, but not on Google); <em>Only my Nikah Counselor can find me</em> (hidden from everyone browsing — a Nikah Counselor assisting you can still find and suggest you); <em>Nobody can find me by searching</em> (fully hidden from all search/browse — only someone who already has your exact profile, like a Nikah Counselor you've spoken to directly, can work with it). You can change this anytime from your profile's Edit page.</li>
     <li><strong>Browse</strong> shows opposite-gender, verified, active profiles set to "Anyone can find me" or "Sallaamti members only" that match your filters. <strong>Saved Profiles</strong> lets you bookmark ones to revisit.</li>
     <li><strong>Interest</strong>: send interest to start things off; the other person can Accept or Decline. Once accepted, a guardian-to-guardian messaging thread opens up for the two families to talk directly and safely.</li>
     <li><strong>Safety</strong>: Block or Report any profile from their page, anytime. A blocked profile can never see or contact you again. You can also deactivate your own profile temporarily.</li>
@@ -94,7 +94,7 @@
 <div x-show="lang === 'ur'" x-cloak dir="rtl" class="prose prose-sm max-w-none prose-ur text-right">
 
 <h3>اکاؤنٹ بنانا اور شروعات</h3>
-<p>آپ ای میل/پاس ورڈ، گوگل، فیس بک، ٹک ٹاک، یا واٹس ایپ OTP (بغیر ای میل کے) کے ذریعے رجسٹر ہو سکتے ہیں۔ رجسٹریشن کے دوران آپ منتخب کرتے ہیں کہ آپ کو کن ماڈیولز میں دلچسپی ہے — نکاح میچ میکنگ، قرآن لرننگ، ڈیجیٹل اسکلز، فیملی کاؤنسلنگ — اور سیدھا اسی حصے میں پہنچ جاتے ہیں۔ اگر آپ کسی شیئر کردہ لنک (مثلاً کسی کی نکاح پروفائل، کورس پیج، بلاگ پوسٹ) سے آئے تھے اور پہلے لاگ اِن یا رجسٹر کرنا پڑا، تو اس کے بعد آپ کو دوبارہ اُسی صفحے پر واپس بھیج دیا جاتا ہے۔</p>
+<p>آپ ای میل/پاس ورڈ، گوگل، فیس بک، ٹک ٹاک، یا واٹس ایپ OTP (بغیر ای میل کے) کے ذریعے رجسٹر ہو سکتے ہیں۔ رجسٹریشن کے دوران آپ منتخب کرتے ہیں کہ آپ کو کن ماڈیولز میں دلچسپی ہے — نکاح مشاورت، قرآن لرننگ، ڈیجیٹل اسکلز، فیملی کاؤنسلنگ — اور سیدھا اسی حصے میں پہنچ جاتے ہیں۔ اگر آپ کسی شیئر کردہ لنک (مثلاً کسی کی نکاح پروفائل، کورس پیج، بلاگ پوسٹ) سے آئے تھے اور پہلے لاگ اِن یا رجسٹر کرنا پڑا، تو اس کے بعد آپ کو دوبارہ اُسی صفحے پر واپس بھیج دیا جاتا ہے۔</p>
 <p><strong>پروفائل → ماڈیول ترجیحات</strong> سے آپ کسی بھی وقت کوئی بھی ماڈیول آن یا آف کر سکتے ہیں — اس سے صرف آپ کے نیویگیشن اور ڈیش بورڈ میں نظر آنے والی چیزیں بدلتی ہیں، آپ کا وہاں پہلے سے موجود ڈیٹا کبھی حذف نہیں ہوتا۔</p>
 
 <h3>ڈیش بورڈ</h3>
@@ -110,7 +110,7 @@
     <li><strong>اکاؤنٹ حذف کریں</strong>: اپنا اکاؤنٹ اور ڈیٹا مستقل طور پر حذف کریں۔</li>
 </ul>
 
-<h3>💍 نکاح میچ میکنگ</h3>
+<h3>💍 نکاح مشاورت</h3>
 <p>پروفائل بنانا ایک 5 مرحلوں پر مشتمل رہنمائی شدہ عمل ہے — آپ کام ادھورا چھوڑ کر بعد میں مکمل کر سکتے ہیں:</p>
 <ol>
     <li><strong>بنیادی معلومات</strong> — عمر، قد، ازدواجی حیثیت، تعلیم، پیشہ، شہر، ملک/صوبہ۔</li>
@@ -121,7 +121,7 @@
 </ol>
 <ul>
     <li><strong>تصدیق لازمی ہے</strong> — جب تک ایڈمن آپ کا شناختی کارڈ تصدیق نہ کرے اور آپ کی یک بارگی تصدیقی فیس کی ادائیگی کنفرم نہ ہو جائے، آپ کی پروفائل کسی کو نظر نہیں آتی (جیز کیش/ایزی پیسہ/بینک ٹرانسفر + اسکرین شاٹ کے ذریعے جمع کروائیں)۔</li>
-    <li><strong>پروفائل کی نمائش — چار سطحیں، آپ کی اپنی مرضی</strong>: <em>کوئی بھی مجھے تلاش کر سکتا ہے</em> (براؤز اور گوگل سرچ نتائج میں دکھائی دیتا ہے)؛ <em>صرف سلامتی ممبرز</em> (براؤز میں دکھائی دیتا ہے، لیکن گوگل پر نہیں)؛ <em>صرف میرا میچ میکر مجھے تلاش کر سکے</em> (براؤز کرنے والے سب سے پوشیدہ — مدد کرنے والا میچ میکر پھر بھی مجھے تلاش کر کے تجویز کر سکتا ہے)؛ <em>کوئی بھی مجھے تلاش کر کے نہیں پا سکتا</em> (تمام تلاش/براؤز سے مکمل پوشیدہ — صرف وہی شخص جس کے پاس پہلے سے میری اصل پروفائل ہو، جیسے وہ میچ میکر جس سے آپ نے براہ راست بات کی ہو، اس پر کام کر سکتا ہے)۔ آپ اسے اپنی پروفائل کے ترمیم صفحے سے کسی بھی وقت تبدیل کر سکتے ہیں۔</li>
+    <li><strong>پروفائل کی نمائش — چار سطحیں، آپ کی اپنی مرضی</strong>: <em>کوئی بھی مجھے تلاش کر سکتا ہے</em> (براؤز اور گوگل سرچ نتائج میں دکھائی دیتا ہے)؛ <em>صرف سلامتی ممبرز</em> (براؤز میں دکھائی دیتا ہے، لیکن گوگل پر نہیں)؛ <em>صرف میرا نکاح مشیر مجھے تلاش کر سکے</em> (براؤز کرنے والے سب سے پوشیدہ — مدد کرنے والا نکاح مشیر پھر بھی مجھے تلاش کر کے تجویز کر سکتا ہے)؛ <em>کوئی بھی مجھے تلاش کر کے نہیں پا سکتا</em> (تمام تلاش/براؤز سے مکمل پوشیدہ — صرف وہی شخص جس کے پاس پہلے سے میری اصل پروفائل ہو، جیسے وہ نکاح مشیر جس سے آپ نے براہ راست بات کی ہو، اس پر کام کر سکتا ہے)۔ آپ اسے اپنی پروفائل کے ترمیم صفحے سے کسی بھی وقت تبدیل کر سکتے ہیں۔</li>
     <li><strong>براؤز</strong> مخالف جنس، تصدیق شدہ، فعال پروفائلز دکھاتا ہے جو "کوئی بھی مجھے تلاش کر سکتا ہے" یا "صرف سلامتی ممبرز" پر سیٹ ہوں اور آپ کی فلٹرز سے میل کھاتی ہوں۔ <strong>محفوظ شدہ پروفائلز</strong> سے آپ بعد میں دوبارہ دیکھنے کے لیے پروفائلز محفوظ کر سکتے ہیں۔</li>
     <li><strong>دلچسپی</strong>: بات چیت شروع کرنے کے لیے دلچسپی بھیجیں؛ دوسرا فریق قبول یا مسترد کر سکتا ہے۔ قبول ہونے کے بعد، دونوں خاندانوں کے سرپرستوں کے درمیان براہ راست اور محفوظ گفتگو کے لیے ایک پیغام رسانی کا سلسلہ کھل جاتا ہے۔</li>
     <li><strong>حفاظت</strong>: کسی بھی وقت کسی بھی پروفائل کو اس کے صفحے سے بلاک یا رپورٹ کریں۔ بلاک شدہ پروفائل آپ کو کبھی نہ دیکھ سکتی ہے نہ رابطہ کر سکتی ہے۔ آپ اپنی پروفائل کو عارضی طور پر غیر فعال بھی کر سکتے ہیں۔</li>

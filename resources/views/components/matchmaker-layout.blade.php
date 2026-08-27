@@ -14,7 +14,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{{ config('app.name') }} — {{ __('db.Match Maker') }}</title>
+    <title>{{ config('app.name') }} — {{ __('db.Nikah Counselor') }}</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
     <style>
@@ -59,7 +59,7 @@
                 @endif
                 <div>
                     <p class="font-bold text-white leading-none">{{ __('db.Sallaamti') }}</p>
-                    <p class="text-pink-300 text-xs">{{ __('db.Match Maker Desk') }}</p>
+                    <p class="text-pink-300 text-xs">{{ __('db.Nikah Counselor Desk') }}</p>
                 </div>
             </div>
 
@@ -123,7 +123,7 @@
                 <a href="{{ route('guide.index') }}"
                     class="flex items-center gap-3 px-3 py-2 rounded-lg transition
                           {{ request()->routeIs('guide.*') ? 'bg-pink-700 text-white' : 'text-pink-100 hover:bg-pink-800' }}">
-                    <span class="text-base">📘</span> {{ __('db.Match Maker Guide') }}
+                    <span class="text-base">📘</span> {{ __('db.Nikah Counselor Guide') }}
                 </a>
             </nav>
 

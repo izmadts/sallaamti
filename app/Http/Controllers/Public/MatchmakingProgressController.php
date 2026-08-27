@@ -70,7 +70,7 @@ class MatchmakingProgressController extends Controller
             $verifyUrl = route('public.matchmaking.progress.verify', ['lead' => $lead->id, 't' => $lead->progress_link_token]);
 
             return view('public.matchmaking.progress', ['lead' => $lead, 'verifyUrl' => $verifyUrl, 'unlocked' => false])
-                ->with('error', 'That doesn\'t match — check the last 7 digits of the WhatsApp number your matchmaker has on file and try again.')
+                ->with('error', 'That doesn\'t match — check the last 7 digits of the WhatsApp number your Nikah Counselor has on file and try again.')
                 ->with('error_ur', 'یہ نمبر میل نہیں کھاتا — اپنے میچ میکر کے پاس موجود واٹس ایپ نمبر کے آخری 7 ہندسے چیک کر کے دوبارہ کوشش کریں۔');
         }
 
@@ -173,7 +173,7 @@ class MatchmakingProgressController extends Controller
             $consentRequest->update(['status' => 'declined', 'responded_at' => now()]);
             $label = explode(' — ', MatchmakingConsent::TYPES[$consentRequest->consent_type])[0];
             MatchmakingTimelineEvent::log($lead, $lead->nikahProfile, 'consent_declined', "{$label} consent was declined by the client.");
-            $statusMessage = 'Noted — your matchmaker has been informed.';
+            $statusMessage = 'Noted — your Nikah Counselor has been informed.';
         }
 
         MatchmakingLinkAccess::record($lead, 'consent_response', $request, $decision);
@@ -277,7 +277,7 @@ class MatchmakingProgressController extends Controller
         ]);
 
         $package = NikahPackage::active()->findOrFail($validated['nikah_package_id']);
-        abort_if($package->isOneTime(), 422, 'That package is not a matchmaking package.');
+        abort_if($package->isOneTime(), 422, 'That package is not a Nikah counseling package.');
 
         $screenshotPath = ImageOptimizer::store($request->file('payment_screenshot'), 'nikah/payments', 'private');
 
@@ -473,6 +473,6 @@ class MatchmakingProgressController extends Controller
 
     private function assertValidToken(Request $request, Lead $lead): void
     {
-        abort_unless($lead->progress_link_token && $request->query('t') === $lead->progress_link_token, 403, 'This link is no longer valid — ask your matchmaker for a fresh one. / یہ لنک اب کارآمد نہیں — اپنے میچ میکر سے نیا لنک طلب کریں۔');
+        abort_unless($lead->progress_link_token && $request->query('t') === $lead->progress_link_token, 403, 'This link is no longer valid — ask your Nikah Counselor for a fresh one. / یہ لنک اب کارآمد نہیں — اپنے نکاح مشیر سے نیا لنک طلب کریں۔');
     }
 }

@@ -1,5 +1,5 @@
 {{-- resources/views/terms-of-service.blade.php --}}
-<x-guest-layout :title="__('db.Terms of Service')" :description="__('db.The terms and conditions for using Sallaamti\'s Quran courses, Digital Skills training, Nikah matchmaking, and family counseling services.')">
+<x-guest-layout :title="__('db.Terms of Service')" :description="__('db.The terms and conditions for using Sallaamti\'s Quran courses, Digital Skills training, Nikah counseling, and family counseling services.')">
     @section('title', __('db.Terms of Service — Sallaamti'))
     @section('description', __('db.The terms and conditions for using Sallaamti.'))
     @section('canonical', url('/terms-of-service'))
@@ -22,7 +22,7 @@
             <div class="prose prose-teal max-w-none prose-headings:font-bold prose-a:text-[--teal]">
 
                 <p>
-                    {{ __('db.Welcome to Sallaamti. By creating an account or using any part of sallaamti.com — including Quran courses, live classes, Digital Skills courses, the Nikah matchmaking platform, family counseling, the Sallaamti Wall, or volunteering and donations — you agree to these Terms of Service. Please read them carefully.') }}
+                    {{ __('db.Welcome to Sallaamti. By creating an account or using any part of sallaamti.com — including Quran courses, live classes, Digital Skills courses, the Nikah counseling platform, family counseling, the Sallaamti Wall, or volunteering and donations — you agree to these Terms of Service. Please read them carefully.') }}
                 </p>
 
                 <h2>{{ __('db.1. Eligibility') }}</h2>

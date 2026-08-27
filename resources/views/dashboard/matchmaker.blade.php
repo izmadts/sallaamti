@@ -1,6 +1,6 @@
 <x-matchmaker-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">Match Maker Desk — {{ $user->name }}</h2>
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight">Nikah Counselor Desk — {{ $user->name }}</h2>
         <p class="text-sm text-gray-500">Your clients, proposals, and responses in one place.</p>
     </x-slot>
 
@@ -16,7 +16,7 @@
         <a href="{{ route('guide.index') }}" class="rounded-xl p-4 flex items-center gap-3 bg-white border border-gray-200 hover:border-teal-300 hover:shadow-sm transition group">
             <span class="text-2xl">📘</span>
             <div class="flex-1">
-                <p class="text-sm font-semibold text-gray-800 group-hover:text-teal-700">New here, or need a refresher? Read the full Match Maker Guide</p>
+                <p class="text-sm font-semibold text-gray-800 group-hover:text-teal-700">New here, or need a refresher? Read the full Nikah Counselor Guide</p>
                 <p class="text-xs text-gray-500">Your role, every step from adding a client to sending proposals, and the security rules to follow — in English and اردو.</p>
             </div>
             <span class="text-teal-600 text-sm font-semibold">Open →</span>

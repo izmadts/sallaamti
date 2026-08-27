@@ -14,12 +14,12 @@
         @method('patch')
 
         <label class="flex items-start gap-3 p-3 border border-gray-200 rounded-lg cursor-pointer hover:bg-gray-50"
-            title="{{ __('db.Turn this on and Nikah matchmaking shows in your menu. Turn it off and it stays hidden until you switch it back on — nothing is deleted either way.') }}">
+            title="{{ __('db.Turn this on and Nikah counseling shows in your menu. Turn it off and it stays hidden until you switch it back on — nothing is deleted either way.') }}">
             <input type="checkbox" name="nikah_module_enabled" value="1" {{ $user->nikah_module_enabled ? 'checked' : '' }}
                 class="mt-1 rounded border-gray-300 text-teal-600 focus:ring-teal-500">
             <span>
                 <span class="block font-medium text-gray-800">💍 {{ __('db.Nikah') }}</span>
-                <span class="block text-xs text-gray-500">{{ __('db.Matchmaking profiles, browsing, and interests.') }}</span>
+                <span class="block text-xs text-gray-500">{{ __('db.Nikah Counseling profiles, browsing, and interests.') }}</span>
             </span>
         </label>
 

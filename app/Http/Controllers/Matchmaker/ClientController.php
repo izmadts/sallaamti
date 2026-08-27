@@ -224,7 +224,7 @@ class ClientController extends Controller
         $lead->update($validated);
 
         if ($reassigned) {
-            MatchmakingTimelineEvent::log($lead, $lead->nikahProfile, 'reassigned', 'Client reassigned to ' . ($lead->assignedTo?->name ?? 'a different matchmaker') . '.');
+            MatchmakingTimelineEvent::log($lead, $lead->nikahProfile, 'reassigned', 'Client reassigned to ' . ($lead->assignedTo?->name ?? 'a different Nikah Counselor') . '.');
         }
 
         if ($statusChanged) {
@@ -266,7 +266,7 @@ class ClientController extends Controller
 
         $lead->update(['status' => 'registered']);
 
-        MatchmakingTimelineEvent::log($lead, null, 'registration_started', 'Matchmaker started assisted registration.');
+        MatchmakingTimelineEvent::log($lead, null, 'registration_started', 'Nikah Counselor started assisted registration.');
 
         return redirect()->route('matchmaker.nikah.profiles.create.step', 'account')
             ->with('status', "Continue registering {$lead->name} below — their details are pre-filled. Come back to this client afterward to link the finished profile.");
@@ -343,7 +343,7 @@ class ClientController extends Controller
             $requirement->items()->create($item);
         }
 
-        MatchmakingTimelineEvent::log($lead, $lead->nikahProfile, 'requirements_saved', 'Matchmaking requirements ' . ($requirement->wasRecentlyCreated ? 'created' : 'updated') . '.', [
+        MatchmakingTimelineEvent::log($lead, $lead->nikahProfile, 'requirements_saved', 'Nikah counseling requirements ' . ($requirement->wasRecentlyCreated ? 'created' : 'updated') . '.', [
             'item_count' => count($validated['items'] ?? []),
         ]);
 
@@ -439,7 +439,7 @@ class ClientController extends Controller
     {
         $this->authorizeClient($lead);
         abort_unless($lead->nikah_profile_id, 422, 'This client needs a linked Nikah profile before a proposal batch can be sent to them.');
-        abort_unless($lead->hasActiveConsent('matchmaking_participation'), 422, 'Record this client\'s consent to participate in matchmaking (see the Consent section on Overview) before sending them proposals.');
+        abort_unless($lead->hasActiveConsent('matchmaking_participation'), 422, 'Record this client\'s consent to participate in Nikah counseling (see the Consent section on Overview) before sending them proposals.');
 
         $batchNumber = ProposalBatch::where('lead_id', $lead->id)->max('batch_number') + 1;
 

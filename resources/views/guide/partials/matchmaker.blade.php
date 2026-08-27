@@ -1,7 +1,7 @@
 <div x-show="lang === 'en'" x-cloak class="prose prose-sm max-w-none">
 
 <h3>Your Role</h3>
-<p>As a Match Maker, you help connect families on Sallaamti — capturing leads from WhatsApp/Facebook/Instagram, helping them register, understanding what they're actually looking for, and putting together proposals for candidates who genuinely fit. Your own workspace (the <strong>Match Maker Desk</strong>) is separate from the general admin panel — Users, Settings, and Integrations stay off-limits, and everything you do is scoped to the clients assigned to you.</p>
+<p>As a Nikah Counselor, you help connect families on Sallaamti — capturing leads from WhatsApp/Facebook/Instagram, helping them register, understanding what they're actually looking for, and putting together proposals for candidates who genuinely fit. Your own workspace (the <strong>Nikah Counselor Desk</strong>) is separate from the general admin panel — Users, Settings, and Integrations stay off-limits, and everything you do is scoped to the clients assigned to you.</p>
 
 <h3>Privacy &amp; Security — Read This First</h3>
 <p>These aren't formalities — they're what makes clients trust the system enough to use it.</p>
@@ -16,7 +16,7 @@
 </ul>
 
 <h3>Your Dashboard, Explained</h3>
-<p>Logging in takes you straight to the Match Maker Desk — not the general member dashboard. Here's what each part means:</p>
+<p>Logging in takes you straight to the Nikah Counselor Desk — not the general member dashboard. Here's what each part means:</p>
 <ul>
     <li><strong>New Leads / Follow-ups Due / Registered Clients</strong> — where your assigned clients currently stand.</li>
     <li><strong>Active Proposal Batches</strong> — batches you've sent that are still waiting on a full response.</li>
@@ -37,11 +37,11 @@
 <p>In the <strong>Shortlist</strong> tab, search verified profiles (filter by gender/city/sect) and add promising candidates, with a short note on why each one fits. This is your own working list — nothing is sent to the client yet. If you've already saved Requirements (Step 2), check <strong>🎯 Suggested Matches</strong> at the top of this tab first — it ranks the active profile pool against what you saved and tags each one <strong>🟢 High</strong>, <strong>🟡 Medium</strong>, or <strong>⚪ Low</strong> match (a candidate is only shown if they satisfy every Must Have) so you're not searching blind.</p>
 
 <h3>Step 4 — Record Consent</h3>
-<p>Before you can send this client any proposals, get their <strong>Matchmaking Participation</strong> consent on file — found on the <strong>Overview</strong> tab. This isn't a formality: the system will block you from creating a proposal batch until an active consent is on file.</p>
+<p>Before you can send this client any proposals, get their <strong>Nikah Counseling Participation</strong> consent on file — found on the <strong>Overview</strong> tab. This isn't a formality: the system will block you from creating a proposal batch until an active consent is on file.</p>
 <p>Two ways to get it. Preferred: press <strong>🔗 Ask Them to Confirm via Link</strong> — this asks the client directly through their own secure link, and only counts once they've actually pressed "I Agree" themselves. You'll see it as "Waiting on them to confirm" until they respond. If that's not workable, use the second form below it to record consent you already got verbally, by phone, or in person — same as before. If a client ever asks to withdraw, press <strong>Revoke</strong> next to it — the record of the original consent (and the revocation) stays, nothing is deleted.</p>
 
 <h3>Step 5 — Choosing a Package</h3>
-<p>A client picks and pays for their own matchmaking package directly on their secure link — you don't assign it manually any more. They see the account details (JazzCash/EasyPaisa/bank transfer, with a one-tap copy button), upload their payment screenshot, and it lands in an admin review queue. You'll see the package appear on their Overview once admin confirms the payment — nothing to do on your end except let the client know their link now has a "Choose a Package" step waiting for them.</p>
+<p>A client picks and pays for their own Nikah counseling package directly on their secure link — you don't assign it manually any more. They see the account details (JazzCash/EasyPaisa/bank transfer, with a one-tap copy button), upload their payment screenshot, and it lands in an admin review queue. You'll see the package appear on their Overview once admin confirms the payment — nothing to do on your end except let the client know their link now has a "Choose a Package" step waiting for them.</p>
 
 <h3>Step 6 — Create &amp; Send a Proposal Batch</h3>
 <p>In the <strong>Proposal Batches</strong> tab, start a new batch (your client needs a linked Nikah profile, an active consent, and an active package first) and add up to <strong>5 candidates</strong> from your shortlist, each with an optional "why this match" note. When you're ready, press <strong>Mark as Sent</strong>.</p>
@@ -64,7 +64,7 @@
 <p>If a verification fee applies and your client is paying you directly (JazzCash or bank transfer), you're responsible for getting the complete document set — CNIC photos and the payment receipt — into the system together, so admin can verify everything in one pass. There are two ways to submit it, both landing in the exact same review queue as if the client had paid it themselves:</p>
 <p><strong>While registering them:</strong> the wizard's last step, <strong>Payment</strong>, lets you record the method, an optional reference number, and a photo of the receipt right there — it's optional, so skip it if they're not paying today.</p>
 <p><strong>Afterward, from their profile:</strong> open the Nikah profile (from its own page, or from the client's Overview tab if they're linked) and use the <strong>💳 Verification Fee Payment</strong> section to submit the receipt once you've collected it. This is only available for clients you registered yourself or are assigned to.</p>
-<p>Either way, this only submits the proof for admin to confirm — it does not mark the fee as paid on its own. You'll see a status note (submitted / confirmed / rejected) right there once admin has reviewed it. This is separate from the matchmaking package payment (Step 5 above) — the verification fee is Sallaamti's one-time "real profile" check, the package is what pays for the matchmaking service itself.</p>
+<p>Either way, this only submits the proof for admin to confirm — it does not mark the fee as paid on its own. You'll see a status note (submitted / confirmed / rejected) right there once admin has reviewed it. This is separate from the Nikah counseling package payment (Step 5 above) — the verification fee is Sallaamti's one-time "real profile" check, the package is what pays for the Nikah counseling service itself.</p>
 
 <h3>What the Client Actually Sees</h3>
 <p>Their one link shows <strong>exactly one thing at a time</strong> — whatever's next for them (confirm a consent, upload a document, choose a package, review a proposed match), never a long list of everything at once. Once nothing's waiting on them, it shows "You're All Caught Up" with a small "+N more things waiting" note if there's more queued behind whatever they just finished. Everything — their current status, active package, full proposal history, and complete activity log — is still there any time, tucked under a "Your Full Status &amp; History" section they can open, just not competing with whatever needs their attention right now.</p>
@@ -72,7 +72,7 @@
 <p>Give the client a heads-up on the verification step itself: every visit to their link asks for the <strong>last 7 digits of the WhatsApp number</strong> you have on file for them — this isn't a bug, it's intentional, and it happens every single time, even if they visited five minutes ago. If they ever ask you to "make it stop asking," explain that this is what keeps the page private if the link ends up somewhere it shouldn't.</p>
 
 <h3>Reading the Activity Timeline</h3>
-<p>Every meaningful action — a lead received, a status change, a profile linked, requirements saved, a candidate shortlisted, a batch sent, a client's response, a package payment submitted/confirmed, a link regenerated — is logged automatically to the <strong>Timeline</strong> tab. Use it to pick up a client's history at a glance, especially useful if you're covering for another matchmaker or reviewing an older case.</p>
+<p>Every meaningful action — a lead received, a status change, a profile linked, requirements saved, a candidate shortlisted, a batch sent, a client's response, a package payment submitted/confirmed, a link regenerated — is logged automatically to the <strong>Timeline</strong> tab. Use it to pick up a client's history at a glance, especially useful if you're covering for another Nikah Counselor or reviewing an older case.</p>
 
 <h3>Your Level &amp; Performance</h3>
 <p>Tap your avatar (or open <strong>My Performance</strong>) to see your Quality Score — built from your Verification Rate, Paid Conversion Rate, and Compliance, the three things Sallaamti can honestly measure today — plus a real progress breakdown toward your next level: exactly how many more verified profiles, how much quality score, and how many more days you need. Levels are promoted automatically once you clear all three for a level — nothing to request, nothing to ask a coordinator about. Higher levels earn a higher commission rate on every sale.</p>
@@ -80,15 +80,15 @@
 <h3>What's Outside Your Access</h3>
 <p>Approving/rejecting profiles, <strong>confirming</strong> a submitted verification or package payment (you can submit proof, but only admin confirms it), viewing CNIC images or a client's real phone number, and reviewing safety reports need the full Admin role. If you spot something that needs that level of action, flag it to an admin rather than trying to work around it.</p>
 
-<h3>Team Oversight (Senior Matchmakers only)</h3>
-<p>If an admin has given your account the extra "Leads / Match Maker Desk" permission, <strong>My Clients</strong> shows every matchmaker's clients, not just your own, with a Matchmaker filter to narrow it down. You can also open, edit, and reassign any client to a different matchmaker — useful for covering someone's leave or rebalancing workload. Every reassignment is logged to that client's Timeline. This is a narrow, specific permission — it does not grant CNIC/phone access, verification approval, or anything else that still needs the full Admin role.</p>
+<h3>Team Oversight (Senior Nikah Counselors only)</h3>
+<p>If an admin has given your account the extra "Leads / Nikah Counselor Desk" permission, <strong>My Clients</strong> shows every Nikah Counselor's clients, not just your own, with a Nikah Counselor filter to narrow it down. You can also open, edit, and reassign any client to a different Nikah Counselor — useful for covering someone's leave or rebalancing workload. Every reassignment is logged to that client's Timeline. This is a narrow, specific permission — it does not grant CNIC/phone access, verification approval, or anything else that still needs the full Admin role.</p>
 
 <h3>Quick Checklist</h3>
 <ul>
     <li>New lead comes in → <strong>Add Client</strong> with a phone number — their link generates itself, set a follow-up date.</li>
     <li>Understand what they want → fill in <strong>Requirements</strong>.</li>
     <li>Find candidates → check <strong>Suggested Matches</strong> (🟢/🟡/⚪ tags), then search &amp; build a <strong>Shortlist</strong>.</li>
-    <li>Record their <strong>Matchmaking Participation consent</strong> on Overview — required before sending proposals.</li>
+    <li>Record their <strong>Nikah Counseling Participation consent</strong> on Overview — required before sending proposals.</li>
     <li>Client chooses &amp; pays for their own <strong>package</strong> on their link — you just wait for admin to confirm it.</li>
     <li>Client has a registered profile, active consent, active package → start a <strong>Proposal Batch</strong>, add up to 5 candidates, <strong>Mark as Sent</strong> — no per-candidate link, they answer right on their own link.</li>
     <li><strong>Copy Link</strong> once from their Overview tab, send it however reaches them — that one link covers everything, forever.</li>
@@ -100,7 +100,7 @@
 <div x-show="lang === 'ur'" x-cloak dir="rtl" class="prose prose-sm max-w-none prose-ur text-right">
 
 <h3>آپ کا کردار</h3>
-<p>ایک میچ میکر کے طور پر، آپ سلامتی پر خاندانوں کو جوڑنے میں مدد کرتے ہیں — واٹس ایپ/فیس بک/انسٹاگرام سے لیڈز حاصل کرنا، ان کی رجسٹریشن میں مدد کرنا، یہ سمجھنا کہ وہ اصل میں کیا تلاش کر رہے ہیں، اور ایسے امیدواروں کے لیے تجاویز تیار کرنا جو واقعی موزوں ہوں۔ آپ کا اپنا ورک اسپیس (<strong>میچ میکر ڈیسک</strong>) عمومی ایڈمن پینل سے الگ ہے — یوزرز، سیٹنگز، اور انٹیگریشنز آپ کی رسائی سے باہر رہتے ہیں، اور آپ جو کچھ بھی کرتے ہیں وہ صرف آپ کو تفویض کردہ کلائنٹس تک محدود ہے۔</p>
+<p>ایک نکاح مشیر کے طور پر، آپ سلامتی پر خاندانوں کو جوڑنے میں مدد کرتے ہیں — واٹس ایپ/فیس بک/انسٹاگرام سے لیڈز حاصل کرنا، ان کی رجسٹریشن میں مدد کرنا، یہ سمجھنا کہ وہ اصل میں کیا تلاش کر رہے ہیں، اور ایسے امیدواروں کے لیے تجاویز تیار کرنا جو واقعی موزوں ہوں۔ آپ کا اپنا ورک اسپیس (<strong>نکاح مشیر ڈیسک</strong>) عمومی ایڈمن پینل سے الگ ہے — یوزرز، سیٹنگز، اور انٹیگریشنز آپ کی رسائی سے باہر رہتے ہیں، اور آپ جو کچھ بھی کرتے ہیں وہ صرف آپ کو تفویض کردہ کلائنٹس تک محدود ہے۔</p>
 
 <h3>رازداری اور سیکیورٹی — یہ پہلے پڑھیں</h3>
 <p>یہ محض رسمی باتیں نہیں ہیں — یہی وہ چیزیں ہیں جو کلائنٹس کو اس نظام پر اعتماد کرنے کے قابل بناتی ہیں۔</p>
@@ -115,7 +115,7 @@
 </ul>
 
 <h3>آپ کا ڈیش بورڈ سمجھیں</h3>
-<p>لاگ اِن کرنے پر آپ براہ راست میچ میکر ڈیسک پر پہنچتے ہیں — عام ممبر ڈیش بورڈ پر نہیں۔ ہر حصے کا مطلب یہ ہے:</p>
+<p>لاگ اِن کرنے پر آپ براہ راست نکاح مشیر ڈیسک پر پہنچتے ہیں — عام ممبر ڈیش بورڈ پر نہیں۔ ہر حصے کا مطلب یہ ہے:</p>
 <ul>
     <li><strong>نئی لیڈز / فالو اپ باقی / رجسٹرڈ کلائنٹس</strong> — آپ کو تفویض کردہ کلائنٹس اس وقت کہاں کھڑے ہیں۔</li>
     <li><strong>فعال تجویز بیچز</strong> — وہ بیچز جو آپ نے بھیجے ہیں اور جن کا مکمل جواب ابھی باقی ہے۔</li>
@@ -136,11 +136,11 @@
 <p><strong>شارٹ لسٹ</strong> ٹیب میں، تصدیق شدہ پروفائلز تلاش کریں (جنس/شہر/فرقے کے لحاظ سے فلٹر) اور امید افزا امیدواروں کو ایک مختصر نوٹ کے ساتھ شامل کریں کہ ہر ایک کیوں موزوں ہے۔ یہ آپ کی اپنی ورکنگ فہرست ہے — ابھی کچھ بھی کلائنٹ کو نہیں بھیجا جاتا۔ اگر آپ نے پہلے سے ضروریات محفوظ کر لی ہیں (مرحلہ 2)، تو پہلے اس ٹیب کے اوپر <strong>🎯 تجویز کردہ میچز</strong> دیکھیں — یہ فعال پروفائل پول کو آپ کی محفوظ کردہ ضروریات کے مقابلے میں درجہ بندی کر کے ہر ایک کو <strong>🟢 اعلیٰ</strong>، <strong>🟡 درمیانہ</strong>، یا <strong>⚪ کم</strong> میچ کا نشان دیتا ہے (کوئی امیدوار تب ہی دکھایا جاتا ہے جب وہ ہر لازمی شرط پوری کرے) تاکہ آپ اندھیرے میں تلاش نہ کریں۔</p>
 
 <h3>مرحلہ 4 — رضامندی لینا</h3>
-<p>کسی کلائنٹ کو تجویز بھیجنے سے پہلے، اس کی <strong>میچ میکنگ میں شرکت</strong> کی رضامندی ہونی چاہیے — یہ <strong>خلاصہ</strong> ٹیب پر ملے گی۔ جب تک یہ رضامندی نہ ہو، نظام آپ کو تجویز بھیجنے نہیں دے گا۔</p>
+<p>کسی کلائنٹ کو تجویز بھیجنے سے پہلے، اس کی <strong>نکاح مشاورت میں شرکت</strong> کی رضامندی ہونی چاہیے — یہ <strong>خلاصہ</strong> ٹیب پر ملے گی۔ جب تک یہ رضامندی نہ ہو، نظام آپ کو تجویز بھیجنے نہیں دے گا۔</p>
 <p>رضامندی لینے کے دو طریقے ہیں۔ سب سے اچھا طریقہ: <strong>🔗 انہیں لنک پر تصدیق کرنے کو کہیں</strong> بٹن دبائیں — نظام خود کلائنٹ سے ان کے اپنے محفوظ لنک پر پوچھے گا، اور رضامندی تبھی شمار ہوگی جب وہ خود "میں راضی ہوں" پر کلک کریں۔ جب تک وہ جواب نہیں دیتے، آپ کو "ان کا جواب آنے کا انتظار" نظر آئے گا۔ اگر یہ ممکن نہ ہو، تو نیچے دوسرے فارم سے وہ رضامندی درج کریں جو آپ کو پہلے ہی زبانی، فون پر، یا ملاقات میں مل چکی ہے — بالکل پہلے کی طرح۔ اگر کوئی کلائنٹ کبھی رضامندی واپس لینا چاہے، تو <strong>منسوخ کریں</strong> دبائیں — پرانا ریکارڈ ضائع نہیں ہوتا، بس منسوخ نظر آئے گا۔</p>
 
 <h3>مرحلہ 5 — پیکج کا انتخاب</h3>
-<p>کلائنٹ اب اپنا میچ میکنگ پیکج خود اپنے محفوظ لنک پر منتخب اور ادا کرتا ہے — اب آپ اسے دستی طور پر تفویض نہیں کرتے۔ وہ ادائیگی کی تفصیلات دیکھتے ہیں (جاز کیش/ایزی پیسہ/بینک ٹرانسفر، ایک کلک میں کاپی کرنے کے بٹن کے ساتھ)، اپنی ادائیگی کی رسید اپلوڈ کرتے ہیں، اور یہ ایڈمن کے جائزے کی قطار میں چلی جاتی ہے۔ ایڈمن کی تصدیق کے بعد آپ کو ان کے خلاصہ پر پیکج نظر آئے گا — آپ کی طرف سے کچھ کرنے کی ضرورت نہیں، بس کلائنٹ کو بتا دیں کہ ان کے لنک پر "پیکج منتخب کریں" کا مرحلہ ان کا منتظر ہے۔</p>
+<p>کلائنٹ اب اپنا نکاح مشاورت پیکج خود اپنے محفوظ لنک پر منتخب اور ادا کرتا ہے — اب آپ اسے دستی طور پر تفویض نہیں کرتے۔ وہ ادائیگی کی تفصیلات دیکھتے ہیں (جاز کیش/ایزی پیسہ/بینک ٹرانسفر، ایک کلک میں کاپی کرنے کے بٹن کے ساتھ)، اپنی ادائیگی کی رسید اپلوڈ کرتے ہیں، اور یہ ایڈمن کے جائزے کی قطار میں چلی جاتی ہے۔ ایڈمن کی تصدیق کے بعد آپ کو ان کے خلاصہ پر پیکج نظر آئے گا — آپ کی طرف سے کچھ کرنے کی ضرورت نہیں، بس کلائنٹ کو بتا دیں کہ ان کے لنک پر "پیکج منتخب کریں" کا مرحلہ ان کا منتظر ہے۔</p>
 
 <h3>مرحلہ 6 — تجویز بیچ بنائیں اور بھیجیں</h3>
 <p><strong>تجویز بیچز</strong> ٹیب میں، ایک نیا بیچ شروع کریں (آپ کے کلائنٹ کے پاس پہلے سے ایک منسلک نکاح پروفائل، فعال رضامندی، اور فعال پیکج ہونا چاہیے) اور اپنی شارٹ لسٹ سے <strong>5 امیدواروں تک</strong> شامل کریں، ہر ایک کے ساتھ اختیاری "یہ میچ کیوں" نوٹ۔ تیار ہونے پر <strong>بھیجا گیا نشان زد کریں</strong> دبائیں۔</p>
@@ -165,7 +165,7 @@
 <p>اگر تصدیقی فیس لاگو ہوتی ہے اور آپ کا کلائنٹ آپ کو براہ راست ادائیگی کر رہا ہے (جاز کیش یا بینک ٹرانسفر)، تو مکمل دستاویزات — شناختی کارڈ کی تصاویر اور ادائیگی کی رسید — ایک ساتھ نظام میں داخل کرنا آپ کی ذمہ داری ہے، تاکہ ایڈمن ایک ہی بار میں سب کچھ تصدیق کر سکے۔ اسے جمع کروانے کے دو طریقے ہیں، اور دونوں بالکل اسی جائزہ قطار میں جاتے ہیں جیسے کلائنٹ خود ادا کرتا تو جاتی۔</p>
 <p><strong>رجسٹریشن کے دوران:</strong> عمل کا آخری مرحلہ، <strong>ادائیگی</strong>، آپ کو طریقہ، اختیاری حوالہ نمبر، اور رسید کی تصویر وہیں درج کرنے دیتا ہے — یہ اختیاری ہے، اگر وہ آج ادائیگی نہیں کر رہے تو اسے چھوڑ دیں۔</p>
 <p><strong>بعد میں، پروفائل سے:</strong> نکاح پروفائل کھولیں (اس کے اپنے صفحے سے، یا کلائنٹ کے خلاصہ ٹیب سے اگر وہ منسلک ہیں) اور رسید جمع کروانے کے لیے <strong>💳 تصدیقی فیس کی ادائیگی</strong> سیکشن استعمال کریں۔ یہ صرف ان کلائنٹس کے لیے دستیاب ہے جنہیں آپ نے خود رجسٹر کیا ہو یا جو آپ کو تفویض کیے گئے ہوں۔</p>
-<p>دونوں صورتوں میں، یہ صرف ایڈمن کی تصدیق کے لیے ثبوت جمع کرواتا ہے — یہ خود بخود فیس کو ادا شدہ نشان زد نہیں کرتا۔ ایڈمن کے جائزے کے بعد آپ کو وہیں حیثیت کا نوٹ (جمع کروایا گیا / تصدیق شدہ / مسترد) نظر آئے گا۔ یہ میچ میکنگ پیکج کی ادائیگی (اوپر مرحلہ 5) سے الگ ہے — تصدیقی فیس سلامتی کی ایک بار کی "حقیقی پروفائل" جانچ ہے، جبکہ پیکج خود میچ میکنگ سروس کی قیمت ہے۔</p>
+<p>دونوں صورتوں میں، یہ صرف ایڈمن کی تصدیق کے لیے ثبوت جمع کرواتا ہے — یہ خود بخود فیس کو ادا شدہ نشان زد نہیں کرتا۔ ایڈمن کے جائزے کے بعد آپ کو وہیں حیثیت کا نوٹ (جمع کروایا گیا / تصدیق شدہ / مسترد) نظر آئے گا۔ یہ نکاح مشاورت پیکج کی ادائیگی (اوپر مرحلہ 5) سے الگ ہے — تصدیقی فیس سلامتی کی ایک بار کی "حقیقی پروفائل" جانچ ہے، جبکہ پیکج خود نکاح مشاورت سروس کی قیمت ہے۔</p>
 
 <h3>کلائنٹ کو اصل میں کیا نظر آتا ہے</h3>
 <p>ان کا ایک لنک ہمیشہ <strong>بالکل ایک ہی چیز</strong> دکھاتا ہے — جو بھی ان کے لیے اگلا مرحلہ ہو (کسی رضامندی کی تصدیق، دستاویز اپلوڈ، پیکج کا انتخاب، کسی تجویز کردہ رشتے کا جائزہ)، کبھی بھی ایک ساتھ لمبی فہرست نہیں۔ جب کچھ بھی ان کا منتظر نہ ہو تو "آپ کا سب کچھ مکمل ہے" دکھاتا ہے، اور اگر کچھ اور قطار میں ہو تو ایک چھوٹا سا "+N اور چیزیں باقی ہیں" نوٹ بھی۔ ان کی موجودہ حیثیت، فعال پیکج، مکمل تجویز کی تاریخ، اور مکمل سرگرمی کا ریکارڈ ہمیشہ موجود رہتا ہے — "آپ کی مکمل صورتحال اور تاریخ" کے نیچے، بس اس چیز کے ساتھ مقابلہ نہیں کرتا جس پر ابھی توجہ درکار ہے۔</p>
@@ -173,7 +173,7 @@
 <p>کلائنٹ کو تصدیق کے مرحلے سے پہلے آگاہ کر دیں: ہر وزٹ پر ان سے <strong>واٹس ایپ نمبر کے آخری 7 ہندسے</strong> مانگے جائیں گے جو آپ کے پاس ان کے لیے درج ہیں — یہ کوئی خرابی نہیں، جان بوجھ کر ایسا کیا گیا ہے، اور یہ ہر بار ہوتا ہے، چاہے انہوں نے پانچ منٹ پہلے ہی وزٹ کیا ہو۔ اگر وہ کبھی کہیں کہ "یہ بار بار کیوں پوچھتا ہے"، تو انہیں سمجھائیں کہ اگر لنک کہیں غلط جگہ پہنچ جائے تو یہی چیز صفحے کو نجی رکھتی ہے۔</p>
 
 <h3>سرگرمی کی ٹائم لائن پڑھنا</h3>
-<p>ہر اہم عمل — لیڈ موصول ہونا، حیثیت کی تبدیلی، پروفائل کا منسلک ہونا، ضروریات محفوظ ہونا، امیدوار کا شارٹ لسٹ ہونا، بیچ بھیجا جانا، کلائنٹ کا جواب، پیکج کی ادائیگی جمع/تصدیق ہونا، لنک کا دوبارہ بننا — خودکار طور پر <strong>ٹائم لائن</strong> ٹیب میں ریکارڈ ہوتا ہے۔ اسے کسی کلائنٹ کی تاریخ ایک نظر میں سمجھنے کے لیے استعمال کریں، خاص طور پر اگر آپ کسی دوسرے میچ میکر کی جگہ کام سنبھال رہے ہوں یا کسی پرانے کیس کا جائزہ لے رہے ہوں۔</p>
+<p>ہر اہم عمل — لیڈ موصول ہونا، حیثیت کی تبدیلی، پروفائل کا منسلک ہونا، ضروریات محفوظ ہونا، امیدوار کا شارٹ لسٹ ہونا، بیچ بھیجا جانا، کلائنٹ کا جواب، پیکج کی ادائیگی جمع/تصدیق ہونا، لنک کا دوبارہ بننا — خودکار طور پر <strong>ٹائم لائن</strong> ٹیب میں ریکارڈ ہوتا ہے۔ اسے کسی کلائنٹ کی تاریخ ایک نظر میں سمجھنے کے لیے استعمال کریں، خاص طور پر اگر آپ کسی دوسرے نکاح مشیر کی جگہ کام سنبھال رہے ہوں یا کسی پرانے کیس کا جائزہ لے رہے ہوں۔</p>
 
 <h3>آپ کی سطح اور کارکردگی</h3>
 <p>اپنی تصویر پر کلک کریں (یا <strong>میری کارکردگی</strong> کھولیں) تاکہ اپنا کوالٹی سکور دیکھ سکیں — جو آپ کی ویریفیکیشن ریٹ، ادا شدہ کنورژن ریٹ، اور کمپلائنس سے بنتا ہے، یہ تین چیزیں جو سلامتی آج ایمانداری سے ناپ سکتی ہے — ساتھ ہی اگلی سطح کی طرف اصل پیش رفت: آپ کو مزید کتنی تصدیق شدہ پروفائلز، کتنا کوالٹی سکور، اور کتنے مزید دن چاہئیں۔ کسی سطح کی تینوں شرائط پوری ہوتے ہی سطح خودکار طور پر بڑھ جاتی ہے — نہ کچھ درخواست کرنی ہے، نہ کسی کوآرڈینیٹر سے پوچھنا ہے۔ اونچی سطحیں ہر فروخت پر زیادہ کمیشن کماتی ہیں۔</p>
@@ -181,15 +181,15 @@
 <h3>آپ کی رسائی سے باہر کیا ہے</h3>
 <p>پروفائلز کی منظوری/مسترد کرنا، جمع کروائی گئی تصدیقی یا پیکج ادائیگی کی <strong>تصدیق</strong> کرنا (آپ ثبوت جمع کروا سکتے ہیں، لیکن تصدیق صرف ایڈمن کرتا ہے)، شناختی کارڈ کی تصاویر یا کلائنٹ کا اصل موبائل نمبر دیکھنا، اور حفاظتی رپورٹس کا جائزہ لینے کے لیے مکمل ایڈمن کردار درکار ہے۔ اگر آپ کو کچھ ایسا نظر آئے جس کے لیے اس سطح کی کارروائی درکار ہو، تو خود کوئی راستہ نکالنے کی بجائے ایڈمن کو مطلع کریں۔</p>
 
-<h3>ٹیم کی نگرانی (صرف سینیئر میچ میکرز)</h3>
-<p>اگر کسی ایڈمن نے آپ کے اکاؤنٹ کو اضافی "لیڈز / میچ میکر ڈیسک" اجازت دی ہے، تو <strong>میرے کلائنٹس</strong> ہر میچ میکر کے کلائنٹس دکھائے گا، صرف آپ کے اپنے نہیں، ساتھ ہی ایک میچ میکر فلٹر بھی ہوگا۔ آپ کسی بھی کلائنٹ کو کھول، ترمیم، اور دوسرے میچ میکر کو تفویض بھی کر سکتے ہیں — کسی کی چھٹی کے دوران کام سنبھالنے یا کام کا بوجھ متوازن کرنے کے لیے مفید۔ ہر تفویض کلائنٹ کی ٹائم لائن میں ریکارڈ ہوتی ہے۔ یہ ایک محدود، مخصوص اجازت ہے — یہ شناختی کارڈ/موبائل نمبر تک رسائی، تصدیق کی منظوری، یا کوئی اور چیز نہیں دیتی جس کے لیے اب بھی مکمل ایڈمن کردار درکار ہے۔</p>
+<h3>ٹیم کی نگرانی (صرف سینیئر نکاح مشیران)</h3>
+<p>اگر کسی ایڈمن نے آپ کے اکاؤنٹ کو اضافی "لیڈز / نکاح مشیر ڈیسک" اجازت دی ہے، تو <strong>میرے کلائنٹس</strong> ہر نکاح مشیر کے کلائنٹس دکھائے گا، صرف آپ کے اپنے نہیں، ساتھ ہی ایک نکاح مشیر فلٹر بھی ہوگا۔ آپ کسی بھی کلائنٹ کو کھول، ترمیم، اور دوسرے نکاح مشیر کو تفویض بھی کر سکتے ہیں — کسی کی چھٹی کے دوران کام سنبھالنے یا کام کا بوجھ متوازن کرنے کے لیے مفید۔ ہر تفویض کلائنٹ کی ٹائم لائن میں ریکارڈ ہوتی ہے۔ یہ ایک محدود، مخصوص اجازت ہے — یہ شناختی کارڈ/موبائل نمبر تک رسائی، تصدیق کی منظوری، یا کوئی اور چیز نہیں دیتی جس کے لیے اب بھی مکمل ایڈمن کردار درکار ہے۔</p>
 
 <h3>فوری چیک لسٹ</h3>
 <ul>
     <li>نئی لیڈ آئے → فون نمبر کے ساتھ <strong>کلائنٹ شامل کریں</strong> — لنک خود بن جائے گا، فالو اپ تاریخ مقرر کریں۔</li>
     <li>سمجھیں وہ کیا چاہتے ہیں → <strong>ضروریات</strong> پُر کریں۔</li>
     <li>امیدوار تلاش کریں → <strong>تجویز کردہ میچز</strong> (🟢/🟡/⚪ نشانات) دیکھیں، پھر تلاش کریں اور <strong>شارٹ لسٹ</strong> بنائیں۔</li>
-    <li>خلاصہ پر ان کی <strong>میچ میکنگ شرکت کی رضامندی</strong> درج کریں — تجاویز بھیجنے سے پہلے لازمی ہے۔</li>
+    <li>خلاصہ پر ان کی <strong>نکاح مشاورت شرکت کی رضامندی</strong> درج کریں — تجاویز بھیجنے سے پہلے لازمی ہے۔</li>
     <li>کلائنٹ اپنے لنک پر خود <strong>پیکج</strong> منتخب اور ادا کرے گا — آپ صرف ایڈمن کی تصدیق کا انتظار کریں۔</li>
     <li>کلائنٹ کی رجسٹرڈ پروفائل، فعال رضامندی، اور فعال پیکج موجود ہے → <strong>تجویز بیچ</strong> شروع کریں، 5 تک امیدوار شامل کریں، <strong>بھیجا گیا نشان زد کریں</strong> — الگ لنک نہیں، وہ سیدھا اپنے ہی لنک پر جواب دیں گے۔</li>
     <li>ان کے خلاصہ ٹیب سے ایک بار <strong>لنک کاپی کریں</strong>، جو بھی طریقہ ان تک پہنچے اس سے بھیجیں — وہی ایک لنک ہمیشہ کے لیے سب کچھ سنبھال لے گا۔</li>

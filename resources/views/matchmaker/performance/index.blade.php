@@ -39,7 +39,7 @@ $accent = $tierColors[$myTier];
                 ['👥', $stats['introduced'], __('db.Profiles Introduced')],
                 ['✅', $stats['verified'], __('db.Verified')],
                 ['💳', $stats['paid'], __('db.Paid & Confirmed')],
-                ['💼', $stats['matchmaking_clients'], __('db.Matchmaking Clients')],
+                ['💼', $stats['matchmaking_clients'], __('db.Nikah Counseling Clients')],
                 ['💌', $stats['proposals'], __('db.Proposals Sent')],
                 ['💞', $stats['mutual_interests'], __('db.Mutual Interests')],
                 ['🏆', $stats['recognition_bonuses'], __('db.Success Awards')],

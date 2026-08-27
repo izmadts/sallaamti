@@ -193,7 +193,7 @@
                 {{-- Consent — see App\Models\MatchmakingConsent. Matchmaking Participation gates sending proposal batches. --}}
                 <div class="mt-6 pt-6 border-t">
                     <h4 class="font-semibold text-gray-700 mb-1">✅ {{ __('db.Consent') }}</h4>
-                    <p class="text-xs text-gray-500 mb-3">{!! __("db.Best way: ask them to confirm it themselves through their secure link — the system asks them directly, no guesswork about what they actually agreed to. If that's not possible, you can still record consent you got verbally, by phone, or in person. An active :participation consent is required before you can send this client any proposals.", ['participation' => '<strong>' . __('db.Matchmaking Participation') . '</strong>']) !!}</p>
+                    <p class="text-xs text-gray-500 mb-3">{!! __("db.Best way: ask them to confirm it themselves through their secure link — the system asks them directly, no guesswork about what they actually agreed to. If that's not possible, you can still record consent you got verbally, by phone, or in person. An active :participation consent is required before you can send this client any proposals.", ['participation' => '<strong>' . __('db.Nikah Counseling Participation') . '</strong>']) !!}</p>
 
                     @if ($lead->consentRequests->where('status', 'pending')->isNotEmpty())
                     <div class="space-y-1.5 mb-3">
@@ -442,7 +442,7 @@
                 @unless ($lead->nikah_profile_id)
                 <p class="text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded-lg p-3">{{ __("db.Link or register this client's Nikah profile before you can send them a proposal batch.") }}</p>
                 @elseif (!$lead->hasActiveConsent('matchmaking_participation'))
-                <p class="text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded-lg p-3">{!! __("db.Record this client's :participation consent (see the Consent section on Overview) before you can send them a proposal batch.", ['participation' => '<strong>' . __('db.Matchmaking Participation') . '</strong>']) !!}</p>
+                <p class="text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded-lg p-3">{!! __("db.Record this client's :participation consent (see the Consent section on Overview) before you can send them a proposal batch.", ['participation' => '<strong>' . __('db.Nikah Counseling Participation') . '</strong>']) !!}</p>
                 @else
                 <form method="POST" action="{{ route('matchmaker.clients.batches.create', $lead) }}">
                     @csrf

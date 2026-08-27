@@ -1,4 +1,4 @@
-<x-guest-layout :title="__('db.Your Matchmaking Progress — Sallaamti')" :description="__('db.Check the status of your matchmaking journey with Sallaamti.')">
+<x-guest-layout :title="__('db.Your Nikah Counseling Progress — Sallaamti')" :description="__('db.Check the status of your Nikah counseling journey with Sallaamti.')">
 
     <div class="py-12 bg-cream">
         <div class="max-w-2xl mx-auto sm:px-6 lg:px-8 space-y-6">
@@ -7,10 +7,10 @@
 
             <div class="bg-white rounded-xl shadow-sm p-8 text-center">
                 <div class="w-16 h-16 mx-auto rounded-full flex items-center justify-center text-3xl mb-4" style="background: var(--teal-light);">🔒</div>
-                <h3 class="text-lg font-bold text-gray-800 mb-1">{{ __('db.Your Matchmaking Progress') }}</h3>
-                <p class="text-sm text-gray-500 mb-1" dir="rtl">آپ کی میچ میکنگ کی صورتحال</p>
-                <p class="text-sm text-gray-500 mb-1">{!! __('db.Enter the :last7 of the WhatsApp number your matchmaker has on file to view your status. You\'ll need to do this every time you visit this page — nothing is remembered on this device.', ['last7' => '<strong>' . __('db.last 7 digits') . '</strong>']) !!}</p>
-                <p class="text-sm text-gray-500 mb-6" dir="rtl">اپنی صورتحال دیکھنے کے لیے اپنے میچ میکر کے پاس موجود واٹس ایپ نمبر کے <strong>آخری 7 ہندسے</strong> درج کریں۔ ہر بار اس صفحے پر آنے پر یہ دوبارہ کرنا ہوگا — اس ڈیوائس پر کچھ بھی یاد نہیں رکھا جاتا۔</p>
+                <h3 class="text-lg font-bold text-gray-800 mb-1">{{ __('db.Your Nikah Counseling Progress') }}</h3>
+                <p class="text-sm text-gray-500 mb-1" dir="rtl">آپ کی نکاح مشاورت کی صورتحال</p>
+                <p class="text-sm text-gray-500 mb-1">{!! __('db.Enter the :last7 of the WhatsApp number your Nikah Counselor has on file to view your status. You\'ll need to do this every time you visit this page — nothing is remembered on this device.', ['last7' => '<strong>' . __('db.last 7 digits') . '</strong>']) !!}</p>
+                <p class="text-sm text-gray-500 mb-6" dir="rtl">اپنی صورتحال دیکھنے کے لیے اپنے نکاح مشیر کے پاس موجود واٹس ایپ نمبر کے <strong>آخری 7 ہندسے</strong> درج کریں۔ ہر بار اس صفحے پر آنے پر یہ دوبارہ کرنا ہوگا — اس ڈیوائس پر کچھ بھی یاد نہیں رکھا جاتا۔</p>
 
                 @if (($error ?? null) || $errors->any())
                 <div class="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm text-left space-y-1">
@@ -57,8 +57,8 @@
                 <div class="bg-white rounded-xl shadow-sm p-6">
                     <h4 class="font-semibold text-gray-700 mb-1">✅ {{ __('db.One Thing to Confirm') }}</h4>
                     <p class="text-xs text-gray-400 mb-1" dir="rtl">✅ ایک چیز کی تصدیق درکار ہے</p>
-                    <p class="text-xs text-gray-500 mb-4">{{ __('db.Your matchmaker is asking you to confirm the following. This goes straight to Sallaamti — nothing is assumed on your behalf.') }}</p>
-                    <p class="text-xs text-gray-500 mb-4" dir="rtl">آپ کا میچ میکر آپ سے مندرجہ ذیل کی تصدیق مانگ رہا ہے۔ یہ براہ راست سلامتی کو جاتا ہے — آپ کی طرف سے کچھ بھی از خود فرض نہیں کیا جاتا۔</p>
+                    <p class="text-xs text-gray-500 mb-4">{{ __('db.Your Nikah Counselor is asking you to confirm the following. This goes straight to Sallaamti — nothing is assumed on your behalf.') }}</p>
+                    <p class="text-xs text-gray-500 mb-4" dir="rtl">آپ کا نکاح مشیر آپ سے مندرجہ ذیل کی تصدیق مانگ رہا ہے۔ یہ براہ راست سلامتی کو جاتا ہے — آپ کی طرف سے کچھ بھی از خود فرض نہیں کیا جاتا۔</p>
 
                     <div class="border border-gray-100 rounded-lg p-4">
                         <p class="text-sm text-gray-700 mb-3">{{ \App\Models\MatchmakingConsent::TYPES[$req->consent_type] }}</p>
@@ -76,8 +76,8 @@
                 <div class="bg-white rounded-xl shadow-sm p-6">
                     <h4 class="font-semibold text-gray-700 mb-1">🪪 {{ __('db.Upload Your Verification Documents') }}</h4>
                     <p class="text-xs text-gray-400 mb-1" dir="rtl">🪪 اپنی تصدیقی دستاویزات اپلوڈ کریں</p>
-                    <p class="text-xs text-gray-500 mb-1">{{ __('db.Your matchmaker registered your profile but couldn\'t collect your CNIC/photo in person. Upload them here — this goes straight to Sallaamti for verification, never through your matchmaker\'s phone.') }}</p>
-                    <p class="text-xs text-gray-500 mb-4" dir="rtl">آپ کے میچ میکر نے آپ کی پروفائل رجسٹر کر دی ہے لیکن آپ کا شناختی کارڈ/تصویر ذاتی طور پر جمع نہیں کر سکے۔ یہاں اپلوڈ کریں — یہ براہ راست سلامتی کو تصدیق کے لیے جاتا ہے، کبھی آپ کے میچ میکر کے فون سے نہیں۔</p>
+                    <p class="text-xs text-gray-500 mb-1">{{ __('db.Your Nikah Counselor registered your profile but couldn\'t collect your CNIC/photo in person. Upload them here — this goes straight to Sallaamti for verification, never through your Nikah Counselor\'s phone.') }}</p>
+                    <p class="text-xs text-gray-500 mb-4" dir="rtl">آپ کے نکاح مشیر نے آپ کی پروفائل رجسٹر کر دی ہے لیکن آپ کا شناختی کارڈ/تصویر ذاتی طور پر جمع نہیں کر سکے۔ یہاں اپلوڈ کریں — یہ براہ راست سلامتی کو تصدیق کے لیے جاتا ہے، کبھی آپ کے نکاح مشیر کے فون سے نہیں۔</p>
 
                     @if ($errors->any())
                     <div class="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">
@@ -172,7 +172,7 @@
                         </div>
                         @endif
                         @if (!setting('jazzcash_number') && !setting('easypaisa_number') && !setting('bank_name'))
-                        <p class="text-red-600">{{ __('db.Payment details have not been configured yet — contact your matchmaker before sending anything.') }}</p>
+                        <p class="text-red-600">{{ __('db.Payment details have not been configured yet — contact your Nikah Counselor before sending anything.') }}</p>
                         @endif
                     </div>
 
@@ -292,7 +292,7 @@
 
                                 @if ($proposal->match_reasons)
                                 <div class="mt-3 pt-3 border-t">
-                                    <p class="text-xs font-semibold text-gray-500 mb-1">{{ __('db.Why your matchmaker suggested this') }} / آپ کے میچ میکر نے یہ کیوں تجویز کیا</p>
+                                    <p class="text-xs font-semibold text-gray-500 mb-1">{{ __('db.Why your Nikah Counselor suggested this') }} / آپ کے نکاح مشیر نے یہ کیوں تجویز کیا</p>
                                     <ul class="text-xs text-gray-600 space-y-0.5 list-disc list-inside">
                                         @foreach ($proposal->match_reasons as $reason)
                                         @if (trim($reason) !== '')
@@ -352,8 +352,8 @@
                 <div class="text-4xl mb-2">🎉</div>
                 <h4 class="font-semibold text-gray-700 mb-1">{{ __("db.You're All Caught Up") }}</h4>
                 <p class="text-xs text-gray-400 mb-3" dir="rtl">آپ کا سب کچھ مکمل ہے</p>
-                <p class="text-sm text-gray-600">{{ __("db.Nothing needs your attention right now — your matchmaker will reach out here as soon as there's something new.") }}</p>
-                <p class="text-sm text-gray-600 mt-1" dir="rtl">فی الحال آپ کی توجہ درکار کسی چیز کی ضرورت نہیں — جیسے ہی کوئی نئی بات ہوگی آپ کا میچ میکر یہیں رابطہ کرے گا۔</p>
+                <p class="text-sm text-gray-600">{{ __("db.Nothing needs your attention right now — your Nikah Counselor will reach out here as soon as there's something new.") }}</p>
+                <p class="text-sm text-gray-600 mt-1" dir="rtl">فی الحال آپ کی توجہ درکار کسی چیز کی ضرورت نہیں — جیسے ہی کوئی نئی بات ہوگی آپ کا نکاح مشیر یہیں رابطہ کرے گا۔</p>
             </div>
             @endif
 
@@ -422,7 +422,7 @@
                             </div>
                         </div>
                         @empty
-                        <p class="text-sm text-gray-400">{{ __("db.No proposals shared yet — your matchmaker will send some here once they've found a match.") }}</p>
+                        <p class="text-sm text-gray-400">{{ __("db.No proposals shared yet — your Nikah Counselor will send some here once they've found a match.") }}</p>
                         @endforelse
                     </div>
 

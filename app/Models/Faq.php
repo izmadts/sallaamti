@@ -27,7 +27,7 @@ class Faq extends Model
     // placement, so a typo'd module key can never silently orphan an FAQ.
     public const MODULES = [
         'general' => 'General / Getting Started',
-        'nikah' => 'Nikah Matchmaking',
+        'nikah' => 'Nikah Counseling',
         'quran' => 'Quran Courses',
         'quran_live' => 'Live Quran Classes',
         'skills' => 'Digital Skills',

@@ -53,7 +53,7 @@
                 <div class="grid sm:grid-cols-2 gap-4">
                     @foreach ([
                         ['🗂️', __('db.Help genuine, serious people register a real, verified Nikah profile with Sallaamti.'), 'مخلص اور سنجیدہ لوگوں کو سلامتی پر ایک حقیقی، تصدیق شدہ نکاح پروفائل بنانے میں مدد کریں۔'],
-                        ['💼', __('db.Guide clients through matchmaking packages and help them find suitable proposals.'), 'کلائنٹس کو میچ میکنگ پیکجز میں رہنمائی دیں اور مناسب رشتے تلاش کرنے میں مدد کریں۔'],
+                        ['💼', __('db.Guide clients through Nikah counseling packages and help them find suitable proposals.'), 'کلائنٹس کو نکاح مشاورت پیکجز میں رہنمائی دیں اور مناسب رشتے تلاش کرنے میں مدد کریں۔'],
                         ['🤝', __('db.Facilitate introductions — you suggest and connect, you never decide or guarantee an outcome for anyone.'), 'تعارف کرائیں — آپ تجویز اور رابطہ کراتے ہیں، کبھی کسی کے لیے فیصلہ یا نتیجے کی ضمانت نہیں دیتے۔'],
                         ['🌍', __('db.Represent Sallaamti in your community with trust — you are the face people rely on locally.'), 'اپنی کمیونٹی میں سلامتی کی نمائندگی اعتماد کے ساتھ کریں — لوگ مقامی طور پر آپ پر بھروسہ کرتے ہیں۔'],
                     ] as $duty)
@@ -80,7 +80,7 @@
                             [__("db.Always route every payment through Sallaamti's official channels only."), 'ہر ادائیگی ہمیشہ صرف سلامتی کے سرکاری ذرائع سے کروائیں۔'],
                             [__('db.Use the word "verified" precisely — it means Sallaamti\'s process was completed, nothing more.'), '"تصدیق شدہ" کا لفظ درست معنوں میں استعمال کریں — اس کا مطلب صرف یہ ہے کہ سلامتی کا عمل مکمل ہو چکا ہے۔'],
                             [__("db.Keep every client's information strictly confidential, always."), 'ہر کلائنٹ کی معلومات ہمیشہ مکمل طور پر خفیہ رکھیں۔'],
-                            [__('db.Prefer gender-matched matchmaking where it helps comfort and privacy.'), 'جہاں آسانی اور رازداری کے لیے مفید ہو، ہم جنس میچ میکنگ کو ترجیح دیں۔'],
+                            [__('db.Prefer gender-matched Nikah counseling where it helps comfort and privacy.'), 'جہاں آسانی اور رازداری کے لیے مفید ہو، ہم جنس نکاح مشاورت کو ترجیح دیں۔'],
                             [__("db.Represent Sallaamti's mission — help families, don't chase quick income."), 'سلامتی کے مشن کی نمائندگی کریں — خاندانوں کی مدد کریں، جلد بازی میں آمدنی کے پیچھے نہ بھاگیں۔'],
                         ] as $item)
                         <li class="flex items-start gap-2">

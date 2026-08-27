@@ -197,7 +197,7 @@
                                 <dd>{{ match($profile->visibility) {
                                     'public' => __('db.Public'),
                                     'members_only' => __('db.Members Only'),
-                                    'matchmaker_assisted' => __('db.Matchmaker-Assisted Only'),
+                                    'matchmaker_assisted' => __('db.Nikah Counselor-Assisted Only'),
                                     'confidential' => __('db.Confidential'),
                                     default => ucfirst($profile->visibility),
                                 } }}</dd>

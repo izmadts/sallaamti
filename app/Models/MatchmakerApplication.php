@@ -34,7 +34,7 @@ class MatchmakerApplication extends Model
         'identity_verified' => 'Identity Verified',
         'references_checked' => 'References Checked',
         'interviewed' => 'Interviewed',
-        'agreement_signed' => 'Matchmaker Agreement Signed',
+        'agreement_signed' => 'Nikah Counselor Agreement Signed',
         'nda_signed' => 'Privacy / NDA Signed',
         'training' => 'Training',
         'assessed' => 'Assessment Passed',

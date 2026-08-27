@@ -23,8 +23,8 @@ class NikahPackageSeeder extends Seeder
             'duration_days' => null,
             'proposal_limit' => null,
             'consultant_level' => 'Basic onboarding only',
-            'description' => 'For people who want to use the platform themselves — registration, profile creation, verification, and full access to normal Sallaamti Nikah features. Consultant involvement is limited to basic onboarding, not personalized matchmaking.',
-            'description_ur' => 'ان لوگوں کے لیے جو خود پلیٹ فارم استعمال کرنا چاہتے ہیں — رجسٹریشن، پروفائل بنانا، تصدیق، اور سلامتی نکاح کی تمام عام سہولیات تک مکمل رسائی۔ کنسلٹنٹ کی شمولیت صرف بنیادی رہنمائی تک محدود ہے، ذاتی میچ میکنگ تک نہیں۔',
+            'description' => 'For people who want to use the platform themselves — registration, profile creation, verification, and full access to normal Sallaamti Nikah features. Consultant involvement is limited to basic onboarding, not personalized Nikah counseling.',
+            'description_ur' => 'ان لوگوں کے لیے جو خود پلیٹ فارم استعمال کرنا چاہتے ہیں — رجسٹریشن، پروفائل بنانا، تصدیق، اور سلامتی نکاح کی تمام عام سہولیات تک مکمل رسائی۔ کنسلٹنٹ کی شمولیت صرف بنیادی رہنمائی تک محدود ہے، ذاتی نکاح مشاورت تک نہیں۔',
             'features' => [
                 'Registration & profile creation',
                 'Profile verification',
@@ -49,16 +49,16 @@ class NikahPackageSeeder extends Seeder
         ]);
 
         NikahPackage::updateOrCreate(['slug' => 'assisted-matchmaking'], [
-            'name' => 'Assisted Matchmaking',
-            'name_ur' => 'معاون میچ میکنگ',
-            'tagline' => 'Guided matchmaking with a consultant\'s help',
-            'tagline_ur' => 'کنسلٹنٹ کی مدد سے رہنمائی شدہ میچ میکنگ',
+            'name' => 'Assisted Nikah Counseling',
+            'name_ur' => 'معاون نکاح مشاورت',
+            'tagline' => 'Guided Nikah counseling with a consultant\'s help',
+            'tagline_ur' => 'کنسلٹنٹ کی مدد سے رہنمائی شدہ نکاح مشاورت',
             'price' => 5000,
             'duration_days' => 90,
             'proposal_limit' => 15,
             'consultant_level' => 'Assisted',
-            'description' => 'Our main matchmaking package — a consultant works with you on your requirements and actively searches on your behalf. Up to 5 suitable proposals are reviewed and shared per month (up to 15 over 3 months), based on database availability and compatibility. This is a cap on proposals shared, not a guarantee of matches.',
-            'description_ur' => 'ہماری اہم میچ میکنگ سروس — ایک کنسلٹنٹ آپ کی ضروریات پر آپ کے ساتھ کام کرتا ہے اور آپ کی جانب سے فعال طور پر تلاش کرتا ہے۔ ڈیٹا بیس کی دستیابی اور مطابقت کی بنیاد پر ماہانہ 5 تک موزوں پروپوزلز کا جائزہ لے کر شیئر کیے جاتے ہیں (3 ماہ میں 15 تک)۔ یہ شیئر کیے گئے پروپوزلز کی حد ہے، رشتے کی ضمانت نہیں۔',
+            'description' => 'Our main Nikah counseling package — a consultant works with you on your requirements and actively searches on your behalf. Up to 5 suitable proposals are reviewed and shared per month (up to 15 over 3 months), based on database availability and compatibility. This is a cap on proposals shared, not a guarantee of matches.',
+            'description_ur' => 'ہماری اہم نکاح مشاورت سروس — ایک کنسلٹنٹ آپ کی ضروریات پر آپ کے ساتھ کام کرتا ہے اور آپ کی جانب سے فعال طور پر تلاش کرتا ہے۔ ڈیٹا بیس کی دستیابی اور مطابقت کی بنیاد پر ماہانہ 5 تک موزوں پروپوزلز کا جائزہ لے کر شیئر کیے جاتے ہیں (3 ماہ میں 15 تک)۔ یہ شیئر کیے گئے پروپوزلز کی حد ہے، رشتے کی ضمانت نہیں۔',
             'features' => [
                 'Everything in Sallaamti Verified',
                 'Female/male consultant assistance as appropriate',
@@ -91,8 +91,8 @@ class NikahPackageSeeder extends Seeder
         ]);
 
         NikahPackage::updateOrCreate(['slug' => 'premium-personal-matchmaking'], [
-            'name' => 'Premium Personal Matchmaking',
-            'name_ur' => 'پریمیئم پرسنل میچ میکنگ',
+            'name' => 'Premium Personal Nikah Counseling',
+            'name_ur' => 'پریمیئم پرسنل نکاح مشاورت',
             'tagline' => '"I don\'t have time — you manage everything."',
             'tagline_ur' => '"میرے پاس وقت نہیں — آپ سب کچھ سنبھالیں۔"',
             'price' => 12000,
@@ -102,7 +102,7 @@ class NikahPackageSeeder extends Seeder
             'description' => 'A dedicated consultant manages your search end to end, from a detailed requirement interview to weekly progress updates. Up to 10 curated proposals are reviewed per month (up to 30 over 3 months), based on database availability and compatibility — a cap on proposals reviewed, not a guarantee of matches.',
             'description_ur' => 'ایک مخصوص کنسلٹنٹ تفصیلی ضروریات کے انٹرویو سے لے کر ہفتہ وار پیش رفت رپورٹس تک، آپ کی تلاش کا مکمل انتظام کرتا ہے۔ ڈیٹا بیس کی دستیابی اور مطابقت کی بنیاد پر ماہانہ 10 تک منتخب پروپوزلز کا جائزہ لیا جاتا ہے (3 ماہ میں 30 تک) — یہ جائزہ لیے گئے پروپوزلز کی حد ہے، رشتے کی ضمانت نہیں۔',
             'features' => [
-                'Everything in Assisted Matchmaking',
+                'Everything in Assisted Nikah Counseling',
                 'Dedicated personal consultant',
                 'Detailed requirement interview',
                 'Priority database search',
@@ -116,7 +116,7 @@ class NikahPackageSeeder extends Seeder
                 'Priority support',
             ],
             'features_ur' => [
-                'معاون میچ میکنگ کی تمام سہولیات',
+                'معاون نکاح مشاورت کی تمام سہولیات',
                 'مخصوص ذاتی کنسلٹنٹ',
                 'تفصیلی ضروریات کا انٹرویو',
                 'ترجیحی ڈیٹا بیس تلاش',
@@ -148,10 +148,10 @@ class NikahPackageSeeder extends Seeder
             'duration_days' => 90,
             'proposal_limit' => null,
             'consultant_level' => 'Dedicated senior consultant',
-            'description' => 'A fully bespoke matchmaking service for highly specific requirements, overseas Pakistani searches, and confidential profiles — extensive manual research by a senior consultant rather than a fixed proposal count. Held back from public launch until the database and track record justify it.',
-            'description_ur' => 'انتہائی مخصوص ضروریات، بیرونِ ملک پاکستانیوں کی تلاش، اور خفیہ پروفائلز کے لیے ایک مکمل طور پر حسبِ ضرورت میچ میکنگ سروس — ایک مقررہ پروپوزل تعداد کے بجائے سینئر کنسلٹنٹ کی جانب سے وسیع دستی تحقیق۔ ڈیٹا بیس اور کامیابی کی شرح اس کے قابل ہونے تک عوامی لانچ کے لیے روکا گیا ہے۔',
+            'description' => 'A fully bespoke Nikah counseling service for highly specific requirements, overseas Pakistani searches, and confidential profiles — extensive manual research by a senior consultant rather than a fixed proposal count. Held back from public launch until the database and track record justify it.',
+            'description_ur' => 'انتہائی مخصوص ضروریات، بیرونِ ملک پاکستانیوں کی تلاش، اور خفیہ پروفائلز کے لیے ایک مکمل طور پر حسبِ ضرورت نکاح مشاورت سروس — ایک مقررہ پروپوزل تعداد کے بجائے سینئر کنسلٹنٹ کی جانب سے وسیع دستی تحقیق۔ ڈیٹا بیس اور کامیابی کی شرح اس کے قابل ہونے تک عوامی لانچ کے لیے روکا گیا ہے۔',
             'features' => [
-                'Everything in Premium Personal Matchmaking',
+                'Everything in Premium Personal Nikah Counseling',
                 'Dedicated senior consultant',
                 'Highly specific requirement handling',
                 'Overseas Pakistani candidate search',
@@ -162,7 +162,7 @@ class NikahPackageSeeder extends Seeder
                 'Personal consultation',
             ],
             'features_ur' => [
-                'پریمیئم پرسنل میچ میکنگ کی تمام سہولیات',
+                'پریمیئم پرسنل نکاح مشاورت کی تمام سہولیات',
                 'مخصوص سینئر کنسلٹنٹ',
                 'انتہائی مخصوص ضروریات کی ہینڈلنگ',
                 'بیرونِ ملک پاکستانی امیدواروں کی تلاش',
