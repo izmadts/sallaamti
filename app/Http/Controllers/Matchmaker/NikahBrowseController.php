@@ -180,7 +180,7 @@ class NikahBrowseController extends Controller
         $isCreator = $profile->created_by === auth()->id();
         $isAssignedViaLead = Lead::where('nikah_profile_id', $profile->id)->where('assigned_to', auth()->id())->exists();
 
-        abort_unless($isCreator || $isAssignedViaLead, 403, 'You can only act on behalf of clients you registered or are assigned to.');
+        abort_unless($isCreator || $isAssignedViaLead, 403, 'You can only act on behalf of clients you registered or are assigned to. If this profile should be yours, ask your admin to reassign the linked client to you.');
     }
 
     private function authorizePaymentSubmission(NikahProfile $profile): void

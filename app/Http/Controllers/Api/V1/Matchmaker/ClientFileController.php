@@ -18,7 +18,7 @@ class ClientFileController extends Controller
 {
     public function show(Lead $lead, string $type): StreamedResponse
     {
-        abort_unless(auth()->user()->hasRole('admin') || auth()->user()->can('leads.manage') || $lead->assigned_to === auth()->id(), 403, 'This client is assigned to another matchmaker.');
+        abort_unless(auth()->user()->hasRole('admin') || auth()->user()->can('leads.manage') || $lead->assigned_to === auth()->id(), 403, 'This client is assigned to another Nikah Counselor, so it is hidden from your account for privacy. If this client should be yours, ask your admin to reassign it to you.');
 
         $profile = $lead->nikahProfile;
         abort_unless($profile, 404);

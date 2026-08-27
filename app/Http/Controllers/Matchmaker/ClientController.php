@@ -579,6 +579,6 @@ class ClientController extends Controller
             return;
         }
 
-        abort_unless($lead->assigned_to === auth()->id(), 403, 'This client is assigned to another matchmaker.');
+        abort_unless($lead->assigned_to === auth()->id(), 403, 'This client is assigned to another Nikah Counselor, so it\'s hidden from your account for privacy. If this client should be yours, ask your admin to reassign it to you — or, if you need to see every counselor\'s clients, ask admin to grant your account the "leads.manage" permission.');
     }
 }
