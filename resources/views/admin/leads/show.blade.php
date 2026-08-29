@@ -105,12 +105,19 @@
                             </div>
                             <div>
                                 <x-input-label for="assigned_to" value="Assigned To" />
+                                @if ($lockedToCreator)
+                                <div class="border border-gray-200 bg-gray-50 rounded-md shadow-sm w-full mt-1 px-3 py-2 text-sm text-gray-700">
+                                    {{ $lead->createdBy?->name ?? 'Unknown' }}
+                                </div>
+                                <p class="text-xs text-gray-400 mt-1">Locked — this lead was created by this counselor, so it can't be reassigned to anyone else.</p>
+                                @else
                                 <select id="assigned_to" name="assigned_to" class="border-gray-300 rounded-md shadow-sm w-full mt-1">
                                     <option value="">Unassigned</option>
                                     @foreach ($matchmakers as $mm)
                                     <option value="{{ $mm->id }}" {{ $lead->assigned_to === $mm->id ? 'selected' : '' }}>{{ $mm->name }}</option>
                                     @endforeach
                                 </select>
+                                @endif
                             </div>
                         </div>
                         <div>

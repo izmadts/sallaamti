@@ -164,7 +164,9 @@ class LeadController extends Controller
             $searchResults = $query->orderByDesc('created_at')->limit(20)->get();
         }
 
-        return view('admin.leads.show', compact('lead', 'matchmakers', 'packages', 'searchResults'));
+        $lockedToCreator = $this->isLockedToCreator($lead);
+
+        return view('admin.leads.show', compact('lead', 'matchmakers', 'packages', 'searchResults', 'lockedToCreator'));
     }
 
     public function update(Request $request, Lead $lead)
@@ -207,6 +209,21 @@ class LeadController extends Controller
             $validated['package_expires_at'] = null;
         }
 
+        // A lead a plain counselor created for themselves stays theirs —
+        // admin can still reassign anything else, but not pull a
+        // self-created lead away from the counselor already working it
+        // (that's what was leaving counselors 403'd on their own leads).
+        // Silently keeping the field locked wouldn't be visible if admin
+        // did try to change it, so this overrides the value AND swaps in
+        // an explicit status message instead of the normal "Lead updated."
+        $lockedToCreator = $this->isLockedToCreator($lead);
+        $attemptedReassign = $lockedToCreator
+            && (string) ($validated['assigned_to'] ?? '') !== (string) $lead->created_by;
+
+        if ($lockedToCreator) {
+            $validated['assigned_to'] = $lead->created_by;
+        }
+
         $statusChanged = $lead->status !== $validated['status'];
         $lead->update($validated);
 
@@ -222,7 +239,23 @@ class LeadController extends Controller
             MatchmakingTimelineEvent::log($lead, $lead->nikahProfile, 'status_changed', 'Status changed to ' . ucfirst(str_replace('_', ' ', $validated['status'])) . '.');
         }
 
+        if ($attemptedReassign) {
+            return back()->with('status', 'Lead updated. Note: this lead was created by ' . ($lead->createdBy?->name ?? 'a Nikah Counselor') . ' — it stays assigned to them and can\'t be reassigned to someone else.');
+        }
+
         return back()->with('status', 'Lead updated.');
+    }
+
+    // A plain counselor's own lead is permanently theirs — reassigning it
+    // away is what left them 403'd trying to open a lead they created
+    // themselves. A lead created by an admin or a leads.manage holder
+    // (a "Senior Matchmaker") stays freely reassignable, since neither of
+    // those is a specific counselor losing "their" client.
+    private function isLockedToCreator(Lead $lead): bool
+    {
+        $creator = $lead->createdBy;
+
+        return $creator !== null && !$creator->hasRole('admin') && !$creator->can('leads.manage');
     }
 
     // Hands off to the exact same walk-in wizard NikahProfileWizardController

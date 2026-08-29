@@ -184,8 +184,9 @@ class ClientController extends Controller
 
         $canManageTeam = $this->canManageTeam();
         $matchmakers = $canManageTeam ? User::role(['admin', 'matchmaker'])->orderBy('name')->get() : collect();
+        $lockedToCreator = $this->isLockedToCreator($lead);
 
-        return view('matchmaker.clients.show', compact('lead', 'searchResults', 'suggestions', 'canManageTeam', 'matchmakers'));
+        return view('matchmaker.clients.show', compact('lead', 'searchResults', 'suggestions', 'canManageTeam', 'matchmakers', 'lockedToCreator'));
     }
 
     public function update(Request $request, Lead $lead)
@@ -210,7 +211,19 @@ class ClientController extends Controller
             unset($validated['assigned_to']);
         }
 
-        $reassigned = isset($validated['assigned_to']) && $validated['assigned_to'] != $lead->assigned_to;
+        // Same lock as Admin\LeadController: a plain counselor's own lead
+        // stays theirs, even for a Senior Matchmaker (leads.manage) editing
+        // it from this team-wide view.
+        $lockedToCreator = $this->isLockedToCreator($lead);
+        $attemptedReassign = $lockedToCreator
+            && isset($validated['assigned_to'])
+            && (string) $validated['assigned_to'] !== (string) $lead->created_by;
+
+        if ($lockedToCreator) {
+            $validated['assigned_to'] = $lead->created_by;
+        }
+
+        $reassigned = !$lockedToCreator && isset($validated['assigned_to']) && $validated['assigned_to'] != $lead->assigned_to;
         $statusChanged = $lead->status !== $validated['status'];
         $hadNoLinkYet = !$lead->progress_link_token;
         $lead->update($validated);
@@ -229,6 +242,10 @@ class ClientController extends Controller
         if ($hadNoLinkYet && $lead->phone) {
             $lead->update(['progress_link_token' => Str::random(24)]);
             MatchmakingTimelineEvent::log($lead, $lead->nikahProfile, 'progress_link_generated', 'Progress page link was generated.');
+        }
+
+        if ($attemptedReassign) {
+            return back()->with('status', 'Client updated. Note: this client was created by ' . ($lead->createdBy?->name ?? 'a Nikah Counselor') . ' — it stays assigned to them and can\'t be reassigned to someone else.');
         }
 
         return back()->with('status', 'Client updated.');
@@ -571,5 +588,17 @@ class ClientController extends Controller
         }
 
         abort_unless($lead->assigned_to === auth()->id(), 403, 'This client is assigned to another Nikah Counselor, so it\'s hidden from your account for privacy. If this client should be yours, ask your admin to reassign it to you — or, if you need to see every counselor\'s clients, ask admin to grant your account the "leads.manage" permission.');
+    }
+
+    // A plain counselor's own client is permanently theirs — reassigning it
+    // away is what left them 403'd trying to open a client they created
+    // themselves. A client created by an admin or a leads.manage holder (a
+    // "Senior Matchmaker") stays freely reassignable, since neither of
+    // those is a specific counselor losing "their" client.
+    private function isLockedToCreator(Lead $lead): bool
+    {
+        $creator = $lead->createdBy;
+
+        return $creator !== null && !$creator->hasRole('admin') && !$creator->can('leads.manage');
     }
 }
