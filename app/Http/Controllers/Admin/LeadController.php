@@ -11,7 +11,6 @@ use App\Models\MatchmakingTimelineEvent;
 use App\Models\NikahPackage;
 use App\Models\NikahProfile;
 use App\Models\User;
-use App\Services\PushNotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
@@ -281,12 +280,11 @@ class LeadController extends Controller
             return;
         }
 
-        app(PushNotificationService::class)->sendToUser(
-            $counselor,
-            'New client assigned',
-            $lead->name . ' has been assigned to you.',
-            ['type' => 'lead_assigned', 'lead_id' => (string) $lead->id]
-        );
+        try {
+            $counselor->notify(new \App\Notifications\MatchmakerLeadAssigned($lead));
+        } catch (\Throwable $e) {
+            \Log::error('MatchmakerLeadAssigned notification failed: ' . $e->getMessage());
+        }
     }
 
     // Hands off to the exact same walk-in wizard NikahProfileWizardController
