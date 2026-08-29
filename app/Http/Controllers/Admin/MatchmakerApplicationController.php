@@ -223,6 +223,12 @@ class MatchmakerApplicationController extends Controller
             $application->update(['user_id' => $user->id]);
         }
 
+        // Same both-directions-if-empty sync ProfileController uses for city —
+        // gender is collected on the application but lives only on User.
+        if (!$user->gender && $application->gender) {
+            $user->update(['gender' => $application->gender]);
+        }
+
         if (!$user->hasRole('matchmaker')) {
             $user->assignRole('matchmaker');
         }
