@@ -1,4 +1,4 @@
-<x-app-layout>
+<x-matchmaker-layout>
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800 leading-tight">{{ __('db.My Contact Requests') }}</h2>
     </x-slot>
@@ -57,4 +57,4 @@
             {{ $requests->links() }}
         </div>
     </div>
-</x-app-layout>
+</x-matchmaker-layout>
