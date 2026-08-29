@@ -112,6 +112,7 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
             Route::get('referral', [MatchmakerApi\ReferralController::class, 'show'])->name('referral.show');
             Route::get('application', [MatchmakerApi\ApplicationController::class, 'show'])->name('application.show');
             Route::get('meta/enums', [MatchmakerApi\MetaController::class, 'enums'])->name('meta.enums');
+            Route::get('meta/payment-accounts', [MatchmakerApi\MetaController::class, 'paymentAccounts'])->name('meta.payment-accounts');
 
             Route::post('device-token', [MatchmakerApi\DeviceTokenController::class, 'store'])->name('device-token.store');
             Route::delete('device-token', [MatchmakerApi\DeviceTokenController::class, 'destroy'])->name('device-token.destroy');
@@ -120,6 +121,10 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
             Route::get('notifications/unread-count', [MatchmakerApi\NotificationController::class, 'unreadCount'])->name('notifications.unread-count');
             Route::post('notifications/{id}/read', [MatchmakerApi\NotificationController::class, 'markRead'])->name('notifications.read');
             Route::post('notifications/read-all', [MatchmakerApi\NotificationController::class, 'markAllRead'])->name('notifications.read-all');
+
+            Route::get('certificate', [MatchmakerApi\CertificateController::class, 'show'])->name('certificate.show');
+            Route::get('certificate/download', [MatchmakerApi\CertificateController::class, 'download'])->name('certificate.download');
+            Route::post('certificate/request-dispatch', [MatchmakerApi\CertificateController::class, 'requestDispatch'])->name('certificate.request-dispatch');
         });
     });
 });

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\V1\Matchmaker;
 
 use App\Http\Controllers\Controller;
 use App\Models\MatchmakingConsent;
+use App\Models\Setting;
 use Illuminate\Http\JsonResponse;
 
 // Every enumerable field in the app (consent type/method, lead status/source,
@@ -44,6 +45,26 @@ class MetaController extends Controller
                 'preferred' => 'Preferred',
                 'flexible' => 'Flexible',
             ],
+        ]);
+    }
+
+    // Same account details resources/views/nikah/payment.blade.php already
+    // shows a paying client — a counselor relaying these over WhatsApp/
+    // phone/in person to a client who's paying by JazzCash/EasyPaisa/bank
+    // transfer needs the exact same numbers, not a second hand-typed copy
+    // that can drift out of sync with what admin has actually configured
+    // in Settings. Authenticated (matchmaker.*) since these are real
+    // account numbers, unlike the enums above.
+    public function paymentAccounts(): JsonResponse
+    {
+        return response()->json([
+            'jazzcash_number' => Setting::get('jazzcash_number'),
+            'jazzcash_account_title' => Setting::get('jazzcash_account_title'),
+            'easypaisa_number' => Setting::get('easypaisa_number'),
+            'bank_name' => Setting::get('bank_name'),
+            'bank_account_title' => Setting::get('bank_account_title'),
+            'bank_account_number' => Setting::get('bank_account_number'),
+            'bank_account_iban' => Setting::get('bank_account_iban'),
         ]);
     }
 }

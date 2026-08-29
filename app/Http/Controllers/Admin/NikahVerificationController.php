@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\MatchmakerApplication;
 use App\Models\NikahContactRequest;
 use App\Models\NikahProfile;
 use Illuminate\Http\Request;
@@ -16,14 +17,43 @@ class NikahVerificationController extends Controller
 
     // Real-admin-only (route middleware is `admin.only`, not a permission a
     // matchmaker could ever hold) — a matchmaker requests, only admin decides.
-    public function contactRequests()
+    // General "things a counselor asked admin to act on" hub — one URL, a
+    // tab per request type (?type=contact|card), rather than a separate
+    // page per type. Contact requests were here first; card-dispatch
+    // requests (from the app's "Request Card Dispatch" button) joined it
+    // as the second tab instead of getting their own standalone page.
+    public function contactRequests(Request $request)
     {
+        $type = $request->query('type', 'contact');
+
+        $pendingContactCount = NikahContactRequest::where('status', 'pending')->count();
+        $pendingCardCount = MatchmakerApplication::whereNotNull('card_requested_at')->whereNull('card_dispatched_at')->count();
+
+        if ($type === 'card') {
+            $cardRequests = MatchmakerApplication::whereNotNull('card_requested_at')
+                ->orderByRaw('card_dispatched_at is not null')
+                ->orderByDesc('card_requested_at')
+                ->paginate(20);
+
+            return view('admin.nikah.contact-requests', [
+                'type' => 'card',
+                'cardRequests' => $cardRequests,
+                'pendingContactCount' => $pendingContactCount,
+                'pendingCardCount' => $pendingCardCount,
+            ]);
+        }
+
         $requests = NikahContactRequest::with(['profile.user', 'requester'])
             ->orderByRaw("status = 'pending' desc")
             ->latest()
             ->paginate(20);
 
-        return view('admin.nikah.contact-requests', compact('requests'));
+        return view('admin.nikah.contact-requests', [
+            'type' => 'contact',
+            'requests' => $requests,
+            'pendingContactCount' => $pendingContactCount,
+            'pendingCardCount' => $pendingCardCount,
+        ]);
     }
 
     public function approveContactRequest(NikahContactRequest $contactRequest)

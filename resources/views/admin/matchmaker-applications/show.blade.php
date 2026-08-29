@@ -154,6 +154,23 @@
                         <span class="text-xs text-gray-400">Not yet generated</span>
                         @endif
                     </div>
+                    <div class="bg-gray-50 rounded-lg p-3">
+                        <p class="text-xs text-gray-400 mb-1">Physical Card</p>
+                        @if ($application->card_dispatched_at)
+                        <p class="text-sm font-semibold text-green-700">✓ Dispatched {{ $application->card_dispatched_at->format('d M Y') }}</p>
+                        @elseif ($application->card_requested_at)
+                        <p class="text-xs text-amber-700 mb-1">Requested {{ $application->card_requested_at->format('d M Y') }}</p>
+                        <form method="POST" action="{{ route('admin.matchmaker-applications.card-dispatched', $application) }}">
+                            @csrf
+                            <button class="text-xs font-semibold px-2 py-1 rounded-lg border" style="border-color: #0d6b6b; color: #0d6b6b">Mark Dispatched</button>
+                        </form>
+                        @else
+                        <span class="text-xs text-gray-400">Not requested yet</span>
+                        @endif
+                        @if ($application->address)
+                        <p class="text-xs text-gray-400 mt-2">{{ collect([$application->address, $application->area, $application->country])->filter()->implode(', ') }}</p>
+                        @endif
+                    </div>
                 </div>
 
                 {{-- Same numbers the counselor's own Performance page shows them — previously invisible to admin, so a manual level override or judging an auto-promotion (Console\Commands\PromoteEligibleCounselors) had nothing to go on. --}}

@@ -24,7 +24,20 @@ class MatchmakerApplicationController extends Controller
             $query->where('status', $request->status);
         }
 
+        // Separate from pipeline `status` — a certified counselor asking
+        // for their physical card mailed is an ongoing fulfillment task,
+        // not a stage in the certification pipeline, so it gets its own
+        // filter rather than being folded into the Stage dropdown.
+        if ($request->filled('card_status')) {
+            match ($request->card_status) {
+                'requested' => $query->whereNotNull('card_requested_at')->whereNull('card_dispatched_at'),
+                'dispatched' => $query->whereNotNull('card_dispatched_at'),
+                default => null,
+            };
+        }
+
         $applications = $query->paginate(20)->withQueryString();
+        $pendingCardRequests = MatchmakerApplication::whereNotNull('card_requested_at')->whereNull('card_dispatched_at')->count();
 
         // A matchmaker account doesn't have to come through this pipeline
         // at all — admin can grant the role directly from Users > Roles.
@@ -38,7 +51,7 @@ class MatchmakerApplicationController extends Controller
             ->orderBy('name')
             ->get();
 
-        return view('admin.matchmaker-applications.index', compact('applications', 'directRoleUsers'));
+        return view('admin.matchmaker-applications.index', compact('applications', 'directRoleUsers', 'pendingCardRequests'));
     }
 
     public function show(MatchmakerApplication $matchmakerApplication, \App\Services\Matchmaking\CounselorPerformanceCalculator $calculator)
@@ -157,6 +170,18 @@ class MatchmakerApplicationController extends Controller
         ]);
 
         return back()->with('status', 'Application marked as withdrawn.');
+    }
+
+    // Marks a counselor's physical ID card as printed and mailed — set
+    // from the app's "Request Card Dispatch" button (card_requested_at),
+    // this is admin confirming the physical follow-through actually
+    // happened. No further automation past this point (no courier
+    // integration) — it's a manual record of a manual task.
+    public function markCardDispatched(MatchmakerApplication $matchmakerApplication)
+    {
+        $matchmakerApplication->update(['card_dispatched_at' => now()]);
+
+        return back()->with('status', 'Card marked as dispatched.');
     }
 
     // Generates (or regenerates, if suspected leaked) the signed link the
