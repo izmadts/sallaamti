@@ -87,7 +87,7 @@
                 <a href="{{ route('matchmaker.clients.show', $lead) }}" class="flex justify-between items-center py-2.5 border-b last:border-0 hover:bg-gray-50 -mx-2 px-2 rounded">
                     <div>
                         <p class="font-medium text-gray-800 text-sm">{{ $lead->name }}</p>
-                        <p class="text-xs text-gray-400">{{ $lead->visiblePhoneFor(auth()->user()) ?: $lead->email }}</p>
+                        <p class="text-xs text-gray-400">{{ $lead->phone ?: $lead->email }}</p>
                     </div>
                     <span class="text-xs {{ $lead->next_follow_up_at->isPast() ? 'text-red-600 font-semibold' : 'text-gray-500' }}">
                         {{ $lead->next_follow_up_at->format('d M') }}

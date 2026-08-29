@@ -53,39 +53,6 @@ class Lead extends Model
         return $this->belongsTo(User::class, 'assigned_to');
     }
 
-    // A matchmaker's own screens show this instead of the real number —
-    // admin-side views keep showing the raw phone unmasked. Keeps the
-    // first 2 and last 2 characters (enough to recognize "yes, that's the
-    // client I have on file") and masks everything in between, regardless
-    // of format (+92, 03xx, spaces, dashes — no assumptions about shape).
-    public function maskedPhone(): ?string
-    {
-        if (!$this->phone) {
-            return null;
-        }
-
-        $length = mb_strlen($this->phone);
-        if ($length <= 4) {
-            return str_repeat('•', $length);
-        }
-
-        return mb_substr($this->phone, 0, 2) . str_repeat('•', $length - 4) . mb_substr($this->phone, -2);
-    }
-
-    // The one exception to "a matchmaker never sees the real phone": the
-    // counselor who personally typed this number in when creating the lead
-    // already knows it — masking it back at them just forces re-entry from
-    // memory/notes. Anyone else (reassigned, or another counselor entirely)
-    // still only ever gets maskedPhone().
-    public function visiblePhoneFor(User $user): ?string
-    {
-        if ($this->phone && $this->created_by === $user->id) {
-            return $this->phone;
-        }
-
-        return $this->maskedPhone();
-    }
-
     public function createdBy()
     {
         return $this->belongsTo(User::class, 'created_by');

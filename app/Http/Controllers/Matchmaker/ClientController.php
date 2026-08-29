@@ -196,11 +196,6 @@ class ClientController extends Controller
         $validated = $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'gender' => ['nullable', 'in:male,female'],
-            // The matchmaker's own phone field is never pre-filled with
-            // the real number (see Lead::maskedPhone()) — blank on submit
-            // means "leave it as-is", not "clear it", same as changing a
-            // password without re-typing the old one. Only a non-empty
-            // submission actually touches the stored value (see below).
             'phone' => ['nullable', 'string', 'max:30'],
             'email' => ['nullable', 'email', 'max:255'],
             'looking_for' => ['nullable', 'in:self,family_member'],
@@ -213,10 +208,6 @@ class ClientController extends Controller
 
         if (!$canManageTeam || empty($validated['assigned_to'])) {
             unset($validated['assigned_to']);
-        }
-
-        if (!$request->filled('phone')) {
-            unset($validated['phone']);
         }
 
         $reassigned = isset($validated['assigned_to']) && $validated['assigned_to'] != $lead->assigned_to;

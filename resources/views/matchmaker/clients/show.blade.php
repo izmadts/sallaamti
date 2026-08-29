@@ -35,7 +35,7 @@
         <div class="bg-white rounded-xl shadow-sm p-6 flex flex-wrap justify-between items-start gap-4">
             <div>
                 <h2 class="text-xl font-bold text-gray-800">{{ $lead->name }}</h2>
-                <p class="text-sm text-gray-500">{{ $lead->visiblePhoneFor(auth()->user()) ?: __('db.— no phone —') }} · {{ $lead->email ?: __('db.— no email —') }}</p>
+                <p class="text-sm text-gray-500">{{ $lead->phone ?: __('db.— no phone —') }} · {{ $lead->email ?: __('db.— no email —') }}</p>
                 <span class="inline-block mt-2 text-xs px-2 py-0.5 rounded-full
                     {{ match($lead->status) {
                         'new' => 'bg-blue-100 text-blue-800',
@@ -149,21 +149,9 @@
                     </div>
                     @endif
                     <div class="grid grid-cols-2 gap-4">
-                        <div x-data="{ editingPhone: false }">
+                        <div>
                             <x-input-label for="phone" :value="__('db.Phone / WhatsApp')" />
-                            @if ($lead->created_by === auth()->id() && $lead->phone)
-                            <div x-show="!editingPhone" class="flex items-center gap-2 mt-1">
-                                <span class="text-sm font-medium text-gray-800 border border-gray-200 rounded-md px-3 py-2 flex-1 bg-gray-50">{{ $lead->phone }}</span>
-                                <button type="button" @click="editingPhone = true" class="text-xs font-semibold px-2 py-2 whitespace-nowrap" style="color: var(--mm-plum);">{{ __('db.Edit') }}</button>
-                            </div>
-                            <div x-show="editingPhone" x-cloak>
-                                <x-text-input id="phone" name="phone" type="text" class="w-full mt-1" value="" placeholder="{{ __('db.leave blank to keep') }} {{ $lead->phone }}" />
-                            </div>
-                            <p class="text-xs text-gray-400 mt-1">{{ __("db.You entered this number yourself when adding :name, so it's shown here — it stays hidden from every other counselor.", ['name' => $lead->name]) }}</p>
-                            @else
-                            <x-text-input id="phone" name="phone" type="text" class="w-full mt-1" value="" placeholder="{{ $lead->maskedPhone() ?: __('db.Not on file yet') }} — {{ __('db.leave blank to keep') }}" />
-                            <p class="text-xs text-gray-400 mt-1">{{ __('db.Hidden for privacy. Type a new number here only to correct it — use Send via WhatsApp/SMS below to actually reach :name.', ['name' => $lead->name]) }}</p>
-                            @endif
+                            <x-text-input id="phone" name="phone" type="text" class="w-full mt-1" :value="$lead->phone" />
                         </div>
                         <div>
                             <x-input-label for="email" :value="__('db.Email')" />

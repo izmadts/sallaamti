@@ -86,7 +86,7 @@
                         <tr class="hover:bg-gray-50">
                             <td class="px-4 py-3">
                                 <p class="font-medium text-gray-800">{{ $lead->name }}</p>
-                                <p class="text-xs text-gray-400">{{ $lead->visiblePhoneFor(auth()->user()) ?: $lead->email ?: '—' }}</p>
+                                <p class="text-xs text-gray-400">{{ $lead->phone ?: $lead->email ?: '—' }}</p>
                             </td>
                             <td class="px-4 py-3">
                                 <span class="text-xs px-2 py-0.5 rounded-full
