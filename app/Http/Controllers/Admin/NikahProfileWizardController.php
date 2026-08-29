@@ -328,7 +328,16 @@ class NikahProfileWizardController extends Controller
             if ($lead && !$lead->nikah_profile_id) {
                 $lead->update(['nikah_profile_id' => $profile->id]);
             }
-        } elseif ($remoteVerification) {
+        } else {
+            // Always create a Lead for a walk-in registration too — not
+            // only when remote verification was requested. Without this, a
+            // profile registered in person (the common case) never gets a
+            // Lead, so it never shows up in the counselor's My Clients
+            // workspace (stage tracker, follow-ups, consent, proposals) —
+            // it only existed as a bare NikahProfile they'd have to find
+            // via Browse instead. Lead is meant to be the one model every
+            // client routes through (see ClientController's class comment,
+            // spec doc §52), so this brings walk-ins in line with that.
             $lead = \App\Models\Lead::create([
                 'name' => $accountData['name'],
                 'gender' => $accountData['gender'],
