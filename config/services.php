@@ -94,4 +94,11 @@ return [
         'client_secret' => env('THREADS_CLIENT_SECRET'),
     ],
 
+    // Sends push notifications to the Nikah Counselor app via FCM — the
+    // service-account key itself lives outside git (see .gitignore) at
+    // storage/app/firebase/firebase-adminsdk.json.
+    'firebase' => [
+        'credentials' => env('FIREBASE_CREDENTIALS', storage_path('app/firebase/firebase-adminsdk.json')),
+    ],
+
 ];

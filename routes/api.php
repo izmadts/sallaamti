@@ -112,6 +112,9 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
             Route::get('referral', [MatchmakerApi\ReferralController::class, 'show'])->name('referral.show');
             Route::get('application', [MatchmakerApi\ApplicationController::class, 'show'])->name('application.show');
             Route::get('meta/enums', [MatchmakerApi\MetaController::class, 'enums'])->name('meta.enums');
+
+            Route::post('device-token', [MatchmakerApi\DeviceTokenController::class, 'store'])->name('device-token.store');
+            Route::delete('device-token', [MatchmakerApi\DeviceTokenController::class, 'destroy'])->name('device-token.destroy');
         });
     });
 });

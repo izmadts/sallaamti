@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\V1\Matchmaker;
 
 use App\Http\Controllers\Controller;
 use App\Models\CommissionLedgerEntry;
+use App\Models\CommissionRule;
 use App\Models\Lead;
 use App\Models\MatchmakerApplication;
 use App\Models\MatchmakerReferral;
@@ -58,26 +59,61 @@ class PerformanceController extends Controller
 
         $application = MatchmakerApplication::where('user_id', $matchmakerId)->where('status', 'certified')->first();
 
+        $stats = [
+            'introduced' => $introducedCount,
+            'verified' => $verifiedCount,
+            'paid' => $paidCount,
+            'matchmaking_clients' => $clientsWithPackage,
+            'proposals' => $proposalsSent,
+            'mutual_interests' => $mutualInterests,
+            'recognition_bonuses' => $recognitionBonuses,
+            'referrals' => $referralCount,
+        ];
+        $score = [
+            'verification_rate' => $verificationRate,
+            'paid_conversion_rate' => $paidConversionRate,
+            'compliance_rate' => $complianceRate,
+            'overall' => $qualityScore,
+        ];
+        $tier = $application?->level ?? 'nikah_counselor';
+
         return response()->json([
-            'stats' => [
-                'introduced' => $introducedCount,
-                'verified' => $verifiedCount,
-                'paid' => $paidCount,
-                'matchmaking_clients' => $clientsWithPackage,
-                'proposals' => $proposalsSent,
-                'mutual_interests' => $mutualInterests,
-                'recognition_bonuses' => $recognitionBonuses,
-                'referrals' => $referralCount,
-            ],
-            'score' => [
-                'verification_rate' => $verificationRate,
-                'paid_conversion_rate' => $paidConversionRate,
-                'compliance_rate' => $complianceRate,
-                'overall' => $qualityScore,
-            ],
+            'stats' => $stats,
+            'score' => $score,
             'commission_earned' => $commissionEarned,
-            'tier' => $application?->level ?? 'nikah_counselor',
+            'tier' => $tier,
             'counselor_code' => $application?->counselor_code,
+            // "X to go" toward the next level — same shape as the web
+            // panel's progress bar (MatchmakerApplication::nextLevelProgress()).
+            'level_progress' => $application?->nextLevelProgress($score, $stats),
+            'commission_rates' => $this->commissionRatesByLevel(),
         ]);
+    }
+
+    // A verified-profile commission rate for every level, so the app can
+    // show a counselor concretely what leveling up is worth — not just an
+    // abstract "higher levels earn more." Reads whatever admin has actually
+    // configured in CommissionRule rather than hardcoding numbers that
+    // would silently drift from the real, editable rates.
+    private function commissionRatesByLevel(): array
+    {
+        $rates = [];
+
+        foreach (MatchmakerApplication::LEVELS as $level => $label) {
+            $rule = CommissionRule::findFor('verified_profile', null, $level);
+            $rates[$level] = [
+                'label' => $label,
+                'rate' => $rule ? $this->formatRate($rule) : null,
+            ];
+        }
+
+        return $rates;
+    }
+
+    private function formatRate(CommissionRule $rule): string
+    {
+        return $rule->rate_type === 'percentage'
+            ? rtrim(rtrim((string) $rule->rate_value, '0'), '.') . '%'
+            : 'Rs. ' . number_format((float) $rule->rate_value);
     }
 }

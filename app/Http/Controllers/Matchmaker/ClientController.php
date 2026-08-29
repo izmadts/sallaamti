@@ -14,6 +14,7 @@ use App\Models\MatchProposal;
 use App\Models\NikahProfile;
 use App\Models\ProposalBatch;
 use App\Models\User;
+use App\Services\PushNotificationService;
 use App\Services\Matchmaking\CompatibilityScorer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -230,6 +231,15 @@ class ClientController extends Controller
 
         if ($reassigned) {
             MatchmakingTimelineEvent::log($lead, $lead->nikahProfile, 'reassigned', 'Client reassigned to ' . ($lead->assignedTo?->name ?? 'a different Nikah Counselor') . '.');
+
+            if ($lead->assignedTo) {
+                app(PushNotificationService::class)->sendToUser(
+                    $lead->assignedTo,
+                    'New client assigned',
+                    $lead->name . ' has been assigned to you.',
+                    ['type' => 'lead_assigned', 'lead_id' => (string) $lead->id]
+                );
+            }
         }
 
         if ($statusChanged) {

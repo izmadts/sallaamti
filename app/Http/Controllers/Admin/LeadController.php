@@ -11,6 +11,7 @@ use App\Models\MatchmakingTimelineEvent;
 use App\Models\NikahPackage;
 use App\Models\NikahProfile;
 use App\Models\User;
+use App\Services\PushNotificationService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
@@ -225,7 +226,12 @@ class LeadController extends Controller
         }
 
         $statusChanged = $lead->status !== $validated['status'];
+        $previousAssignedTo = $lead->assigned_to;
         $lead->update($validated);
+
+        if ($lead->assigned_to && $lead->assigned_to != $previousAssignedTo) {
+            $this->notifyAssignment($lead);
+        }
 
         if ($packageChanged) {
             MatchmakingTimelineEvent::log($lead, $lead->nikahProfile, 'package_changed', 'Package changed to ' . ($lead->fresh()->nikahPackage?->name ?? 'None') . '.');
@@ -256,6 +262,24 @@ class LeadController extends Controller
         $creator = $lead->createdBy;
 
         return $creator !== null && !$creator->hasRole('admin') && !$creator->can('leads.manage');
+    }
+
+    // Pushes to the counselor's Nikah Counselor app the moment a lead
+    // lands (or is reassigned) to them — the single most time-sensitive
+    // event a counselor needs to know about, since a fresh lead cools fast.
+    private function notifyAssignment(Lead $lead): void
+    {
+        $counselor = User::find($lead->assigned_to);
+        if (!$counselor) {
+            return;
+        }
+
+        app(PushNotificationService::class)->sendToUser(
+            $counselor,
+            'New client assigned',
+            $lead->name . ' has been assigned to you.',
+            ['type' => 'lead_assigned', 'lead_id' => (string) $lead->id]
+        );
     }
 
     // Hands off to the exact same walk-in wizard NikahProfileWizardController
