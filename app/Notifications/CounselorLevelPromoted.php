@@ -3,6 +3,7 @@
 namespace App\Notifications;
 
 use App\Models\MatchmakerApplication;
+use App\Notifications\Channels\FcmChannel;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Notification;
@@ -24,7 +25,26 @@ class CounselorLevelPromoted extends Notification implements ShouldQueue
 
     public function via($notifiable): array
     {
-        return ['database', 'mail'];
+        return ['database', 'mail', FcmChannel::class];
+    }
+
+    // Only the counselor's own leg gets a push — admin doesn't have the
+    // counselor app, and would get pushed to nothing anyway (no device
+    // tokens registered for that role), but returning null here is clearer
+    // than relying on that incidentally.
+    public function toFcm($notifiable): ?array
+    {
+        if ($this->forAdmin) {
+            return null;
+        }
+
+        $label = MatchmakerApplication::LEVELS[$this->application->level];
+
+        return [
+            'title' => '🎉 You\'ve been promoted!',
+            'body' => "Your consistent, verified work earned you a new level: {$label}. Higher commission rates now apply.",
+            'data' => ['type' => 'level_promoted', 'level' => $this->application->level],
+        ];
     }
 
     public function toMail($notifiable): MailMessage

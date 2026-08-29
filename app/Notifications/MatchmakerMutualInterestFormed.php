@@ -4,6 +4,7 @@ namespace App\Notifications;
 
 use App\Models\Lead;
 use App\Models\NikahInterest;
+use App\Notifications\Channels\FcmChannel;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -17,7 +18,16 @@ class MatchmakerMutualInterestFormed extends Notification implements ShouldQueue
 
     public function via($notifiable): array
     {
-        return ['database', 'mail'];
+        return ['database', 'mail', FcmChannel::class];
+    }
+
+    public function toFcm($notifiable): array
+    {
+        return [
+            'title' => '💍 Mutual interest confirmed',
+            'body' => "Mutual interest confirmed for your client {$this->lead->name} — contact details are already shared, follow up on next steps.",
+            'data' => ['type' => 'mutual_interest', 'lead_id' => (string) $this->lead->id],
+        ];
     }
 
     public function toMail($notifiable): MailMessage

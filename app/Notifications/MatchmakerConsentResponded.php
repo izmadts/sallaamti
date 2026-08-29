@@ -5,6 +5,7 @@ namespace App\Notifications;
 use App\Models\Lead;
 use App\Models\MatchmakingConsent;
 use App\Models\MatchmakingConsentRequest;
+use App\Notifications\Channels\FcmChannel;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -18,7 +19,18 @@ class MatchmakerConsentResponded extends Notification implements ShouldQueue
 
     public function via($notifiable): array
     {
-        return ['database', 'mail'];
+        return ['database', 'mail', FcmChannel::class];
+    }
+
+    public function toFcm($notifiable): array
+    {
+        $granted = $this->consentRequest->status === 'granted';
+
+        return [
+            'title' => $granted ? '✅ Consent confirmed' : '❌ Consent declined',
+            'body' => "{$this->lead->name} " . ($granted ? 'confirmed' : 'declined') . " their \"{$this->label()}\" consent request.",
+            'data' => ['type' => 'consent_responded', 'lead_id' => (string) $this->lead->id],
+        ];
     }
 
     private function label(): string

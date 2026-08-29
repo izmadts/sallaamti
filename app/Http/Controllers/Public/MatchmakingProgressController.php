@@ -246,6 +246,14 @@ class MatchmakingProgressController extends Controller
 
         MatchmakingLinkAccess::record($proposal, 'proposal_response', $request, $validated['response']);
 
+        if ($lead->assigned_to) {
+            try {
+                User::find($lead->assigned_to)?->notify(new \App\Notifications\MatchmakerProposalResponded($proposal->fresh(), $lead));
+            } catch (\Throwable $e) {
+                \Log::error('MatchmakerProposalResponded notification failed: ' . $e->getMessage());
+            }
+        }
+
         return $this->unlockedView($lead)->with('status', 'Thank you — your response has been recorded.');
     }
 

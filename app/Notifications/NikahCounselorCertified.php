@@ -4,6 +4,7 @@ namespace App\Notifications;
 
 use App\Models\Certificate;
 use App\Models\MatchmakerApplication;
+use App\Notifications\Channels\FcmChannel;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -17,7 +18,16 @@ class NikahCounselorCertified extends Notification implements ShouldQueue
 
     public function via($notifiable): array
     {
-        return ['database', 'mail'];
+        return ['database', 'mail', FcmChannel::class];
+    }
+
+    public function toFcm($notifiable): array
+    {
+        return [
+            'title' => '🎉 You\'re certified!',
+            'body' => 'Your application has been approved — you are now a Certified Sallaamti Nikah Counselor (' . $this->application->counselor_code . ').',
+            'data' => ['type' => 'counselor_certified'],
+        ];
     }
 
     public function toMail($notifiable): MailMessage

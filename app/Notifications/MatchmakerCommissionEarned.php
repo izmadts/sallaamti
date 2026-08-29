@@ -3,6 +3,7 @@
 namespace App\Notifications;
 
 use App\Models\CommissionLedgerEntry;
+use App\Notifications\Channels\FcmChannel;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -26,7 +27,16 @@ class MatchmakerCommissionEarned extends Notification implements ShouldQueue
 
     public function via($notifiable): array
     {
-        return ['database', 'mail'];
+        return ['database', 'mail', FcmChannel::class];
+    }
+
+    public function toFcm($notifiable): array
+    {
+        return [
+            'title' => '💰 Commission earned',
+            'body' => 'You earned Rs. ' . number_format((float) $this->entry->commission_amount) . ' for ' . $this->label() . '.',
+            'data' => ['type' => 'commission_earned', 'entry_id' => (string) $this->entry->id],
+        ];
     }
 
     public function toMail($notifiable): MailMessage
