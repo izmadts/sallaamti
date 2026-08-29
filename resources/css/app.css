@@ -30,11 +30,13 @@
        scrolls by accident. Flip to dir="rtl" for Urdu and the same
        overflow anchors the viewport to the right instead, so that hidden
        sliver becomes a visible horizontal scrollbar with a blank white
-       gap on the left. Rather than hunt down every element that could
-       ever cause this, pin the page itself so it can never scroll
-       sideways in either direction. */
+       gap on the left. Containing it on <html> too (not just <body>)
+       seemed like the safer belt-and-suspenders version of this fix, but
+       iOS Safari treats <html>'s overflow-x as part of the root scroll
+       container — hiding it there broke vertical momentum scrolling
+       (page felt "stuck"). <body> alone still fully contains the
+       horizontal overflow without touching the root scroller.       */
     html {
-        overflow-x: hidden;
         overscroll-behavior-y: none;
     }
 
