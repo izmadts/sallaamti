@@ -149,7 +149,7 @@
                         @else
                         <select id="assigned_to" name="assigned_to" class="border-gray-300 rounded-md shadow-sm w-full mt-1">
                             @foreach ($matchmakers as $mm)
-                            <option value="{{ $mm->id }}" {{ $lead->assigned_to === $mm->id ? 'selected' : '' }}>{{ $mm->name }}</option>
+                            <option value="{{ $mm->id }}" {{ (int) $lead->assigned_to === (int) $mm->id ? 'selected' : '' }}>{{ $mm->name }}</option>
                             @endforeach
                         </select>
                         @endif

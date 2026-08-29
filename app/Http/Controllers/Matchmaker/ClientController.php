@@ -587,7 +587,14 @@ class ClientController extends Controller
             return;
         }
 
-        abort_unless($lead->assigned_to === auth()->id(), 403, 'This client is assigned to another Nikah Counselor, so it\'s hidden from your account for privacy. If this client should be yours, ask your admin to reassign it to you — or, if you need to see every counselor\'s clients, ask admin to grant your account the "leads.manage" permission.');
+        // Loose-but-safe: a lead's own list view filters with a plain SQL
+        // WHERE (MySQL coerces "253" and 253 as equal), but this is a PHP
+        // comparison — some accounts had assigned_to matching in the list
+        // yet still 403ing here, which only makes sense if the two sides
+        // were the same ID as different PHP types. (int) on both sides
+        // makes the comparison match what the list already showed, and
+        // stays safe since a real ID is never 0.
+        abort_unless((int) $lead->assigned_to === (int) auth()->id(), 403, 'This client is assigned to another Nikah Counselor, so it\'s hidden from your account for privacy. If this client should be yours, ask your admin to reassign it to you — or, if you need to see every counselor\'s clients, ask admin to grant your account the "leads.manage" permission.');
     }
 
     // A plain counselor's own client is permanently theirs — reassigning it

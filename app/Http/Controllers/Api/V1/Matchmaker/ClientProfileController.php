@@ -49,7 +49,7 @@ class ClientProfileController extends Controller
             return;
         }
 
-        abort_unless($lead->assigned_to === auth()->id(), 403, 'This client is assigned to another Nikah Counselor, so it is hidden from your account for privacy. If this client should be yours, ask your admin to reassign it to you.');
+        abort_unless((int) $lead->assigned_to === (int) auth()->id(), 403, 'This client is assigned to another Nikah Counselor, so it is hidden from your account for privacy. If this client should be yours, ask your admin to reassign it to you.');
     }
 
     public function show(Lead $lead): JsonResponse

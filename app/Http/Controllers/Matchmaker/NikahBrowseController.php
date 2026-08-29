@@ -74,7 +74,7 @@ class NikahBrowseController extends Controller
             ->first();
 
         $canActOnBehalf = Auth::user()->hasRole('admin')
-            || $profile->created_by === Auth::id()
+            || (int) $profile->created_by === (int) Auth::id()
             || Lead::where('nikah_profile_id', $profile->id)->where('assigned_to', Auth::id())->exists();
 
         $pendingReceivedInterests = $canActOnBehalf
@@ -177,7 +177,7 @@ class NikahBrowseController extends Controller
             return;
         }
 
-        $isCreator = $profile->created_by === auth()->id();
+        $isCreator = (int) $profile->created_by === (int) auth()->id();
         $isAssignedViaLead = Lead::where('nikah_profile_id', $profile->id)->where('assigned_to', auth()->id())->exists();
 
         abort_unless($isCreator || $isAssignedViaLead, 403, 'You can only act on behalf of clients you registered or are assigned to. If this profile should be yours, ask your admin to reassign the linked client to you.');

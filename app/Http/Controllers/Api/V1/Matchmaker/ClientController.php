@@ -47,7 +47,10 @@ class ClientController extends Controller
             return;
         }
 
-        abort_unless($lead->assigned_to === auth()->id(), 403, 'This client is assigned to another Nikah Counselor, so it is hidden from your account for privacy. If this client should be yours, ask your admin to reassign it to you.');
+        // (int) cast on both sides — see the web ClientController's
+        // authorizeClient() for why a strict === here can wrongly 403 an
+        // account whose own list still correctly shows the same lead.
+        abort_unless((int) $lead->assigned_to === (int) auth()->id(), 403, 'This client is assigned to another Nikah Counselor, so it is hidden from your account for privacy. If this client should be yours, ask your admin to reassign it to you.');
     }
 
     public function index(Request $request): JsonResponse

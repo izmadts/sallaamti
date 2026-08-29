@@ -86,7 +86,7 @@ class InterestController extends Controller
             return;
         }
 
-        $isCreator = $profile->created_by === auth()->id();
+        $isCreator = (int) $profile->created_by === (int) auth()->id();
         $isAssignedViaLead = Lead::where('nikah_profile_id', $profile->id)->where('assigned_to', auth()->id())->exists();
 
         abort_unless($isCreator || $isAssignedViaLead, 403, 'You can only act on behalf of clients you registered or are assigned to.');
