@@ -83,6 +83,10 @@ class PerformanceController extends Controller
             'commission_earned' => $commissionEarned,
             'tier' => $tier,
             'counselor_code' => $application?->counselor_code,
+            // Distinguishes "no certified application on file" from "at the
+            // top level already" — both leave level_progress null below, and
+            // the app needs to tell those two apart (very different UI).
+            'is_certified' => $application !== null,
             // "X to go" toward the next level — same shape as the web
             // panel's progress bar (MatchmakerApplication::nextLevelProgress()).
             'level_progress' => $application?->nextLevelProgress($score, $stats),
