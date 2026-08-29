@@ -124,6 +124,13 @@ class LeadController extends Controller
 
         MatchmakingTimelineEvent::log($lead, null, 'lead_received', "Lead received from {$lead->source}.");
 
+        // Only when assigned to someone other than the admin creating it —
+        // an admin assigning a fresh lead to themselves doesn't need a
+        // push telling them what they just did.
+        if ($lead->assigned_to != auth()->id()) {
+            $this->notifyAssignment($lead);
+        }
+
         return redirect()->route('admin.leads.show', $lead)->with('status', 'Lead added.');
     }
 
