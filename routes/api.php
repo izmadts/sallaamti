@@ -115,6 +115,11 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
 
             Route::post('device-token', [MatchmakerApi\DeviceTokenController::class, 'store'])->name('device-token.store');
             Route::delete('device-token', [MatchmakerApi\DeviceTokenController::class, 'destroy'])->name('device-token.destroy');
+
+            Route::get('notifications', [MatchmakerApi\NotificationController::class, 'index'])->name('notifications.index');
+            Route::get('notifications/unread-count', [MatchmakerApi\NotificationController::class, 'unreadCount'])->name('notifications.unread-count');
+            Route::post('notifications/{id}/read', [MatchmakerApi\NotificationController::class, 'markRead'])->name('notifications.read');
+            Route::post('notifications/read-all', [MatchmakerApi\NotificationController::class, 'markAllRead'])->name('notifications.read-all');
         });
     });
 });
