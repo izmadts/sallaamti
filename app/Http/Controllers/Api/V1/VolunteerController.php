@@ -19,9 +19,25 @@ use Illuminate\Validation\ValidationException;
 // in without waiting on the approval email.
 class VolunteerController extends Controller
 {
+    // Matches by user_id first, but also falls back to email/phone — the
+    // public web form (VolunteerController@store) lets anyone submit
+    // without an account, so a returning member's own earlier application
+    // may not be linked to their user_id yet. Without this fallback,
+    // apply() wouldn't find that row and would collide with its unique
+    // email/phone constraint on insert instead of recognizing it.
     private function myApplication(Request $request): ?VolunteerApplication
     {
-        return VolunteerApplication::where('user_id', $request->user()->id)->latest()->first();
+        $user = $request->user();
+
+        return VolunteerApplication::where(function ($query) use ($user) {
+            $query->where('user_id', $user->id);
+            if ($user->email) {
+                $query->orWhere('email', $user->email);
+            }
+            if ($user->phone) {
+                $query->orWhere('phone', $user->phone);
+            }
+        })->latest()->first();
     }
 
     private function payload(VolunteerApplication $application): array
@@ -58,6 +74,7 @@ class VolunteerController extends Controller
 
         $user = $request->user();
         $fields = array_merge($validated, [
+            'user_id' => $user->id,
             'name' => $user->name,
             'email' => $user->email,
             'phone' => $user->phone,
@@ -69,7 +86,7 @@ class VolunteerController extends Controller
                 $existing->update($fields);
                 $application = $existing;
             } else {
-                $application = VolunteerApplication::create(array_merge($fields, ['user_id' => $user->id]));
+                $application = VolunteerApplication::create($fields);
             }
         } catch (\Illuminate\Database\QueryException) {
             throw ValidationException::withMessages([
