@@ -1,4 +1,4 @@
-<x-guest-layout :title="__('db.Application Received — Sallaamti Nikah Counselor')" :description="__(\"db.Your Nikah Counselor application has been received. Here's what happens next, your role and duties, and the Do's and Don'ts every counselor follows.\")">
+<x-guest-layout :title="__('db.Application Received — Sallaamti Nikah Counselor')" :description="__('db.Your Nikah Counselor application has been received. Here\'s what happens next, your role and duties, and the Do\'s and Don\'ts every counselor follows.')">
 
     {{-- Page Hero --}}
     <section class="page-hero relative overflow-hidden flex items-center" style="min-height: 280px; background: linear-gradient(135deg, #0d6b6b 0%, #1a1a2e 100%);">

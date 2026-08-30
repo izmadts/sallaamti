@@ -124,5 +124,5 @@ final class UserTable extends PowerGridComponent
                 ->hide(),
         ];
     }
-    
+    */
 }

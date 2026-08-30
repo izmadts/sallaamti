@@ -104,7 +104,7 @@
                                 $currentSect = old('sect', $profile->sect);
                                 $isOtherSect = $currentSect && !in_array($currentSect, $knownSects);
                             @endphp
-                            <div x-data="{ sect: '{{ $isOtherSect ? 'Other' : $currentSect }}' }">
+                            <div x-data="{ sect: @js($isOtherSect ? 'Other' : $currentSect) }">
                                 <x-input-label for="sect" :value="__('db.Sect')" />
                                 <select id="sect" name="sect" x-model="sect" required class="border-gray-300 rounded-md shadow-sm w-full mt-1"
                                     title="{{ __('db.Your school of thought — helps us match you with someone compatible.') }}">
