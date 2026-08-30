@@ -101,4 +101,12 @@ return [
         'credentials' => env('FIREBASE_CREDENTIALS', storage_path('app/firebase/firebase-adminsdk.json')),
     ],
 
+    // Shared secret used to verify GitHub's push webhook (see
+    // DeployWebhookController) actually came from GitHub before it's
+    // allowed to queue a production deploy. Same value must be set as the
+    // webhook's "Secret" in GitHub's repo settings.
+    'deploy_webhook' => [
+        'secret' => env('DEPLOY_WEBHOOK_SECRET'),
+    ],
+
 ];

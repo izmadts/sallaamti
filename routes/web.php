@@ -780,4 +780,11 @@ Route::prefix('nda-agreement')->name('public.matchmaker-agreement.')->group(func
 // linked from the footer and certificate verify page.
 Route::view('/nikah-counselor/code-of-conduct', 'nikah-counselor.code-of-conduct')->name('nikah-counselor.code-of-conduct');
 
+// GitHub push webhook — see DeployWebhookController and docs/deployment.md.
+// Auth is the HMAC signature GitHub signs the payload with (DEPLOY_WEBHOOK_SECRET),
+// not a session, so this deliberately sits outside any auth middleware.
+Route::post('/webhooks/github-deploy', [\App\Http\Controllers\DeployWebhookController::class, 'handle'])
+    ->name('webhooks.github-deploy')
+    ->middleware('throttle:30,1');
+
 require __DIR__ . '/auth.php';

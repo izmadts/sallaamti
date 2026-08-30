@@ -36,6 +36,13 @@ return Application::configure(basePath: dirname(__DIR__))
     $middleware->api(append: [
         \App\Http\Middleware\SetApiLocale::class,
     ]);
+    // GitHub can't send a Laravel CSRF token — this route is authenticated
+    // instead by an HMAC signature over the raw body (see
+    // DeployWebhookController), which is what CSRF protection exists to
+    // approximate in the first place.
+    $middleware->validateCsrfTokens(except: [
+        'webhooks/github-deploy',
+    ]);
 })->withExceptions(function (Exceptions $exceptions): void {
     // A logout click on a page left open past the session lifetime is a
     // stale CSRF token, not a real security event — the safe thing to do
