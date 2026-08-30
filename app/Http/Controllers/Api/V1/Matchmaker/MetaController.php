@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\V1\Matchmaker;
 
 use App\Http\Controllers\Controller;
 use App\Models\MatchmakingConsent;
+use App\Models\MatchmakingRequirementItem;
 use App\Models\NikahPackage;
 use App\Models\Setting;
 use Illuminate\Http\JsonResponse;
@@ -46,6 +47,14 @@ class MetaController extends Controller
                 'preferred' => 'Preferred',
                 'flexible' => 'Flexible',
             ],
+            // Was never exposed here, so the app's Requirements tab has
+            // been collecting requirement_type as free text instead of
+            // picking from this fixed set MatchmakingRequirementItem
+            // itself defines — that inconsistency (e.g. "City" vs "city"
+            // vs "shehar") is exactly why match-scoring against these
+            // requirements couldn't reliably compare against a candidate's
+            // actual profile fields.
+            'requirement_types' => MatchmakingRequirementItem::TYPES,
         ]);
     }
 

@@ -495,6 +495,7 @@ class ClientController extends Controller
                     'city' => $item->nikahProfile->city,
                     'sect' => $item->nikahProfile->sect,
                 ] : null,
+                'match_score' => $item->nikahProfile ? $lead->matchScoreWith($item->nikahProfile) : null,
             ]) : null,
             'requirement' => $lead->relationLoaded('requirement') && $lead->requirement ? [
                 'notes' => $lead->requirement->notes,

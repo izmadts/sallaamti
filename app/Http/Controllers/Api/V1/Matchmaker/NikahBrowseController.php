@@ -40,8 +40,13 @@ class NikahBrowseController extends Controller
 
         $profiles = $query->orderByDesc('created_at')->paginate(15)->withQueryString();
 
+        // Only set when browsing on behalf of a specific client (the
+        // Shortlist/Batches "pick a candidate" flow) — a plain browse has
+        // no client to score candidates against.
+        $lead = $request->filled('lead_id') ? Lead::with('requirement.items')->find($request->integer('lead_id')) : null;
+
         return response()->json([
-            'profiles' => collect($profiles->items())->map(fn ($p) => $this->cardPayload($p)),
+            'profiles' => collect($profiles->items())->map(fn ($p) => $this->cardPayload($p, lead: $lead)),
             'current_page' => $profiles->currentPage(),
             'last_page' => $profiles->lastPage(),
             'total' => $profiles->total(),
@@ -81,7 +86,7 @@ class NikahBrowseController extends Controller
         return response()->json(['message' => __('db.Contact request sent to admin for review.')], 201);
     }
 
-    private function cardPayload(NikahProfile $profile, bool $detailed = false): array
+    private function cardPayload(NikahProfile $profile, bool $detailed = false, ?Lead $lead = null): array
     {
         $data = [
             'id' => $profile->id,
@@ -95,6 +100,10 @@ class NikahBrowseController extends Controller
             'country' => $profile->country,
             'gender' => $profile->user?->gender,
         ];
+
+        if ($lead) {
+            $data['match_score'] = $lead->matchScoreWith($profile);
+        }
 
         if ($detailed) {
             $data['about'] = $profile->about;

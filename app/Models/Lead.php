@@ -145,6 +145,46 @@ class Lead extends Model
         return $this->nikah_profile_id !== null;
     }
 
+    // How well a candidate fits THIS client's stated Requirements — must_have
+    // items count 3x, preferred 2x, flexible 1x toward the percentage.
+    // 'level' is null (not 'low') when there's nothing to judge by — no
+    // Requirement saved yet, or every item is a type nothing can be
+    // compared against (see MatchmakingRequirementItem::matchesCandidate) —
+    // so the UI can tell "no data" apart from "genuinely a weak match".
+    public function matchScoreWith(NikahProfile $candidate): array
+    {
+        $weights = ['must_have' => 3, 'preferred' => 2, 'flexible' => 1];
+        $total = 0;
+        $score = 0;
+        $considered = 0;
+
+        foreach ($this->requirement?->items ?? [] as $item) {
+            $matched = $item->matchesCandidate($candidate);
+            if ($matched === null) {
+                continue;
+            }
+
+            $weight = $weights[$item->priority] ?? 1;
+            $total += $weight;
+            $considered++;
+            if ($matched) {
+                $score += $weight;
+            }
+        }
+
+        if ($total === 0) {
+            return ['level' => null, 'percentage' => 0, 'considered' => 0];
+        }
+
+        $percentage = (int) round(($score / $total) * 100);
+
+        return [
+            'level' => $percentage >= 75 ? 'high' : ($percentage >= 40 ? 'medium' : 'low'),
+            'percentage' => $percentage,
+            'considered' => $considered,
+        ];
+    }
+
     // Single source of truth for "what does this client see next on their
     // progress link" — used both to render that link
     // (Public\MatchmakingProgressController) and to show the counselor/
