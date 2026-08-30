@@ -144,4 +144,104 @@ class Lead extends Model
     {
         return $this->nikah_profile_id !== null;
     }
+
+    // Single source of truth for "what does this client see next on their
+    // progress link" — used both to render that link
+    // (Public\MatchmakingProgressController) and to show the counselor/
+    // admin exactly where a client is stuck, without either side having to
+    // reverse-engineer it from the raw timeline log. Same priority order
+    // requested for the client link itself: registration -> documents ->
+    // package/payment -> consent -> optional PIN setup -> proposals ->
+    // waiting on a sent interest's response.
+    public function progressQueue(): \Illuminate\Support\Collection
+    {
+        $queue = collect();
+
+        if (!$this->nikahProfile) {
+            $queue->push(['type' => 'registration', 'data' => null]);
+
+            return $queue;
+        }
+
+        if (empty($this->nikahProfile->cnic_front_image) || empty($this->nikahProfile->cnic_back_image) || empty($this->nikahProfile->cnic_number)) {
+            $queue->push(['type' => 'documents', 'data' => null]);
+        }
+
+        if (!$this->nikah_package_id) {
+            if (in_array($this->package_payment_status, [null, 'rejected'], true)) {
+                $queue->push(['type' => 'package', 'data' => null]);
+            } elseif ($this->package_payment_status === 'submitted') {
+                $queue->push(['type' => 'package_pending', 'data' => null]);
+            }
+        }
+
+        foreach ($this->consentRequests->where('status', 'pending') as $consentRequest) {
+            $queue->push(['type' => 'consent', 'data' => $consentRequest]);
+        }
+
+        $linkedAccount = $this->nikahProfile?->user ?: User::where('phone', $this->phone)->first();
+        if (!$this->account_setup_skipped_at && !$linkedAccount?->pin) {
+            $queue->push(['type' => 'account_setup', 'data' => null]);
+        }
+
+        foreach ($this->proposalBatches->where('status', '!=', 'draft') as $batch) {
+            $pending = $batch->proposals->whereNull('response');
+            if ($pending->isNotEmpty()) {
+                $queue->push(['type' => 'proposal_batch', 'data' => $batch, 'pending' => $pending]);
+            }
+        }
+
+        if ($queue->isEmpty()) {
+            $pendingSentInterest = NikahInterest::where('sender_profile_id', $this->nikahProfile->id)
+                ->where('status', 'pending')
+                ->latest()
+                ->first();
+
+            if ($pendingSentInterest) {
+                $queue->push(['type' => 'interest_pending', 'data' => $pendingSentInterest]);
+            }
+        }
+
+        return $queue;
+    }
+
+    public function isMatched(): bool
+    {
+        if (!$this->nikahProfile) {
+            return false;
+        }
+
+        return NikahInterest::where('status', 'accepted')
+            ->where(function ($q) {
+                $q->where('sender_profile_id', $this->nikahProfile->id)
+                    ->orWhere('receiver_profile_id', $this->nikahProfile->id);
+            })->exists();
+    }
+
+    // Short, human label for whatever progressQueue() says is current —
+    // this is what a counselor/admin actually reads at a glance.
+    public function progressStageLabel(): string
+    {
+        if ($this->isMatched()) {
+            return '🎉 Matched';
+        }
+
+        $current = $this->progressQueue()->first();
+
+        if (!$current) {
+            return 'All caught up';
+        }
+
+        return match ($current['type']) {
+            'registration' => 'Awaiting client registration',
+            'documents' => 'Awaiting document upload',
+            'package' => 'Awaiting package selection & payment',
+            'package_pending' => 'Payment submitted — awaiting admin review',
+            'consent' => 'Awaiting consent response',
+            'account_setup' => 'Awaiting optional PIN setup',
+            'proposal_batch' => 'Awaiting response to a proposal',
+            'interest_pending' => 'Waiting on the other side to respond',
+            default => 'In progress',
+        };
+    }
 }

@@ -387,6 +387,13 @@
                 <p class="text-xs text-gray-500 mt-2 mb-3">The one standing link {{ $lead->name }} uses for everything — status, documents, consents, proposals. Only admin sees the raw link and phone number here; the assigned counselor only gets Copy/Send buttons.</p>
 
                 @php $adminProgressLink = \App\Http\Controllers\Matchmaker\ClientController::progressLink($lead); @endphp
+                @if ($adminProgressLink)
+                <p class="mb-3">
+                    <span class="text-xs font-semibold px-2.5 py-1 rounded-full {{ $lead->isMatched() ? 'bg-green-100 text-green-800' : 'bg-amber-50 text-amber-700' }}">
+                        Current status: {{ $lead->progressStageLabel() }}
+                    </span>
+                </p>
+                @endif
                 <div class="flex flex-wrap items-center gap-2">
                     @if ($adminProgressLink)
                     <input type="text" readonly value="{{ $adminProgressLink }}" class="text-xs border-gray-200 rounded-lg flex-1 min-w-[16rem] bg-gray-50" onclick="this.select()" id="admin-progress-link">

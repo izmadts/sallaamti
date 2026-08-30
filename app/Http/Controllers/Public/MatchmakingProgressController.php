@@ -12,7 +12,6 @@ use App\Models\MatchmakingConsentRequest;
 use App\Models\MatchmakingLinkAccess;
 use App\Models\MatchmakingTimelineEvent;
 use App\Models\MatchProposal;
-use App\Models\NikahInterest;
 use App\Models\NikahPackage;
 use App\Models\NikahProfile;
 use App\Models\User;
@@ -92,7 +91,7 @@ class MatchmakingProgressController extends Controller
     // else (about me, preferences, CNIC) is filled in later, same as any
     // self-registered member. If the counselor already registered this
     // lead (has a NikahProfile), this step never appears — see
-    // buildActionQueue().
+    // Lead::progressQueue().
     public function registerProfile(Request $request, Lead $lead)
     {
         $this->assertValidToken($request, $lead);
@@ -154,6 +153,14 @@ class MatchmakingProgressController extends Controller
 
         MatchmakingTimelineEvent::log($lead, $profile, 'profile_registration', 'Client completed their own Nikah profile registration via their secure progress link.');
         MatchmakingLinkAccess::record($lead, 'profile_registration', $request, 'success');
+
+        if ($lead->assigned_to) {
+            try {
+                User::find($lead->assigned_to)?->notify(new \App\Notifications\MatchmakerClientRegistered($lead));
+            } catch (\Throwable $e) {
+                \Log::error('MatchmakerClientRegistered notification failed: ' . $e->getMessage());
+            }
+        }
 
         return $this->unlockedView($lead, $last7)->with('status', $isNewAccount
             ? "You're registered, and this device can now use your PIN to check your status at sallaamti.com anytime. Next: upload your verification documents."
@@ -422,91 +429,15 @@ class MatchmakingProgressController extends Controller
         // package dropdown already applies.
         $packages = NikahPackage::active()->ordered()->get()->reject->isOneTime()->values();
 
-        $queue = $this->buildActionQueue($lead);
+        // The queue itself lives on Lead::progressQueue() now — the exact
+        // same method the counselor/admin views call to show "where is
+        // this client stuck" without duplicating this logic a second time.
+        $queue = $lead->progressQueue();
         $currentStep = $queue->first();
         $stepsRemaining = max(0, $queue->count() - 1);
-
-        // Drives the celebratory "You're Matched!" variant of the empty
-        // fallback state — true once there's a real accepted NikahInterest
-        // on either side of their profile, i.e. an actual mutual match,
-        // not just a proposal they said "interested" to.
-        $isMatched = $lead->nikahProfile && NikahInterest::where('status', 'accepted')
-            ->where(function ($q) use ($lead) {
-                $q->where('sender_profile_id', $lead->nikahProfile->id)
-                    ->orWhere('receiver_profile_id', $lead->nikahProfile->id);
-            })->exists();
+        $isMatched = $lead->isMatched();
 
         return view('public.matchmaking.progress', ['lead' => $lead, 'verifyUrl' => $verifyUrl, 'documentsUrl' => $documentsUrl, 'unlocked' => true, 'last7' => $last7, 'packages' => $packages, 'currentStep' => $currentStep, 'stepsRemaining' => $stepsRemaining, 'isMatched' => $isMatched]);
-    }
-
-    // One thing at a time, in the order the user actually asked for:
-    // register (only if the counselor hasn't already) -> documents ->
-    // package/payment -> consent -> optional quick-access PIN -> proposals
-    // -> waiting on a response to an interest they sent. If the counselor
-    // already registered this lead, stage 1 never appears and the queue
-    // just starts from whatever's still missing.
-    private function buildActionQueue(Lead $lead): \Illuminate\Support\Collection
-    {
-        $queue = collect();
-
-        if (!$lead->nikahProfile) {
-            $queue->push(['type' => 'registration', 'data' => null]);
-
-            return $queue;
-        }
-
-        if (empty($lead->nikahProfile->cnic_front_image) || empty($lead->nikahProfile->cnic_back_image) || empty($lead->nikahProfile->cnic_number)) {
-            $queue->push(['type' => 'documents', 'data' => null]);
-        }
-
-        if (!$lead->nikah_package_id) {
-            if (in_array($lead->package_payment_status, [null, 'rejected'], true)) {
-                $queue->push(['type' => 'package', 'data' => null]);
-            } elseif ($lead->package_payment_status === 'submitted') {
-                $queue->push(['type' => 'package_pending', 'data' => null]);
-            }
-        }
-
-        foreach ($lead->consentRequests->where('status', 'pending') as $consentRequest) {
-            $queue->push(['type' => 'consent', 'data' => $consentRequest]);
-        }
-
-        // A one-time, skippable offer — not a hard requirement to keep
-        // using this link (everything above and below already works via
-        // the last-7-digits check alone), just a chance to get a real,
-        // loggable-in-later account for a lead the counselor registered
-        // (a self-registered one already set this up in stage 1). Shown
-        // once things have settled, before the ongoing proposal cycle, so
-        // it doesn't compete with anything more urgent, and never
-        // resurfaces once they either set it up or say "not now" — see
-        // linkedAccount()/registerAccount().
-        if (!$lead->account_setup_skipped_at && !$this->linkedAccount($lead)?->pin) {
-            $queue->push(['type' => 'account_setup', 'data' => null]);
-        }
-
-        foreach ($lead->proposalBatches->where('status', '!=', 'draft') as $batch) {
-            $pending = $batch->proposals->whereNull('response');
-            if ($pending->isNotEmpty()) {
-                $queue->push(['type' => 'proposal_batch', 'data' => $batch, 'pending' => $pending]);
-            }
-        }
-
-        // Nothing left needing a decision — but if they said "interested"
-        // to someone and it's still awaiting a response, say so instead of
-        // just going quiet. Real proposal-batch history + full status
-        // still lives in the collapsed section below regardless.
-        if ($queue->isEmpty()) {
-            $pendingSentInterest = NikahInterest::where('sender_profile_id', $lead->nikahProfile->id)
-                ->where('status', 'pending')
-                ->latest()
-                ->first();
-
-            if ($pendingSentInterest) {
-                $queue->push(['type' => 'interest_pending', 'data' => $pendingSentInterest]);
-            }
-        }
-
-        return $queue;
     }
 
     // A lead may already have a real User behind it (the matchmaker's own

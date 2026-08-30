@@ -223,6 +223,11 @@
                     @if ($progressLink)
                     <p class="text-xs font-semibold text-gray-600 mb-2">🔗 {{ $linkTitle }}</p>
                     <p class="text-xs text-gray-400 mb-2">{{ __("db.The link itself isn't shown here — copy it and paste it into WhatsApp, Messenger, SMS, or wherever you're already talking to :name. Only admin can see the raw link.", ['name' => $lead->name]) }}</p>
+                    <p class="mb-3">
+                        <span class="text-xs font-semibold px-2.5 py-1 rounded-full {{ $lead->isMatched() ? 'bg-green-100 text-green-800' : 'bg-amber-50 text-amber-700' }}">
+                            {{ __('db.Current status:') }} {{ $lead->progressStageLabel() }}
+                        </span>
+                    </p>
                     @endif
                     <div class="flex flex-wrap items-center gap-2">
                         @if ($progressLink)

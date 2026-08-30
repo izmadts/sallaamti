@@ -48,7 +48,7 @@
             @endif
 
             @if ($currentStep)
-            {{-- One step at a time — see MatchmakingProgressController::buildActionQueue(). Whatever's next is the only card shown here; everything else waits below or stays in the collapsed history. --}}
+            {{-- One step at a time — see Lead::progressQueue(). Whatever's next is the only card shown here; everything else waits below or stays in the collapsed history. --}}
 
                 @switch($currentStep['type'])
 
