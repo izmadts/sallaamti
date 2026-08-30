@@ -76,6 +76,15 @@ class NikahProfile extends Model
     {
         return [
             'user_id' => 'integer',
+            // Uncast integer columns come back as strings from PDO on
+            // production (confirmed real for this app — see the
+            // project-wide (int)-cast fix for the same class of bug in
+            // NikahInterestController etc.). The mobile app's NikahProfile.
+            // fromJson() does a strict `as int` on these, which threw and
+            // sent the whole Nikah tab to a generic error screen.
+            'age' => 'integer',
+            'pref_min_age' => 'integer',
+            'pref_max_age' => 'integer',
             'date_of_birth' => 'date',
             'has_children' => 'boolean',
             'open_to_polygamy' => 'boolean',
