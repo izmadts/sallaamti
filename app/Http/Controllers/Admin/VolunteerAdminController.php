@@ -7,6 +7,7 @@ use App\Models\Certificate;
 use App\Models\VolunteerApplication;
 use App\Mail\VolunteerApplicationDecision;
 use App\Mail\VolunteerApproved;
+use App\Notifications\VolunteerApplicationDecided;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Mail;
@@ -48,6 +49,12 @@ class VolunteerAdminController extends Controller
             } catch (\Throwable $e) {
                 \Log::error('Volunteer ID card generation/email failed: ' . $e->getMessage());
             }
+
+            try {
+                $volunteer->user->notify(new VolunteerApplicationDecided($volunteer, approved: true));
+            } catch (\Throwable $e) {
+                \Log::error('VolunteerApplicationDecided notification failed: ' . $e->getMessage());
+            }
         } elseif ($volunteer->email) {
             // QA finding: a guest applicant (no account, so no Certificate/
             // ID card can be issued) previously got no notification at all
@@ -74,6 +81,14 @@ class VolunteerAdminController extends Controller
                 Mail::to($volunteer->email)->send(new VolunteerApplicationDecision($volunteer, approved: false));
             } catch (\Throwable $e) {
                 \Log::error('Volunteer rejection email failed: ' . $e->getMessage());
+            }
+        }
+
+        if ($volunteer->user) {
+            try {
+                $volunteer->user->notify(new VolunteerApplicationDecided($volunteer, approved: false));
+            } catch (\Throwable $e) {
+                \Log::error('VolunteerApplicationDecided notification failed: ' . $e->getMessage());
             }
         }
 

@@ -16,6 +16,7 @@ use App\Http\Controllers\Api\V1\NikahInterestController;
 use App\Http\Controllers\Api\V1\NikahPaymentController;
 use App\Http\Controllers\Api\V1\NikahProfileController;
 use App\Http\Controllers\Api\V1\NikahSafetyController;
+use App\Http\Controllers\Api\V1\VolunteerController;
 use Illuminate\Support\Facades\Route;
 
 // GitHub Auto Deploy Webhook
@@ -105,6 +106,12 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
         // matchmaker.* prefix groups rather than duplicated under each.
         Route::get('leads/{lead}/messages', [NikahHireCounselorController::class, 'messages'])->name('leads.messages.index');
         Route::post('leads/{lead}/messages', [NikahHireCounselorController::class, 'sendMessage'])->name('leads.messages.store');
+
+        Route::prefix('volunteer')->name('volunteer.')->group(function () {
+            Route::get('status', [VolunteerController::class, 'status'])->name('status');
+            Route::post('apply', [VolunteerController::class, 'apply'])->name('apply');
+            Route::get('certificate', [VolunteerController::class, 'certificate'])->name('certificate');
+        });
 
         // Nikah Counselor (matchmaker) app — see EnsureUserIsMatchmakerApi's
         // class docblock for why this uses its own 'api.matchmaker' gate
