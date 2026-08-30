@@ -25,7 +25,7 @@ class PostController extends Controller
     public function show(Post $post)
     {
         $viewer = Auth::user();
-        $canPreview = $viewer && ($viewer->id === $post->user_id || $viewer->can('posts.manage'));
+        $canPreview = $viewer && ((int) $viewer->id === (int) $post->user_id || $viewer->can('posts.manage'));
 
         abort_unless($post->status === 'published' || $canPreview, 404);
 
@@ -141,7 +141,7 @@ class PostController extends Controller
 
     public function destroy(Post $post)
     {
-        abort_unless(Auth::id() === $post->user_id || Auth::user()->can('posts.delete'), 403);
+        abort_unless((int) Auth::id() === (int) $post->user_id || Auth::user()->can('posts.delete'), 403);
 
         if ($post->cover_image) {
             Storage::disk('public')->delete($post->cover_image);
@@ -154,7 +154,7 @@ class PostController extends Controller
 
     private function authorizeEdit(Post $post): void
     {
-        abort_unless(Auth::id() === $post->user_id || Auth::user()->can('posts.manage'), 403);
+        abort_unless((int) Auth::id() === (int) $post->user_id || Auth::user()->can('posts.manage'), 403);
     }
 
     private function validatePost(Request $request): array

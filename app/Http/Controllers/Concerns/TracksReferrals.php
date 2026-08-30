@@ -46,7 +46,7 @@ trait TracksReferrals
 
         $application = MatchmakerApplication::where('counselor_code', $code)->where('status', 'certified')->first();
 
-        if (!$application || !$application->user_id || $application->user_id === $user->id) {
+        if (!$application || !$application->user_id || (int) $application->user_id === (int) $user->id) {
             return;
         }
 

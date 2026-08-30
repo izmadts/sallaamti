@@ -233,7 +233,7 @@ class CounselingBookingController extends Controller
 
     public function show(CounselingBooking $booking)
     {
-        abort_unless($booking->member_id === Auth::id(), 403);
+        abort_unless((int) $booking->member_id === (int) Auth::id(), 403);
         $booking->load(['counselor', 'supportQuery.responses.responder']);
 
         return view('counseling.bookings.show', compact('booking'));
@@ -241,7 +241,7 @@ class CounselingBookingController extends Controller
 
     public function cancel(Request $request, CounselingBooking $booking)
     {
-        abort_unless($booking->member_id === Auth::id(), 403);
+        abort_unless((int) $booking->member_id === (int) Auth::id(), 403);
         abort_if(in_array($booking->status, ['completed', 'cancelled']), 403);
 
         $booking->update([
@@ -255,7 +255,7 @@ class CounselingBookingController extends Controller
 
     public function reply(Request $request, CounselingBooking $booking)
     {
-        abort_unless($booking->member_id === Auth::id(), 403);
+        abort_unless((int) $booking->member_id === (int) Auth::id(), 403);
         abort_unless($booking->support_query_id, 404);
 
         $validated = $request->validate(['message' => ['required', 'string', 'max:2000']]);
@@ -272,7 +272,7 @@ class CounselingBookingController extends Controller
 
     public function rate(Request $request, CounselingBooking $booking)
     {
-        abort_unless($booking->member_id === Auth::id(), 403);
+        abort_unless((int) $booking->member_id === (int) Auth::id(), 403);
         abort_unless($booking->status === 'completed', 403);
 
         $validated = $request->validate([

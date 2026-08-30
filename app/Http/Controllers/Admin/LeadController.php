@@ -357,7 +357,7 @@ class LeadController extends Controller
     public function markShortlistSent(Lead $lead, LeadShortlistItem $item)
     {
         $this->authorize_();
-        abort_unless($item->lead_id === $lead->id, 404);
+        abort_unless((int) $item->lead_id === (int) $lead->id, 404);
 
         $item->update(['sent_at' => now()]);
 
@@ -369,7 +369,7 @@ class LeadController extends Controller
     public function removeFromShortlist(Lead $lead, LeadShortlistItem $item)
     {
         $this->authorize_();
-        abort_unless($item->lead_id === $lead->id, 404);
+        abort_unless((int) $item->lead_id === (int) $lead->id, 404);
 
         $item->delete();
 

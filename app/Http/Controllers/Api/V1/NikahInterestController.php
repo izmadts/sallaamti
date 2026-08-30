@@ -89,7 +89,7 @@ class NikahInterestController extends Controller
     public function accept(Request $request, NikahInterest $interest): JsonResponse
     {
         $myProfile = $request->user()->nikahProfile;
-        abort_unless($myProfile && $interest->receiver_profile_id === $myProfile->id, 403);
+        abort_unless($myProfile && (int) $interest->receiver_profile_id === (int) $myProfile->id, 403);
 
         if (!$myProfile->canInteract()) {
             return response()->json(['code' => 'not_verified', 'message' => __('db.Your profile must be fully verified and paid before you can accept interests.')], 403);
@@ -109,7 +109,7 @@ class NikahInterestController extends Controller
     public function decline(Request $request, NikahInterest $interest): JsonResponse
     {
         $myProfile = $request->user()->nikahProfile;
-        abort_unless($myProfile && $interest->receiver_profile_id === $myProfile->id, 403);
+        abort_unless($myProfile && (int) $interest->receiver_profile_id === (int) $myProfile->id, 403);
 
         $interest->update(['status' => 'declined', 'responded_at' => now()]);
 

@@ -45,7 +45,7 @@ class AvailabilityController extends Controller
 
     public function destroy(CounselorAvailability $availability)
     {
-        abort_unless($availability->counselor_id === Auth::id(), 403);
+        abort_unless((int) $availability->counselor_id === (int) Auth::id(), 403);
 
         $availability->delete();
 

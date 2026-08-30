@@ -34,7 +34,7 @@ class QuranTeacherController extends Controller
 
     public function showGroup(QuranClassGroup $group)
     {
-        abort_unless($group->teacher_id === Auth::id(), 403);
+        abort_unless((int) $group->teacher_id === (int) Auth::id(), 403);
 
         $students = $group->activeStudents()->with('admission.messages.sender')->get();
         $todaysLink = $group->todaysLink();
@@ -49,7 +49,7 @@ class QuranTeacherController extends Controller
 
     public function postDailyLink(Request $request, QuranClassGroup $group)
     {
-        abort_unless($group->teacher_id === Auth::id(), 403);
+        abort_unless((int) $group->teacher_id === (int) Auth::id(), 403);
 
         $validated = $request->validate([
             'join_url' => ['required', 'url'],
@@ -72,8 +72,8 @@ class QuranTeacherController extends Controller
 
     public function storeAssessment(Request $request, QuranClassGroup $group, QuranGroupStudent $student)
     {
-        abort_unless($group->teacher_id === Auth::id(), 403);
-        abort_unless($student->quran_class_group_id === $group->id, 403);
+        abort_unless((int) $group->teacher_id === (int) Auth::id(), 403);
+        abort_unless((int) $student->quran_class_group_id === (int) $group->id, 403);
 
         $validated = $request->validate([
             'type' => ['required', 'in:weekly_quiz,monthly_test,quarterly_exam,annual_exam'],
@@ -95,8 +95,8 @@ class QuranTeacherController extends Controller
 
     public function storeProgressReport(Request $request, QuranClassGroup $group, QuranGroupStudent $student)
     {
-        abort_unless($group->teacher_id === Auth::id(), 403);
-        abort_unless($student->quran_class_group_id === $group->id, 403);
+        abort_unless((int) $group->teacher_id === (int) Auth::id(), 403);
+        abort_unless((int) $student->quran_class_group_id === (int) $group->id, 403);
 
         $validated = $request->validate([
             'month' => ['required', 'string'],
@@ -153,7 +153,7 @@ class QuranTeacherController extends Controller
     public function studentDetail(QuranGroupStudent $student)
     {
         $group = $student->group;
-        abort_unless($group->teacher_id === Auth::id(), 403);
+        abort_unless((int) $group->teacher_id === (int) Auth::id(), 403);
 
         $assessments = QuranAssessment::where('quran_admission_id', $student->quran_admission_id)
             ->where('quran_class_group_id', $group->id)
@@ -170,7 +170,7 @@ class QuranTeacherController extends Controller
 
     public function replyToStudent(Request $request, QuranGroupStudent $student)
     {
-        abort_unless($student->group->teacher_id === Auth::id(), 403);
+        abort_unless((int) $student->group->teacher_id === (int) Auth::id(), 403);
         abort_unless($student->admission, 404);
 
         $validated = $request->validate([

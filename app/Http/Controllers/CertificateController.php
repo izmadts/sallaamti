@@ -27,7 +27,7 @@ class CertificateController extends Controller
 
     public function download(Certificate $certificate)
     {
-        abort_unless($certificate->user_id === Auth::id() || Auth::user()->hasRole('admin'), 403);
+        abort_unless((int) $certificate->user_id === (int) Auth::id() || Auth::user()->hasRole('admin'), 403);
 
         $certificate->load('user', 'course', 'issuer');
 

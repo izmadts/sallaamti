@@ -219,7 +219,7 @@ class ClientController extends Controller
     public function removeFromShortlist(Lead $lead, LeadShortlistItem $item): JsonResponse
     {
         $this->authorizeClient($lead);
-        abort_unless($item->lead_id === $lead->id, 404);
+        abort_unless((int) $item->lead_id === (int) $lead->id, 404);
 
         $item->delete();
 
@@ -316,7 +316,7 @@ class ClientController extends Controller
     public function revokeConsent(Lead $lead, MatchmakingConsent $consent): JsonResponse
     {
         $this->authorizeClient($lead);
-        abort_unless($consent->lead_id === $lead->id, 404);
+        abort_unless((int) $consent->lead_id === (int) $lead->id, 404);
         abort_if(!$consent->isActive(), 422, 'This consent was already revoked.');
 
         $consent->update(['revoked_at' => now(), 'revoked_by' => auth()->id()]);
@@ -361,7 +361,7 @@ class ClientController extends Controller
     public function addProposal(Request $request, Lead $lead, ProposalBatch $batch): JsonResponse
     {
         $this->authorizeClient($lead);
-        abort_unless($batch->lead_id === $lead->id, 404);
+        abort_unless((int) $batch->lead_id === (int) $lead->id, 404);
         abort_unless($batch->status === 'draft', 422, 'Only a draft batch can have candidates added.');
 
         $validated = $request->validate([
@@ -386,7 +386,7 @@ class ClientController extends Controller
     public function removeProposal(Lead $lead, ProposalBatch $batch, MatchProposal $proposal): JsonResponse
     {
         $this->authorizeClient($lead);
-        abort_unless($batch->lead_id === $lead->id && $proposal->proposal_batch_id === $batch->id, 404);
+        abort_unless((int) $batch->lead_id === (int) $lead->id && (int) $proposal->proposal_batch_id === (int) $batch->id, 404);
         abort_unless($batch->status === 'draft', 422);
 
         $proposal->delete();
@@ -397,7 +397,7 @@ class ClientController extends Controller
     public function sendBatch(Lead $lead, ProposalBatch $batch): JsonResponse
     {
         $this->authorizeClient($lead);
-        abort_unless($batch->lead_id === $lead->id, 404);
+        abort_unless((int) $batch->lead_id === (int) $lead->id, 404);
 
         if ($batch->proposals()->count() === 0) {
             return response()->json(['message' => 'Add at least one candidate before sending.'], 422);
@@ -436,7 +436,7 @@ class ClientController extends Controller
     public function regenerateLink(Lead $lead, ProposalBatch $batch, MatchProposal $proposal): JsonResponse
     {
         $this->authorizeClient($lead);
-        abort_unless($batch->lead_id === $lead->id && $proposal->proposal_batch_id === $batch->id, 404);
+        abort_unless((int) $batch->lead_id === (int) $lead->id && (int) $proposal->proposal_batch_id === (int) $batch->id, 404);
         abort_unless($proposal->sent_at, 422, 'This candidate has not been sent a link yet.');
         abort_if($proposal->status === 'responded', 422, 'The client already responded to this proposal — nothing to regenerate.');
 

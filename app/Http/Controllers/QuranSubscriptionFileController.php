@@ -14,7 +14,7 @@ class QuranSubscriptionFileController extends Controller
         abort_unless($path && Storage::disk('private')->exists($path), 404);
 
         $user = Auth::user();
-        abort_unless($subscription->user_id === $user->id || $user->hasRole('admin'), 403);
+        abort_unless((int) $subscription->user_id === (int) $user->id || $user->hasRole('admin'), 403);
 
         return Storage::disk('private')->response($path);
     }

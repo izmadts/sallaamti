@@ -181,7 +181,7 @@ class QuranLiveCourseController extends Controller
 
     public function subscribe(QuranLiveCourse $course, QuranAdmission $admission)
     {
-        abort_unless($admission->user_id === Auth::id() && $admission->quran_live_course_id === $course->id, 403);
+        abort_unless((int) $admission->user_id === (int) Auth::id() && (int) $admission->quran_live_course_id === (int) $course->id, 403);
 
         $month = now()->format('Y-m');
         $subscription = $course->subscriptionFor($admission, $month);
@@ -191,7 +191,7 @@ class QuranLiveCourseController extends Controller
 
     public function storeSubscription(Request $request, QuranLiveCourse $course, QuranAdmission $admission)
     {
-        abort_unless($admission->user_id === Auth::id() && $admission->quran_live_course_id === $course->id, 403);
+        abort_unless((int) $admission->user_id === (int) Auth::id() && (int) $admission->quran_live_course_id === (int) $course->id, 403);
 
         $month = now()->format('Y-m');
         $subscription = $course->subscriptionFor($admission, $month);
@@ -250,7 +250,7 @@ class QuranLiveCourseController extends Controller
 
     public function reply(Request $request, QuranAdmission $admission)
     {
-        abort_unless($admission->user_id === Auth::id(), 403);
+        abort_unless((int) $admission->user_id === (int) Auth::id(), 403);
 
         $validated = $request->validate([
             'message' => ['required', 'string', 'min:1', 'max:2000'],

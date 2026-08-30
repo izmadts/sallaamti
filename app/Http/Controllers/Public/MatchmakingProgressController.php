@@ -144,7 +144,7 @@ class MatchmakingProgressController extends Controller
     public function respondToConsent(Request $request, Lead $lead, MatchmakingConsentRequest $consentRequest)
     {
         $this->assertValidToken($request, $lead);
-        abort_unless($consentRequest->lead_id === $lead->id, 404);
+        abort_unless((int) $consentRequest->lead_id === (int) $lead->id, 404);
 
         if (!$this->reverifyLast7($lead, $request)) {
             MatchmakingLinkAccess::record($lead, 'consent_response', $request, 'failed');
@@ -199,7 +199,7 @@ class MatchmakingProgressController extends Controller
     public function respondToProposal(Request $request, Lead $lead, MatchProposal $proposal)
     {
         $this->assertValidToken($request, $lead);
-        abort_unless($proposal->batch->lead_id === $lead->id, 404);
+        abort_unless((int) $proposal->batch->lead_id === (int) $lead->id, 404);
 
         if (!$this->reverifyLast7($lead, $request)) {
             MatchmakingLinkAccess::record($proposal, 'proposal_response', $request, 'failed');

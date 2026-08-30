@@ -105,7 +105,7 @@ class BlogPostController extends Controller
     private function authorizePost(BlogPost $blogPost): void
     {
         abort_unless(
-            $blogPost->user_id === Auth::id() || Auth::user()->hasAnyRole(['admin', 'manager']),
+            (int) $blogPost->user_id === (int) Auth::id() || Auth::user()->hasAnyRole(['admin', 'manager']),
             403
         );
     }

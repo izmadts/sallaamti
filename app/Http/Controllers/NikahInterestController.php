@@ -65,7 +65,7 @@ class NikahInterestController extends Controller
     public function accept(NikahInterest $interest)
     {
         $myProfile = Auth::user()->nikahProfile;
-        abort_unless($myProfile && $interest->receiver_profile_id === $myProfile->id, 403);
+        abort_unless($myProfile && (int) $interest->receiver_profile_id === (int) $myProfile->id, 403);
 
         if (!$myProfile->canInteract()) {
             return back()->with('error', 'Your profile must be fully verified and paid before you can accept interests.');
@@ -79,7 +79,7 @@ class NikahInterestController extends Controller
     public function decline(NikahInterest $interest)
     {
         $myProfile = Auth::user()->nikahProfile;
-        abort_unless($myProfile && $interest->receiver_profile_id === $myProfile->id, 403);
+        abort_unless($myProfile && (int) $interest->receiver_profile_id === (int) $myProfile->id, 403);
 
         $this->declineNikahInterest($interest);
 

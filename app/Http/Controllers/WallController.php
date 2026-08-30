@@ -201,7 +201,7 @@ class WallController extends Controller
     // moderation lever instead: the author or any admin can remove one.
     public function destroyComment(Comment $comment)
     {
-        abort_unless($comment->user_id === Auth::id() || Auth::user()->hasRole('admin'), 403);
+        abort_unless((int) $comment->user_id === (int) Auth::id() || Auth::user()->hasRole('admin'), 403);
 
         $comment->delete();
 

@@ -31,11 +31,11 @@ trait AuthorizesNikahFileAccess
         }
 
         if (in_array($type, ['cnic_front_image', 'cnic_back_image', 'payment_screenshot'])) {
-            abort_unless($profile->user_id === $user->id, 403);
+            abort_unless((int) $profile->user_id === (int) $user->id, 403);
             return Storage::disk('private')->response($path);
         }
 
-        if ($profile->user_id === $user->id) {
+        if ((int) $profile->user_id === (int) $user->id) {
             return Storage::disk('private')->response($path);
         }
 

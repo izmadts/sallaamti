@@ -50,7 +50,7 @@ class NikahPhotoController extends Controller
 
     public function destroy(NikahPhoto $photo)
     {
-        abort_unless($photo->profile->user_id === Auth::id(), 403);
+        abort_unless((int) $photo->profile->user_id === (int) Auth::id(), 403);
 
         Storage::disk('private')->delete($photo->path);
         $wasPrimary = $photo->is_primary;
@@ -67,7 +67,7 @@ class NikahPhotoController extends Controller
 
     public function setPrimary(NikahPhoto $photo)
     {
-        abort_unless($photo->profile->user_id === Auth::id(), 403);
+        abort_unless((int) $photo->profile->user_id === (int) Auth::id(), 403);
 
         // Remove current primary
         $photo->profile->photos()->update(['is_primary' => false]);
@@ -116,7 +116,7 @@ class NikahPhotoController extends Controller
         $ownerProfile = $photo->nikahProfile;
 
         // Owner can always see their own photos
-        if ($photo->nikahProfile->user_id === $requestingUser?->id) {
+        if ((int) $photo->nikahProfile->user_id === (int) $requestingUser?->id) {
             return $this->servePhoto($photo);
         }
 

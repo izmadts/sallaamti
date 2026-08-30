@@ -127,7 +127,7 @@ class NikahBrowseController extends Controller
             'match_percentage' => $breakdown['percentage'],
             'match_criteria' => $breakdown['criteria'],
             'interest_status' => $interest?->status,
-            'is_mine_sent' => $interest && $interest->sender_profile_id === $myProfile->id,
+            'is_mine_sent' => $interest && (int) $interest->sender_profile_id === (int) $myProfile->id,
             'is_saved' => $isSaved,
         ]);
     }

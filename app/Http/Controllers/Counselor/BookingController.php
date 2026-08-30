@@ -34,7 +34,7 @@ class BookingController extends Controller
 
     public function show(CounselingBooking $booking)
     {
-        abort_unless($booking->counselor_id === Auth::id(), 403);
+        abort_unless((int) $booking->counselor_id === (int) Auth::id(), 403);
         $booking->load(['member', 'supportQuery.responses.responder']);
 
         return view('counselor.bookings.show', compact('booking'));
@@ -42,7 +42,7 @@ class BookingController extends Controller
 
     public function confirm(Request $request, CounselingBooking $booking)
     {
-        abort_unless($booking->counselor_id === Auth::id(), 403);
+        abort_unless((int) $booking->counselor_id === (int) Auth::id(), 403);
 
         if ($booking->status !== 'requested') {
             return back()->with('error', 'This session is already ' . str_replace('_', ' ', $booking->status) . ' — nothing to confirm.');
@@ -62,7 +62,7 @@ class BookingController extends Controller
 
     public function complete(Request $request, CounselingBooking $booking)
     {
-        abort_unless($booking->counselor_id === Auth::id(), 403);
+        abort_unless((int) $booking->counselor_id === (int) Auth::id(), 403);
 
         if (in_array($booking->status, ['completed', 'cancelled', 'no_show'])) {
             return back()->with('error', 'This session is already ' . str_replace('_', ' ', $booking->status) . ' — it can\'t be marked complete.');
@@ -85,7 +85,7 @@ class BookingController extends Controller
 
     public function cancel(Request $request, CounselingBooking $booking)
     {
-        abort_unless($booking->counselor_id === Auth::id(), 403);
+        abort_unless((int) $booking->counselor_id === (int) Auth::id(), 403);
 
         if (in_array($booking->status, ['completed', 'cancelled'])) {
             return back()->with('error', 'This session is already ' . str_replace('_', ' ', $booking->status) . ' — it can\'t be cancelled.');
@@ -104,7 +104,7 @@ class BookingController extends Controller
 
     public function markNoShow(CounselingBooking $booking)
     {
-        abort_unless($booking->counselor_id === Auth::id(), 403);
+        abort_unless((int) $booking->counselor_id === (int) Auth::id(), 403);
 
         if (in_array($booking->status, ['completed', 'cancelled', 'no_show'])) {
             return back()->with('error', 'This session is already ' . str_replace('_', ' ', $booking->status) . ' — it can\'t be marked no-show.');
@@ -120,7 +120,7 @@ class BookingController extends Controller
     // thread the booking already created but never surfaced anywhere.
     public function reply(Request $request, CounselingBooking $booking)
     {
-        abort_unless($booking->counselor_id === Auth::id(), 403);
+        abort_unless((int) $booking->counselor_id === (int) Auth::id(), 403);
         abort_unless($booking->support_query_id, 404);
 
         $validated = $request->validate(['message' => ['required', 'string', 'max:2000']]);

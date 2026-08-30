@@ -89,7 +89,7 @@ class TestimonialController extends Controller
 
     private function authorizeOwner(Testimonial $testimonial): void
     {
-        abort_unless($testimonial->user_id === Auth::id(), 403);
+        abort_unless((int) $testimonial->user_id === (int) Auth::id(), 403);
     }
 
     private function validateTestimonial(Request $request): array

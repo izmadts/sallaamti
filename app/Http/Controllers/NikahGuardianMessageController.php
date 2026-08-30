@@ -25,8 +25,8 @@ class NikahGuardianMessageController extends Controller
         abort_unless($myProfile, 403);
 
         abort_unless(
-            $interest->sender_profile_id === $myProfile->id ||
-                $interest->receiver_profile_id === $myProfile->id,
+            (int) $interest->sender_profile_id === (int) $myProfile->id ||
+                (int) $interest->receiver_profile_id === (int) $myProfile->id,
             403
         );
 
@@ -40,7 +40,7 @@ class NikahGuardianMessageController extends Controller
             ->where('sender_id', '!=', Auth::id())
             ->update(['is_read' => true]);
 
-        $otherProfileId = $interest->sender_profile_id === $myProfile->id
+        $otherProfileId = (int) $interest->sender_profile_id === (int) $myProfile->id
             ? $interest->receiver_profile_id
             : $interest->sender_profile_id;
 
@@ -53,8 +53,8 @@ class NikahGuardianMessageController extends Controller
         abort_unless($myProfile, 403);
 
         abort_unless(
-            $interest->sender_profile_id === $myProfile->id ||
-                $interest->receiver_profile_id === $myProfile->id,
+            (int) $interest->sender_profile_id === (int) $myProfile->id ||
+                (int) $interest->receiver_profile_id === (int) $myProfile->id,
             403
         );
 
@@ -69,7 +69,7 @@ class NikahGuardianMessageController extends Controller
             'message' => $request->message,
         ]);
 
-        $recipientProfileId = $interest->sender_profile_id === $myProfile->id
+        $recipientProfileId = (int) $interest->sender_profile_id === (int) $myProfile->id
             ? $interest->receiver_profile_id
             : $interest->sender_profile_id;
         $recipient = \App\Models\NikahProfile::find($recipientProfileId)?->user;

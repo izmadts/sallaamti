@@ -38,7 +38,7 @@ class NikahSafetyController extends Controller
         $interestId = null;
         if ($request->filled('nikah_interest_id')) {
             $interest = \App\Models\NikahInterest::find($request->nikah_interest_id);
-            if ($interest && ($interest->sender_profile_id === $myProfile->id || $interest->receiver_profile_id === $myProfile->id)) {
+            if ($interest && ((int) $interest->sender_profile_id === (int) $myProfile->id || (int) $interest->receiver_profile_id === (int) $myProfile->id)) {
                 $interestId = $interest->id;
             }
         }
@@ -75,7 +75,7 @@ class NikahSafetyController extends Controller
     public function unblock(NikahBlock $block)
     {
         $myProfile = Auth::user()->nikahProfile;
-        abort_unless($myProfile && $block->blocker_profile_id === $myProfile->id, 403);
+        abort_unless($myProfile && (int) $block->blocker_profile_id === (int) $myProfile->id, 403);
 
         $block->delete();
 
