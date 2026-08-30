@@ -3,6 +3,7 @@
 namespace App\Notifications;
 
 use App\Models\NikahInterest;
+use App\Notifications\Channels\FcmChannel;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Notification;
@@ -16,7 +17,16 @@ class NikahInterestAccepted extends Notification implements ShouldQueue
 
     public function via($notifiable): array
     {
-        return ['database', 'mail'];
+        return ['database', 'mail', FcmChannel::class];
+    }
+
+    public function toFcm($notifiable): array
+    {
+        return [
+            'title' => '✅ Interest accepted!',
+            'body' => 'Your interest request was accepted — contact details are now visible.',
+            'data' => ['type' => 'interest_accepted', 'interest_id' => (string) $this->interest->id],
+        ];
     }
 
     public function toMail($notifiable): MailMessage

@@ -2,6 +2,7 @@
 
 namespace App\Notifications;
 
+use App\Notifications\Channels\FcmChannel;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Notification;
@@ -13,7 +14,16 @@ class NikahProfileVerified extends Notification implements ShouldQueue
 
     public function via($notifiable): array
     {
-        return ['database', 'mail'];
+        return ['database', 'mail', FcmChannel::class];
+    }
+
+    public function toFcm($notifiable): array
+    {
+        return [
+            'title' => '✅ Profile verified!',
+            'body' => 'Congratulations! Your Nikah profile is verified and now visible to potential matches.',
+            'data' => ['type' => 'profile_verified'],
+        ];
     }
 
     public function toMail($notifiable): MailMessage

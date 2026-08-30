@@ -2,6 +2,7 @@
 
 namespace App\Notifications;
 
+use App\Notifications\Channels\FcmChannel;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Notification;
@@ -13,7 +14,16 @@ class NikahPaymentConfirmed extends Notification implements ShouldQueue
 
     public function via($notifiable): array
     {
-        return ['database', 'mail'];
+        return ['database', 'mail', FcmChannel::class];
+    }
+
+    public function toFcm($notifiable): array
+    {
+        return [
+            'title' => '💳 Payment confirmed',
+            'body' => 'Your Nikah verification fee payment has been confirmed. Our team will now review your profile.',
+            'data' => ['type' => 'payment_confirmed'],
+        ];
     }
 
     public function toMail($notifiable): MailMessage
