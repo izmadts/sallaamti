@@ -17,10 +17,21 @@ class NikahBrowseController extends Controller
 {
     public function index(Request $request): JsonResponse
     {
+        // Only set when browsing on behalf of a specific client (the
+        // Shortlist/Batches "pick a candidate" flow) — a plain browse has
+        // no client to score candidates against or narrow by gender for.
+        $lead = $request->filled('lead_id') ? Lead::with('requirement.items')->find($request->integer('lead_id')) : null;
+
         $query = NikahProfile::with('user')->matchmakerVisible();
 
         if ($request->filled('gender')) {
             $query->whereHas('user', fn ($q) => $q->where('gender', $request->gender));
+        } elseif ($lead?->gender) {
+            // Picking a candidate for a client of known gender: default to
+            // the opposite gender rather than showing everyone and relying
+            // on the counselor to remember to filter — still overridable
+            // via the Gender filter above if they explicitly set one.
+            $query->whereHas('user', fn ($q) => $q->where('gender', $lead->gender === 'male' ? 'female' : 'male'));
         }
         if ($request->filled('city')) {
             $query->where('city', 'like', '%' . $request->city . '%');
@@ -39,11 +50,6 @@ class NikahBrowseController extends Controller
         }
 
         $profiles = $query->orderByDesc('created_at')->paginate(15)->withQueryString();
-
-        // Only set when browsing on behalf of a specific client (the
-        // Shortlist/Batches "pick a candidate" flow) — a plain browse has
-        // no client to score candidates against.
-        $lead = $request->filled('lead_id') ? Lead::with('requirement.items')->find($request->integer('lead_id')) : null;
 
         return response()->json([
             'profiles' => collect($profiles->items())->map(fn ($p) => $this->cardPayload($p, lead: $lead)),
