@@ -202,7 +202,7 @@
                         </div>
                         <div>
                             <label class="text-xs text-gray-500 block mb-1">{{ __('db.Payment Screenshot') }}</label>
-                            <x-photo-upload-field name="payment_screenshot" :required="true" />
+                            <x-photo-upload-field name="payment_screenshot" :required="true" :allow-camera="false" />
                         </div>
                         <button class="w-full text-white text-sm font-semibold px-5 py-2.5 rounded-lg hover:opacity-90 transition" style="background: #0d6b6b">{{ __('db.Submit Package Payment') }} / پیکج ادائیگی جمع کروائیں</button>
                     </form>

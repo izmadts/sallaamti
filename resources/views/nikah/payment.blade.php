@@ -119,7 +119,7 @@
                     </div>
                     <div>
                         <x-input-label :value="__('db.Payment Screenshot')" />
-                        <x-photo-upload-field name="payment_screenshot" :required="true" />
+                        <x-photo-upload-field name="payment_screenshot" :required="true" :allow-camera="false" />
                     </div>
                     <x-primary-button>✅ {{ __('db.Complete My Verification — Submit Payment') }}</x-primary-button>
                 </form>

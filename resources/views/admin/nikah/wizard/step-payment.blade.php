@@ -63,7 +63,7 @@
                         </div>
                         <div class="mt-4">
                             <x-input-label for="payment_screenshot" value="Payment Screenshot / Receipt Photo" />
-                            <x-photo-upload-field name="payment_screenshot" />
+                            <x-photo-upload-field name="payment_screenshot" :allow-camera="false" />
                             @if (!empty($data['payment_screenshot']))
                             <p class="text-xs text-green-600 mt-1">✓ Already uploaded — choose a file only if you want to replace it.</p>
                             @endif
