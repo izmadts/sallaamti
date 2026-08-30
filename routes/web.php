@@ -752,6 +752,7 @@ Route::middleware(['auth', 'matchmaker'])->prefix('matchmaker')->name('matchmake
 Route::prefix('p')->name('public.matchmaking.progress.')->group(function () {
     Route::get('/{lead}', [\App\Http\Controllers\Public\MatchmakingProgressController::class, 'show'])->name('show');
     Route::post('/{lead}/verify', [\App\Http\Controllers\Public\MatchmakingProgressController::class, 'verify'])->name('verify')->middleware('throttle:10,1');
+    Route::post('/{lead}/register', [\App\Http\Controllers\Public\MatchmakingProgressController::class, 'registerProfile'])->name('register')->middleware('throttle:10,1');
     Route::post('/{lead}/documents', [\App\Http\Controllers\Public\MatchmakingProgressController::class, 'uploadDocuments'])->name('documents')->middleware('throttle:10,1');
     Route::post('/{lead}/consents/{consentRequest}', [\App\Http\Controllers\Public\MatchmakingProgressController::class, 'respondToConsent'])->name('consents.respond')->middleware('throttle:10,1');
     Route::post('/{lead}/proposals/{proposal}/respond', [\App\Http\Controllers\Public\MatchmakingProgressController::class, 'respondToProposal'])->name('proposals.respond')->middleware('throttle:10,1');

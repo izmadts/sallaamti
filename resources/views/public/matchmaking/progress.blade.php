@@ -52,6 +52,93 @@
 
                 @switch($currentStep['type'])
 
+                @case('registration')
+                <div class="bg-white rounded-xl shadow-sm p-6">
+                    <h4 class="font-semibold text-gray-700 mb-1">📝 {{ __('db.Complete Your Registration') }}</h4>
+                    <p class="text-xs text-gray-400 mb-1" dir="rtl">📝 اپنی رجسٹریشن مکمل کریں</p>
+                    <p class="text-xs text-gray-500 mb-4">{{ __("db.Just the essentials to get your profile started — you can add more details later. This creates your Sallaamti account too, so you can check back here or log in directly at sallaamti.com.") }}</p>
+                    <p class="text-xs text-gray-500 mb-4" dir="rtl">صرف بنیادی معلومات آپ کی پروفائل شروع کرنے کے لیے — باقی تفصیلات بعد میں شامل کر سکتے ہیں۔ اس سے آپ کا سلامتی اکاؤنٹ بھی بن جائے گا تاکہ آپ یہاں واپس آ کر یا براہ راست sallaamti.com پر لاگ ان کر سکیں۔</p>
+
+                    @if ($errors->any())
+                    <div class="mb-4 p-3 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">
+                        <ul class="list-disc list-inside">
+                            @foreach ($errors->all() as $error)
+                            <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                    @endif
+
+                    <form method="POST" action="{{ route('public.matchmaking.progress.register', ['lead' => $lead->id, 't' => $lead->progress_link_token]) }}" class="space-y-4">
+                        @csrf
+                        <input type="hidden" name="last7" value="{{ $last7 ?? '' }}">
+
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="text-xs text-gray-500 block mb-1">{{ __('db.Gender') }} <span dir="rtl">/ جنس</span></label>
+                                <select name="gender" required class="border-gray-300 rounded-lg text-sm w-full">
+                                    <option value="">{{ __('db.Select') }}</option>
+                                    <option value="male" {{ old('gender') === 'male' ? 'selected' : '' }}>{{ __('db.Male') }}</option>
+                                    <option value="female" {{ old('gender') === 'female' ? 'selected' : '' }}>{{ __('db.Female') }}</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label class="text-xs text-gray-500 block mb-1">{{ __('db.Date of Birth') }} <span dir="rtl">/ تاریخ پیدائش</span></label>
+                                <input type="date" name="date_of_birth" value="{{ old('date_of_birth') }}" required
+                                    max="{{ now()->subYears(18)->toDateString() }}" min="{{ now()->subYears(100)->toDateString() }}"
+                                    class="border-gray-300 rounded-lg text-sm w-full">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="text-xs text-gray-500 block mb-1">{{ __('db.Marital Status') }} <span dir="rtl">/ ازدواجی حیثیت</span></label>
+                            <select name="marital_status" required class="border-gray-300 rounded-lg text-sm w-full">
+                                <option value="">{{ __('db.Select') }}</option>
+                                <option value="never_married" {{ old('marital_status') === 'never_married' ? 'selected' : '' }}>{{ __('db.Never Married') }}</option>
+                                <option value="divorced" {{ old('marital_status') === 'divorced' ? 'selected' : '' }}>{{ __('db.Divorced') }}</option>
+                                <option value="widowed" {{ old('marital_status') === 'widowed' ? 'selected' : '' }}>{{ __('db.Widowed') }}</option>
+                                <option value="separated" {{ old('marital_status') === 'separated' ? 'selected' : '' }}>{{ __('db.Separated') }}</option>
+                                <option value="married" {{ old('marital_status') === 'married' ? 'selected' : '' }}>{{ __('db.Married (Second Wife)') }}</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="text-xs text-gray-500 block mb-1">{{ __('db.City') }} <span dir="rtl">/ شہر</span></label>
+                            <input type="text" name="city" value="{{ old('city') }}" required class="border-gray-300 rounded-lg text-sm w-full">
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="text-xs text-gray-500 block mb-1">{{ __('db.Guardian Name') }} <span dir="rtl">/ سرپرست کا نام</span></label>
+                                <input type="text" name="guardian_name" value="{{ old('guardian_name') }}" required class="border-gray-300 rounded-lg text-sm w-full">
+                            </div>
+                            <div>
+                                <label class="text-xs text-gray-500 block mb-1">{{ __('db.Guardian Contact') }} <span dir="rtl">/ سرپرست کا رابطہ نمبر</span></label>
+                                <input type="text" name="guardian_contact" value="{{ old('guardian_contact') }}" required class="border-gray-300 rounded-lg text-sm w-full">
+                            </div>
+                        </div>
+
+                        <div class="pt-2 border-t">
+                            <p class="text-xs text-gray-500 mb-2">{{ __('db.Set a 4-digit PIN so you can log in at sallaamti.com anytime, not just this link.') }}</p>
+                            <div class="flex justify-center gap-3 flex-wrap">
+                                <div>
+                                    <label class="text-xs text-gray-500 block mb-1 text-center">{{ __('db.4-Digit PIN') }}</label>
+                                    <input type="text" name="pin" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" required
+                                        class="border-gray-300 rounded-lg text-center text-lg tracking-widest w-32">
+                                </div>
+                                <div>
+                                    <label class="text-xs text-gray-500 block mb-1 text-center">{{ __('db.Confirm PIN') }}</label>
+                                    <input type="text" name="pin_confirmation" inputmode="numeric" pattern="[0-9]{4}" maxlength="4" required
+                                        class="border-gray-300 rounded-lg text-center text-lg tracking-widest w-32">
+                                </div>
+                            </div>
+                        </div>
+
+                        <button class="w-full text-white text-sm font-semibold px-5 py-2.5 rounded-lg hover:opacity-90 transition" style="background: #0d6b6b">{{ __('db.Complete Registration') }} / رجسٹریشن مکمل کریں</button>
+                    </form>
+                </div>
+                @break
+
                 @case('consent')
                 @php $req = $currentStep['data']; @endphp
                 <div class="bg-white rounded-xl shadow-sm p-6">
@@ -340,12 +427,34 @@
                 </div>
                 @break
 
+                @case('interest_pending')
+                @php $waitingInterest = $currentStep['data']; @endphp
+                <div class="bg-white rounded-xl shadow-sm p-8 text-center">
+                    <div class="w-14 h-14 mx-auto rounded-full flex items-center justify-center text-2xl mb-3 bg-pink-50">💌</div>
+                    <h4 class="font-semibold text-gray-700 mb-1">{{ __('db.Matching In Progress') }}</h4>
+                    <p class="text-xs text-gray-400 mb-3" dir="rtl">میچنگ جاری ہے</p>
+                    <p class="text-sm text-gray-600">{{ __("db.You said you're interested in a proposed match — we've forwarded it and are waiting for their response. We'll let you know here as soon as they reply.") }}</p>
+                    <p class="text-sm text-gray-600 mt-1" dir="rtl">آپ نے ایک تجویز کردہ رشتے میں دلچسپی ظاہر کی — ہم نے آگے بھیج دیا ہے اور ان کے جواب کا انتظار ہے۔ جواب آتے ہی آپ کو یہاں بتا دیا جائے گا۔</p>
+                </div>
+                @break
+
                 @endswitch
 
                 @if ($stepsRemaining > 0)
                 <p class="text-center text-xs text-gray-400">+{{ $stepsRemaining }} {{ $stepsRemaining > 1 ? __('db.more things waiting after this') : __('db.more thing waiting after this') }} / اس کے بعد {{ $stepsRemaining }} اور چیز باقی ہے</p>
                 @endif
 
+            @elseif ($isMatched ?? false)
+            {{-- A real mutual, accepted match exists — the whole point of this
+                 journey — so the empty state gets to actually say so instead
+                 of the same generic "nothing waiting" copy. --}}
+            <div class="rounded-xl shadow-sm p-8 text-center text-white" style="background: linear-gradient(135deg, #0d6b6b, #b8962e)">
+                <div class="text-5xl mb-2">🎉💍</div>
+                <h4 class="font-bold text-xl mb-1">{{ __('db.Congratulations — You\'re Matched!') }}</h4>
+                <p class="text-sm opacity-90 mb-3" dir="rtl">مبارک ہو — آپ کا رشتہ طے پا گیا!</p>
+                <p class="text-sm opacity-90">{{ __('db.A mutual match has been confirmed. Your Nikah Counselor will be in touch to guide you through the next steps.') }}</p>
+                <p class="text-sm opacity-90 mt-1" dir="rtl">باہمی رشتہ طے پا چکا ہے۔ اگلے مراحل میں رہنمائی کے لیے آپ کا نکاح مشیر جلد رابطہ کرے گا۔</p>
+            </div>
             @else
             {{-- Nothing waiting on the client right now — no CNIC/consent/package/proposal to act on --}}
             <div class="bg-white rounded-xl shadow-sm p-8 text-center">
