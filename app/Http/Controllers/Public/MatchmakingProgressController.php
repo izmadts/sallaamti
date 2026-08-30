@@ -370,7 +370,13 @@ class MatchmakingProgressController extends Controller
         }
 
         if (!$lead->nikah_package_id) {
-            if (in_array($lead->package_payment_status, [null, 'rejected'], true)) {
+            // Only offer to pick/pay for a package once the counselor has
+            // actually registered a NikahProfile for them — otherwise an
+            // unconverted lead lands straight on "choose a package and
+            // pay" before their profile even exists. An already-submitted
+            // payment still surfaces regardless, since that's just
+            // reporting an existing state, not asking for a new one.
+            if ($lead->nikahProfile && in_array($lead->package_payment_status, [null, 'rejected'], true)) {
                 $queue->push(['type' => 'package', 'data' => null]);
             } elseif ($lead->package_payment_status === 'submitted') {
                 $queue->push(['type' => 'package_pending', 'data' => null]);

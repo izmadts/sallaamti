@@ -1,4 +1,4 @@
-<x-guest-layout :title="__('db.Your Nikah Counseling Progress — Sallaamti')" :description="__('db.Check the status of your Nikah counseling journey with Sallaamti.')">
+<x-minimal-layout :title="__('db.Your Nikah Counseling Progress — Sallaamti')">
 
     <div class="py-12 bg-cream">
         <div class="max-w-2xl mx-auto sm:px-6 lg:px-8 space-y-6">
@@ -445,4 +445,4 @@
 
         </div>
     </div>
-</x-guest-layout>
+</x-minimal-layout>
