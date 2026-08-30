@@ -123,6 +123,7 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
             Route::get('application', [MatchmakerApi\ApplicationController::class, 'show'])->name('application.show');
             Route::get('meta/enums', [MatchmakerApi\MetaController::class, 'enums'])->name('meta.enums');
             Route::get('meta/payment-accounts', [MatchmakerApi\MetaController::class, 'paymentAccounts'])->name('meta.payment-accounts');
+            Route::get('meta/packages', [MatchmakerApi\MetaController::class, 'packages'])->name('meta.packages');
 
             Route::post('device-token', [MatchmakerApi\DeviceTokenController::class, 'store'])->name('device-token.store');
             Route::delete('device-token', [MatchmakerApi\DeviceTokenController::class, 'destroy'])->name('device-token.destroy');

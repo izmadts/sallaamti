@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Api\V1\Matchmaker;
 
 use App\Http\Controllers\Controller;
 use App\Models\MatchmakingConsent;
+use App\Models\NikahPackage;
 use App\Models\Setting;
 use Illuminate\Http\JsonResponse;
 
@@ -65,6 +66,31 @@ class MetaController extends Controller
             'bank_account_title' => Setting::get('bank_account_title'),
             'bank_account_number' => Setting::get('bank_account_number'),
             'bank_account_iban' => Setting::get('bank_account_iban'),
+        ]);
+    }
+
+    // The same admin-managed catalog resources/views/public/matchmaking's
+    // package-selection step already reads — a counselor discussing
+    // options with a client (in person, over WhatsApp) needs to see the
+    // exact same names/prices/limits, not remember them or guess.
+    public function packages(): JsonResponse
+    {
+        return response()->json([
+            'packages' => NikahPackage::active()->ordered()->get()->map(fn (NikahPackage $package) => [
+                'id' => $package->id,
+                'name' => $package->localizedName(),
+                'tagline' => $package->localizedTagline(),
+                'description' => $package->localizedDescription(),
+                'features' => $package->localizedFeatures(),
+                'price' => $package->price,
+                'currency' => $package->currency,
+                'duration_days' => $package->duration_days,
+                'proposal_limit' => $package->proposal_limit,
+                'consultant_level' => $package->consultant_level,
+                'is_one_time' => $package->isOneTime(),
+                'color' => $package->color,
+                'icon' => $package->icon,
+            ]),
         ]);
     }
 }
