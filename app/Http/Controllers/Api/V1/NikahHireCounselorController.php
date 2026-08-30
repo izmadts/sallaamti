@@ -31,12 +31,21 @@ class NikahHireCounselorController extends Controller
         return $profile;
     }
 
-    public function counselors(): JsonResponse
+    public function counselors(Request $request): JsonResponse
     {
+        $city = trim((string) $request->query('city', ''));
+        $gender = $request->query('gender');
+
         $applications = MatchmakerApplication::where('status', 'certified')
             ->with('user')
             ->get()
-            ->filter(fn (MatchmakerApplication $app) => $app->user && $app->user->hasRole('matchmaker'));
+            ->filter(fn (MatchmakerApplication $app) => $app->user && $app->user->hasRole('matchmaker'))
+            ->when($city !== '', fn ($apps) => $apps->filter(
+                fn (MatchmakerApplication $app) => $app->user->city && str_contains(strtolower($app->user->city), strtolower($city))
+            ))
+            ->when(in_array($gender, ['male', 'female'], true), fn ($apps) => $apps->filter(
+                fn (MatchmakerApplication $app) => $app->user->gender === $gender
+            ));
 
         return response()->json([
             'counselors' => $applications->map(fn (MatchmakerApplication $app) => [
@@ -45,6 +54,8 @@ class NikahHireCounselorController extends Controller
                 'avatar' => $app->user->avatar,
                 'bio' => $app->user->counselor_bio,
                 'tier' => $app->level,
+                'city' => $app->user->city,
+                'gender' => $app->user->gender,
             ])->values(),
         ]);
     }
@@ -134,6 +145,15 @@ class NikahHireCounselorController extends Controller
                 'duration_days' => $p->duration_days,
                 'proposal_limit' => $p->proposal_limit,
             ]),
+            'payment_instructions' => [
+                'jazzcash_number' => setting('jazzcash_number'),
+                'jazzcash_account_title' => setting('jazzcash_account_title'),
+                'easypaisa_number' => setting('easypaisa_number'),
+                'bank_name' => setting('bank_name'),
+                'bank_account_title' => setting('bank_account_title'),
+                'bank_account_number' => setting('bank_account_number'),
+                'bank_account_iban' => setting('bank_account_iban'),
+            ],
         ]);
     }
 
