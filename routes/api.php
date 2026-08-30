@@ -10,9 +10,11 @@ use App\Http\Controllers\Api\V1\MetaController;
 use App\Http\Controllers\Api\V1\NikahBrowseController;
 use App\Http\Controllers\Api\V1\NikahCounselorApplicationController;
 use App\Http\Controllers\Api\V1\NikahFileController;
+use App\Http\Controllers\Api\V1\NikahGuardianMessageController;
 use App\Http\Controllers\Api\V1\NikahInterestController;
 use App\Http\Controllers\Api\V1\NikahPaymentController;
 use App\Http\Controllers\Api\V1\NikahProfileController;
+use App\Http\Controllers\Api\V1\NikahSafetyController;
 use Illuminate\Support\Facades\Route;
 
 // GitHub Auto Deploy Webhook
@@ -67,6 +69,7 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
             Route::post('payment', [NikahPaymentController::class, 'store'])->name('payment.store');
 
             Route::get('browse', [NikahBrowseController::class, 'index'])->name('browse.index');
+            Route::get('saved', [NikahBrowseController::class, 'savedProfiles'])->name('saved.index');
             Route::get('profile/{profile}', [NikahBrowseController::class, 'show'])->name('browse.show');
             Route::post('profile/{profile}/save', [NikahBrowseController::class, 'toggleSave'])->name('browse.save');
             Route::get('file/{profile}/{type}', [NikahFileController::class, 'show'])->name('file');
@@ -75,6 +78,15 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
             Route::get('interests', [NikahInterestController::class, 'index'])->name('interests.index');
             Route::post('interests/{interest}/accept', [NikahInterestController::class, 'accept'])->name('interests.accept');
             Route::post('interests/{interest}/decline', [NikahInterestController::class, 'decline'])->name('interests.decline');
+
+            Route::get('interests/{interest}/messages', [NikahGuardianMessageController::class, 'index'])->name('messages.index');
+            Route::post('interests/{interest}/messages', [NikahGuardianMessageController::class, 'store'])->name('messages.store');
+
+            Route::post('block/{profile}', [NikahSafetyController::class, 'block'])->name('block');
+            Route::delete('block/{block}', [NikahSafetyController::class, 'unblock'])->name('unblock');
+            Route::get('blocked', [NikahSafetyController::class, 'blockedList'])->name('blocked');
+            Route::post('report/{profile}', [NikahSafetyController::class, 'report'])->name('report');
+            Route::post('toggle-active', [NikahSafetyController::class, 'toggleActive'])->name('toggle-active');
         });
 
         // Nikah Counselor (matchmaker) app — see EnsureUserIsMatchmakerApi's

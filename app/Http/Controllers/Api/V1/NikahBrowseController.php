@@ -121,6 +121,7 @@ class NikahBrowseController extends Controller
         })->first();
 
         $isSaved = NikahSavedProfile::where('nikah_profile_id', $myProfile->id)->where('saved_profile_id', $profile->id)->exists();
+        $hasAcceptedInterest = $interest && $interest->status === 'accepted';
 
         return response()->json([
             'profile' => $this->cardPayload($profile, [], [], detailed: true),
@@ -129,6 +130,43 @@ class NikahBrowseController extends Controller
             'interest_status' => $interest?->status,
             'is_mine_sent' => $interest && (int) $interest->sender_profile_id === (int) $myProfile->id,
             'is_saved' => $isSaved,
+            // Guardian contact only reveals after mutual acceptance — same
+            // gate resources/views/nikah/profile-view.blade.php uses.
+            'interest_id' => $interest?->id,
+            'has_accepted_interest' => $hasAcceptedInterest,
+            'contact' => $hasAcceptedInterest ? [
+                'guardian_name' => $profile->guardian_name,
+                'guardian_relation' => $profile->guardian_relation,
+                'guardian_contact' => $profile->guardian_contact,
+            ] : null,
+        ]);
+    }
+
+    // The web equivalent (NikahProfileController::saved()) — a member's own
+    // saved/shortlisted candidates, same card shape as the main browse list.
+    public function savedProfiles(Request $request): JsonResponse
+    {
+        $user = $request->user();
+        $myProfile = $user->nikahProfile;
+
+        if ($blocked = $this->browsingBlockedResponse($myProfile)) {
+            return $blocked;
+        }
+
+        $savedIds = $myProfile->savedProfiles()->pluck('saved_profile_id')->toArray();
+        $sentInterestIds = $myProfile->sentInterests()->pluck('receiver_profile_id')->toArray();
+
+        $profiles = NikahProfile::memberSearchable()
+            ->whereIn('id', $savedIds)
+            ->with(['user', 'photos' => fn ($q) => $q->where('is_primary', true)])
+            ->get()
+            ->map(function ($profile) use ($myProfile) {
+                $profile->match_percentage = $profile->matchBreakdownWith($myProfile)['percentage'];
+                return $profile;
+            });
+
+        return response()->json([
+            'profiles' => $profiles->map(fn ($p) => $this->cardPayload($p, $sentInterestIds, $savedIds)),
         ]);
     }
 
