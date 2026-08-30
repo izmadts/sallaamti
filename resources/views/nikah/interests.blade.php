@@ -25,6 +25,7 @@
                                     {{ __('db.Guardian Contact: :contact (:name)', ['contact' => $interest->sender->guardian_contact, 'name' => $interest->sender->guardian_name]) }}
                                 </p>
                                 @endif
+                                <a href="{{ route('nikah.profile.view', $interest->sender) }}" class="text-xs font-semibold mt-1 inline-block" style="color: var(--teal)">{{ __('db.View Full Profile') }} →</a>
                             </div>
                             <div>
                                 @if ($interest->status === 'pending')
@@ -71,6 +72,7 @@
                                                     {{ __('db.Guardian Contact: :contact (:name)', ['contact' => $interest->receiver->guardian_contact, 'name' => $interest->receiver->guardian_name]) }}
                                                 </p>
                                                 @endif
+                                                <a href="{{ route('nikah.profile.view', $interest->receiver) }}" class="text-xs font-semibold mt-1 inline-block" style="color: var(--teal)">{{ __('db.View Full Profile') }} →</a>
                                             </div>
                                         </div>
                                         <span class="text-xs px-2 py-1 rounded-full {{ $interest->status === 'accepted' ? 'bg-green-100 text-green-800' : ($interest->status === 'declined' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800') }}">
