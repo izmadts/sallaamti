@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\V1\NikahBrowseController;
 use App\Http\Controllers\Api\V1\NikahCounselorApplicationController;
 use App\Http\Controllers\Api\V1\NikahFileController;
 use App\Http\Controllers\Api\V1\NikahGuardianMessageController;
+use App\Http\Controllers\Api\V1\NikahHireCounselorController;
 use App\Http\Controllers\Api\V1\NikahInterestController;
 use App\Http\Controllers\Api\V1\NikahPaymentController;
 use App\Http\Controllers\Api\V1\NikahProfileController;
@@ -87,7 +88,23 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
             Route::get('blocked', [NikahSafetyController::class, 'blockedList'])->name('blocked');
             Route::post('report/{profile}', [NikahSafetyController::class, 'report'])->name('report');
             Route::post('toggle-active', [NikahSafetyController::class, 'toggleActive'])->name('toggle-active');
+
+            // Optional bridge into the counselor-assisted flow — a
+            // self-service member choosing to bring in a Nikah Counselor.
+            // See NikahHireCounselorController's class docblock.
+            Route::get('counselors', [NikahHireCounselorController::class, 'counselors'])->name('counselors.index');
+            Route::post('hire-counselor', [NikahHireCounselorController::class, 'hire'])->name('hire-counselor');
+            Route::get('my-lead', [NikahHireCounselorController::class, 'myLead'])->name('my-lead');
+            Route::get('lead-packages', [NikahHireCounselorController::class, 'packages'])->name('lead-packages');
+            Route::post('lead-package', [NikahHireCounselorController::class, 'submitPackage'])->name('lead-package');
         });
+
+        // Counselor<->client messaging for a hired Lead — reachable by
+        // either party (see NikahHireCounselorController::authorizeLeadParty()),
+        // so this deliberately sits outside both the nikah.* and
+        // matchmaker.* prefix groups rather than duplicated under each.
+        Route::get('leads/{lead}/messages', [NikahHireCounselorController::class, 'messages'])->name('leads.messages.index');
+        Route::post('leads/{lead}/messages', [NikahHireCounselorController::class, 'sendMessage'])->name('leads.messages.store');
 
         // Nikah Counselor (matchmaker) app — see EnsureUserIsMatchmakerApi's
         // class docblock for why this uses its own 'api.matchmaker' gate

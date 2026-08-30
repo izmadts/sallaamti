@@ -108,6 +108,11 @@ class Lead extends Model
         return $this->hasMany(MatchmakingConsentRequest::class)->latest('requested_at');
     }
 
+    public function clientMessages()
+    {
+        return $this->hasMany(LeadClientMessage::class)->orderBy('created_at');
+    }
+
     public function hasActiveConsent(string $type): bool
     {
         return $this->consents()->active()->where('consent_type', $type)->exists();
