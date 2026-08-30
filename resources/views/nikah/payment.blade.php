@@ -119,9 +119,7 @@
                     </div>
                     <div>
                         <x-input-label :value="__('db.Payment Screenshot')" />
-                        <input type="file" name="payment_screenshot" accept="image/*" capture="environment" class="w-full mt-1" required
-                            title="{{ __('db.A screenshot of your JazzCash/bank confirmation, or a photo of a printed receipt.') }}">
-                        <p class="text-[11px] text-gray-400 mt-1">📷 {{ __('db.You can take a photo directly on mobile, or upload a saved screenshot.') }}</p>
+                        <x-photo-upload-field name="payment_screenshot" :required="true" />
                     </div>
                     <x-primary-button>✅ {{ __('db.Complete My Verification — Submit Payment') }}</x-primary-button>
                 </form>

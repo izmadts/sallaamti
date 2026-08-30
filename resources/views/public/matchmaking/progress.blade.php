@@ -99,15 +99,15 @@
                         </div>
                         <div>
                             <label class="text-xs text-gray-500 block mb-1">{{ __('db.CNIC Photo (Front)') }} <span dir="rtl">/ شناختی کارڈ کی تصویر (اگلا حصہ)</span></label>
-                            <input type="file" name="cnic_front_image" accept="image/*" capture="environment" class="text-sm w-full">
+                            <x-photo-upload-field name="cnic_front_image" />
                         </div>
                         <div>
                             <label class="text-xs text-gray-500 block mb-1">{{ __('db.CNIC Photo (Back)') }} <span dir="rtl">/ شناختی کارڈ کی تصویر (پچھلا حصہ)</span></label>
-                            <input type="file" name="cnic_back_image" accept="image/*" capture="environment" class="text-sm w-full">
+                            <x-photo-upload-field name="cnic_back_image" />
                         </div>
                         <div>
                             <label class="text-xs text-gray-500 block mb-1">{{ __('db.Your Photo (optional)') }} <span dir="rtl">/ آپ کی تصویر (اختیاری)</span></label>
-                            <input type="file" name="photo" accept="image/*" capture="environment" class="text-sm w-full">
+                            <x-photo-upload-field name="photo" />
                         </div>
                         <div class="flex items-center gap-2">
                             <input type="checkbox" id="allow_photo_sharing" name="allow_photo_sharing" value="1" class="rounded">
@@ -202,7 +202,7 @@
                         </div>
                         <div>
                             <label class="text-xs text-gray-500 block mb-1">{{ __('db.Payment Screenshot') }}</label>
-                            <input type="file" name="payment_screenshot" accept="image/*" capture="environment" required class="text-sm w-full">
+                            <x-photo-upload-field name="payment_screenshot" :required="true" />
                         </div>
                         <button class="w-full text-white text-sm font-semibold px-5 py-2.5 rounded-lg hover:opacity-90 transition" style="background: #0d6b6b">{{ __('db.Submit Package Payment') }} / پیکج ادائیگی جمع کروائیں</button>
                     </form>

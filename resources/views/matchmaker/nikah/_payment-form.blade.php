@@ -33,7 +33,7 @@
     </div>
     <div>
         <label class="text-xs text-gray-500 block mb-1">{{ __('db.Receipt Photo') }}</label>
-        <input type="file" name="payment_screenshot" accept="image/*" capture="environment" required class="text-sm">
+        <x-photo-upload-field name="payment_screenshot" :required="true" />
     </div>
     <x-primary-button>{{ __('db.Submit for Review') }}</x-primary-button>
 </form>
