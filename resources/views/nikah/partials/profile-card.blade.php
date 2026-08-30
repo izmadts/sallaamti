@@ -51,7 +51,7 @@
             <span class="text-[11px] font-semibold bg-purple-500 text-white px-2 py-0.5 rounded-full shadow flex items-center gap-1" title="{{ __('db.Guardian contact confirmed by our team') }}">👨‍👩‍👦 {{ __('db.Guardian Verified') }}</span>
             @endif
             @if (!$badges['cnic'] && !$badges['payment'] && !$badges['guardian'])
-            <span class="text-[11px] font-semibold bg-gray-500/90 text-white px-2 py-0.5 rounded-full shadow flex items-center gap-1" title="{{ __(\"db.Our team hasn't finished reviewing this profile yet\") }}">⏳ {{ __('db.Verification Pending') }}</span>
+            <span class="text-[11px] font-semibold bg-gray-500/90 text-white px-2 py-0.5 rounded-full shadow flex items-center gap-1" title="{{ __("db.Our team hasn't finished reviewing this profile yet") }}">⏳ {{ __('db.Verification Pending') }}</span>
             @endif
         </div>
 
