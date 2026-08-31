@@ -67,15 +67,15 @@ class CounselingBookingController extends Controller
             $date = request('date') ? Carbon::parse(request('date')) : Carbon::today();
             $viewData['date'] = $date;
 
-            if ($choice === 'auto') {
-                $counselorIds = User::role('family_counselor')->pluck('id')->all();
-                $viewData['slots'] = $this->availableSlots($counselorIds, $date);
-            } else {
-                // A specific counselor was chosen - show their whole day
-                // (open + already-booked) instead of just the gaps, so the
-                // member can see the full schedule and pick faster.
-                $viewData['slots'] = $this->slotsWithStatus((int) $choice, $date);
-            }
+            // "Any Available" has no one particular schedule to show - rather
+            // than aggregate every counselor's slots together (which could
+            // misrepresent whose time is actually being booked), the member
+            // just states a preferred date/time and a counselor confirms.
+            // A specific counselor still gets their whole day (open +
+            // already-booked, not just the gaps) so the member can see the
+            // full schedule and pick faster.
+            $viewData['isAnyAvailable'] = $choice === 'auto';
+            $viewData['slots'] = $choice === 'auto' ? [] : $this->slotsWithStatus((int) $choice, $date);
         }
 
         return view("counseling.wizard.step-{$step}", $viewData);

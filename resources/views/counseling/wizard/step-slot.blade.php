@@ -24,6 +24,7 @@
                 <h3 class="font-semibold text-gray-700 mb-1">{{ __('db.Pick a time') }}</h3>
                 <p class="text-sm text-gray-500 mb-4">{{ __('db.All times shown are your local time.') }}</p>
 
+                @unless ($isAnyAvailable)
                 <div class="flex items-center justify-between mb-4 bg-gray-50 rounded-lg p-2 gap-2">
                     <a href="{{ route('counseling.book.step', ['step' => 'slot', 'date' => $date->copy()->subDay()->toDateString()]) }}"
                         class="px-3 py-1 text-sm text-gray-600 hover:text-teal-700 whitespace-nowrap {{ $date->isToday() ? 'invisible' : '' }}">← {{ __('db.Prev day') }}</a>
@@ -36,9 +37,11 @@
                     onchange="window.location.href = '{{ route('counseling.book.step', 'slot') }}?date=' + this.value"
                     class="w-full mb-4 border-gray-300 focus:border-teal-500 focus:ring-teal-500 rounded-lg text-sm"
                     title="{{ __('db.Jump straight to a specific date') }}">
+                @endunless
 
                 @php $openSlots = collect($slots)->reject(fn ($slot) => $slot['booked']); @endphp
 
+                @unless ($isAnyAvailable)
                 <form method="POST" action="{{ route('counseling.book.step.save', 'slot') }}" class="space-y-4">
                     @csrf
 
@@ -71,13 +74,19 @@
                         <x-primary-button :disabled="$openSlots->isEmpty()">{{ __('db.Review & Submit') }} →</x-primary-button>
                     </div>
                 </form>
+                @endunless
 
-                {{-- Fallback: no counselor has open availability (or none is
-                     registered yet) — let the member request anyway with a
-                     preferred time; admin assigns a counselor afterward. --}}
-                <div class="mt-6 pt-6 border-t">
+                {{-- "Any Available" always lands here directly (no one
+                     particular schedule to show a grid for); a specific
+                     counselor falls back here only once their day is fully
+                     booked — admin assigns/confirms a counselor either way. --}}
+                <div @unless ($isAnyAvailable) class="mt-6 pt-6 border-t" @endunless>
+                    @if ($isAnyAvailable)
+                    <div class="mb-4 p-3 bg-teal-50 text-teal-800 text-sm rounded-lg">{{ __('db.Since any counselor can take this, just tell us what time works for you and a counselor will confirm.') }}</div>
+                    @else
                     <h4 class="font-semibold text-gray-700 mb-1">{{ __("db.Can't find a time that works?") }}</h4>
                     <p class="text-sm text-gray-500 mb-3">{{ __('db.Tell us your preferred date and time — we\'ll assign a counselor and confirm with you.') }}</p>
+                    @endif
                     <form method="POST" action="{{ route('counseling.book.step.save', 'slot') }}" class="flex flex-col sm:flex-row gap-3">
                         @csrf
                         <input type="datetime-local" name="preferred_at" required
@@ -87,6 +96,9 @@
                             {{ __('db.Request This Time') }} →
                         </button>
                     </form>
+                    <div class="flex justify-start pt-3">
+                        <a href="{{ route('counseling.book.step', 'counselor') }}" class="btn-base text-gray-600 border border-gray-300 px-4 py-2 rounded-md hover:bg-gray-50">← {{ __('db.Back') }}</a>
+                    </div>
                 </div>
 
             </div>
