@@ -68,11 +68,15 @@ class CounselingController extends Controller
     {
         $validated = $request->validate([
             'date' => ['required', 'date'],
-            'counselor_ids' => ['nullable', 'array'],
-            'counselor_ids.*' => ['integer', 'exists:users,id'],
+            // Comma-separated instead of an array param - sidesteps
+            // needing bracket-notation query encoding (key[]=1&key[]=2)
+            // on the client just for a short list of IDs.
+            'counselor_ids' => ['nullable', 'string'],
         ]);
 
-        $counselorIds = $validated['counselor_ids'] ?? User::role('counselor')->pluck('id')->all();
+        $counselorIds = isset($validated['counselor_ids'])
+            ? array_map('intval', explode(',', $validated['counselor_ids']))
+            : User::role('counselor')->pluck('id')->all();
         $date = Carbon::parse($validated['date']);
 
         $counselorNames = User::whereIn('id', $counselorIds)->pluck('name', 'id');
