@@ -44,8 +44,18 @@ class DonationController extends Controller
     $validated['user_id']      = Auth::id();
     $validated['payment_status'] = 'submitted';
     $validated['is_anonymous'] = $request->has('is_anonymous');
-    $validated['cause']        = $request->input('cause', 'general');
+    // QA finding: the form field and validation rule are both named
+    // "cause", but the actual column (and every notification/admin view
+    // that reads it back) is "purpose" - "cause" isn't a column at all, so
+    // Donation::create() silently dropped it and every donation showed the
+    // "General Fund" fallback regardless of what the donor picked.
+    $validated['purpose']      = $request->input('cause', 'general');
+    unset($validated['cause']);
     $validated['payment_reference'] = $request->input('payment_reference', 'pending-admin-verify');
+    // donor_name has no DB default and the column is NOT nullable, but
+    // validation allows it blank (anonymous / logged-in donors who don't
+    // retype their name) - fall back before it ever reaches the insert.
+    $validated['donor_name']   = $validated['donor_name'] ?: (Auth::user()->name ?? 'Anonymous Donor');
     // QA finding: this was missing entirely — donation_number has no DB
     // default, so every submission was throwing a QueryException before
     // ever reaching the redirect below. Donation::generateNumber() already

@@ -14,6 +14,7 @@ class Donation extends Model
         'phone',
         'amount',
         'purpose',
+        'message',
         'payment_method',
         'payment_reference',
         'payment_screenshot',

@@ -28,7 +28,7 @@ class DonationReceived extends Notification implements ShouldQueue
             ->line('---')
             ->line('**Donation Summary**')
             ->line('Amount: PKR ' . number_format($this->donation->amount))
-            ->line('Cause: ' . ucfirst(str_replace('_', ' ', $this->donation->cause ?? 'General Fund')))
+            ->line('Cause: ' . ucfirst(str_replace('_', ' ', $this->donation->purpose ?? 'General Fund')))
             ->line('Reference: #' . str_pad($this->donation->id, 6, '0', STR_PAD_LEFT))
             ->line('Date: ' . $this->donation->created_at->format('d M Y, h:i A'))
             ->line('---')
