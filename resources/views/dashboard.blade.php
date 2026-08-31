@@ -20,6 +20,25 @@
         </div>
     </x-slot>
 
+    {{-- Nikah Counselor set a temporary password for this account — nudge
+         toward a real one the client chose themselves. Dismissible via
+         Ignore (session-only, like the banner below); reappears on future
+         visits until they actually change it. --}}
+    @if (Auth::user()->must_change_password)
+    <div x-data="{ show: true }" x-show="show" x-cloak
+        class="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-xl max-w-sm w-full p-6">
+            <div class="text-3xl mb-3">🔑</div>
+            <h3 class="font-semibold text-gray-800 text-lg mb-2">{{ __('db.Set Your Own Password') }}</h3>
+            <p class="text-sm text-gray-600 mb-5">{{ __('db.Your Nikah Counselor set up a temporary password for you. For your account\'s security, please choose your own password.') }}</p>
+            <div class="flex items-center justify-end gap-3">
+                <button type="button" @click="show = false" class="text-sm text-gray-500 hover:text-gray-700">{{ __('db.Ignore') }}</button>
+                <a href="{{ route('profile.edit') }}#update-password" class="bg-teal-600 text-white text-sm font-semibold px-4 py-2 rounded-lg hover:bg-teal-700 transition">{{ __('db.Change Password') }}</a>
+            </div>
+        </div>
+    </div>
+    @endif
+
     <div class="py-8">
         <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
 
