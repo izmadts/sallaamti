@@ -9,7 +9,7 @@
 
     <div class="max-w-2xl bg-white rounded-lg shadow-sm p-6">
         <p class="text-sm text-gray-500 mb-4">
-            Select as many photos and videos as you like (up to 30 at a time). Each one becomes a queued post — titled from its filename for now, so open the <a href="{{ route('admin.community-posts.queue') }}" class="text-[--teal] hover:underline">Queue</a> afterwards to fix captions before they go out. They won't publish themselves until the daily scheduled batch (or you) gets to them.
+            Select as many photos and videos as you like (up to 30 at a time), titled from each filename for now.
         </p>
 
         @if ($errors->any())
@@ -22,7 +22,7 @@
         </div>
         @endif
 
-        <form method="POST" action="{{ route('admin.community-posts.bulk-store') }}" enctype="multipart/form-data" class="space-y-4" x-data="{ tags: '', count: 0 }">
+        <form method="POST" action="{{ route('admin.community-posts.bulk-store') }}" enctype="multipart/form-data" class="space-y-4" x-data="{ tags: '', count: 0, mode: 'instant' }">
             @csrf
 
             <div>
@@ -30,6 +30,23 @@
                 <input type="file" name="files[]" accept="image/*,video/*" multiple required class="w-full mt-1"
                     @change="count = $event.target.files.length">
                 <p class="text-xs text-gray-400 mt-1" x-show="count > 0" x-cloak><span x-text="count"></span> file(s) selected. Images max 2MB each, videos max 50MB each.</p>
+            </div>
+
+            <div class="p-4 rounded-lg bg-gray-50 border border-gray-200">
+                <x-input-label value="When should these go live?" />
+                <div class="flex gap-4 mt-2">
+                    <label class="flex items-center gap-2 text-sm text-gray-700">
+                        <input type="radio" name="mode" value="instant" x-model="mode" checked class="text-teal-600">
+                        Publish instantly — appears on the Wall right away
+                    </label>
+                    <label class="flex items-center gap-2 text-sm text-gray-700">
+                        <input type="radio" name="mode" value="queue" x-model="mode" class="text-teal-600">
+                        Add to Queue — review captions and release on your own schedule
+                    </label>
+                </div>
+                <p class="text-xs text-gray-400 mt-2" x-show="mode === 'queue'" x-cloak>
+                    Queued items won't appear on the Wall until you publish them (individually, or via the daily scheduled batch) from the <a href="{{ route('admin.community-posts.queue') }}" class="text-[--teal] hover:underline">Queue</a> page.
+                </p>
             </div>
 
             <div>
@@ -73,7 +90,7 @@
                 </div>
             </div>
 
-            <x-primary-button>Add to Queue</x-primary-button>
+            <x-primary-button x-text="mode === 'instant' ? 'Publish Now' : 'Add to Queue'">Publish Now</x-primary-button>
         </form>
     </div>
 </x-admin-layout>

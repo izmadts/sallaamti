@@ -164,11 +164,15 @@ class CommunityPostController extends Controller
             'files.*' => ['file', 'mimes:jpg,jpeg,png,webp,mp4,mov,webm', 'max:51200'],
             'tags' => ['nullable', 'string'],
             'hashtags' => ['nullable', 'string', 'max:500'],
+            'mode' => ['nullable', 'in:instant,queue'],
         ]);
 
         $tags = $this->parseTags($validated['tags'] ?? null);
         $socialTargets = $this->parseSocialTargets($request);
+        $instant = ($validated['mode'] ?? 'instant') === 'instant';
         $nextPosition = (int) (CommunityPost::where('status', 'scheduled')->max('queue_position') ?? -1) + 1;
+
+        $posts = [];
 
         foreach ($request->file('files') as $file) {
             $isVideo = str_starts_with($file->getMimeType(), 'video/');
@@ -180,8 +184,9 @@ class CommunityPostController extends Controller
                 'tags' => $tags,
                 'hashtags' => $validated['hashtags'] ?? null,
                 'social_targets' => $socialTargets,
-                'status' => 'scheduled',
-                'queue_position' => $nextPosition++,
+                'status' => $instant ? 'published' : 'scheduled',
+                'published_at' => $instant ? now() : null,
+                'queue_position' => $instant ? null : $nextPosition++,
             ]);
 
             if ($isVideo) {
@@ -189,9 +194,19 @@ class CommunityPostController extends Controller
             } else {
                 $post->update(['photo' => $file->store('community-posts', 'public')]);
             }
+
+            $posts[] = $post;
         }
 
-        $count = count($request->file('files'));
+        $count = count($posts);
+
+        if ($instant) {
+            foreach ($posts as $post) {
+                $this->publisher->dispatchSocialPosts($post);
+            }
+
+            return redirect()->route('admin.community-posts.index')->with('status', "{$count} " . Str::plural('item', $count) . ' published to the Wall.');
+        }
 
         return redirect()->route('admin.community-posts.queue')->with('status', "{$count} " . Str::plural('item', $count) . ' added to the queue — edit captions before they go out.');
     }
