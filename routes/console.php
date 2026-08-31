@@ -10,6 +10,7 @@ Artisan::command('inspire', function () {
 
 Schedule::command('bookings:send-reminders')->hourly();
 Schedule::command('users:purge-deactivated')->daily();
+Schedule::command('notifications:prune')->daily();
 Schedule::command('quran:send-class-reminders')->dailyAt('08:00');
 Schedule::command('quran:send-fee-reminders')->dailyAt('08:30');
 Schedule::command('matchmaker:promote-eligible-counselors')->dailyAt('02:00');
