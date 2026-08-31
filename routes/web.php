@@ -477,6 +477,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::post('/leads/{lead}/shortlist/{item}/sent', [\App\Http\Controllers\Admin\LeadController::class, 'markShortlistSent'])->name('leads.shortlist.sent');
     Route::delete('/leads/{lead}/shortlist/{item}', [\App\Http\Controllers\Admin\LeadController::class, 'removeFromShortlist'])->name('leads.shortlist.remove');
     Route::post('/leads/{lead}/progress-link', [\App\Http\Controllers\Admin\LeadController::class, 'regenerateProgressLink'])->name('leads.progress-link.regenerate');
+    Route::post('/leads/{lead}/set-password', [\App\Http\Controllers\Admin\LeadController::class, 'setLoginPassword'])->name('leads.set-password');
     Route::post('/leads/{lead}/package-payment/confirm', [\App\Http\Controllers\Admin\LeadController::class, 'confirmPackagePayment'])->name('leads.package-payment.confirm');
     Route::post('/leads/{lead}/package-payment/reject', [\App\Http\Controllers\Admin\LeadController::class, 'rejectPackagePayment'])->name('leads.package-payment.reject');
     Route::get('/leads/{lead}/file/{type}', [\App\Http\Controllers\Admin\LeadController::class, 'file'])->name('leads.file');

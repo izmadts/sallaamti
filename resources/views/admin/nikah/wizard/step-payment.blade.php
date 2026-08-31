@@ -72,7 +72,7 @@
                     @endif
 
                     <div class="flex justify-between pt-2">
-                        <a href="{{ route($routePrefix . '.nikah.profiles.create.step', 'verification') }}" class="btn-base text-gray-600 border border-gray-300 px-4 py-2 rounded-md hover:bg-gray-50">← Back</a>
+                        <a href="{{ route($routePrefix . '.nikah.profiles.create.step', 'about') }}" class="btn-base text-gray-600 border border-gray-300 px-4 py-2 rounded-md hover:bg-gray-50">← Back</a>
                         <x-primary-button>Next: Review & Confirm →</x-primary-button>
                     </div>
                 </form>

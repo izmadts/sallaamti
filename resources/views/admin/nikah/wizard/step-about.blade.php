@@ -40,9 +40,23 @@
                         </div>
                     </x-nikah-section>
 
+                    <x-nikah-section title="Profile Visibility" icon="👁️" color="teal">
+                        @php $vis = old('visibility', $data['visibility'] ?? 'public'); @endphp
+                        <select id="visibility" name="visibility" required class="border-gray-300 rounded-md shadow-sm w-full">
+                            <option value="public" {{ $vis === 'public' ? 'selected' : '' }}>Public (shows in browse + Google)</option>
+                            <option value="members_only" {{ $vis === 'members_only' ? 'selected' : '' }}>Members Only (shows in browse, not Google)</option>
+                            <option value="matchmaker_assisted" {{ $vis === 'matchmaker_assisted' ? 'selected' : '' }}>Matchmaker-Assisted Only (hidden from member browse, matchmakers can still find it)</option>
+                            <option value="confidential" {{ $vis === 'confidential' ? 'selected' : '' }}>Confidential (hidden from all search/browse — ID-only access)</option>
+                        </select>
+                    </x-nikah-section>
+
+                    <div class="bg-blue-50 border border-blue-200 rounded-lg p-4 text-sm text-blue-700">
+                        🔗 CNIC and photo aren't collected here — after payment, you'll land on the client's page where you can set their login password and share their secure self-upload link.
+                    </div>
+
                     <div class="flex justify-between pt-2">
                         <a href="{{ route($routePrefix . '.nikah.profiles.create.step', 'deen') }}" class="btn-base text-gray-600 border border-gray-300 px-4 py-2 rounded-md hover:bg-gray-50">← Back</a>
-                        <x-primary-button>Next: Verification →</x-primary-button>
+                        <x-primary-button>Next: Payment →</x-primary-button>
                     </div>
                 </form>
 

@@ -411,6 +411,28 @@
                 @endunless
             </div>
 
+            {{-- Login password — a walk-in-registered client's account otherwise only ever gets a random, never-shown password, so this is the only way they get real (cross-device) login credentials --}}
+            @if ($lead->nikahProfile?->user)
+            <div class="bg-white rounded-xl shadow-sm p-6">
+                <h3 class="font-semibold text-gray-700 mb-1 border-b pb-2">🔑 Client Login Password</h3>
+                <p class="text-xs text-gray-500 mt-2 mb-3">Set a temporary password so {{ $lead->name }} can log into the Sallaamti app/website themselves. They'll be prompted to choose their own on first login.</p>
+                <form method="POST" action="{{ route('admin.leads.set-password', $lead) }}" class="flex flex-wrap items-center gap-2"
+                    onsubmit="document.getElementById('admin-set-password-confirm-{{ $lead->id }}').value = document.getElementById('admin-set-password-input-{{ $lead->id }}').value; return confirm('Set this as the client\'s new login password?')">
+                    @csrf
+                    <input type="text" name="password" id="admin-set-password-input-{{ $lead->id }}" required minlength="8"
+                        placeholder="Temporary password" class="border-gray-300 rounded-lg text-sm">
+                    <input type="hidden" name="password_confirmation" id="admin-set-password-confirm-{{ $lead->id }}">
+                    <button type="button"
+                        onclick="const chars='ABCDEFGHJKMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789'; let v=''; for(let i=0;i<10;i++){v+=chars[Math.floor(Math.random()*chars.length)];} document.getElementById('admin-set-password-input-{{ $lead->id }}').value=v;"
+                        class="text-xs font-semibold px-2 py-1.5 rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-50">🎲 Generate</button>
+                    <button type="button"
+                        onclick="navigator.clipboard.writeText(document.getElementById('admin-set-password-input-{{ $lead->id }}').value); this.textContent = '✅ Copied!'; setTimeout(() => this.textContent = '📋 Copy', 1500);"
+                        class="text-xs font-semibold px-2 py-1.5 rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-50">📋 Copy</button>
+                    <button type="submit" class="text-xs font-semibold px-3 py-1.5 rounded-lg bg-gray-800 text-white hover:opacity-90">Set Password</button>
+                </form>
+            </div>
+            @endif
+
             {{-- Timeline --}}
             <div class="bg-white rounded-xl shadow-sm p-6">
                 <h3 class="font-semibold text-gray-700 mb-3 border-b pb-2">🕓 Activity Timeline ({{ $lead->timelineEvents->count() }})</h3>

@@ -408,6 +408,32 @@ class LeadController extends Controller
         return back()->with('status', 'Progress link ready.');
     }
 
+    // Admin's own equivalent of Matchmaker\ClientController::setLoginPassword()
+    // — a plain matchmaker's version lives under the matchmaker.* route
+    // group (gated by the 'matchmaker' role middleware), which a full admin
+    // without that role can't reach, so this exists here too rather than
+    // sending admin through a route they'd get bounced from.
+    public function setLoginPassword(Request $request, Lead $lead)
+    {
+        $this->authorize_();
+
+        $user = $lead->nikahProfile?->user;
+        abort_unless($user, 422, 'This client needs a linked Sallaamti profile before a login password can be set.');
+
+        $validated = $request->validate([
+            'password' => ['required', 'confirmed', \Illuminate\Validation\Rules\Password::defaults()],
+        ]);
+
+        $user->update([
+            'password' => \Illuminate\Support\Facades\Hash::make($validated['password']),
+            'must_change_password' => true,
+        ]);
+
+        MatchmakingTimelineEvent::log($lead, $lead->nikahProfile, 'login_password_set', 'A temporary login password was set for this client by admin.');
+
+        return back()->with('status', 'Login password set — share it with the client now.');
+    }
+
     // A client's own package selection + payment proof
     // (Public\MatchmakingProgressController::selectPackage()) only ever
     // records a claim — this is the one moment that actually activates it,

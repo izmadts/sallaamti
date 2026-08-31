@@ -27,14 +27,23 @@ class ClientProfileController extends Controller
 
     private const CREATION_REQUIRED = ['date_of_birth', 'city', 'guardian_name', 'guardian_contact'];
 
+    // Hard security boundary, not just a client-side omission: a Nikah
+    // Counselor must never be able to submit a client's CNIC or photo
+    // through this walk-in endpoint, under any circumstances, even via a
+    // raw API call that bypasses the app's UI entirely. Stripped from the
+    // request before $submittedKeys is ever built, so no rule ever exists
+    // for these keys and nothing in $validated can carry them through -
+    // the file-upload branch that used to store cnic_front_image/
+    // cnic_back_image/photo was removed for the same reason. CNIC/photo
+    // are collected only when the client uploads them themselves, later,
+    // through their own authenticated session (Api\V1\NikahProfileController).
+    private const NC_FORBIDDEN_FIELDS = ['cnic_number', 'cnic_front_image', 'cnic_back_image', 'photo', 'allow_photo_sharing'];
+
     private const FIELD_LABELS = [
         'date_of_birth' => 'Date of Birth',
         'city' => 'City',
         'guardian_name' => 'Guardian Name',
         'guardian_contact' => 'Guardian Contact Number',
-        'cnic_number' => 'CNIC Number',
-        'cnic_front_image' => 'CNIC front image',
-        'cnic_back_image' => 'CNIC back image',
         'identifier' => 'Email or Phone',
     ];
 
@@ -97,7 +106,7 @@ class ClientProfileController extends Controller
             ], [], ['identifier' => $this->fieldLabel('identifier')]);
         }
 
-        $submittedKeys = array_keys($request->all());
+        $submittedKeys = array_diff(array_keys($request->all()), self::NC_FORBIDDEN_FIELDS);
 
         if ($request->has('height') || $request->has('height_other')) {
             $submittedKeys[] = 'height';
@@ -138,23 +147,6 @@ class ClientProfileController extends Controller
         }
         if ($request->has('open_to_polygamy')) {
             $validated['open_to_polygamy'] = $request->boolean('open_to_polygamy');
-        }
-        if ($request->has('allow_photo_sharing')) {
-            $validated['allow_photo_sharing'] = $request->boolean('allow_photo_sharing');
-        }
-
-        try {
-            foreach (['cnic_front_image', 'cnic_back_image', 'photo'] as $file) {
-                if ($request->hasFile($file)) {
-                    $disk = $file === 'photo' ? 'nikah/photos' : 'nikah/cnic';
-                    $maxDimension = $file === 'photo' ? 1200 : 1600;
-                    $quality = $file === 'photo' ? 82 : 85;
-                    $validated[$file] = ImageOptimizer::store($request->file($file), $disk, 'private', maxDimension: $maxDimension, quality: $quality);
-                }
-            }
-        } catch (\Throwable $e) {
-            report($e);
-            throw ValidationException::withMessages(['photo' => __('db.Sorry, we could not save the uploaded photo(s) — please try again in a moment.')]);
         }
 
         if (!$profile) {

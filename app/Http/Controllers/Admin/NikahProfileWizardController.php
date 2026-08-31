@@ -22,30 +22,36 @@ use Illuminate\Validation\Rule;
 // HasWizardSteps session-per-step pattern as the member-facing
 // NikahProfileWizardController, plus a leading "account" step for the
 // name/identifier/gender that only exists here (walk-ins don't have an
-// account yet). Held to the exact same validation (incl. required CNIC
-// photos) as a member creating their own profile — this is in-person,
-// consented data entry, not the same thing as a matchmaker browsing an
-// existing member's CNIC/photo without their knowledge (see the
-// Matchmaker browse controller, which redacts both).
+// account yet). CNIC/photo are deliberately NOT collected here at all —
+// see the comment on $wizardStepFields below.
 class NikahProfileWizardController extends Controller
 {
     use HasWizardSteps, ValidatesNikahProfile, RegistersMinimalUsers, SubmitsNikahPayment;
 
     protected string $wizardKey = 'admin_nikah_profile';
 
+    // CNIC/photo were deliberately dropped from this walk-in flow entirely
+    // (project decision, 2026-08-31) — a counselor collecting a stranger's
+    // ID document/photo over the phone or on the spot was exactly the "no
+    // CNIC over WhatsApp" problem the old remote_verification checkbox
+    // existed to work around case-by-case. Rather than a per-registration
+    // choice, self-upload is now just how it always works: the counselor
+    // registers everything else and takes payment, and the client uploads
+    // their own CNIC/photo later from their own progress link after
+    // logging in (see finalize()'s always-on progress-link status message,
+    // and Matchmaker\ClientController::setLoginPassword()/web equivalent
+    // for how they get a real login to do that with).
     protected array $wizardStepFields = [
         'account' => ['name', 'identifier', 'gender'],
         'basic' => ['date_of_birth', 'height', 'height_other', 'marital_status', 'has_children', 'children_count', 'living_situation', 'education', 'profession', 'city', 'state', 'country'],
         'family' => ['caste', 'family_type', 'guardian_name', 'guardian_contact', 'guardian_relation', 'ethnicity'],
         'deen' => ['sect', 'sect_other', 'prayer_frequency', 'hijab_or_beard', 'smokes', 'diet', 'open_to_polygamy'],
-        'about' => ['about', 'expectations'],
-        'verification' => ['cnic_number', 'cnic_front_image', 'cnic_back_image', 'photo', 'allow_photo_sharing', 'visibility', 'remote_verification'],
+        'about' => ['about', 'expectations', 'visibility'],
         // Optional — a matchmaker collecting payment on the spot can submit
-        // it right here so the whole document set (CNIC + payment) is
-        // reviewed by admin together; skippable if the client isn't paying
-        // today (they can pay later themselves, or it can be submitted
-        // afterward from the profile page — see Matchmaker\
-        // NikahBrowseController::submitPayment()).
+        // it right here; skippable if the client isn't paying today (they
+        // can pay later themselves, or it can be submitted afterward from
+        // the profile page — see Matchmaker\NikahBrowseController::
+        // submitPayment()).
         'payment' => ['payment_method', 'payment_reference', 'payment_screenshot'],
     ];
 
@@ -55,7 +61,6 @@ class NikahProfileWizardController extends Controller
         'family' => 'Family & Guardian',
         'deen' => 'Deen & Lifestyle',
         'about' => 'About',
-        'verification' => 'Verification & Visibility',
         'payment' => 'Payment',
     ];
 
@@ -161,36 +166,8 @@ class NikahProfileWizardController extends Controller
         }
 
         $rules = collect($this->nikahProfileRules())->only($this->wizardStepFields[$step])->toArray();
-        $existing = $this->wizardStepData($step);
-
-        if ($step === 'verification') {
-            if (!empty($existing['cnic_front_image'])) {
-                $rules['cnic_front_image'] = ['nullable', 'image', 'max:4096'];
-            }
-            if (!empty($existing['cnic_back_image'])) {
-                $rules['cnic_back_image'] = ['nullable', 'image', 'max:4096'];
-            }
-
-            $rules['remote_verification'] = ['nullable', 'boolean'];
-
-            // A matchmaker registering someone they can't physically meet
-            // shouldn't be forced to collect CNIC/photo over WhatsApp just
-            // to get past this step (see project_matchmaker_hiring_document
-            // §20 — "no CNIC over WhatsApp"). Checking this box defers
-            // collection to a secure self-upload the client does
-            // themselves from their own progress link (see finalize()).
-            if ($request->boolean('remote_verification')) {
-                $rules['cnic_number'] = ['nullable', 'string', 'max:20'];
-                $rules['cnic_front_image'] = ['nullable', 'image', 'max:4096'];
-                $rules['cnic_back_image'] = ['nullable', 'image', 'max:4096'];
-            }
-        }
 
         $validated = $request->validate($rules, $this->nikahProfileMessages());
-
-        if ($step === 'verification') {
-            $validated['remote_verification'] = $request->boolean('remote_verification');
-        }
 
         if ($step === 'basic') {
             $validated['height'] = $this->resolveHeight($request);
@@ -201,44 +178,17 @@ class NikahProfileWizardController extends Controller
             $validated['open_to_polygamy'] = $request->boolean('open_to_polygamy');
         }
 
-        if ($step === 'verification') {
-            try {
-                foreach (['cnic_front_image', 'cnic_back_image', 'photo'] as $file) {
-                    if ($request->hasFile($file)) {
-                        $disk = $file === 'photo' ? 'nikah/photos' : 'nikah/cnic';
-                        $maxDimension = $file === 'photo' ? 1200 : 1600;
-                        $quality = $file === 'photo' ? 82 : 85;
-                        $validated[$file] = ImageOptimizer::store($request->file($file), $disk, 'private', maxDimension: $maxDimension, quality: $quality);
-                    } elseif (!empty($existing[$file])) {
-                        $validated[$file] = $existing[$file];
-                    }
-                }
-            } catch (\Throwable $e) {
-                report($e);
-                $message = 'Sorry, we could not save the uploaded photo(s) — please try again in a moment.';
-
-                if ($request->wantsJson()) {
-                    throw \Illuminate\Validation\ValidationException::withMessages(['photo' => $message]);
-                }
-
-                return back()->withInput()->withErrors(['photo' => $message]);
-            }
-
-            $validated['allow_photo_sharing'] = $request->boolean('allow_photo_sharing');
-        }
-
         $this->saveWizardStep($step, $validated);
 
         return $this->nextStepRedirect($step, $request);
     }
 
-    // Accepts the request so the verification step's fetch()-based submit
-    // (see admin/nikah/wizard/step-verification's script) gets a JSON
-    // redirect instead of a real 302 — turns a browser-level upload
-    // failure (e.g. Chrome's ERR_UPLOAD_FILE_CHANGED) into this page's own
-    // friendly in-place error instead of Chrome's network-error screen.
-    // Every other step still gets the plain redirect since only that
-    // view's form actually sends the AJAX headers.
+    // Accepts the request so a step whose view submits via fetch() with
+    // AJAX headers gets a JSON redirect instead of a real 302 (useful for
+    // turning a browser-level upload failure, e.g. Chrome's
+    // ERR_UPLOAD_FILE_CHANGED, into a friendly in-place error instead of
+    // Chrome's network-error screen) — not currently used by any step in
+    // this wizard, but kept since a future file-upload step may want it.
     private function nextStepRedirect(string $step, ?Request $request = null)
     {
         $steps = $this->wizardSteps();
@@ -284,14 +234,11 @@ class NikahProfileWizardController extends Controller
         $data = $this->wizardAllData();
         $accountData = collect($data)->only(['name', 'identifier', 'gender'])->toArray();
         $paymentData = collect($data)->only(['payment_method', 'payment_reference', 'payment_screenshot'])->toArray();
-        $remoteVerification = (bool) ($data['remote_verification'] ?? false);
         // Payment fields are handled separately below via
         // recordNikahPaymentSubmission() (sets payment_status/amount
         // together, not left to mass-assignment) — excluded here so
         // create() doesn't half-apply them without a status.
-        // remote_verification is wizard-only bookkeeping, not a real
-        // NikahProfile column.
-        $profileData = collect($data)->except(['name', 'identifier', 'gender', 'payment_method', 'payment_reference', 'payment_screenshot', 'remote_verification'])->toArray();
+        $profileData = collect($data)->except(['name', 'identifier', 'gender', 'payment_method', 'payment_reference', 'payment_screenshot'])->toArray();
 
         $identifier = $accountData['identifier'];
         $isEmail = (bool) filter_var($identifier, FILTER_VALIDATE_EMAIL);
@@ -312,14 +259,15 @@ class NikahProfileWizardController extends Controller
 
         $profile = NikahProfile::create($profileData);
 
-        // Link (or create) the Lead this profile belongs to — needed so a
-        // remote-verification self-upload has a WhatsApp number and a
+        // Link (or create) the Lead this profile belongs to — needed so the
+        // client's own self-upload of their CNIC/photo (always required
+        // now — see $wizardStepFields' comment) has a WhatsApp number and a
         // progress link to be gated by. If the wizard was reached via
         // ClientController::convert(), that Lead is reused (and, as a side
         // fix, actually gets linked back now — previously the matchmaker
-        // had to do that manually afterward). Otherwise, only when remote
-        // verification was actually requested, a minimal Lead is created
-        // so the "one link for everything" mechanism is always available.
+        // had to do that manually afterward). Otherwise a minimal Lead is
+        // always created so the "one link for everything" mechanism is
+        // always available.
         $leadId = session("{$this->wizardSessionKey()}.lead_id");
         $lead = null;
 
@@ -355,21 +303,22 @@ class NikahProfileWizardController extends Controller
 
         if ($isEmail) {
             Password::sendResetLink(['email' => $user->email]);
-            $status .= ' A password-setup link was emailed to them so they can log in.';
+            $status .= ' A password-setup link was emailed to them so they can log in — or set a temporary password yourself below and hand it to them directly.';
         } else {
-            $status .= ' No email was provided, so no login link could be sent — add one to their account later via Users, then use "Send Password Reset Link" there.';
+            $status .= ' Set a temporary login password for them below (under "Client Login Password") and hand it to them directly — they\'ll be asked to choose their own once they log in.';
         }
 
-        if ($remoteVerification) {
-            if ($lead && $lead->phone) {
-                if (!$lead->progress_link_token) {
-                    $lead->update(['progress_link_token' => Str::random(40)]);
-                }
-                $link = \App\Http\Controllers\Matchmaker\ClientController::progressLink($lead);
-                $status .= " Their CNIC/photo weren't collected today — send them this one secure link and they can upload everything themselves (it also shows their status and proposals): {$link}. They'll enter the last 7 digits of the WhatsApp number on file, every time.";
-            } else {
-                $status .= ' Their CNIC/photo weren\'t collected today, but a phone number is needed to secure a self-upload link — add one to their account, then generate their progress link from the client page.';
+        // CNIC/photo are never collected in this flow (see $wizardStepFields'
+        // comment) — the client always needs their own link to upload those
+        // later, not only in some conditional case.
+        if ($lead && $lead->phone) {
+            if (!$lead->progress_link_token) {
+                $lead->update(['progress_link_token' => Str::random(40)]);
             }
+            $link = \App\Http\Controllers\Matchmaker\ClientController::progressLink($lead);
+            $status .= " Their CNIC/photo weren't collected today — send them this one secure link and they can upload everything themselves (it also shows their status and proposals): {$link}. They'll enter the last 7 digits of the WhatsApp number on file, every time.";
+        } else {
+            $status .= ' Their CNIC/photo weren\'t collected today, but a phone number is needed to secure a self-upload link — add one to their account, then generate their progress link from the client page.';
         }
 
         $fee = $profile->applicableVerificationFee();
@@ -385,14 +334,17 @@ class NikahProfileWizardController extends Controller
 
         $this->clearWizardSession();
 
-        // A plain matchmaker (nikah.create-profile only, not nikah.view/
-        // nikah.manage) can't open the admin verification-review page —
-        // that was sending them straight into a 403 right after finishing
-        // the wizard. Send them to their own Browse Profiles view of the
-        // same profile instead; a full admin still lands on the real
-        // review page.
-        $redirectRoute = auth()->user()->can('nikah.view') ? 'admin.nikah.show' : 'matchmaker.nikah.show';
+        // Land back on the Lead's own page (not the Nikah profile's) —
+        // that's where "Client Login Password" and the progress-link
+        // controls actually live, so the counselor can immediately set
+        // credentials and hand off the self-upload link right after
+        // finishing, instead of having to navigate there separately.
+        // routeNamePrefix() (not the nikah.view permission check this used
+        // before) is the right switch here since this is about which Lead
+        // page the current user's role can actually reach, not about
+        // Nikah-profile-specific permissions.
+        $redirectRoute = $this->routeNamePrefix() === 'admin' ? 'admin.leads.show' : 'matchmaker.clients.show';
 
-        return redirect()->route($redirectRoute, $profile)->with('status', $status);
+        return redirect()->route($redirectRoute, $lead)->with('status', $status);
     }
 }

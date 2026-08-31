@@ -11,7 +11,7 @@
         <div class="max-w-3xl mx-auto sm:px-6 lg:px-8">
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
 
-                <x-wizard-progress :steps="$steps" :titles="$stepTitles" current="verification" />
+                <x-wizard-progress :steps="$steps" :titles="$stepTitles" current="payment" />
 
                 @if ($errors->any())
                 <div class="mb-4 p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg">
@@ -92,12 +92,7 @@
                     <div class="border rounded-lg p-4 flex justify-between items-start">
                         <div>
                             <p class="text-xs text-gray-400">Verification & Visibility</p>
-                            @if (!empty($data['remote_verification']))
-                            <p class="text-sm text-blue-700">🔗 Client will upload CNIC/photo themselves via a secure link after registration.</p>
-                            @else
-                            <p class="text-sm text-gray-800">CNIC: {{ $data['cnic_number'] }}</p>
-                            <p class="text-sm text-gray-600">{{ !empty($data['cnic_front_image']) && !empty($data['cnic_back_image']) ? '✓ Front & back photos uploaded' : 'Missing CNIC photo(s)' }}</p>
-                            @endif
+                            <p class="text-sm text-blue-700">🔗 Client will upload their CNIC/photo themselves via a secure link after registration.</p>
                             <p class="text-sm text-gray-600">Visibility: {{ match($data['visibility'] ?? null) {
                                 'public' => 'Public',
                                 'members_only' => 'Members Only',
@@ -106,7 +101,7 @@
                                 default => '—',
                             } }}</p>
                         </div>
-                        <a href="{{ route($routePrefix . '.nikah.profiles.create.step', 'verification') }}" class="text-xs text-teal-700 hover:underline">Edit</a>
+                        <a href="{{ route($routePrefix . '.nikah.profiles.create.step', 'about') }}" class="text-xs text-teal-700 hover:underline">Edit</a>
                     </div>
 
                     <div class="border rounded-lg p-4 flex justify-between items-start">
