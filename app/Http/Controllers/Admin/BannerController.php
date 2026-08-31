@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Banner;
+use App\Services\ImageOptimizer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -31,7 +32,7 @@ class BannerController extends Controller
             'image'       => ['required', 'image', 'max:4096'],
         ]);
 
-        $validated['image'] = $request->file('image')->store('banners', 'public');
+        $validated['image'] = ImageOptimizer::store($request->file('image'), 'banners', 'public', maxDimension: 1920, quality: 82);
         $validated['is_active'] = $request->has('is_active');
 
         Banner::create($validated);
@@ -56,7 +57,7 @@ class BannerController extends Controller
 
         if ($request->hasFile('image')) {
             Storage::disk('public')->delete($banner->image);
-            $validated['image'] = $request->file('image')->store('banners', 'public');
+            $validated['image'] = ImageOptimizer::store($request->file('image'), 'banners', 'public', maxDimension: 1920, quality: 82);
         }
 
         $validated['is_active'] = $request->has('is_active');

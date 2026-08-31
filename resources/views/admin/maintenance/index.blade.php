@@ -90,6 +90,44 @@
                 </div>
             </div>
 
+            {{-- Logs --}}
+            <div class="bg-white rounded-xl shadow-sm p-6">
+                <div class="flex flex-wrap items-start justify-between gap-3 mb-4">
+                    <div>
+                        <h3 class="font-semibold text-gray-800">📄 Logs</h3>
+                        <p class="text-xs text-gray-400 mt-1">
+                            New errors now rotate into a fresh dated file daily and auto-delete after {{ env('LOG_DAILY_DAYS', 14) }} days. This clears whatever already piled up before that took effect — nothing reads these files back, so it's always safe to clear.
+                        </p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-2xl font-bold text-gray-800">{{ $logsTotalMb }} MB</p>
+                        <p class="text-xs text-gray-400">{{ $logFiles->count() }} files</p>
+                    </div>
+                </div>
+
+                <form method="POST" action="{{ route('admin.maintenance.clear-logs') }}"
+                    onsubmit="return confirm('Delete all {{ $logFiles->count() }} log file(s)? This cannot be undone.')" class="mb-4">
+                    @csrf
+                    <button class="bg-red-600 text-white text-sm px-4 py-2 rounded hover:bg-red-700" @if($logFiles->isEmpty()) disabled @endif>
+                        🗑️ Clear Log Files
+                    </button>
+                </form>
+
+                @if ($logFiles->isNotEmpty())
+                <details>
+                    <summary class="text-xs text-gray-500 cursor-pointer">Show log files</summary>
+                    <div class="mt-3 space-y-1">
+                        @foreach ($logFiles as $file)
+                        <div class="flex justify-between text-xs text-gray-500 py-1 border-b border-gray-50">
+                            <span>{{ $file['name'] }} <span class="text-gray-400">— {{ $file['modifiedAt']->format('d M Y') }}</span></span>
+                            <span>{{ $file['sizeMb'] }} MB</span>
+                        </div>
+                        @endforeach
+                    </div>
+                </details>
+                @endif
+            </div>
+
         </div>
     </div>
 </x-admin-layout>

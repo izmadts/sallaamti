@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\BlogPost;
+use App\Services\ImageOptimizer;
 use App\Support\HtmlSanitizer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -38,7 +39,7 @@ class BlogPostController extends Controller
         $validated['status'] = 'draft';
 
         if ($request->hasFile('cover_image')) {
-            $validated['cover_image'] = $request->file('cover_image')->store('blog-posts', 'public');
+            $validated['cover_image'] = ImageOptimizer::store($request->file('cover_image'), 'blog-posts', 'public', maxDimension: 1600, quality: 82);
         }
 
         BlogPost::create($validated);
@@ -63,7 +64,7 @@ class BlogPostController extends Controller
             if ($blog_post->cover_image) {
                 Storage::disk('public')->delete($blog_post->cover_image);
             }
-            $validated['cover_image'] = $request->file('cover_image')->store('blog-posts', 'public');
+            $validated['cover_image'] = ImageOptimizer::store($request->file('cover_image'), 'blog-posts', 'public', maxDimension: 1600, quality: 82);
         }
 
         $blog_post->update($validated);

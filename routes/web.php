@@ -365,6 +365,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
         Route::get('maintenance', [SystemMaintenanceController::class, 'index'])->name('maintenance.index');
         Route::post('maintenance/optimize-database', [SystemMaintenanceController::class, 'optimizeDatabase'])->name('maintenance.optimize-database');
         Route::post('maintenance/optimize-images', [SystemMaintenanceController::class, 'optimizeImages'])->name('maintenance.optimize-images');
+        Route::post('maintenance/clear-logs', [SystemMaintenanceController::class, 'clearLogs'])->name('maintenance.clear-logs');
 
         // Bulk messaging (Email / WhatsApp) — uses the same Gmail/WhatsApp
         // credentials as Integrations, and touches every member's contact

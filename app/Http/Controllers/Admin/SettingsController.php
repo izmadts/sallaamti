@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\NikahProfile;
 use App\Models\Setting;
 use App\Models\User;
+use App\Services\ImageOptimizer;
 use App\Support\HtmlSanitizer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -192,7 +193,7 @@ class SettingsController extends Controller
             if (setting('seo_og_image')) {
                 Storage::disk('public')->delete(setting('seo_og_image'));
             }
-            $path = $request->file('seo_og_image')->store('settings', 'public');
+            $path = ImageOptimizer::store($request->file('seo_og_image'), 'settings', 'public', maxDimension: 1200, quality: 82);
             Setting::set('seo_og_image', $path, 'seo');
         }
 

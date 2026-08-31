@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\TeamMember;
+use App\Services\ImageOptimizer;
 use App\Support\HtmlSanitizer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
@@ -46,7 +47,7 @@ class TeamMemberController extends Controller
         $validated['is_founder'] = $request->has('is_founder');
 
         if ($request->hasFile('photo')) {
-            $validated['photo'] = $request->file('photo')->store('team-members', 'public');
+            $validated['photo'] = ImageOptimizer::store($request->file('photo'), 'team-members', 'public', maxDimension: 800, quality: 82);
         }
 
         TeamMember::create($validated);
@@ -82,7 +83,7 @@ class TeamMemberController extends Controller
 
         if ($request->hasFile('photo')) {
             if ($team_member->photo) Storage::disk('public')->delete($team_member->photo);
-            $validated['photo'] = $request->file('photo')->store('team-members', 'public');
+            $validated['photo'] = ImageOptimizer::store($request->file('photo'), 'team-members', 'public', maxDimension: 800, quality: 82);
         }
 
         $team_member->update($validated);

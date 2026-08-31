@@ -7,6 +7,7 @@ use App\Models\CommunityPost;
 use App\Models\Setting;
 use App\Models\SocialAccount;
 use App\Services\CommunityPostPublisher;
+use App\Services\ImageOptimizer;
 use App\Support\HtmlSanitizer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -53,7 +54,7 @@ class CommunityPostController extends Controller
         $validated['published_at'] = $validated['status'] === 'published' ? now() : null;
 
         if ($request->hasFile('photo')) {
-            $validated['photo'] = $request->file('photo')->store('community-posts', 'public');
+            $validated['photo'] = ImageOptimizer::store($request->file('photo'), 'community-posts', 'public', maxDimension: 1600, quality: 82);
         }
         if ($request->hasFile('video')) {
             $validated['video'] = $request->file('video')->store('community-posts/videos', 'public');
@@ -96,7 +97,7 @@ class CommunityPostController extends Controller
 
         if ($request->hasFile('photo')) {
             if ($community_post->photo) Storage::disk('public')->delete($community_post->photo);
-            $validated['photo'] = $request->file('photo')->store('community-posts', 'public');
+            $validated['photo'] = ImageOptimizer::store($request->file('photo'), 'community-posts', 'public', maxDimension: 1600, quality: 82);
         }
         if ($request->hasFile('video')) {
             if ($community_post->video) Storage::disk('public')->delete($community_post->video);
@@ -192,7 +193,7 @@ class CommunityPostController extends Controller
             if ($isVideo) {
                 $post->update(['video' => $file->store('community-posts/videos', 'public')]);
             } else {
-                $post->update(['photo' => $file->store('community-posts', 'public')]);
+                $post->update(['photo' => ImageOptimizer::store($file, 'community-posts', 'public', maxDimension: 1600, quality: 82)]);
             }
 
             $posts[] = $post;

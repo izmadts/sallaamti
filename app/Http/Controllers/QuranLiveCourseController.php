@@ -10,6 +10,7 @@ use App\Models\QuranLiveCourse;
 use App\Models\QuranMessage;
 use App\Models\QuranProgressReport;
 use App\Models\QuranSubscription;
+use App\Services\ImageOptimizer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
@@ -206,7 +207,7 @@ class QuranLiveCourseController extends Controller
             'payment_screenshot' => ['required', 'image', 'max:4096'],
         ]);
 
-        $validated['payment_screenshot'] = $request->file('payment_screenshot')->store('quran-live/payments', 'private');
+        $validated['payment_screenshot'] = ImageOptimizer::store($request->file('payment_screenshot'), 'quran-live/payments', 'private', maxDimension: 1600, quality: 82);
         $validated['payment_status'] = 'submitted';
         $validated['payment_rejection_reason'] = null;
         $validated['amount'] = $course->monthly_fee;

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Post;
 use App\Models\User;
+use App\Services\ImageOptimizer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -83,7 +84,7 @@ class PostController extends Controller
         }
 
         if ($request->hasFile('cover_image')) {
-            $validated['cover_image'] = $request->file('cover_image')->store('posts', 'public');
+            $validated['cover_image'] = ImageOptimizer::store($request->file('cover_image'), 'posts', 'public', maxDimension: 1600, quality: 82);
         }
 
         $post = Post::create($validated);
@@ -122,7 +123,7 @@ class PostController extends Controller
             if ($post->cover_image) {
                 Storage::disk('public')->delete($post->cover_image);
             }
-            $validated['cover_image'] = $request->file('cover_image')->store('posts', 'public');
+            $validated['cover_image'] = ImageOptimizer::store($request->file('cover_image'), 'posts', 'public', maxDimension: 1600, quality: 82);
         }
 
         // An already-published post edited by its non-privileged author goes
