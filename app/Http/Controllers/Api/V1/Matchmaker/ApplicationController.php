@@ -23,13 +23,19 @@ class ApplicationController extends Controller
         }
 
         $stepKeys = array_keys(MatchmakerApplication::STEPS);
+        // array_search() returns false (not null) when the status isn't
+        // found — true for TERMINAL_EXIT_STATUSES (rejected/withdrawn),
+        // which are valid statuses but deliberately not in STEPS. Left as
+        // `false`, this serializes to JSON `false`, which crashes the
+        // Flutter app's `as int?` cast ("bool is not a subtype of int?").
+        $stepIndex = array_search($application->status, $stepKeys, true);
 
         return response()->json([
             'has_application' => true,
             'status' => $application->status,
             'status_label' => MatchmakerApplication::STEPS[$application->status] ?? ucfirst($application->status),
             'is_terminal' => in_array($application->status, MatchmakerApplication::TERMINAL_EXIT_STATUSES, true),
-            'step_index' => array_search($application->status, $stepKeys, true),
+            'step_index' => $stepIndex === false ? null : $stepIndex,
             'steps' => MatchmakerApplication::STEPS,
             'level' => $application->level,
             'level_label' => MatchmakerApplication::LEVELS[$application->level] ?? $application->level,
