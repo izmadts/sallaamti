@@ -76,6 +76,9 @@ class LeadController extends Controller
         if ($request->boolean('my_leads')) {
             $query->where('assigned_to', auth()->id());
         }
+        if ($request->filled('payment_status')) {
+            $query->where('package_payment_status', $request->payment_status);
+        }
 
         $leads = $query->orderByDesc('created_at')->paginate(20)->withQueryString();
 
@@ -84,6 +87,7 @@ class LeadController extends Controller
             'contacted' => Lead::where('status', 'contacted')->count(),
             'registered' => Lead::where('status', 'registered')->count(),
             'follow_ups_due' => Lead::whereDate('next_follow_up_at', '<=', now())->whereNotIn('status', ['registered', 'not_interested', 'closed'])->count(),
+            'payment_due' => Lead::where('package_payment_status', 'submitted')->count(),
         ];
 
         $matchmakers = User::role(['admin', 'matchmaker'])->orderBy('name')->get();

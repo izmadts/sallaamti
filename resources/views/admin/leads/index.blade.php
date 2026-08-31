@@ -9,7 +9,7 @@
     <div class="py-6">
         <div class="max-w-6xl mx-auto sm:px-6 lg:px-8 space-y-6">
 
-            <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div class="grid grid-cols-2 sm:grid-cols-5 gap-3">
                 <div class="bg-white rounded-lg shadow-sm p-3 text-center">
                     <p class="text-xl font-bold text-blue-600">{{ $stats['new'] }}</p>
                     <p class="text-xs text-gray-500">New</p>
@@ -26,6 +26,10 @@
                     <p class="text-xl font-bold text-red-600">{{ $stats['follow_ups_due'] }}</p>
                     <p class="text-xs text-gray-500">Follow-ups Due</p>
                 </div>
+                <a href="{{ route('admin.leads.index', ['payment_status' => 'submitted']) }}" class="bg-white rounded-lg shadow-sm p-3 text-center hover:bg-gray-50">
+                    <p class="text-xl font-bold text-purple-600">{{ $stats['payment_due'] }}</p>
+                    <p class="text-xs text-gray-500">Payment Due</p>
+                </a>
             </div>
 
             <form method="GET" class="bg-white p-4 rounded-lg shadow-sm flex flex-wrap gap-3 items-end">
@@ -49,6 +53,15 @@
                         @foreach ($matchmakers as $mm)
                         <option value="{{ $mm->id }}" {{ (string) request('assigned_to') === (string) $mm->id ? 'selected' : '' }}>{{ $mm->name }}</option>
                         @endforeach
+                    </select>
+                </div>
+                <div>
+                    <label class="text-xs text-gray-500">Package Payment</label>
+                    <select name="payment_status" class="border-gray-300 rounded text-sm block">
+                        <option value="">Any</option>
+                        <option value="submitted" {{ request('payment_status') === 'submitted' ? 'selected' : '' }}>Awaiting Review</option>
+                        <option value="confirmed" {{ request('payment_status') === 'confirmed' ? 'selected' : '' }}>Confirmed</option>
+                        <option value="rejected" {{ request('payment_status') === 'rejected' ? 'selected' : '' }}>Rejected</option>
                     </select>
                 </div>
                 <label class="flex items-center gap-1.5 text-sm text-gray-600 pb-2">
@@ -99,7 +112,14 @@
                             <td class="px-4 py-3 text-xs {{ $lead->next_follow_up_at && $lead->next_follow_up_at->isPast() ? 'text-red-600 font-semibold' : 'text-gray-400' }}">
                                 {{ $lead->next_follow_up_at?->format('d M Y') ?? '—' }}
                             </td>
-                            <td class="px-4 py-3 text-xs text-gray-500">{{ $lead->nikahPackage?->name ?? '—' }}</td>
+                            <td class="px-4 py-3 text-xs text-gray-500">
+                                {{ $lead->nikahPackage?->name ?? '—' }}
+                                @if ($lead->package_payment_status === 'submitted')
+                                <span class="block mt-1 text-purple-700 bg-purple-100 px-1.5 py-0.5 rounded-full text-[11px] font-semibold w-fit">💵 Payment Due</span>
+                                @elseif ($lead->package_payment_status === 'rejected')
+                                <span class="block mt-1 text-red-700 bg-red-100 px-1.5 py-0.5 rounded-full text-[11px] font-semibold w-fit">Payment Rejected</span>
+                                @endif
+                            </td>
                         </tr>
                         @empty
                         <tr>

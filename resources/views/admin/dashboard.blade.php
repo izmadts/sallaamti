@@ -32,7 +32,7 @@
         {{-- ===== NIKAH ===== --}}
         <section>
             <p class="text-xs font-semibold text-gray-400 uppercase tracking-widest mb-2">Nikah Matchmaking</p>
-            <div class="grid grid-cols-2 xl:grid-cols-4 gap-3">
+            <div class="grid grid-cols-2 xl:grid-cols-5 gap-3">
                 <x-admin-stat
                     :href="route('admin.nikah.payments')"
                     value="{{ $stats['pending_nikah_payments'] }}"
@@ -40,6 +40,13 @@
                     color="yellow"
                     icon="💳"
                     :badge="$stats['pending_nikah_payments'] > 0" />
+                <x-admin-stat
+                    :href="route('admin.leads.index', ['payment_status' => 'submitted'])"
+                    value="{{ $stats['pending_package_payments'] }}"
+                    label="Pending Package Payments"
+                    color="purple"
+                    icon="💵"
+                    :badge="$stats['pending_package_payments'] > 0" />
                 <x-admin-stat
                     :href="route('admin.nikah.verifications')"
                     value="{{ $stats['pending_nikah_verification'] }}"

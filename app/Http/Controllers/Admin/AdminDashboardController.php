@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Certificate;
 use App\Models\Course;
 use App\Models\Enrollment;
+use App\Models\Lead;
 use App\Models\NikahProfile;
 use App\Models\NikahReport;
 use App\Models\CounselingBooking;
@@ -36,6 +37,7 @@ class AdminDashboardController extends Controller
             'total_nikah_profiles'      => NikahProfile::count(),
             'verified_nikah_profiles'   => NikahProfile::where('verification_status', 'verified')->count(),
             'pending_nikah_reports'     => NikahReport::where('status', 'pending')->count(),
+            'pending_package_payments'  => Lead::where('package_payment_status', 'submitted')->count(),
 
             // Quran Self-Paced Courses — track-filtered so these numbers
             // don't silently blend in Digital Skills courses now that the

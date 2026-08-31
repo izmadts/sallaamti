@@ -107,10 +107,16 @@
                     class="flex items-center justify-between gap-3 px-3 py-2 rounded-lg transition
                           {{ request()->routeIs('admin.leads*') ? 'bg-teal-700 text-white' : 'text-teal-100 hover:bg-teal-800' }}">
                     <span class="flex items-center gap-3"><span class="text-base">📞</span> Leads</span>
-                    @php $followUpsDue = \App\Models\Lead::whereDate('next_follow_up_at', '<=', now())->whereNotIn('status', ['registered', 'not_interested', 'closed'])->count(); @endphp
-                    @if ($followUpsDue > 0)
-                    <span class="bg-red-400 text-red-900 text-xs font-bold px-1.5 py-0.5 rounded-full">{{ $followUpsDue }}</span>
-                    @endif
+                    <span class="flex items-center gap-1">
+                        @php $followUpsDue = \App\Models\Lead::whereDate('next_follow_up_at', '<=', now())->whereNotIn('status', ['registered', 'not_interested', 'closed'])->count(); @endphp
+                        @if ($followUpsDue > 0)
+                        <span class="bg-red-400 text-red-900 text-xs font-bold px-1.5 py-0.5 rounded-full" title="Follow-ups due">{{ $followUpsDue }}</span>
+                        @endif
+                        @php $pendingPackagePayments = \App\Models\Lead::where('package_payment_status', 'submitted')->count(); @endphp
+                        @if ($pendingPackagePayments > 0)
+                        <span class="bg-purple-400 text-purple-900 text-xs font-bold px-1.5 py-0.5 rounded-full" title="Package payments awaiting review">💵{{ $pendingPackagePayments }}</span>
+                        @endif
+                    </span>
                 </a>
                 <a href="{{ route('admin.nikah.profiles') }}"
                     class="flex items-center gap-3 px-3 py-2 rounded-lg transition
