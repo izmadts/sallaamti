@@ -242,6 +242,28 @@
                     <p class="text-xs text-amber-700 mt-2">{{ __("db.Add a phone number above first — that's what :name will enter to unlock the page.", ['name' => $lead->name]) }}</p>
                     @endunless
                 </div>
+
+                {{-- Login password — a walk-in-registered client's account otherwise only ever gets a random, never-shown password, so this is the only way they get real (cross-device, not just this-device-trusted) login credentials --}}
+                @if ($lead->nikahProfile?->user)
+                <div class="mt-6 pt-6 border-t">
+                    <h4 class="font-semibold text-gray-700 mb-1">🔑 {{ __('db.Client Login Password') }}</h4>
+                    <p class="text-xs text-gray-500 mb-3">{{ __("db.Set a temporary password so :name can log into the Sallaamti app/website themselves. They'll be prompted to choose their own on first login.", ['name' => $lead->name]) }}</p>
+                    <form method="POST" action="{{ route('matchmaker.clients.set-password', $lead) }}" class="flex flex-wrap items-center gap-2"
+                        onsubmit="document.getElementById('set-password-confirm-{{ $lead->id }}').value = document.getElementById('set-password-input-{{ $lead->id }}').value; return confirm({{ Js::from(__("db.Set this as the client's new login password?")) }})">
+                        @csrf
+                        <input type="text" name="password" id="set-password-input-{{ $lead->id }}" required minlength="8"
+                            placeholder="{{ __('db.Temporary password') }}" class="border-gray-300 rounded-lg text-sm">
+                        <input type="hidden" name="password_confirmation" id="set-password-confirm-{{ $lead->id }}">
+                        <button type="button"
+                            onclick="const chars='ABCDEFGHJKMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789'; let v=''; for(let i=0;i<10;i++){v+=chars[Math.floor(Math.random()*chars.length)];} document.getElementById('set-password-input-{{ $lead->id }}').value=v;"
+                            class="text-xs font-semibold px-2 py-1.5 rounded-lg border" style="border-color: var(--mm-plum); color: var(--mm-plum);">🎲 {{ __('db.Generate') }}</button>
+                        <button type="button"
+                            onclick="navigator.clipboard.writeText(document.getElementById('set-password-input-{{ $lead->id }}').value); this.textContent = {{ Js::from('✅ ' . __('db.Copied!')) }}; setTimeout(() => this.textContent = {{ Js::from('📋 ' . __('db.Copy')) }}, 1500);"
+                            class="text-xs font-semibold px-2 py-1.5 rounded-lg border" style="border-color: var(--mm-plum); color: var(--mm-plum);">📋 {{ __('db.Copy') }}</button>
+                        <button type="submit" class="text-xs font-semibold px-3 py-1.5 rounded-lg text-white hover:opacity-90" style="background: var(--mm-plum);">{{ __('db.Set Password') }}</button>
+                    </form>
+                </div>
+                @endif
             </div>
 
             {{-- === REQUIREMENTS === --}}

@@ -580,6 +580,32 @@ class ClientController extends Controller
         return back()->with('status', 'Progress link ready — use Copy Link below and paste it wherever you\'re messaging ' . $lead->name . '. They\'ll need the last 7 digits of the WhatsApp number on file to view it, every time.');
     }
 
+    // Same as Api\V1\Matchmaker\ClientController::setLoginPassword() — see
+    // that method's comment for why this exists. Kept as a plain redirect
+    // (not an inline flash of the password itself) so the counselor still
+    // has to copy it from wherever they typed/generated it before
+    // submitting; nothing sensitive round-trips back through the session.
+    public function setLoginPassword(Request $request, Lead $lead)
+    {
+        $this->authorizeClient($lead);
+
+        $user = $lead->nikahProfile?->user;
+        abort_unless($user, 422, 'This client needs a linked Sallaamti profile before a login password can be set.');
+
+        $validated = $request->validate([
+            'password' => ['required', 'confirmed', \Illuminate\Validation\Rules\Password::defaults()],
+        ]);
+
+        $user->update([
+            'password' => \Illuminate\Support\Facades\Hash::make($validated['password']),
+            'must_change_password' => true,
+        ]);
+
+        MatchmakingTimelineEvent::log($lead, $lead->nikahProfile, 'login_password_set', 'A temporary login password was set for this client by their Nikah Counselor.');
+
+        return back()->with('status', 'Login password set — share it with the client now.');
+    }
+
     public static function progressLink(Lead $lead): ?string
     {
         if (!$lead->progress_link_token) {

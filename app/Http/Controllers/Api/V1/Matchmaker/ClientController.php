@@ -326,6 +326,35 @@ class ClientController extends Controller
         return response()->json(['message' => __('db.Consent revoked.')]);
     }
 
+    // Walk-in/counselor-registered clients only ever get a random, never-
+    // shown password (RegistersMinimalUsers::createMinimalUser()), so they
+    // have no way to log into the member app themselves — the progress
+    // link's own PIN setup is device-trust-bound, not a portable
+    // credential. This lets the counselor set a real, known temporary
+    // password and hand it to the client directly (in person, WhatsApp,
+    // etc.); must_change_password then prompts the client to pick their
+    // own on first login, with an option to dismiss and keep using it.
+    public function setLoginPassword(Request $request, Lead $lead): JsonResponse
+    {
+        $this->authorizeClient($lead);
+
+        $user = $lead->nikahProfile?->user;
+        abort_unless($user, 422, 'This client needs a linked Sallaamti profile before a login password can be set.');
+
+        $validated = $request->validate([
+            'password' => ['required', 'confirmed', \Illuminate\Validation\Rules\Password::defaults()],
+        ]);
+
+        $user->update([
+            'password' => \Illuminate\Support\Facades\Hash::make($validated['password']),
+            'must_change_password' => true,
+        ]);
+
+        MatchmakingTimelineEvent::log($lead, $lead->nikahProfile, 'login_password_set', 'A temporary login password was set for this client by their Nikah Counselor.');
+
+        return response()->json(['message' => __('db.Login password set — share it with the client now.')]);
+    }
+
     public function regenerateProgressLink(Lead $lead): JsonResponse
     {
         $this->authorizeClient($lead);

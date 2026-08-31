@@ -64,6 +64,7 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
             Route::get('/', [ProfileController::class, 'show'])->name('show');
             Route::post('/', [ProfileController::class, 'update'])->name('update');
             Route::post('modules', [ProfileController::class, 'updateModules'])->name('modules.update');
+            Route::post('password', [ProfileController::class, 'updatePassword'])->name('password.update');
         });
 
         Route::post('device-token', [DeviceTokenController::class, 'store'])->name('device-token.store');
@@ -172,6 +173,7 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
             Route::post('clients/{lead}/consents/request', [MatchmakerApi\ClientController::class, 'requestConsent'])->name('clients.consents.request');
             Route::post('clients/{lead}/consents/{consent}/revoke', [MatchmakerApi\ClientController::class, 'revokeConsent'])->name('clients.consents.revoke');
             Route::post('clients/{lead}/progress-link', [MatchmakerApi\ClientController::class, 'regenerateProgressLink'])->name('clients.progress-link.regenerate');
+            Route::post('clients/{lead}/set-password', [MatchmakerApi\ClientController::class, 'setLoginPassword'])->name('clients.set-password');
 
             Route::post('clients/{lead}/proposal-batches', [MatchmakerApi\ClientController::class, 'createBatch'])->name('clients.batches.create');
             Route::post('clients/{lead}/proposal-batches/{batch}/proposals', [MatchmakerApi\ClientController::class, 'addProposal'])->name('clients.batches.proposals.add');

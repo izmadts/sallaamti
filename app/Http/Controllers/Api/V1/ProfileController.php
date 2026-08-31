@@ -8,12 +8,14 @@ use App\Rules\ValidPhoneNumber;
 use App\Services\ImageOptimizer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules\Password;
 
 // The mobile-app side of ProfileController (web). Same fields/validation
 // as ProfileUpdateRequest and updateModules() - just JSON in, JSON out,
-// and no username/public_bio/password/PIN/deactivation yet (those stay
-// web-only for now; nothing here precludes adding them later).
+// and no username/public_bio/PIN/deactivation yet (those stay web-only
+// for now; nothing here precludes adding them later).
 class ProfileController extends Controller
 {
     public function show(Request $request): JsonResponse
@@ -55,6 +57,23 @@ class ProfileController extends Controller
                 $profile->update(['city' => $user->city]);
             }
         }
+
+        return response()->json(['user' => new UserResource($user->fresh())]);
+    }
+
+    public function updatePassword(Request $request): JsonResponse
+    {
+        $user = $request->user();
+
+        $validated = $request->validate([
+            'current_password' => ['required', 'current_password'],
+            'password' => ['required', 'confirmed', Password::defaults()],
+        ]);
+
+        $user->update([
+            'password' => Hash::make($validated['password']),
+            'must_change_password' => false,
+        ]);
 
         return response()->json(['user' => new UserResource($user->fresh())]);
     }

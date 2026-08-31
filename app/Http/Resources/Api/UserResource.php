@@ -27,6 +27,7 @@ class UserResource extends JsonResource
                 'skills' => (bool) $this->skills_module_enabled,
             ],
             'has_nikah_profile' => $this->nikahProfile()->exists(),
+            'must_change_password' => (bool) $this->must_change_password,
             // Only meaningful for counselors — mirrors PerformanceController's
             // own tier lookup so the mobile app's top bar can show the same
             // badge (🥉/🥈/🥇/⭐) without a separate round trip at login.
