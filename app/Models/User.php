@@ -113,6 +113,17 @@ class User extends Authenticatable
             ? route('user.avatar', $this)
             : 'https://ui-avatars.com/api/?name=' . urlencode($this->name) . '&background=0D8ABC&color=fff';
     }
+
+    // Same fallback as avatarUrl(), but pointed at the Sanctum-authenticated
+    // Api\V1\AvatarController route instead of the web (session-auth,
+    // owner/admin-only) one — see that controller's docblock for why a
+    // separate, more permissive route exists for mobile.
+    public function apiAvatarUrl(): string
+    {
+        return $this->avatar
+            ? route('api.v1.avatar', $this)
+            : 'https://ui-avatars.com/api/?name=' . urlencode($this->name) . '&background=0D8ABC&color=fff';
+    }
     public function enrollments()
     {
         return $this->hasMany(Enrollment::class);

@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Api\V1\AuthController;
+use App\Http\Controllers\Api\V1\AvatarController;
 use App\Http\Controllers\Api\V1\DashboardController;
 use App\Http\Controllers\Api\V1\DeviceTokenController;
 use App\Http\Controllers\Api\V1\DonationController;
@@ -17,6 +18,7 @@ use App\Http\Controllers\Api\V1\NikahInterestController;
 use App\Http\Controllers\Api\V1\NikahPaymentController;
 use App\Http\Controllers\Api\V1\NikahProfileController;
 use App\Http\Controllers\Api\V1\NikahSafetyController;
+use App\Http\Controllers\Api\V1\ProfileController;
 use App\Http\Controllers\Api\V1\VolunteerController;
 use App\Http\Controllers\Api\V1\WallController;
 use Illuminate\Support\Facades\Route;
@@ -55,6 +57,13 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
 
     Route::middleware('auth:sanctum')->group(function () {
         Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
+        Route::get('avatar/{user}', [AvatarController::class, 'show'])->name('avatar');
+
+        Route::prefix('profile')->name('profile.')->group(function () {
+            Route::get('/', [ProfileController::class, 'show'])->name('show');
+            Route::post('/', [ProfileController::class, 'update'])->name('update');
+            Route::post('modules', [ProfileController::class, 'updateModules'])->name('modules.update');
+        });
 
         Route::post('device-token', [DeviceTokenController::class, 'store'])->name('device-token.store');
         Route::delete('device-token', [DeviceTokenController::class, 'destroy'])->name('device-token.destroy');

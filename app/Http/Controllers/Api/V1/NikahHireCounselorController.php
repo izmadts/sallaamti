@@ -51,7 +51,7 @@ class NikahHireCounselorController extends Controller
             'counselors' => $applications->map(fn (MatchmakerApplication $app) => [
                 'id' => $app->user->id,
                 'name' => $app->user->name,
-                'avatar' => $app->user->avatar,
+                'avatar' => $app->user->apiAvatarUrl(),
                 'bio' => $app->user->counselor_bio,
                 'tier' => $app->level,
                 'city' => $app->user->city,
@@ -123,7 +123,7 @@ class NikahHireCounselorController extends Controller
             'counselor' => $lead->assignedTo ? [
                 'id' => $lead->assignedTo->id,
                 'name' => $lead->assignedTo->name,
-                'avatar' => $lead->assignedTo->avatar,
+                'avatar' => $lead->assignedTo->apiAvatarUrl(),
             ] : null,
             'nikah_package_id' => $lead->nikah_package_id,
             'package_payment_status' => $lead->package_payment_status,

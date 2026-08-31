@@ -18,7 +18,7 @@ class UserResource extends JsonResource
             'phone' => $this->phone,
             'gender' => $this->gender,
             'city' => $this->city,
-            'avatar_url' => $this->avatarUrl(),
+            'avatar_url' => $this->apiAvatarUrl(),
             'roles' => $this->getRoleNames(),
             'modules' => [
                 'nikah' => (bool) $this->nikah_module_enabled,

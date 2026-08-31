@@ -48,7 +48,7 @@ class WallController extends Controller
         return [
             'type' => $isDua ? 'dua' : 'post',
             'id' => $item->id,
-            'author' => ($hideAuthor || !$author) ? null : ['name' => $author->name, 'avatar' => $author->avatar],
+            'author' => ($hideAuthor || !$author) ? null : ['name' => $author->name, 'avatar' => $author->apiAvatarUrl()],
             'is_anonymous' => $isDua ? (bool) $item->is_anonymous : false,
             'title' => $isDua ? null : $item->title,
             'body' => $item->body,
@@ -70,7 +70,7 @@ class WallController extends Controller
     {
         return [
             'id' => $comment->id,
-            'author' => $comment->user ? ['name' => $comment->user->name, 'avatar' => $comment->user->avatar] : null,
+            'author' => $comment->user ? ['name' => $comment->user->name, 'avatar' => $comment->user->apiAvatarUrl()] : null,
             'body' => $comment->body,
             'parent_id' => $comment->parent_id,
             'created_at' => $comment->created_at,
