@@ -107,6 +107,28 @@
             </div>
             @endif
 
+            {{-- Permanent delete — admin-only, unrecoverable. Meant for a
+                 mistaken/test entry, not for offboarding a real counselor:
+                 it erases their commission/payout history along with
+                 everything else. --}}
+            @if (auth()->user()->hasRole('admin'))
+            <div class="bg-white rounded-xl shadow-sm p-6 border-2 border-red-200">
+                <h4 class="font-semibold text-red-700 mb-2 border-b border-red-100 pb-2">⚠ Danger Zone — Permanent Delete</h4>
+                <p class="text-xs text-gray-500 mb-2">Permanently deletes this application, their Sallaamti account, and everything tied to it — certificate, commission/payout history, and every Lead they created or were assigned. This cannot be undone.</p>
+                @if ($commissionCount > 0)
+                <p class="text-xs font-semibold text-red-700 mb-1">⚠ This counselor has {{ $commissionCount }} commission ledger {{ Str::plural('entry', $commissionCount) }} — deleting erases that payout history permanently. Consider deactivating the account instead unless this is genuinely a test entry.</p>
+                @endif
+                @if ($leadCount > 0)
+                <p class="text-xs text-gray-500 mb-3">{{ $leadCount }} {{ Str::plural('lead', $leadCount) }} will be deleted along with their full history (shortlist, timeline, consents, proposal batches, messages).</p>
+                @endif
+                <form method="POST" action="{{ route('admin.matchmaker-applications.destroy', $application) }}" class="mt-2" onsubmit="return confirm('Permanently delete {{ $application->full_name }} and everything tied to their account? This cannot be undone.') &amp;&amp; confirm('Are you absolutely sure? This will also delete {{ $leadCount }} lead(s) and {{ $commissionCount }} commission record(s).')">
+                    @csrf
+                    @method('DELETE')
+                    <button class="text-sm font-semibold px-4 py-2 rounded-lg border-2 border-red-600 text-red-700 hover:bg-red-50">Permanently Delete Nikah Counselor</button>
+                </form>
+            </div>
+            @endif
+
             {{-- Agreement / NDA --}}
             <div class="bg-white rounded-xl shadow-sm p-6">
                 <h4 class="font-semibold text-gray-700 mb-1 border-b pb-2">📜 Nikah Counselor Agreement & NDA</h4>

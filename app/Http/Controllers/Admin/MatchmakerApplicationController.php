@@ -5,10 +5,12 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Auth\Concerns\RegistersMinimalUsers;
 use App\Http\Controllers\Controller;
 use App\Models\Certificate;
+use App\Models\Lead;
 use App\Models\MatchmakerApplication;
 use App\Models\User;
 use App\Notifications\NikahCounselorCertified;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -67,7 +69,22 @@ class MatchmakerApplicationController extends Controller
             : null;
         $levelProgress = $performance ? $matchmakerApplication->nextLevelProgress($performance['score'], $performance['stats']) : null;
 
-        return view('admin.matchmaker-applications.show', ['application' => $matchmakerApplication, 'performance' => $performance, 'levelProgress' => $levelProgress]);
+        // Shown on the permanent-delete confirmation so admin isn't
+        // guessing what "everything tied to this counselor" actually means.
+        $leadCount = $matchmakerApplication->user_id
+            ? Lead::where('assigned_to', $matchmakerApplication->user_id)->orWhere('created_by', $matchmakerApplication->user_id)->count()
+            : 0;
+        $commissionCount = $matchmakerApplication->user_id
+            ? \App\Models\CommissionLedgerEntry::where('matchmaker_id', $matchmakerApplication->user_id)->count()
+            : 0;
+
+        return view('admin.matchmaker-applications.show', [
+            'application' => $matchmakerApplication,
+            'performance' => $performance,
+            'levelProgress' => $levelProgress,
+            'leadCount' => $leadCount,
+            'commissionCount' => $commissionCount,
+        ]);
     }
 
     public function updateStatus(Request $request, MatchmakerApplication $matchmakerApplication)
@@ -281,6 +298,37 @@ class MatchmakerApplicationController extends Controller
         } catch (\Throwable $e) {
             \Log::error('NikahCounselorCertified notification failed: ' . $e->getMessage());
         }
+    }
+
+    // Admin-only, permanent, unrecoverable — meant for cleaning up a
+    // mistaken/test entry, not for offboarding a real counselor (that
+    // permanently erases their CommissionLedgerEntry payout history along
+    // with everything else). Deletes every Lead they created or were
+    // assigned (which cascades to that lead's shortlist items, timeline,
+    // requirements, consents, proposal batches, and messages via existing
+    // DB foreign keys), then the application row itself, then the User
+    // account (which separately cascades to their Certificate,
+    // CommissionLedgerEntry, ProposalBatch, and MatchmakerReferral rows).
+    // Client accounts/NikahProfiles those leads pointed at are untouched -
+    // deleting a Lead only removes the counselor's own tracking of that
+    // client relationship, never the client's own record.
+    public function destroy(MatchmakerApplication $matchmakerApplication)
+    {
+        abort_unless(auth()->user()->hasRole('admin'), 403, 'Only an admin can permanently delete a Nikah Counselor.');
+
+        $user = $matchmakerApplication->user;
+
+        DB::transaction(function () use ($matchmakerApplication, $user) {
+            if ($user) {
+                Lead::where('assigned_to', $user->id)->orWhere('created_by', $user->id)->delete();
+            }
+
+            $matchmakerApplication->delete();
+
+            $user?->delete();
+        });
+
+        return redirect()->route('admin.matchmaker-applications.index')->with('status', 'Nikah Counselor permanently deleted.');
     }
 
     private function generateCounselorCode(): string
