@@ -61,7 +61,7 @@
                             <input id="avatar" type="file" name="avatar" accept="image/*" class="w-full mt-1 text-sm">
                         </div>
                     </div>
-                    @if ($user->hasRole('counselor'))
+                    @if ($user->hasRole('family_counselor'))
                     <div>
                         <x-input-label for="counselor_bio" value="Counselor specialty / bio (shown to members picking a counselor)" />
                         <textarea id="counselor_bio" name="counselor_bio" rows="2" maxlength="500" class="w-full mt-1 border-gray-300 rounded-lg text-sm">{{ old('counselor_bio', $user->counselor_bio) }}</textarea>
@@ -111,8 +111,8 @@
                             <span class="text-xs px-2 py-0.5 rounded-full
                                     {{ $role->name === 'admin' ? 'bg-red-100 text-red-700' :
                                        ($role->name === 'teacher' ? 'bg-purple-100 text-purple-700' :
-                                       ($role->name === 'counselor' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-600')) }}">
-                                {{ ucfirst($role->name) }}
+                                       ($role->name === 'family_counselor' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-600')) }}">
+                                {{ ucwords(str_replace('_', ' ', $role->name)) }}
                             </span>
                         </label>
                         @endforeach

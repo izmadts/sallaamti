@@ -60,7 +60,7 @@ class CounselingController extends Controller
         return response()->json([
             'categories' => self::CATEGORIES,
             'contact_methods' => self::CONTACT_METHODS,
-            'counselors' => User::role('counselor')->orderBy('name')->get()->map(fn (User $c) => $this->counselorPayload($c))->values(),
+            'counselors' => User::role('family_counselor')->orderBy('name')->get()->map(fn (User $c) => $this->counselorPayload($c))->values(),
         ]);
     }
 
@@ -76,7 +76,7 @@ class CounselingController extends Controller
 
         $counselorIds = isset($validated['counselor_ids'])
             ? array_map('intval', explode(',', $validated['counselor_ids']))
-            : User::role('counselor')->pluck('id')->all();
+            : User::role('family_counselor')->pluck('id')->all();
         $date = Carbon::parse($validated['date']);
 
         // Once the member has narrowed down to one specific counselor, show

@@ -160,7 +160,7 @@
  <a href="{{ route('blog.index') }}" class="px-3 py-2 text-sm font-medium {{ request()->routeIs('blog.*') ? 'text-[--teal]' : 'text-[--text-dark] hover:text-[--teal]' }}">{{ __('db.Blog') }}</a>
  <a href="{{ url('/team') }}" class="px-3 py-2 text-sm font-medium {{ request()->is('team') ? 'text-[--teal]' : 'text-[--text-dark] hover:text-[--teal]' }}">{{ __('db.Team') }}</a>
  <a href="{{ url('/contact') }}" class="px-3 py-2 text-sm font-medium {{ request()->is('contact') ? 'text-[--teal]' : 'text-[--text-dark] hover:text-[--teal]' }}">{{ __('db.Contact') }}</a>
- @if (!auth()->check() || !auth()->user()->hasAnyRole(['admin', 'teacher', 'counselor', 'matchmaker', 'manager', 'blogger']))
+ @if (!auth()->check() || !auth()->user()->hasAnyRole(['admin', 'teacher', 'family_counselor', 'matchmaker', 'manager', 'blogger']))
  <x-wall-nav-badge :dua="$latestApprovedDua ?? null">
  <a href="{{ route('wall.index') }}" class="px-3 py-2 text-sm font-medium inline-flex items-center gap-1 {{ request()->routeIs('wall.*') ? 'text-[--teal]' : 'text-[--text-dark] hover:text-[--teal]' }}">
  🤲 {{ __('db.Wall') }}
@@ -241,7 +241,7 @@
  <a href="{{ route('blog.index') }}" class="py-2 text-sm font-medium {{ request()->routeIs('blog.*') ? 'text-[--teal]' : 'text-[--text-dark]' }}">{{ __('db.Blog') }}</a>
  <a href="{{ url('/team') }}" class="py-2 text-sm font-medium {{ request()->is('team') ? 'text-[--teal]' : 'text-[--text-dark]' }}">{{ __('db.Team') }}</a>
  <a href="{{ url('/contact') }}" class="py-2 text-sm font-medium {{ request()->is('contact') ? 'text-[--teal]' : 'text-[--text-dark]' }}">{{ __('db.Contact') }}</a>
- @if (!auth()->check() || !auth()->user()->hasAnyRole(['admin', 'teacher', 'counselor', 'matchmaker', 'manager', 'blogger']))
+ @if (!auth()->check() || !auth()->user()->hasAnyRole(['admin', 'teacher', 'family_counselor', 'matchmaker', 'manager', 'blogger']))
  <div class="border-t my-2"></div>
  <a href="{{ route('wall.index') }}" class="py-2 text-sm font-semibold flex items-center gap-1.5" style="color: var(--teal)">
  🤲 {{ __('db.Sallaamti Wall') }}

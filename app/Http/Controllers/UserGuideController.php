@@ -25,7 +25,7 @@ class UserGuideController extends Controller
             'showAdmin' => $canSeeAdminGuide,
             'showMatchmaker' => $isFullAdmin || $user->hasRole('matchmaker'),
             'showTeacher' => $isFullAdmin || $user->hasRole('teacher'),
-            'showCounselor' => $isFullAdmin || $user->hasRole('counselor'),
+            'showCounselor' => $isFullAdmin || $user->hasRole('family_counselor'),
             'showContentManager' => $user->hasAnyRole(['admin', 'manager', 'blogger']),
         ]);
     }

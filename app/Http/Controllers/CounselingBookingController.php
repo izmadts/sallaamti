@@ -57,7 +57,7 @@ class CounselingBookingController extends Controller
         ];
 
         if ($step === 'counselor') {
-            $viewData['counselors'] = User::role('counselor')->orderBy('name')->get();
+            $viewData['counselors'] = User::role('family_counselor')->orderBy('name')->get();
         }
 
         if ($step === 'slot') {
@@ -68,7 +68,7 @@ class CounselingBookingController extends Controller
             $viewData['date'] = $date;
 
             if ($choice === 'auto') {
-                $counselorIds = User::role('counselor')->pluck('id')->all();
+                $counselorIds = User::role('family_counselor')->pluck('id')->all();
                 $viewData['slots'] = $this->availableSlots($counselorIds, $date);
             } else {
                 // A specific counselor was chosen - show their whole day
@@ -119,7 +119,7 @@ class CounselingBookingController extends Controller
 
             $counselorData = $this->wizardStepData('counselor');
             $choice = $counselorData['counselor_choice'] ?? 'auto';
-            $allowedIds = $choice === 'auto' ? User::role('counselor')->pluck('id')->all() : [(int) $choice];
+            $allowedIds = $choice === 'auto' ? User::role('family_counselor')->pluck('id')->all() : [(int) $choice];
 
             abort_unless(in_array((int) $counselorId, $allowedIds), 422, 'Invalid counselor selection.');
 

@@ -14,7 +14,7 @@ class EnsureUserIsCounselor
             abort(403, 'Unauthorized.');
         }
 
-        if (!$request->user()->hasRole('counselor')) {
+        if (!$request->user()->hasRole('family_counselor')) {
             session()->forget('url.intended');
 
             return redirect()->route('dashboard')

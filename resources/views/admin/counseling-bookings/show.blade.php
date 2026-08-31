@@ -82,7 +82,7 @@
                 @csrf
                 <select name="counselor_id" class="border border-gray-200 rounded-lg px-3 py-2 text-sm flex-1">
                     @foreach ($counselors as $c)
-                    <option value="{{ $c->id }}" {{ $booking->counselor_id === $c->id ? 'selected' : '' }}>{{ $c->name }}{{ $c->hasRole('admin') && !$c->hasRole('counselor') ? ' (admin)' : '' }}</option>
+                    <option value="{{ $c->id }}" {{ $booking->counselor_id === $c->id ? 'selected' : '' }}>{{ $c->name }}{{ $c->hasRole('admin') && !$c->hasRole('family_counselor') ? ' (admin)' : '' }}</option>
                     @endforeach
                 </select>
                 <button class="px-4 py-2 rounded-lg text-white text-sm font-semibold" style="background: #0d6b6b">Reassign</button>

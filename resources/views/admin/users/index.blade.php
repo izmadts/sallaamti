@@ -37,7 +37,7 @@
                     <select name="role" class="border-gray-300 rounded text-sm block">
                         <option value="">All Roles</option>
                         @foreach ($roles as $role)
-                        <option value="{{ $role->name }}" {{ request('role') === $role->name ? 'selected' : '' }}>{{ ucfirst($role->name) }}</option>
+                        <option value="{{ $role->name }}" {{ request('role') === $role->name ? 'selected' : '' }}>{{ ucwords(str_replace('_', ' ', $role->name)) }}</option>
                         @endforeach
                     </select>
                 </div>
@@ -104,8 +104,8 @@
                                     <span class="text-xs px-2 py-0.5 rounded-full
                                                 {{ $role->name === 'admin' ? 'bg-red-100 text-red-700' :
                                                    ($role->name === 'teacher' ? 'bg-purple-100 text-purple-700' :
-                                                   ($role->name === 'counselor' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-600')) }}">
-                                        {{ ucfirst($role->name) }}
+                                                   ($role->name === 'family_counselor' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-600')) }}">
+                                        {{ ucwords(str_replace('_', ' ', $role->name)) }}
                                     </span>
                                     @empty
                                     <span class="text-xs text-gray-400">No role</span>

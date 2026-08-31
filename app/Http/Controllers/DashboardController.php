@@ -21,7 +21,7 @@ class DashboardController extends Controller
             return $this->teacherDashboard($authUser);
         }
 
-        if ($authUser->hasRole('counselor')) {
+        if ($authUser->hasRole('family_counselor')) {
             return $this->counselorDashboard($authUser);
         }
 

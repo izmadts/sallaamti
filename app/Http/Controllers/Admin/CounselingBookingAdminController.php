@@ -32,7 +32,7 @@ class CounselingBookingAdminController extends Controller
         $bookings = $query->paginate(20)->withQueryString();
         // Admin can assign any counselor — or themselves, or any other
         // admin, to personally take a session ("admin by self can attend").
-        $counselors = User::role(['counselor', 'admin'])->orderBy('name')->get();
+        $counselors = User::role(['family_counselor', 'admin'])->orderBy('name')->get();
 
         return view('admin.counseling-bookings.index', compact('bookings', 'counselors'));
     }
@@ -40,7 +40,7 @@ class CounselingBookingAdminController extends Controller
     public function show(CounselingBooking $booking)
     {
         $booking->load(['member', 'counselor', 'supportQuery.responses.responder']);
-        $counselors = User::role(['counselor', 'admin'])->orderBy('name')->get();
+        $counselors = User::role(['family_counselor', 'admin'])->orderBy('name')->get();
 
         return view('admin.counseling-bookings.show', compact('booking', 'counselors'));
     }
