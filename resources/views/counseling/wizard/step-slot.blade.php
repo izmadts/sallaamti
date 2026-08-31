@@ -37,26 +37,38 @@
                     class="w-full mb-4 border-gray-300 focus:border-teal-500 focus:ring-teal-500 rounded-lg text-sm"
                     title="{{ __('db.Jump straight to a specific date') }}">
 
+                @php $openSlots = collect($slots)->reject(fn ($slot) => $slot['booked']); @endphp
+
                 <form method="POST" action="{{ route('counseling.book.step.save', 'slot') }}" class="space-y-4">
                     @csrf
 
                     @if (empty($slots))
                     <p class="text-sm text-gray-400 italic p-4 text-center border rounded-lg">{{ __('db.No available slots on this day — try another date, or request a session below without picking an exact slot.') }}</p>
                     @else
+                    @if ($openSlots->isEmpty())
+                    <p class="text-sm text-gray-400 italic p-4 text-center border rounded-lg">{{ __('db.This counselor is fully booked on this day — try another date, or request a session below without picking an exact slot.') }}</p>
+                    @endif
                     <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
                         @foreach ($slots as $slot)
+                        @if ($slot['booked'])
+                        <span class="border border-gray-200 bg-gray-50 rounded-lg p-3 text-center cursor-not-allowed" title="{{ __('db.Already booked') }}">
+                            <span class="block text-sm font-medium text-gray-400 line-through">{{ $slot['datetime']->format('h:i A') }}</span>
+                            <span class="block text-[11px] text-gray-400 mt-0.5">{{ __('db.Booked') }}</span>
+                        </span>
+                        @else
                         @php $value = $slot['counselor_id'] . '|' . $slot['datetime']->toDateTimeString(); @endphp
                         <label class="border rounded-lg p-3 text-center cursor-pointer hover:border-teal-400 has-[:checked]:border-teal-600 has-[:checked]:bg-teal-50">
                             <input type="radio" name="slot" value="{{ $value }}" class="sr-only" required>
                             <span class="block text-sm font-medium text-gray-700">{{ $slot['datetime']->format('h:i A') }}</span>
                         </label>
+                        @endif
                         @endforeach
                     </div>
                     @endif
 
                     <div class="flex justify-between pt-2">
                         <a href="{{ route('counseling.book.step', 'counselor') }}" class="btn-base text-gray-600 border border-gray-300 px-4 py-2 rounded-md hover:bg-gray-50">← {{ __('db.Back') }}</a>
-                        <x-primary-button :disabled="empty($slots)">{{ __('db.Review & Submit') }} →</x-primary-button>
+                        <x-primary-button :disabled="$openSlots->isEmpty()">{{ __('db.Review & Submit') }} →</x-primary-button>
                     </div>
                 </form>
 

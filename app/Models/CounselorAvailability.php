@@ -35,6 +35,20 @@ class CounselorAvailability extends Model
     // slots that already have a requested/confirmed booking.
     public static function generateSlotsFor(int $counselorId, Carbon $date): array
     {
+        return collect(static::slotsWithStatusFor($counselorId, $date))
+            ->reject(fn ($slot) => $slot['booked'])
+            ->pluck('datetime')
+            ->values()
+            ->all();
+    }
+
+    // Same expansion as generateSlotsFor(), but keeps already-booked slots
+    // in the result (tagged 'booked') instead of dropping them. Once a
+    // member has narrowed down to one specific counselor, showing their
+    // whole day at a glance (open vs taken) lets them pick faster than
+    // only ever seeing the gaps.
+    public static function slotsWithStatusFor(int $counselorId, Carbon $date): array
+    {
         $rules = static::where('counselor_id', $counselorId)
             ->where('is_active', true)
             ->where(function ($q) use ($date) {
@@ -70,9 +84,12 @@ class CounselorAvailability extends Model
             ->all();
 
         return $slots
-            ->reject(fn ($slot) => in_array($slot->format('Y-m-d H:i'), $taken))
             ->sort()
             ->values()
+            ->map(fn (Carbon $slot) => [
+                'datetime' => $slot,
+                'booked' => in_array($slot->format('Y-m-d H:i'), $taken),
+            ])
             ->all();
     }
 }

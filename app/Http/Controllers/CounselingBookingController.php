@@ -63,13 +63,19 @@ class CounselingBookingController extends Controller
         if ($step === 'slot') {
             $counselorData = $this->wizardStepData('counselor');
             $choice = $counselorData['counselor_choice'] ?? 'auto';
-            $counselorIds = $choice === 'auto'
-                ? User::role('counselor')->pluck('id')->all()
-                : [(int) $choice];
 
             $date = request('date') ? Carbon::parse(request('date')) : Carbon::today();
             $viewData['date'] = $date;
-            $viewData['slots'] = $this->availableSlots($counselorIds, $date);
+
+            if ($choice === 'auto') {
+                $counselorIds = User::role('counselor')->pluck('id')->all();
+                $viewData['slots'] = $this->availableSlots($counselorIds, $date);
+            } else {
+                // A specific counselor was chosen - show their whole day
+                // (open + already-booked) instead of just the gaps, so the
+                // member can see the full schedule and pick faster.
+                $viewData['slots'] = $this->slotsWithStatus((int) $choice, $date);
+            }
         }
 
         return view("counseling.wizard.step-{$step}", $viewData);
@@ -291,12 +297,25 @@ class CounselingBookingController extends Controller
 
         foreach ($counselorIds as $counselorId) {
             foreach (CounselorAvailability::generateSlotsFor($counselorId, $date) as $time) {
-                $slots[] = ['counselor_id' => $counselorId, 'datetime' => $time];
+                $slots[] = ['counselor_id' => $counselorId, 'datetime' => $time, 'booked' => false];
             }
         }
 
         usort($slots, fn ($a, $b) => $a['datetime'] <=> $b['datetime']);
 
         return $slots;
+    }
+
+    private function slotsWithStatus(int $counselorId, Carbon $date): array
+    {
+        return collect(CounselorAvailability::slotsWithStatusFor($counselorId, $date))
+            ->map(fn ($slot) => [
+                'counselor_id' => $counselorId,
+                'datetime' => $slot['datetime'],
+                'booked' => $slot['booked'],
+            ])
+            ->sortBy('datetime')
+            ->values()
+            ->all();
     }
 }

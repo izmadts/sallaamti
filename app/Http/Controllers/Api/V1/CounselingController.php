@@ -79,15 +79,29 @@ class CounselingController extends Controller
             : User::role('counselor')->pluck('id')->all();
         $date = Carbon::parse($validated['date']);
 
+        // Once the member has narrowed down to one specific counselor, show
+        // their whole day (open + already-booked) instead of only the gaps,
+        // so the member can see the full schedule at a glance. That view
+        // only makes sense for a single counselor - mixing several
+        // counselors' booked times together would just be confusing.
+        $showBooked = count($counselorIds) === 1;
+
         $counselorNames = User::whereIn('id', $counselorIds)->pluck('name', 'id');
 
         $slots = [];
         foreach ($counselorIds as $counselorId) {
-            foreach (CounselorAvailability::generateSlotsFor($counselorId, $date) as $time) {
+            $counselorSlots = $showBooked
+                ? CounselorAvailability::slotsWithStatusFor($counselorId, $date)
+                : collect(CounselorAvailability::generateSlotsFor($counselorId, $date))
+                    ->map(fn ($time) => ['datetime' => $time, 'booked' => false])
+                    ->all();
+
+            foreach ($counselorSlots as $slot) {
                 $slots[] = [
                     'counselor_id' => $counselorId,
                     'counselor_name' => $counselorNames[$counselorId] ?? null,
-                    'datetime' => $time->toDateTimeString(),
+                    'datetime' => $slot['datetime']->toDateTimeString(),
+                    'booked' => $slot['booked'],
                 ];
             }
         }
