@@ -1,8 +1,11 @@
 @php
     $displayName = $dua->is_anonymous ? __('db.A Sallaamti member') : $dua->user->name;
 @endphp
-<div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-4 sm:p-5">
-    <div class="flex items-start gap-3">
+<div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
+    @if ($dua->image)
+    <img src="{{ \Illuminate\Support\Facades\Storage::url($dua->image) }}" alt="" class="w-full h-44 object-cover">
+    @endif
+    <div class="p-4 sm:p-5 flex items-start gap-3">
         <div class="w-10 h-10 rounded-full flex items-center justify-center text-lg flex-shrink-0" style="background: #f0fdfa">🤲</div>
         <div class="flex-1 min-w-0">
             <div class="flex items-center gap-2 flex-wrap">

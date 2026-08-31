@@ -10,6 +10,7 @@ use App\Models\Reaction;
 use App\Models\SavedPost;
 use App\Notifications\CommentReceived;
 use App\Notifications\ReactionReceived;
+use App\Services\ImageOptimizer;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -52,7 +53,9 @@ class WallController extends Controller
             'is_anonymous' => $isDua ? (bool) $item->is_anonymous : false,
             'title' => $isDua ? null : $item->title,
             'body' => $item->body,
-            'photo_url' => (!$isDua && $item->photo) ? Storage::disk('public')->url($item->photo) : null,
+            'photo_url' => $isDua
+                ? ($item->image ? Storage::disk('public')->url($item->image) : null)
+                : ($item->photo ? Storage::disk('public')->url($item->photo) : null),
             'video_url' => (!$isDua && $item->video) ? Storage::disk('public')->url($item->video) : null,
             'tags' => $isDua ? [] : ($item->tags ?? []),
             'event_at' => $isDua ? null : $item->event_at,
@@ -166,14 +169,25 @@ class WallController extends Controller
         $validated = $request->validate([
             'body' => ['required', 'string', 'max:1000'],
             'is_anonymous' => ['nullable', 'boolean'],
+            'image' => ['nullable', 'image', 'max:8192'],
         ]);
 
-        DuaRequest::create([
+        $fields = [
             'user_id' => $request->user()->id,
             'body' => $validated['body'],
             'is_anonymous' => $request->boolean('is_anonymous'),
             'status' => 'pending',
-        ]);
+        ];
+
+        // Kept small on purpose - this is a feed thumbnail, not a document
+        // needing full fidelity, and it's a member upload with no size
+        // control on the source photo (unlike admin's Community Posts,
+        // which stay at the 1600px default).
+        if ($request->hasFile('image')) {
+            $fields['image'] = ImageOptimizer::store($request->file('image'), 'wall/duas', 'public', maxDimension: 1080, quality: 75);
+        }
+
+        DuaRequest::create($fields);
 
         return response()->json(['message' => 'Your dua has been submitted and will appear once our team reviews it.'], 201);
     }

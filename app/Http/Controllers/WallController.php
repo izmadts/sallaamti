@@ -9,6 +9,7 @@ use App\Models\Reaction;
 use App\Models\SavedPost;
 use App\Notifications\CommentReceived;
 use App\Notifications\ReactionReceived;
+use App\Services\ImageOptimizer;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -97,14 +98,25 @@ class WallController extends Controller
         $validated = $request->validate([
             'body' => ['required', 'string', 'max:1000'],
             'is_anonymous' => ['nullable', 'boolean'],
+            'image' => ['nullable', 'image', 'max:8192'],
         ]);
 
-        DuaRequest::create([
+        $fields = [
             'user_id' => Auth::id(),
             'body' => $validated['body'],
             'is_anonymous' => $request->boolean('is_anonymous'),
             'status' => 'pending',
-        ]);
+        ];
+
+        // Kept small on purpose - this is a feed thumbnail, not a document
+        // needing full fidelity, and it's a member upload with no size
+        // control on the source photo (unlike admin's Community Posts,
+        // which stay at the 1600px default).
+        if ($request->hasFile('image')) {
+            $fields['image'] = ImageOptimizer::store($request->file('image'), 'wall/duas', 'public', maxDimension: 1080, quality: 75);
+        }
+
+        DuaRequest::create($fields);
 
         return back()->with('status', "Your dua has been submitted and will appear once our team reviews it. JazakAllah Khair for sharing.");
     }

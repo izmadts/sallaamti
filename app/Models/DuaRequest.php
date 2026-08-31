@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\MorphMany;
 
 class DuaRequest extends Model
 {
-    protected $fillable = ['user_id', 'body', 'is_anonymous', 'status', 'rejection_reason'];
+    protected $fillable = ['user_id', 'body', 'is_anonymous', 'image', 'status', 'rejection_reason'];
 
     protected $casts = [
         'is_anonymous' => 'boolean',
