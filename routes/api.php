@@ -18,6 +18,7 @@ use App\Http\Controllers\Api\V1\NikahPaymentController;
 use App\Http\Controllers\Api\V1\NikahProfileController;
 use App\Http\Controllers\Api\V1\NikahSafetyController;
 use App\Http\Controllers\Api\V1\VolunteerController;
+use App\Http\Controllers\Api\V1\WallController;
 use Illuminate\Support\Facades\Route;
 
 // GitHub Auto Deploy Webhook
@@ -118,6 +119,17 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
             Route::get('meta', [DonationController::class, 'meta'])->name('meta');
             Route::get('/', [DonationController::class, 'index'])->name('index');
             Route::post('/', [DonationController::class, 'store'])->name('store');
+        });
+
+        Route::prefix('wall')->name('wall.')->group(function () {
+            Route::get('/', [WallController::class, 'index'])->name('index');
+            Route::get('saved', [WallController::class, 'saved'])->name('saved');
+            Route::post('dua', [WallController::class, 'storeDua'])->name('dua.store');
+            Route::post('{type}/{id}/react', [WallController::class, 'react'])->whereIn('type', ['dua', 'post'])->whereNumber('id')->name('react');
+            Route::post('{type}/{id}/save', [WallController::class, 'save'])->whereIn('type', ['dua', 'post'])->whereNumber('id')->name('save');
+            Route::get('{type}/{id}/comments', [WallController::class, 'comments'])->whereIn('type', ['dua', 'post'])->whereNumber('id')->name('comments.index');
+            Route::post('{type}/{id}/comments', [WallController::class, 'storeComment'])->whereIn('type', ['dua', 'post'])->whereNumber('id')->name('comments.store');
+            Route::delete('comments/{comment}', [WallController::class, 'destroyComment'])->name('comments.destroy');
         });
 
         // Nikah Counselor (matchmaker) app — see EnsureUserIsMatchmakerApi's
