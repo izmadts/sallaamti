@@ -15,6 +15,7 @@ class Donation extends Model
         'amount',
         'purpose',
         'message',
+        'is_anonymous',
         'payment_method',
         'payment_reference',
         'payment_screenshot',
@@ -25,7 +26,10 @@ class Donation extends Model
 
     protected function casts(): array
     {
-        return ['payment_confirmed_at' => 'datetime'];
+        return [
+            'is_anonymous' => 'boolean',
+            'payment_confirmed_at' => 'datetime',
+        ];
     }
 
     public function user()
