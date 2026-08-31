@@ -24,7 +24,13 @@
                 @forelse ($donations as $donation)
                 <div class="p-5 flex justify-between items-start flex-wrap gap-3">
                     <div>
-                        <p class="font-medium">{{ $donation->donor_name }} {{ $donation->user_id ? '' : '(Guest)' }}</p>
+                        <p class="font-medium">
+                            {{ $donation->donor_name }}
+                            {{ $donation->user_id ? '' : '(Guest)' }}
+                            @if ($donation->is_anonymous)
+                            <span class="text-xs font-normal px-2 py-0.5 rounded-full bg-gray-100 text-gray-500 align-middle">Anonymous</span>
+                            @endif
+                        </p>
                         <p class="text-sm text-gray-500">{{ $donation->email }} {{ $donation->phone }}</p>
                         <p class="text-sm text-gray-500">Rs. {{ number_format($donation->amount) }} — {{ $donation->purpose }}</p>
                         <p class="text-sm text-gray-500">Ref: {{ $donation->payment_reference }} via {{ $donation->payment_method }}</p>
