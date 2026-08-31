@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\AvatarController;
+use App\Http\Controllers\Api\V1\CounselingController;
 use App\Http\Controllers\Api\V1\DashboardController;
 use App\Http\Controllers\Api\V1\DeviceTokenController;
 use App\Http\Controllers\Api\V1\DonationController;
@@ -128,6 +129,17 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
             Route::get('meta', [DonationController::class, 'meta'])->name('meta');
             Route::get('/', [DonationController::class, 'index'])->name('index');
             Route::post('/', [DonationController::class, 'store'])->name('store');
+        });
+
+        Route::prefix('counseling')->name('counseling.')->group(function () {
+            Route::get('meta', [CounselingController::class, 'meta'])->name('meta');
+            Route::get('slots', [CounselingController::class, 'slots'])->name('slots');
+            Route::get('bookings', [CounselingController::class, 'index'])->name('bookings.index');
+            Route::post('bookings', [CounselingController::class, 'store'])->name('bookings.store');
+            Route::get('bookings/{booking}', [CounselingController::class, 'show'])->name('bookings.show');
+            Route::post('bookings/{booking}/cancel', [CounselingController::class, 'cancel'])->name('bookings.cancel');
+            Route::post('bookings/{booking}/reply', [CounselingController::class, 'reply'])->name('bookings.reply');
+            Route::post('bookings/{booking}/rate', [CounselingController::class, 'rate'])->name('bookings.rate');
         });
 
         Route::prefix('wall')->name('wall.')->group(function () {

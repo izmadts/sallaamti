@@ -3,6 +3,7 @@
 namespace App\Notifications;
 
 use App\Models\CounselingBooking;
+use App\Notifications\Channels\FcmChannel;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -19,7 +20,18 @@ class CounselingBookingReassigned extends Notification implements ShouldQueue
 
     public function via($notifiable): array
     {
-        return ['mail', 'database'];
+        return ['mail', 'database', FcmChannel::class];
+    }
+
+    public function toFcm($notifiable): array
+    {
+        return [
+            'title' => $this->forCounselor ? '📋 Session assigned to you' : '🔄 Counselor updated',
+            'body' => $this->forCounselor
+                ? 'A session on ' . $this->booking->scheduled_at->format('d M, h:i A') . ' needs your confirmation.'
+                : 'Your session on ' . $this->booking->scheduled_at->format('d M, h:i A') . ' now has a new counselor.',
+            'data' => ['type' => 'counseling_booking_reassigned', 'booking_id' => (string) $this->booking->id],
+        ];
     }
 
     public function toMail($notifiable): MailMessage
