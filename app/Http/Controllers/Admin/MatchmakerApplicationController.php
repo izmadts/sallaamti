@@ -147,6 +147,31 @@ class MatchmakerApplicationController extends Controller
         return back()->with('status', 'Application rejected.');
     }
 
+    // Undoes an accidental/mistaken reject() — deliberately admin-only
+    // (not the broader matchmaker-applications.manage permission the rest
+    // of this controller uses), since reversing a rejection is a rarer,
+    // more sensitive call than the routine stage/reject/withdraw actions.
+    // reject() has no side effects beyond the row itself (no role granted/
+    // revoked, no notification sent - see reject()'s own comment), so
+    // there's nothing else to undo: just clear the rejection and drop the
+    // application back to the first pipeline stage for admin to
+    // re-advance manually via the existing "Move to Stage" control.
+    public function reactivate(MatchmakerApplication $matchmakerApplication)
+    {
+        abort_unless(auth()->user()->hasRole('admin'), 403, 'Only an admin can reactivate a rejected application.');
+        abort_unless($matchmakerApplication->status === 'rejected', 422, 'Only a rejected application can be reactivated.');
+
+        $matchmakerApplication->update([
+            'status' => 'applied',
+            'rejected_at' => null,
+            'reviewed_by' => auth()->id(),
+            'notes' => trim(($matchmakerApplication->notes ? $matchmakerApplication->notes . "\n\n" : '')
+                . 'Reactivated by ' . auth()->user()->name . ' on ' . now()->format('d M Y') . ' — moved back to "Application Received."'),
+        ]);
+
+        return back()->with('status', 'Application reactivated — back at "Application Received." Move it forward through the pipeline as needed.');
+    }
+
     // 'withdrawn' has been in STATUSES/TERMINAL_EXIT_STATUSES since this
     // pipeline was built, but was never actually reachable — updateStatus()
     // only accepts STEPS values and reject() hard-codes 'rejected'. This is

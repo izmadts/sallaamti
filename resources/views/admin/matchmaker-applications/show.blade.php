@@ -93,6 +93,20 @@
             </div>
             @endunless
 
+            {{-- Reactivate a rejected application — admin-only (reject()/withdraw()
+                 have no side effects to undo, so this just clears the rejection
+                 and drops it back to the first stage for admin to re-advance) --}}
+            @if ($application->status === 'rejected' && auth()->user()->hasRole('admin'))
+            <div class="bg-white rounded-xl shadow-sm p-6">
+                <h4 class="font-semibold text-gray-700 mb-2 border-b pb-2">Reactivate Application</h4>
+                <p class="text-xs text-gray-500 mb-3">Undoes the rejection and moves this application back to "Application Received" — you can then move it forward through the pipeline again.</p>
+                <form method="POST" action="{{ route('admin.matchmaker-applications.reactivate', $application) }}" onsubmit="return confirm('Reactivate this application? It will move back to \'Application Received.\'')">
+                    @csrf
+                    <button class="text-sm font-semibold px-4 py-2 rounded-lg text-white hover:opacity-90" style="background: #0d6b6b">Reactivate Application</button>
+                </form>
+            </div>
+            @endif
+
             {{-- Agreement / NDA --}}
             <div class="bg-white rounded-xl shadow-sm p-6">
                 <h4 class="font-semibold text-gray-700 mb-1 border-b pb-2">📜 Nikah Counselor Agreement & NDA</h4>
