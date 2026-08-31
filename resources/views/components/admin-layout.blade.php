@@ -242,9 +242,13 @@
                     @endif
                 </a>
                 <a href="{{ route('admin.donations.index') }}"
-                    class="flex items-center gap-3 px-3 py-2 rounded-lg transition
+                    class="flex items-center justify-between gap-3 px-3 py-2 rounded-lg transition
                           {{ request()->routeIs('admin.donations*') ? 'bg-teal-700 text-white' : 'text-teal-100 hover:bg-teal-800' }}">
-                    <span class="text-base">💰</span> Donations
+                    <span class="flex items-center gap-3"><span class="text-base">💰</span> Donations</span>
+                    @php $pendingDonations = \App\Models\Donation::where('payment_status', 'submitted')->count(); @endphp
+                    @if ($pendingDonations > 0)
+                    <span class="bg-green-400 text-green-900 text-xs font-bold px-1.5 py-0.5 rounded-full">{{ $pendingDonations }}</span>
+                    @endif
                 </a>
                 <a href="{{ route('admin.subscribers.index') }}"
                     class="flex items-center gap-3 px-3 py-2 rounded-lg transition
