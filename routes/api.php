@@ -3,6 +3,7 @@
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\DashboardController;
 use App\Http\Controllers\Api\V1\DeviceTokenController;
+use App\Http\Controllers\Api\V1\DonationController;
 use App\Http\Controllers\Api\V1\FaqController;
 use App\Http\Controllers\Api\V1\NotificationController;
 use App\Http\Controllers\Api\V1\Matchmaker as MatchmakerApi;
@@ -111,6 +112,12 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
             Route::get('status', [VolunteerController::class, 'status'])->name('status');
             Route::post('apply', [VolunteerController::class, 'apply'])->name('apply');
             Route::get('certificate', [VolunteerController::class, 'certificate'])->name('certificate');
+        });
+
+        Route::prefix('donations')->name('donations.')->group(function () {
+            Route::get('meta', [DonationController::class, 'meta'])->name('meta');
+            Route::get('/', [DonationController::class, 'index'])->name('index');
+            Route::post('/', [DonationController::class, 'store'])->name('store');
         });
 
         // Nikah Counselor (matchmaker) app — see EnsureUserIsMatchmakerApi's
