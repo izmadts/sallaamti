@@ -4,6 +4,7 @@ namespace App\Notifications;
 
 use App\Models\QuranAdmission;
 use App\Models\QuranLiveCourse;
+use App\Notifications\Channels\FcmChannel;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -17,7 +18,7 @@ class QuranFeeReminder extends Notification implements ShouldQueue
 
     public function via($notifiable): array
     {
-        return ['database', 'mail'];
+        return ['database', 'mail', FcmChannel::class];
     }
 
     public function toMail($notifiable): MailMessage
@@ -35,6 +36,16 @@ class QuranFeeReminder extends Notification implements ShouldQueue
         return [
             'message' => "💳 This month's fee for {$this->admission->student_name} ({$this->course->title}) is still due.",
             'url' => route('quran-live.subscribe', [$this->course, $this->admission]),
+        ];
+    }
+
+    public function toFcm($notifiable): array
+    {
+        return [
+            'title' => 'Monthly fee due',
+            'body' => "This month's fee for {$this->admission->student_name} ({$this->course->title}) is still due.",
+            'data' => ['type' => 'quran_fee_due', 'admission_id' => (string) $this->admission->id],
+            'app' => 'sallaamti_app',
         ];
     }
 }

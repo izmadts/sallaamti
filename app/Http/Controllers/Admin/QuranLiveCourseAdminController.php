@@ -31,6 +31,7 @@ class QuranLiveCourseAdminController extends Controller
         $validated['created_by'] = Auth::id();
         $validated['is_published'] = $request->has('is_published');
         $validated['class_days'] = $request->input('class_days', []);
+        $validated['topics'] = $this->parseTopics($request);
 
         QuranLiveCourse::create($validated);
 
@@ -44,7 +45,6 @@ class QuranLiveCourseAdminController extends Controller
             'course' => $quranLiveCourse,
             'teachers' => $teachers,
         ]);
-        return view('admin.quran-live.edit', ['course' => $quranLiveCourse, 'teachers' => $teachers]);
     }
 
     public function update(Request $request, QuranLiveCourse $quranLiveCourse)
@@ -52,16 +52,26 @@ class QuranLiveCourseAdminController extends Controller
         $validated = $this->validateCourse($request);
         $validated['is_published'] = $request->has('is_published');
         $validated['class_days'] = $request->input('class_days', []);
-        // After validation, convert textarea to JSON array
-        if ($request->filled('topics_raw')) {
-            $validated['topics'] = array_filter(
-                array_map('trim', explode("\n", $request->topics_raw))
-            );
-        }
-        
+        $validated['topics'] = $this->parseTopics($request);
+
         $quranLiveCourse->update($validated);
-        
+
         return redirect()->route('admin.quran-live-courses.index')->with('status', 'Course updated.');
+    }
+
+    // Was only ever called from update() — a newly created course's topics
+    // were silently dropped regardless of what was typed into the textarea,
+    // since store() never processed topics_raw at all. Shared here so both
+    // save paths behave the same.
+    private function parseTopics(Request $request): array
+    {
+        if (!$request->filled('topics_raw')) {
+            return [];
+        }
+
+        return array_values(array_filter(
+            array_map('trim', explode("\n", $request->topics_raw))
+        ));
     }
 
     public function destroy(QuranLiveCourse $quranLiveCourse)
@@ -108,6 +118,14 @@ class QuranLiveCourseAdminController extends Controller
 
     private function validateCourse(Request $request): array
     {
+        // level_number, category, duration, gender_preference and
+        // max_students_per_group all sit right there on both the create and
+        // edit forms — but were missing from this whitelist entirely, the
+        // same class of bug the comment below already flags for `outcome`.
+        // $request->validate() silently drops anything not listed here, so
+        // every one of these was thrown away on every save, no error shown,
+        // ever. Confirmed against production: the one real course had all
+        // five NULL despite the edit screen showing values typed into them.
         $validated = $request->validate([
             'title' => ['required', 'string', 'max:255'],
             'description' => ['nullable', 'string'],
@@ -116,14 +134,21 @@ class QuranLiveCourseAdminController extends Controller
             // was silently dropped on every save regardless of what an
             // admin typed in.
             'outcome' => ['nullable', 'string'],
+            'level_number' => ['nullable', 'string', 'max:50'],
+            'category' => ['nullable', 'string', 'max:100'],
+            'duration' => ['nullable', 'string', 'max:100'],
             'teacher_id' => ['nullable', 'exists:users,id', new ApprovedTeacherRule()],
             'class_time' => ['nullable', 'string', 'max:50'],
             'min_age' => ['nullable', 'integer', 'min:1', 'max:120'],
             'max_age' => ['nullable', 'integer', 'min:1', 'max:120', 'gte:min_age'],
+            'gender_preference' => ['nullable', 'in:male,female,both'],
+            'max_students_per_group' => ['nullable', 'integer', 'min:1', 'max:100'],
             'monthly_fee' => ['required', 'numeric', 'min:0'],
         ]);
 
         $validated['outcome'] = HtmlSanitizer::clean($validated['outcome'] ?? null);
+        $validated['gender_preference'] = $validated['gender_preference'] ?? 'both';
+        $validated['max_students_per_group'] = $validated['max_students_per_group'] ?? 10;
 
         return $validated;
     }

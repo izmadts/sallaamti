@@ -8,10 +8,11 @@ use Illuminate\Notifications\Notification;
 // A standard Laravel notification channel — add \App\Notifications\Channels\
 // FcmChannel::class to any Notification's via() and implement toFcm() on it
 // (return null to skip sending for that particular case, e.g. the admin leg
-// of a dual-audience notification) to also push it to the Nikah Counselor
-// app. Reuses whatever recipient the notification already targets, so every
-// existing mail/database notification stays the single source of truth for
-// "who gets told what" — this only adds a delivery channel.
+// of a dual-audience notification) to also push it to the member or Nikah
+// Counselor app. Reuses whatever recipient the notification already
+// targets, so every existing mail/database notification stays the single
+// source of truth for "who gets told what" — this only adds a delivery
+// channel.
 class FcmChannel
 {
     public function send(object $notifiable, Notification $notification): void
@@ -25,11 +26,15 @@ class FcmChannel
             return;
         }
 
+        // 'app' narrows delivery to that app's own registered devices (see
+        // PushNotificationService::sendToUser) — omit it only for a
+        // notification genuinely meaningful to either app.
         app(PushNotificationService::class)->sendToUser(
             $notifiable,
             $payload['title'],
             $payload['body'],
-            $payload['data'] ?? []
+            $payload['data'] ?? [],
+            $payload['app'] ?? null
         );
     }
 }

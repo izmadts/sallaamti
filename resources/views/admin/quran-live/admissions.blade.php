@@ -6,6 +6,8 @@
     <div class="py-12">
         <div class="max-w-6xl mx-auto sm:px-6 lg:px-8 space-y-4">
 
+            @if (session('status'))<div class="p-4 bg-green-50 text-green-700 rounded">{{ session('status') }}</div>@endif
+            @if (session('error'))<div class="p-4 bg-red-50 text-red-700 rounded">{{ session('error') }}</div>@endif
 
             @forelse ($admissions as $admission)
             <div class="bg-white shadow-sm rounded-lg p-5">
@@ -38,8 +40,11 @@
                     </div>
 
                     <span class="text-xs px-2 py-1 rounded-full
-                            {{ $admission->status === 'assigned' ? 'bg-green-100 text-green-800' :
-                               ($admission->status === 'rejected' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800') }}">
+                            {{ match($admission->status) {
+                                'assigned', 'completed' => 'bg-green-100 text-green-800',
+                                'rejected', 'dropped' => 'bg-red-100 text-red-800',
+                                default => 'bg-yellow-100 text-yellow-800',
+                            } }}">
                         {{ ucfirst($admission->status) }}
                     </span>
                 </div>
@@ -50,10 +55,24 @@
                         @csrf
                         <select name="group_id" class="border-gray-300 rounded text-sm" required>
                             <option value="">-- Select Group --</option>
-                            @foreach (\App\Models\QuranClassGroup::with('course')->where('is_active', true)->get() as $group)
-                            <option value="{{ $group->id }}">{{ $group->course->title }} — {{ $group->group_name }} ({{ $group->class_time }})</option>
+                            @php
+                                // Scoped to THIS admission's own course — it
+                                // used to list every active group system-wide,
+                                // which let a Nazrah Level 1 admission be
+                                // assigned straight into an unrelated
+                                // Tajweed/Advanced group with two clicks.
+                                $eligibleGroups = $admission->course->classGroups()->where('is_active', true)->get();
+                            @endphp
+                            @foreach ($eligibleGroups as $group)
+                            @php $genderMismatch = $group->gender !== 'mixed' && $group->gender !== $admission->student_gender; @endphp
+                            <option value="{{ $group->id }}" {{ ($genderMismatch || $group->isFull()) ? 'disabled' : '' }}>
+                                {{ $group->group_name }} ({{ $group->class_time }}, {{ ucfirst($group->gender) }}{{ $group->teacher ? ' — ' . $group->teacher->name : '' }}){{ $group->isFull() ? ' — FULL' : ($genderMismatch ? ' — gender mismatch' : '') }}
+                            </option>
                             @endforeach
                         </select>
+                        @if ($eligibleGroups->isEmpty())
+                        <p class="text-xs text-red-500 mt-1">No active groups exist yet for {{ $admission->course->title }} — create one first.</p>
+                        @endif
                         <button class="bg-green-600 text-white text-sm px-4 py-2 rounded">Assign to Group</button>
                     </form>
 

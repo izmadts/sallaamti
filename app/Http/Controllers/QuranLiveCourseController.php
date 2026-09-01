@@ -61,6 +61,33 @@ class QuranLiveCourseController extends Controller
         $this->wizardKey = "quran_admission_{$course->id}";
     }
 
+    /**
+     * A course's own min_age/max_age/gender_preference were being collected
+     * from the admin but never checked against what a family actually
+     * submits — a 40-year-old could apply to a "Kids 5-8" course, or a girl
+     * to a boys-only one. Both are nullable/'both' by default (no
+     * restriction), so these only fire when the course actually declares one.
+     */
+    private function ageRule(QuranLiveCourse $course): \Closure
+    {
+        return function (string $attribute, mixed $value, \Closure $fail) use ($course) {
+            if ($course->min_age !== null && $value < $course->min_age) {
+                $fail("This course is for ages {$course->min_age}" . ($course->max_age ? "–{$course->max_age}" : '+') . '.');
+            } elseif ($course->max_age !== null && $value > $course->max_age) {
+                $fail("This course is for ages " . ($course->min_age ?? 1) . "–{$course->max_age}.");
+            }
+        };
+    }
+
+    private function genderRule(QuranLiveCourse $course): \Closure
+    {
+        return function (string $attribute, mixed $value, \Closure $fail) use ($course) {
+            if ($course->gender_preference && $course->gender_preference !== 'both' && $value !== $course->gender_preference) {
+                $fail("This course is for {$course->gender_preference} students only.");
+            }
+        };
+    }
+
     private function admissionRules(QuranLiveCourse $course): array
     {
         return [
@@ -74,8 +101,8 @@ class QuranLiveCourseController extends Controller
                     fn ($query) => $query->where('quran_live_course_id', $course->id)->where('user_id', Auth::id())
                 ),
             ],
-            'student_gender' => ['required', 'in:male,female'],
-            'student_age' => ['required', 'integer', 'min:3', 'max:80'],
+            'student_gender' => ['required', 'in:male,female', $this->genderRule($course)],
+            'student_age' => ['required', 'integer', 'min:3', 'max:80', $this->ageRule($course)],
             'education_grade' => ['nullable', 'string', 'max:100'],
             'learned_quran_before' => ['nullable', 'boolean'],
             'preferred_days' => ['nullable', 'array'],

@@ -4,6 +4,7 @@ namespace App\Notifications;
 
 use App\Models\QuranAdmission;
 use App\Models\QuranClassGroup;
+use App\Notifications\Channels\FcmChannel;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
@@ -17,7 +18,7 @@ class QuranClassReminder extends Notification implements ShouldQueue
 
     public function via($notifiable): array
     {
-        return ['database', 'mail'];
+        return ['database', 'mail', FcmChannel::class];
     }
 
     public function toMail($notifiable): MailMessage
@@ -35,6 +36,16 @@ class QuranClassReminder extends Notification implements ShouldQueue
         return [
             'message' => "📅 {$this->admission->student_name} has class today at {$this->group->class_time} — {$this->group->group_name}.",
             'url' => route('quran-live.my-class'),
+        ];
+    }
+
+    public function toFcm($notifiable): array
+    {
+        return [
+            'title' => 'Quran class today',
+            'body' => "{$this->admission->student_name} has class today at {$this->group->class_time} — {$this->group->group_name}.",
+            'data' => ['type' => 'quran_class_today', 'group_id' => (string) $this->group->id],
+            'app' => 'sallaamti_app',
         ];
     }
 }

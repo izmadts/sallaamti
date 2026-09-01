@@ -56,6 +56,13 @@ class QuranTeacherController extends Controller
             'passcode' => ['nullable', 'string', 'max:50'],
         ]);
 
+        // Whether this is the first post for today matters: a student
+        // shouldn't get "the link is up!" pinged again just because the
+        // teacher corrected a typo in the passcode a minute later.
+        $isFirstPostToday = !QuranDailyLink::where('quran_class_group_id', $group->id)
+            ->where('class_date', now()->toDateString())
+            ->exists();
+
         QuranDailyLink::updateOrCreate(
             [
                 'quran_class_group_id' => $group->id,
@@ -67,7 +74,32 @@ class QuranTeacherController extends Controller
             ])
         );
 
+        if ($isFirstPostToday) {
+            $this->notifyStudentsLinkIsUp($group);
+        }
+
         return back()->with('status', "Today's link posted.");
+    }
+
+    /**
+     * Only students whose current month is actually confirmed — the link
+     * wouldn't do them any good otherwise (My Class hides it behind the
+     * payment gate the same way it does everywhere else), so pinging an
+     * unpaid parent that "the link is up" would just be confusing.
+     */
+    private function notifyStudentsLinkIsUp(QuranClassGroup $group): void
+    {
+        $month = now()->format('Y-m');
+
+        $group->activeStudents()->with('user')->get()
+            ->filter(fn (QuranGroupStudent $gs) => $group->course->subscriptionFor($gs->admission, $month)?->payment_status === 'confirmed')
+            ->each(function (QuranGroupStudent $gs) use ($group) {
+                try {
+                    $gs->user?->notify(new \App\Notifications\QuranClassLinkPosted($group));
+                } catch (\Throwable $e) {
+                    \Log::error('QuranClassLinkPosted notification failed: ' . $e->getMessage());
+                }
+            });
     }
 
     public function storeAssessment(Request $request, QuranClassGroup $group, QuranGroupStudent $student)

@@ -17,9 +17,21 @@ use Kreait\Firebase\Messaging\Notification;
 // lead, confirming a payment, etc).
 class PushNotificationService
 {
-    public function sendToUser(User $user, string $title, string $body, array $data = []): void
+    /**
+     * $app narrows delivery to one app's registered devices ('sallaamti_app'
+     * or 'nikah_counselor', see DeviceToken::$app) — left null (send to every
+     * device this user has, regardless of which app registered it) for
+     * existing callers. Matters once a notification's `data` payload is
+     * meaningful to only one app's routing (e.g. a Quran Live class-link
+     * ping means nothing to the counselor app) — the rare account that's
+     * both a member and a counselor shouldn't get a push the other app
+     * can't make sense of.
+     */
+    public function sendToUser(User $user, string $title, string $body, array $data = [], ?string $app = null): void
     {
-        $tokens = DeviceToken::where('user_id', $user->id)->pluck('token', 'id');
+        $tokens = DeviceToken::where('user_id', $user->id)
+            ->when($app, fn ($query) => $query->where('app', $app))
+            ->pluck('token', 'id');
         if ($tokens->isEmpty()) {
             return;
         }

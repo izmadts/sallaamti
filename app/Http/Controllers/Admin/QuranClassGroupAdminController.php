@@ -10,7 +10,7 @@ use App\Models\QuranLiveCourse;
 use App\Models\User;
 use App\Rules\ApprovedTeacherRule;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Validation\Rule;
 
 class QuranClassGroupAdminController extends Controller
 {
@@ -84,17 +84,45 @@ class QuranClassGroupAdminController extends Controller
 
     public function assignToGroup(Request $request, QuranAdmission $admission)
     {
+        // Scoped to this admission's own course — exists:quran_class_groups,id
+        // alone would accept ANY group in the system, which is exactly how a
+        // 6-year-old's Nazrah admission could end up assigned into an
+        // unrelated Tajweed/Advanced group. The dropdown itself is now also
+        // scoped (admissions.blade.php), so this is the server-side backstop
+        // for that, not the only guard.
         $request->validate([
-            'group_id' => ['required', 'exists:quran_class_groups,id'],
+            'group_id' => [
+                'required',
+                Rule::exists('quran_class_groups', 'id')->where('quran_live_course_id', $admission->quran_live_course_id),
+            ],
         ]);
 
         $group = QuranClassGroup::findOrFail($request->group_id);
 
-        abort_if($group->isFull(), 422, 'This group is full.');
+        if ($group->gender !== 'mixed' && $group->gender !== $admission->student_gender) {
+            return back()->with('error', "{$group->group_name} is a {$group->gender}-only group — {$admission->student_name} is {$admission->student_gender}.");
+        }
+
+        if ($group->isFull()) {
+            return back()->with('error', "{$group->group_name} is full.");
+        }
+
+        // Moving a student who's already actively placed elsewhere: without
+        // this, the old QuranGroupStudent row is left untouched at 'active'
+        // while a second one is created here, leaving them occupying a seat
+        // in both groups simultaneously — assigned_group_id (a single FK)
+        // would only ever reflect the newest one, silently hiding the stale
+        // membership. 'dropped' is reused rather than adding a distinct
+        // "transferred" status — the group enum has no such concept, and
+        // "no longer active here, because moved" is what dropped means.
+        QuranGroupStudent::where('quran_admission_id', $admission->id)
+            ->where('quran_class_group_id', '!=', $group->id)
+            ->where('status', 'active')
+            ->update(['status' => 'dropped']);
 
         // Matched by admission (child), not just user_id — two siblings
         // assigned to the same group must land as two separate rows.
-        QuranGroupStudent::firstOrCreate([
+        $groupStudent = QuranGroupStudent::firstOrCreate([
             'quran_class_group_id' => $group->id,
             'quran_admission_id' => $admission->id,
         ], [
@@ -102,6 +130,13 @@ class QuranClassGroupAdminController extends Controller
             'joined_date' => now()->toDateString(),
             'status' => 'active',
         ]);
+
+        // firstOrCreate leaves an existing-but-dropped row (e.g. re-assigning
+        // back to a group they were previously removed from) at 'dropped' —
+        // reactivate it rather than silently doing nothing.
+        if ($groupStudent->status !== 'active') {
+            $groupStudent->update(['status' => 'active', 'completed_date' => null]);
+        }
 
         $admission->update([
             'assigned_group_id' => $group->id,
@@ -114,7 +149,7 @@ class QuranClassGroupAdminController extends Controller
             \Log::error('QuranClassAssigned notification failed: ' . $e->getMessage());
         }
 
-        return back()->with('status', "Student assigned to {$group->group_name}.");
+        return back()->with('status', "{$admission->student_name} assigned to {$group->group_name}.");
     }
 
     public function rejectAdmission(Request $request, QuranAdmission $admission)
@@ -136,6 +171,17 @@ class QuranClassGroupAdminController extends Controller
 
         if ($request->status === 'completed') {
             $student->update(['completed_date' => now()->toDateString()]);
+        }
+
+        // This used to only ever touch QuranGroupStudent — the linked
+        // QuranAdmission permanently kept reading 'assigned' even after a
+        // student was dropped or completed, since nothing synced the two.
+        // assigned_group_id is deliberately left as-is (historical record of
+        // which group they were in), only the current-state status moves.
+        if ($student->admission && in_array($request->status, ['completed', 'dropped'], true)) {
+            $student->admission->update(['status' => $request->status]);
+        } elseif ($student->admission && $request->status === 'active' && $student->admission->status !== 'assigned') {
+            $student->admission->update(['status' => 'assigned']);
         }
 
         return back()->with('status', 'Student status updated.');
