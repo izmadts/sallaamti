@@ -7,7 +7,7 @@ use App\Models\Certificate;
 use App\Models\MatchmakerApplication;
 use App\Models\User;
 use App\Notifications\NikahCounselorCardRequested;
-use Barryvdh\DomPDF\Facade\Pdf;
+use App\Services\CertificatePdf;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -56,11 +56,7 @@ class CertificateController extends Controller
     public function download(Request $request): Response
     {
         $certificate = Certificate::where('user_id', $request->user()->id)->where('type', 'nikah_counselor_id')->firstOrFail();
-        $certificate->load('user', 'issuer');
 
-        $pdf = Pdf::loadView('certificates.nikah-counselor-id', ['certificate' => $certificate])
-            ->setPaper([0, 0, 242.7, 153.15]);
-
-        return $pdf->download('Sallaamti-Nikah-Counselor-ID-' . $certificate->certificate_number . '.pdf');
+        return CertificatePdf::download($certificate);
     }
 }

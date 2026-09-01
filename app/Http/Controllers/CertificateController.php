@@ -4,9 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Certificate;
 use App\Models\Course;
+use App\Services\CertificatePdf;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Barryvdh\DomPDF\Facade\Pdf;
 
 class CertificateController extends Controller
 {
@@ -29,37 +29,7 @@ class CertificateController extends Controller
     {
         abort_unless((int) $certificate->user_id === (int) Auth::id() || Auth::user()->hasRole('admin'), 403);
 
-        $certificate->load('user', 'course', 'issuer');
-
-        if ($certificate->type === 'volunteer_id') {
-            // 85.6mm x 54mm (ISO/IEC 7810 ID-1) converted to points and
-            // rounded up slightly — rounding down here left the page a hair
-            // short of the CSS-declared mm size, which made DomPDF spill a
-            // near-invisible sliver onto a blank second page.
-            $pdf = Pdf::loadView('certificates.volunteer-id-card', ['certificate' => $certificate])
-                ->setPaper([0, 0, 242.7, 153.15]);
-
-            return $pdf->download('Sallaamti-Volunteer-ID-' . $certificate->certificate_number . '.pdf');
-        }
-
-        if ($certificate->type === 'nikah_counselor_id') {
-            $pdf = Pdf::loadView('certificates.nikah-counselor-id', ['certificate' => $certificate])
-                ->setPaper([0, 0, 242.7, 153.15]);
-
-            return $pdf->download('Sallaamti-Nikah-Counselor-ID-' . $certificate->certificate_number . '.pdf');
-        }
-
-        if ($certificate->course?->track === 'skills') {
-            $pdf = Pdf::loadView('certificates.pdf-skills', ['certificate' => $certificate])
-                ->setPaper('a4', 'landscape');
-
-            return $pdf->download('Sallaamti-Certificate-' . $certificate->certificate_number . '.pdf');
-        }
-
-        $pdf = Pdf::loadView('certificates.pdf', ['certificate' => $certificate])
-            ->setPaper('a4', 'landscape');
-
-        return $pdf->download('Sallaamti-Certificate-' . $certificate->certificate_number . '.pdf');
+        return CertificatePdf::download($certificate);
     }
 
     public function index()

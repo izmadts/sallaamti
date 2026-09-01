@@ -3,24 +3,17 @@
 namespace App\Http\Controllers;
 
 use App\Models\Course;
-use App\Models\QuizAttempt;
+use App\Models\Lesson;
+use App\Models\LessonProgress;
+use App\Services\QuizGrader;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\RateLimiter;
 
+// Scoring, the pass threshold and the attempt rate limit all live in
+// QuizGrader — shared with the app's Api\V1\LearningController so a learner
+// gets marked the same way whichever surface they sit the quiz on.
 class QuizController extends Controller
 {
-    /** Blocks brute-forcing quiz answers via repeated resubmission. */
-    private function guardAgainstBruteForce(string $key): void
-    {
-        abort_if(
-            RateLimiter::tooManyAttempts($key, 10),
-            429,
-            'Too many attempts. Please wait before trying this quiz again.'
-        );
-        RateLimiter::hit($key, 3600);
-    }
-
     public function show(Course $course)
     {
         abort_unless($course->isEnrolledBy(Auth::user()), 403, 'Enroll in this course first.');
@@ -43,35 +36,13 @@ class QuizController extends Controller
         $quiz = $course->quiz;
         abort_unless($quiz, 404);
 
-        $this->guardAgainstBruteForce("quiz-submit:{$quiz->id}:" . Auth::id());
+        QuizGrader::guardAgainstBruteForce($quiz, Auth::user());
+        $attempt = QuizGrader::grade($quiz, $request->input('answers', []), Auth::user());
 
-        $questions = $quiz->questions;
-        $answers = $request->input('answers', []);
-
-        $correctCount = 0;
-        foreach ($questions as $question) {
-            $submitted = $answers[$question->id] ?? null;
-            if ($submitted !== null && (int) $submitted === $question->correct_option) {
-                $correctCount++;
-            }
-        }
-
-        $scorePercentage = $questions->count() > 0 ? (int) round(($correctCount / $questions->count()) * 100) : 0;
-        $passed = $scorePercentage >= $quiz->passing_percentage;
-
-        QuizAttempt::create([
-            'quiz_id' => $quiz->id,
-            'user_id' => Auth::id(),
-            'answers' => $answers,
-            'score_percentage' => $scorePercentage,
-            'passed' => $passed,
-        ]);
-
-        return redirect()->route('quiz.show', $course)->with('status', $passed
-            ? "Congratulations! You scored {$scorePercentage}% and passed."
-            : "You scored {$scorePercentage}%. You need {$quiz->passing_percentage}% to pass — try again.");
+        return redirect()->route('quiz.show', $course)->with('status', QuizGrader::resultMessage($attempt, $quiz));
     }
-    public function showLessonQuiz(\App\Models\Lesson $lesson)
+
+    public function showLessonQuiz(Lesson $lesson)
     {
         $course = $lesson->course;
         abort_unless($course->isEnrolledBy(Auth::user()), 403, 'Enroll in this course first.');
@@ -85,47 +56,25 @@ class QuizController extends Controller
         return view('quiz.show-lesson', compact('lesson', 'course', 'quiz', 'bestAttempt'));
     }
 
-    public function submitLessonQuiz(Request $request, \App\Models\Lesson $lesson)
+    public function submitLessonQuiz(Request $request, Lesson $lesson)
     {
         abort_unless($lesson->course->isEnrolledBy(Auth::user()), 403, 'Enroll in this course first.');
 
         $quiz = $lesson->quiz;
         abort_unless($quiz, 404);
 
-        $this->guardAgainstBruteForce("quiz-submit:{$quiz->id}:" . Auth::id());
+        QuizGrader::guardAgainstBruteForce($quiz, Auth::user());
+        $attempt = QuizGrader::grade($quiz, $request->input('answers', []), Auth::user());
 
-        $questions = $quiz->questions;
-        $answers = $request->input('answers', []);
-
-        $correctCount = 0;
-        foreach ($questions as $question) {
-            $submitted = $answers[$question->id] ?? null;
-            if ($submitted !== null && (int) $submitted === $question->correct_option) {
-                $correctCount++;
-            }
-        }
-
-        $scorePercentage = $questions->count() > 0 ? (int) round(($correctCount / $questions->count()) * 100) : 0;
-        $passed = $scorePercentage >= $quiz->passing_percentage;
-
-        QuizAttempt::create([
-            'quiz_id' => $quiz->id,
-            'user_id' => Auth::id(),
-            'answers' => $answers,
-            'score_percentage' => $scorePercentage,
-            'passed' => $passed,
-        ]);
-
-        // Optional: auto-mark lesson complete if quiz passed
-        if ($passed) {
-            \App\Models\LessonProgress::updateOrCreate(
+        // Passing the lesson's own quiz proves the lesson was worked through,
+        // so it counts as completed without a second explicit tap.
+        if ($attempt->passed) {
+            LessonProgress::updateOrCreate(
                 ['user_id' => Auth::id(), 'lesson_id' => $lesson->id],
                 ['completed_at' => now()]
             );
         }
 
-        return redirect()->route('lesson.quiz.show', $lesson)->with('status', $passed
-            ? "Congratulations! You scored {$scorePercentage}% and passed."
-            : "You scored {$scorePercentage}%. You need {$quiz->passing_percentage}% to pass — try again.");
+        return redirect()->route('lesson.quiz.show', $lesson)->with('status', QuizGrader::resultMessage($attempt, $quiz));
     }
 }

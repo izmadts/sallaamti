@@ -7,6 +7,7 @@ use App\Http\Controllers\Api\V1\DashboardController;
 use App\Http\Controllers\Api\V1\DeviceTokenController;
 use App\Http\Controllers\Api\V1\DonationController;
 use App\Http\Controllers\Api\V1\FaqController;
+use App\Http\Controllers\Api\V1\LearningController;
 use App\Http\Controllers\Api\V1\NotificationController;
 use App\Http\Controllers\Api\V1\Matchmaker as MatchmakerApi;
 use App\Http\Controllers\Api\V1\MetaController;
@@ -157,6 +158,29 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
             Route::post('admissions/{admission}/messages', [QuranLiveController::class, 'sendMessage'])->name('admissions.messages.store');
             Route::get('my-class', [QuranLiveController::class, 'myClass'])->name('my-class');
             Route::get('my-progress', [QuranLiveController::class, 'myProgress'])->name('my-progress');
+        });
+
+        // Self-paced learning — the same `courses` table the web serves at
+        // /courses (track=quran) and /skills (track=skills), so one group
+        // covers both dashboard entry points. See LearningController's class
+        // docblock for why it isn't split per web controller.
+        Route::prefix('learning')->name('learning.')->group(function () {
+            Route::get('courses', [LearningController::class, 'courses'])->name('courses.index');
+            Route::get('courses/{course}', [LearningController::class, 'show'])->name('courses.show');
+            Route::post('courses/{course}/enroll', [LearningController::class, 'enroll'])->name('courses.enroll');
+            Route::get('my-learning', [LearningController::class, 'myLearning'])->name('my-learning');
+
+            Route::get('lessons/{lesson}', [LearningController::class, 'lesson'])->name('lessons.show');
+            Route::post('lessons/{lesson}/complete', [LearningController::class, 'completeLesson'])->name('lessons.complete');
+
+            Route::get('lessons/{lesson}/quiz', [LearningController::class, 'lessonQuiz'])->name('lessons.quiz.show');
+            Route::post('lessons/{lesson}/quiz', [LearningController::class, 'submitLessonQuiz'])->name('lessons.quiz.submit');
+            Route::get('courses/{course}/quiz', [LearningController::class, 'courseQuiz'])->name('courses.quiz.show');
+            Route::post('courses/{course}/quiz', [LearningController::class, 'submitCourseQuiz'])->name('courses.quiz.submit');
+
+            Route::post('courses/{course}/certificate', [LearningController::class, 'generateCertificate'])->name('courses.certificate');
+            Route::get('certificates', [LearningController::class, 'certificates'])->name('certificates.index');
+            Route::get('certificates/{certificate}/download', [LearningController::class, 'downloadCertificate'])->name('certificates.download');
         });
 
         Route::prefix('wall')->name('wall.')->group(function () {
