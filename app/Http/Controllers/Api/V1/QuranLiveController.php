@@ -82,6 +82,10 @@ class QuranLiveController extends Controller
             'course_id' => $admission->quran_live_course_id,
             'student_name' => $admission->student_name,
             'status' => $admission->status,
+            // Only meaningful for 'rejected' today, but harmless to always
+            // include — the app couldn't previously explain a rejection at
+            // all, since this never left the server.
+            'admin_notes' => $admission->admin_notes,
             'subscription' => $this->subscriptionPayload($subscription),
             'todays_link' => $confirmed ? $this->linkPayload($course->todaysLink()) : null,
         ];
@@ -316,6 +320,7 @@ class QuranLiveController extends Controller
                     'student_name' => $a->student_name,
                     'course_title' => $a->course->title,
                     'status' => $a->status,
+                    'admin_notes' => $a->admin_notes,
                     'preferred_time' => $a->preferred_time,
                     'teacher_preference' => $a->teacher_preference,
                 ])->values(),
