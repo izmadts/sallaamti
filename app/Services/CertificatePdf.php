@@ -24,6 +24,13 @@ class CertificatePdf
 
     public static function download(Certificate $certificate): Response
     {
+        // A pending/rejected course-certificate request has no
+        // certificate_number yet and was never actually issued — the
+        // three admin-triggered types (volunteer_id, nikah_counselor_id,
+        // admin) are always created already-approved, so this only ever
+        // actually bites the course-request flow.
+        abort_unless($certificate->isApproved(), 404);
+
         $certificate->loadMissing('user', 'course', 'issuer');
 
         $number = $certificate->certificate_number;

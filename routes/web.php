@@ -441,6 +441,11 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
         Route::get('certificates/create', [CertificateAdminController::class, 'create'])->name('certificates.create');
         Route::post('certificates', [CertificateAdminController::class, 'store'])->name('certificates.store');
         Route::delete('certificates/{certificate}', [CertificateAdminController::class, 'destroy'])->name('certificates.destroy');
+        // A course-completion certificate request (see LearningController::
+        // generateCertificate/CertificateController::generate) lands here
+        // pending — admin decides before a real certificate_number exists.
+        Route::post('certificates/{certificate}/approve', [CertificateAdminController::class, 'approve'])->name('certificates.approve');
+        Route::post('certificates/{certificate}/reject', [CertificateAdminController::class, 'reject'])->name('certificates.reject');
     });
 
     // Nikah Management — GET routes need nikah.view, mutating POST routes

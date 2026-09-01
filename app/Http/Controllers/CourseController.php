@@ -32,8 +32,11 @@ class CourseController extends Controller
         // Guest-safe checks
         $isEnrolled = auth()->check() && $course->isEnrolledBy(Auth::user());
         $progress = $isEnrolled ? $course->progressFor(Auth::user()) : 0;
+        $certificate = $isEnrolled
+            ? \App\Models\Certificate::where('user_id', Auth::id())->where('course_id', $course->id)->first()
+            : null;
 
-        return view('courses.show', compact('course', 'isEnrolled', 'progress'));
+        return view('courses.show', compact('course', 'isEnrolled', 'progress', 'certificate'));
     }
 
     public function enroll(Course $course)

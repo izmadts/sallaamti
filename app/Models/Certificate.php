@@ -9,7 +9,7 @@ use Endroid\QrCode\Writer\PngWriter;
 
 class Certificate extends Model
 {
-    protected $fillable = ['certificate_number', 'user_id', 'course_id', 'type', 'title', 'issued_by', 'issued_at'];
+    protected $fillable = ['certificate_number', 'user_id', 'course_id', 'type', 'title', 'status', 'rejection_reason', 'issued_by', 'issued_at'];
 
     protected function casts(): array
     {
@@ -19,6 +19,16 @@ class Certificate extends Model
             'issued_by' => 'integer',
             'issued_at' => 'datetime',
         ];
+    }
+
+    public function isPending(): bool
+    {
+        return $this->status === 'pending';
+    }
+
+    public function isApproved(): bool
+    {
+        return $this->status === 'approved';
     }
 
     public function user()

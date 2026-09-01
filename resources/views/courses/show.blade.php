@@ -147,11 +147,27 @@
             @if (auth()->check() && $course->isCertificateEligibleFor(auth()->user()))
             <div class="bg-white rounded-lg shadow-sm p-6">
                 <h3 class="font-semibold text-gray-700 mb-2">🎓 {{ __('db.Certificate') }}</h3>
+                @if (!$certificate)
                 <p class="text-sm text-gray-500 mb-3">{{ __("db.You've completed all requirements for this course!") }}</p>
                 <form method="POST" action="{{ route('certificate.generate', $course) }}">
                     @csrf
-                    <button class="bg-green-600 text-white text-sm px-4 py-2 rounded hover:bg-green-700">{{ __('db.Get Certificate') }}</button>
+                    <button class="bg-green-600 text-white text-sm px-4 py-2 rounded hover:bg-green-700">{{ __('db.Request Certificate') }}</button>
                 </form>
+                @elseif ($certificate->isPending())
+                <p class="text-sm text-amber-600">⏳ {{ __('db.Your certificate request is awaiting admin review.') }}</p>
+                @elseif ($certificate->status === 'rejected')
+                <p class="text-sm text-red-600 mb-1">❌ {{ __('db.Your certificate request wasn\'t approved.') }}</p>
+                @if ($certificate->rejection_reason)
+                <p class="text-sm text-gray-500 mb-3">{{ $certificate->rejection_reason }}</p>
+                @endif
+                <form method="POST" action="{{ route('certificate.generate', $course) }}">
+                    @csrf
+                    <button class="bg-green-600 text-white text-sm px-4 py-2 rounded hover:bg-green-700">{{ __('db.Request Again') }}</button>
+                </form>
+                @else
+                <p class="text-sm text-gray-500 mb-3">{{ __('db.Your certificate is approved and ready.') }}</p>
+                <a href="{{ route('certificate.download', $certificate) }}" class="inline-block bg-green-600 text-white text-sm px-4 py-2 rounded hover:bg-green-700">{{ __('db.Download Certificate') }}</a>
+                @endif
             </div>
             @endif
         </div>

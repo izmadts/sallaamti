@@ -113,6 +113,10 @@ class LearningController extends Controller
             'title' => CertificatePdf::label($certificate),
             'type' => $certificate->type,
             'course_id' => $certificate->course_id,
+            // 'pending'/'approved'/'rejected' — a request the student hasn't
+            // heard back on yet has no certificate_number/issued_at at all.
+            'status' => $certificate->status,
+            'rejection_reason' => $certificate->rejection_reason,
             'issued_at' => $certificate->issued_at?->toIso8601String(),
         ];
     }
@@ -426,6 +430,14 @@ class LearningController extends Controller
         return $answers;
     }
 
+    /**
+     * Submits a certificate request rather than issuing one outright — an
+     * admin has to approve it before certificate_number/issued_at exist
+     * (see the certificates table migration for why). (user_id, course_id)
+     * is unique, so a previously-rejected request is reset back to pending
+     * rather than silently left rejected forever the way firstOrCreate
+     * would leave it — resubmitting has to actually do something.
+     */
     public function generateCertificate(Course $course, Request $request): JsonResponse
     {
         $user = $request->user();
@@ -437,10 +449,14 @@ class LearningController extends Controller
             'Complete the course and pass the final quiz first.'
         );
 
-        $certificate = Certificate::firstOrCreate(
-            ['user_id' => $user->id, 'course_id' => $course->id],
-            ['certificate_number' => Certificate::generateNumber(), 'issued_at' => now()]
-        );
+        $certificate = Certificate::firstOrNew(['user_id' => $user->id, 'course_id' => $course->id]);
+
+        if ($certificate->isApproved()) {
+            return response()->json(['certificate' => $this->certificatePayload($certificate)], 200);
+        }
+        abort_if($certificate->isPending() && $certificate->exists, 422, 'Your request is already awaiting review.');
+
+        $certificate->fill(['type' => 'course', 'status' => 'pending', 'rejection_reason' => null])->save();
 
         return response()->json(['certificate' => $this->certificatePayload($certificate)], 201);
     }
