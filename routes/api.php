@@ -20,6 +20,7 @@ use App\Http\Controllers\Api\V1\NikahPaymentController;
 use App\Http\Controllers\Api\V1\NikahProfileController;
 use App\Http\Controllers\Api\V1\NikahSafetyController;
 use App\Http\Controllers\Api\V1\ProfileController;
+use App\Http\Controllers\Api\V1\QuranLiveController;
 use App\Http\Controllers\Api\V1\VolunteerController;
 use App\Http\Controllers\Api\V1\WallController;
 use Illuminate\Support\Facades\Route;
@@ -141,6 +142,21 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
             Route::post('bookings/{booking}/cancel', [CounselingController::class, 'cancel'])->name('bookings.cancel');
             Route::post('bookings/{booking}/reply', [CounselingController::class, 'reply'])->name('bookings.reply');
             Route::post('bookings/{booking}/rate', [CounselingController::class, 'rate'])->name('bookings.rate');
+        });
+
+        // The mobile side of QuranLiveCourseController (web) — see
+        // QuranLiveController's class docblock for how admission collapses
+        // the web's 3-step session wizard into one request.
+        Route::prefix('quran-live')->name('quran-live.')->group(function () {
+            Route::get('meta', [QuranLiveController::class, 'meta'])->name('meta');
+            Route::get('courses', [QuranLiveController::class, 'courses'])->name('courses.index');
+            Route::get('courses/{course}', [QuranLiveController::class, 'show'])->name('courses.show');
+            Route::post('courses/{course}/admissions', [QuranLiveController::class, 'storeAdmission'])->name('admissions.store');
+            Route::get('admissions/{admission}/subscription', [QuranLiveController::class, 'subscription'])->name('admissions.subscription.show');
+            Route::post('admissions/{admission}/subscription', [QuranLiveController::class, 'storeSubscription'])->name('admissions.subscription.store');
+            Route::post('admissions/{admission}/messages', [QuranLiveController::class, 'sendMessage'])->name('admissions.messages.store');
+            Route::get('my-class', [QuranLiveController::class, 'myClass'])->name('my-class');
+            Route::get('my-progress', [QuranLiveController::class, 'myProgress'])->name('my-progress');
         });
 
         Route::prefix('wall')->name('wall.')->group(function () {
