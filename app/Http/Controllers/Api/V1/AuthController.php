@@ -10,6 +10,7 @@ use App\Models\OtpCode;
 use App\Models\User;
 use App\Notifications\OtpCodeMail;
 use App\Rules\ValidPhoneNumber;
+use Illuminate\Auth\Events\PasswordReset;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -129,6 +130,81 @@ class AuthController extends Controller
         }
 
         return $this->tokenResponse($user, $purpose === 'registration' ? 201 : 200);
+    }
+
+    /**
+     * Step 1 of forgot-password: email a 6-digit reset code.
+     *
+     * Keyed on email rather than phone (unlike otpRequest, which is a
+     * phone-first login flow) because that's the one identifier every account
+     * here is guaranteed to reach — password-registered and social accounts
+     * alike — and it's where the code has to be delivered anyway.
+     */
+    public function passwordForgot(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'email' => ['required', 'email', 'max:255'],
+        ]);
+
+        $user = User::where('email', $validated['email'])->first();
+
+        if ($user) {
+            $otp = OtpCode::generateFor($validated['email'], 'password_reset', $user->id);
+
+            Notification::route('mail', $validated['email'])->notify(new OtpCodeMail(
+                $otp->code,
+                subject: 'Reset your Sallaamti password',
+                intro: 'We received a request to reset your password. Your reset code is:',
+            ));
+        }
+
+        // Deliberately the same response whether or not that address has an
+        // account — varying it would let anyone test which emails are
+        // registered here.
+        return response()->json([
+            'message' => __('db.If that email is registered, we\'ve sent a 6-digit reset code to it.'),
+        ]);
+    }
+
+    /** Step 2: verify the code and set the new password. */
+    public function passwordReset(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'email' => ['required', 'email', 'max:255'],
+            'code' => ['required', 'digits:6'],
+            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+        ]);
+
+        if (!OtpCode::verify($validated['email'], $validated['code'], 'password_reset')) {
+            throw ValidationException::withMessages(['code' => __('db.That code is invalid or has expired.')]);
+        }
+
+        $user = User::where('email', $validated['email'])->first();
+
+        if (!$user) {
+            throw ValidationException::withMessages(['email' => __('db.We couldn\'t find an account for that email.')]);
+        }
+
+        $user->password = Hash::make($validated['password']);
+        // A counselor-set temporary password is exactly what someone would be
+        // escaping here, so the nag to change it no longer applies.
+        $user->must_change_password = false;
+        $user->save();
+
+        // Resetting a password is the moment you want every other session
+        // gone — if someone else was holding a token for this account, this
+        // is what locks them out.
+        $user->tokens()->delete();
+
+        // Proving control of the account is enough to come back, same as
+        // otpVerify treats a successful code.
+        if ($user->isDeactivated()) {
+            $user->reactivate();
+        }
+
+        event(new PasswordReset($user));
+
+        return $this->tokenResponse($user);
     }
 
     public function socialGoogle(Request $request): JsonResponse

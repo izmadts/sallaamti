@@ -11,7 +11,15 @@ class OtpCodeMail extends Notification implements ShouldQueue
 {
     use Queueable;
 
-    public function __construct(public string $code) {}
+    // $subject/$intro default to the sign-in wording this started as. Password
+    // reset overrides them (see AuthController::passwordForgot) so a member who
+    // didn't ask for a reset can tell from the email alone what was attempted,
+    // rather than getting the same anonymous "verification code" either way.
+    public function __construct(
+        public string $code,
+        public string $subject = 'Your Sallaamti Verification Code',
+        public string $intro = 'Your verification code is:',
+    ) {}
 
     public function via($notifiable): array
     {
@@ -21,9 +29,9 @@ class OtpCodeMail extends Notification implements ShouldQueue
     public function toMail($notifiable): MailMessage
     {
         return (new MailMessage)
-            ->subject('Your Sallaamti Verification Code')
+            ->subject($this->subject)
             ->greeting('Assalamu Alaikum!')
-            ->line('Your verification code is:')
+            ->line($this->intro)
             ->line("## {$this->code}")
             ->line('This code expires in 10 minutes.')
             ->line("If you didn't request this, you can safely ignore this email.")

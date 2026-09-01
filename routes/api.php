@@ -40,6 +40,10 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
         Route::post('login', [AuthController::class, 'login'])->middleware('throttle:10,1')->name('login');
         Route::post('otp/request', [AuthController::class, 'otpRequest'])->middleware('throttle:5,1')->name('otp.request');
         Route::post('otp/verify', [AuthController::class, 'otpVerify'])->middleware('throttle:10,1')->name('otp.verify');
+        // Forgot password — same shape and throttles as the OTP pair above:
+        // requesting a code is the scarcer action, submitting one is retried.
+        Route::post('password/forgot', [AuthController::class, 'passwordForgot'])->middleware('throttle:5,1')->name('password.forgot');
+        Route::post('password/reset', [AuthController::class, 'passwordReset'])->middleware('throttle:10,1')->name('password.reset');
         Route::post('social/google', [AuthController::class, 'socialGoogle'])->middleware('throttle:10,1')->name('social.google');
         Route::post('social/facebook', [AuthController::class, 'socialFacebook'])->middleware('throttle:10,1')->name('social.facebook');
 
