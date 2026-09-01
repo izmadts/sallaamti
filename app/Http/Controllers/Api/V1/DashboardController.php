@@ -16,7 +16,7 @@ class DashboardController extends Controller
     // The app's home-screen tiles — deliberately its own list rather than
     // reusing Faq::MODULES (which also includes non-tile entries like
     // "general"), so growing one doesn't silently reshape the other.
-    private const TILES = ['nikah', 'quran', 'quran_live', 'skills', 'counseling', 'donation', 'volunteer', 'wall'];
+    private const TILES = ['nikah', 'quran', 'quran_live', 'skills', 'counseling', 'donation', 'volunteer', 'wall', 'community'];
 
     // Which of the 4 togglable preferences (see the users table's
     // *_module_enabled columns, same ones the web nav's module dropdown
