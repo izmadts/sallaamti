@@ -28,6 +28,7 @@ class QuranClassLinkPosted extends Notification implements ShouldQueue
     public function toArray($notifiable): array
     {
         return [
+            'type' => 'quran_class_link_posted',
             'message' => "🎥 Today's class link is up for {$this->group->group_name}.",
             'url' => route('quran-live.my-class'),
         ];

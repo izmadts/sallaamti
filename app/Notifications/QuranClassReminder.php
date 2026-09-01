@@ -34,6 +34,7 @@ class QuranClassReminder extends Notification implements ShouldQueue
     public function toArray($notifiable): array
     {
         return [
+            'type' => 'quran_class_today',
             'message' => "📅 {$this->admission->student_name} has class today at {$this->group->class_time} — {$this->group->group_name}.",
             'url' => route('quran-live.my-class'),
         ];

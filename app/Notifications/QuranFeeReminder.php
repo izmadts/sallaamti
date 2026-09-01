@@ -34,6 +34,7 @@ class QuranFeeReminder extends Notification implements ShouldQueue
     public function toArray($notifiable): array
     {
         return [
+            'type' => 'quran_fee_due',
             'message' => "💳 This month's fee for {$this->admission->student_name} ({$this->course->title}) is still due.",
             'url' => route('quran-live.subscribe', [$this->course, $this->admission]),
         ];

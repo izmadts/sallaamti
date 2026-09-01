@@ -22,6 +22,7 @@ class QuranClassAssigned extends Notification implements ShouldQueue
     public function toArray($notifiable): array
     {
         return [
+            'type' => 'quran_class_assigned',
             'message' => "You have been assigned to {$this->group->group_name} — {$this->group->class_time}. Please complete your monthly payment to join.",
             'url' => route('quran-live.my-class'),
         ];

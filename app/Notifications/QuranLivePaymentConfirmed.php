@@ -33,6 +33,7 @@ class QuranLivePaymentConfirmed extends Notification implements ShouldQueue
     public function toArray($notifiable): array
     {
         return [
+            'type' => 'quran_payment_confirmed',
             'message' => '✅ Monthly fee confirmed for ' . $this->course->title . '. Join your class!',
             'url' => route('quran-live.my-class'),
         ];
