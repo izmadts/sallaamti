@@ -31,13 +31,14 @@
                     </div>
                     <div>
                         <x-input-label :value="__('db.Preferred Time')" />
+                        <p class="text-xs text-gray-400 mb-1">{{ __("db.Our academy's available class slots, shown in Pakistan Time (PKT).") }}</p>
                         @php $currentTime = old('preferred_time', $data['preferred_time'] ?? ''); @endphp
                         <select name="preferred_time" class="border-gray-300 rounded-md w-full mt-1">
                             @foreach ([
                                 '12:00 PM','1:00 PM','2:00 PM','3:00 PM','4:00 PM','5:00 PM','6:00 PM',
                                 '7:00 PM','8:00 PM','9:00 PM','10:00 PM','11:00 PM','12:00 AM',
                             ] as $t)
-                            <option value="{{ $t }}" {{ $currentTime === $t ? 'selected' : '' }}>{{ $t }} ( UTC+05:00 )</option>
+                            <option value="{{ $t }}" {{ $currentTime === $t ? 'selected' : '' }}>{{ $t }} PKT</option>
                             @endforeach
                         </select>
                     </div>

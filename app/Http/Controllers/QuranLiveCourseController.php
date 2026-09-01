@@ -203,7 +203,7 @@ class QuranLiveCourseController extends Controller
 
         $validated = $request->validate([
             'payment_method' => ['required', 'in:jazzcash,easypaisa,bank_transfer'],
-            'payment_reference' => ['required', 'string', 'max:100'],
+            'payment_reference' => ['nullable', 'string', 'max:100'],
             'payment_screenshot' => ['required', 'image', 'max:4096'],
         ]);
 

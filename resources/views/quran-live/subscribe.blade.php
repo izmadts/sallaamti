@@ -38,7 +38,7 @@
                         <option value="bank_transfer">{{ __('db.Bank Transfer') }}</option>
                     </select>
                 </div>
-                <div><x-input-label :value="__('db.Transaction Reference')" /><x-text-input name="payment_reference" class="w-full mt-1" required /></div>
+                <div><x-input-label :value="__('db.Transaction Reference (optional)')" /><x-text-input name="payment_reference" class="w-full mt-1" /></div>
                 <div><x-input-label :value="__('db.Screenshot')" /><input type="file" name="payment_screenshot" accept="image/*" class="w-full mt-1" required></div>
                 <x-primary-button>{{ __('db.Submit Payment') }}</x-primary-button>
             </form>
