@@ -49,6 +49,26 @@ class HtmlSanitizer
         return $purifier->purify($html);
     }
 
+    /**
+     * Sanitize content that may or may not already be HTML.
+     *
+     * The web's authoring surfaces use Trix and post real HTML; the mobile
+     * apps have a plain multiline text field instead. Wrapping plain input in
+     * <br>s before purifying means one stored value renders correctly on both
+     * — without it, a post written on a phone collapses onto a single line
+     * when the same record is read on the web.
+     */
+    public static function cleanAuthoredText(?string $input): ?string
+    {
+        if ($input === null || $input === '') {
+            return $input;
+        }
+
+        $isHtml = $input !== strip_tags($input);
+
+        return static::clean($isHtml ? $input : nl2br(e($input), false));
+    }
+
     // Same trust level as clean() above (admin-authored only — bulk email
     // composers are gated behind nikah.manage-style admin permissions, never
     // open to members), but a broader allowlist: a newsletter-style HTML

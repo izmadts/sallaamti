@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\AvatarController;
+use App\Http\Controllers\Api\V1\BlogController;
 use App\Http\Controllers\Api\V1\CounselingController;
 use App\Http\Controllers\Api\V1\DashboardController;
 use App\Http\Controllers\Api\V1\DeviceTokenController;
@@ -20,8 +21,10 @@ use App\Http\Controllers\Api\V1\NikahInterestController;
 use App\Http\Controllers\Api\V1\NikahPaymentController;
 use App\Http\Controllers\Api\V1\NikahProfileController;
 use App\Http\Controllers\Api\V1\NikahSafetyController;
+use App\Http\Controllers\Api\V1\PostController;
 use App\Http\Controllers\Api\V1\ProfileController;
 use App\Http\Controllers\Api\V1\QuranLiveController;
+use App\Http\Controllers\Api\V1\TestimonialController;
 use App\Http\Controllers\Api\V1\VolunteerController;
 use App\Http\Controllers\Api\V1\WallController;
 use Illuminate\Support\Facades\Route;
@@ -185,6 +188,38 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
             Route::post('courses/{course}/certificate', [LearningController::class, 'generateCertificate'])->name('courses.certificate');
             Route::get('certificates', [LearningController::class, 'certificates'])->name('certificates.index');
             Route::get('certificates/{certificate}/download', [LearningController::class, 'downloadCertificate'])->name('certificates.download');
+        });
+
+        // Community reading + member-authored content. Posts and Testimonials
+        // both go through a review gate (see their controllers); Blog is
+        // staff-authored, so it's read-only here.
+        Route::prefix('blog')->name('blog.')->group(function () {
+            Route::get('/', [BlogController::class, 'index'])->name('index');
+            Route::get('{blogPost}', [BlogController::class, 'show'])->name('show');
+        });
+
+        Route::prefix('posts')->name('posts.')->group(function () {
+            // 'mine' must be declared before '{post}', or it'd be swallowed
+            // as a post id lookup — same ordering the web routes need.
+            Route::get('mine', [PostController::class, 'mine'])->name('mine');
+            Route::get('/', [PostController::class, 'index'])->name('index');
+            Route::post('/', [PostController::class, 'store'])->name('store');
+            // Bound on id, not the model's slug route key — the app addresses
+            // every other resource by id, and the slug is in the payload for
+            // building the public share URL anyway.
+            Route::get('{post:id}', [PostController::class, 'show'])->name('show');
+            // POST rather than PUT: the app sends multipart for the cover
+            // image, and PHP doesn't populate $_FILES on a PUT body.
+            Route::post('{post:id}', [PostController::class, 'update'])->name('update');
+            Route::delete('{post:id}', [PostController::class, 'destroy'])->name('destroy');
+        });
+
+        Route::prefix('testimonials')->name('testimonials.')->group(function () {
+            Route::get('mine', [TestimonialController::class, 'mine'])->name('mine');
+            Route::get('/', [TestimonialController::class, 'index'])->name('index');
+            Route::post('/', [TestimonialController::class, 'store'])->name('store');
+            Route::post('{testimonial}', [TestimonialController::class, 'update'])->name('update');
+            Route::delete('{testimonial}', [TestimonialController::class, 'destroy'])->name('destroy');
         });
 
         Route::prefix('wall')->name('wall.')->group(function () {
