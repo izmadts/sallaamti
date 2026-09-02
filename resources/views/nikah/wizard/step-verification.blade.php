@@ -23,33 +23,16 @@
                     @csrf
 
                     <x-nikah-section :title="__('db.Verification (Required)')" icon="🪪" color="rose" :description="__('db.Your CNIC will only be used for verification and is never shown publicly.')">
-                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            <div>
-                                <x-input-label for="cnic_number" :value="__('db.CNIC Number')" />
-                                <x-text-input id="cnic_number" name="cnic_number" type="text" class="w-full mt-1" :value="old('cnic_number', $data['cnic_number'] ?? '')" required
-                                    placeholder="{{ __('db.e.g. 12345-1234567-1') }}" title="{{ __('db.Your 13-digit CNIC number, exactly as printed on your card.') }}" />
-                                <p class="text-xs text-gray-400 mt-1">{{ __('db.Must be unique — one CNIC can only be used for one profile.') }}</p>
-                            </div>
-                            <div></div>
-                            <div>
-                                <x-input-label for="cnic_front_image" :value="__('db.CNIC Photo (Front)')" />
-                                <x-photo-upload-field name="cnic_front_image" :required="empty($data['cnic_front_image'])" />
-                                @if (!empty($data['cnic_front_image']))
-                                <p class="text-xs text-green-600 mt-1">✓ {{ __('db.Already uploaded — choose a file only if you want to replace it.') }}</p>
-                                @endif
-                            </div>
-                            <div>
-                                <x-input-label for="cnic_back_image" :value="__('db.CNIC Photo (Back)')" />
-                                <x-photo-upload-field name="cnic_back_image" :required="empty($data['cnic_back_image'])" />
-                                @if (!empty($data['cnic_back_image']))
-                                <p class="text-xs text-green-600 mt-1">✓ {{ __('db.Already uploaded — choose a file only if you want to replace it.') }}</p>
-                                @endif
-                            </div>
+                        <div>
+                            <x-input-label for="cnic_number" :value="__('db.CNIC Number')" />
+                            <x-text-input id="cnic_number" name="cnic_number" type="text" class="w-full mt-1" :value="old('cnic_number', $data['cnic_number'] ?? '')" required
+                                placeholder="{{ __('db.e.g. 12345-1234567-1') }}" title="{{ __('db.Your 13-digit CNIC number, exactly as printed on your card.') }}" />
+                            <p class="text-xs text-gray-400 mt-1">{{ __('db.Must be unique — one CNIC can only be used for one profile.') }}</p>
                         </div>
                         <hr class="mt-4 border-rose-200">
                         <div class="mt-4">
-                            <x-input-label for="photo" :value="__('db.Your Nikah Profile Photo (private, shared only if you allow, hidden until mutual interest is accepted)')" />
-                            <input id="photo" name="photo" type="file" accept="image/*" class="w-full mt-1" />
+                            <x-input-label for="photo" :value="__('db.Your Nikah Profile Photo — shown to a match only after mutual interest is accepted, and never shown publicly')" />
+                            <input id="photo" name="photo" type="file" accept="image/*" class="w-full mt-1" required />
                             @if (!empty($data['photo']))
                             <p class="text-xs text-green-600 mt-1">✓ {{ __('db.Already uploaded — choose a file only if you want to replace it.') }}</p>
                             @endif

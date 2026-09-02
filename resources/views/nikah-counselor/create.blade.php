@@ -167,16 +167,6 @@
                                         <p class="text-xs text-gray-400 mt-1">{{ __('db.Camera only — must be a live photo of you, not an uploaded file.') }}</p>
                                         <x-input-error :messages="$errors->get('selfie_photo')" class="mt-1" />
                                     </div>
-                                    <div>
-                                        <label class="auth-label">{{ __('db.CNIC Photo (Front)') }} <span class="text-red-400">*</span></label>
-                                        <x-photo-upload-field name="cnic_front_image" :required="true" :allow-camera="false" />
-                                        <x-input-error :messages="$errors->get('cnic_front_image')" class="mt-1" />
-                                    </div>
-                                    <div>
-                                        <label class="auth-label">{{ __('db.CNIC Photo (Back)') }} <span class="text-red-400">*</span></label>
-                                        <x-photo-upload-field name="cnic_back_image" :required="true" :allow-camera="false" />
-                                        <x-input-error :messages="$errors->get('cnic_back_image')" class="mt-1" />
-                                    </div>
                                 </div>
                                 <p class="text-xs text-gray-500 mt-3">🔒 {{ __('db.Submitted directly and securely to Sallaamti — never shared, never collected any other way.') }}</p>
                             </div>

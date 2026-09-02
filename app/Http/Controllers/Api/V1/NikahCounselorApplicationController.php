@@ -30,9 +30,10 @@ class NikahCounselorApplicationController extends Controller
             'qualification' => ['required', 'in:' . implode(',', array_keys(MatchmakerApplication::QUALIFICATIONS))],
             'qualification_other' => ['required_if:qualification,other', 'nullable', 'string', 'max:100'],
             'selfie_photo' => ['required', 'image', 'max:4096'],
-            'cnic_number' => ['required', 'string', 'max:20', 'unique:matchmaker_applications,cnic_number'],
-            'cnic_front_image' => ['required', 'image', 'max:4096'],
-            'cnic_back_image' => ['required', 'image', 'max:4096'],
+            // CNIC number stays looking mandatory on the form; CNIC front/
+            // back photo upload is retired here too, same policy change as
+            // the member Nikah profile.
+            'cnic_number' => ['nullable', 'string', 'max:20', 'unique:matchmaker_applications,cnic_number'],
             'area' => ['nullable', 'string', 'max:100'],
             'country' => ['nullable', 'string', 'max:100'],
             'address' => ['nullable', 'string', 'max:500'],
@@ -47,8 +48,6 @@ class NikahCounselorApplicationController extends Controller
         ]);
 
         $validated['selfie_photo'] = ImageOptimizer::store($request->file('selfie_photo'), 'matchmaker-applications/selfies', 'private');
-        $validated['cnic_front_image'] = ImageOptimizer::store($request->file('cnic_front_image'), 'matchmaker-applications/cnic', 'private');
-        $validated['cnic_back_image'] = ImageOptimizer::store($request->file('cnic_back_image'), 'matchmaker-applications/cnic', 'private');
 
         $validated['user_id'] = null;
         $validated['consent_accepted'] = true;

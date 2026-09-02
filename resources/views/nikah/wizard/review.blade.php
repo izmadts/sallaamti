@@ -74,8 +74,6 @@
                     <div class="border rounded-lg p-4">
                         <h3 class="font-semibold text-gray-700 mb-2">{{ __('db.Photos & Verification') }}</h3>
                         <div class="flex gap-4 text-sm text-gray-600">
-                            <span>{{ !empty($data['cnic_front_image']) ? '✓' : '✗' }} {{ __('db.CNIC Front') }}</span>
-                            <span>{{ !empty($data['cnic_back_image']) ? '✓' : '✗' }} {{ __('db.CNIC Back') }}</span>
                             <span>{{ !empty($data['photo']) ? '✓' : '✗' }} {{ __('db.Profile Photo') }}</span>
                         </div>
                     </div>

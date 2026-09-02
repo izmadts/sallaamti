@@ -282,35 +282,18 @@
 
                     <x-nikah-section :title="__('db.Verification')" icon="🪪" color="rose" :description="__('db.Your CNIC is private and never shown publicly.')">
                         <div>
-                            @if ($profile->cnic_number && $profile->cnic_front_image && $profile->cnic_back_image)
+                            @if ($profile->cnic_number)
                             <div class="bg-white border border-rose-200 rounded-lg p-4 text-sm text-gray-600">
                                 <p class="font-medium text-gray-700 mb-1">🔒 CNIC Verification Submitted</p>
                                 <p>CNIC Number: {{ $profile->cnic_number }}</p>
                                 <p class="mt-1">Your CNIC details are locked and cannot be changed here. If you need to update your CNIC, please contact support.</p>
                             </div>
                             @else
-                            <p class="text-sm text-gray-500 mb-3">Leave file fields blank to keep your current uploads.</p>
-                            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                @if (!$profile->cnic_number)
-                                <div>
-                                    <x-input-label for="cnic_number" value="CNIC Number" />
-                                    <x-text-input id="cnic_number" name="cnic_number" type="text" class="w-full mt-1" :value="old('cnic_number')" required
-                                        placeholder="{{ __('db.e.g. 12345-1234567-1') }}" title="{{ __('db.Your 13-digit CNIC number, exactly as printed on your card.') }}" />
-                                    <p class="text-xs text-gray-400 mt-1">{{ __('db.Must be unique — one CNIC can only be used for one profile.') }}</p>
-                                </div>
-                                @endif
-                                @if (!$profile->cnic_front_image)
-                                <div>
-                                    <x-input-label for="cnic_front_image" value="CNIC Photo (Front)" />
-                                    <x-photo-upload-field name="cnic_front_image" :required="true" />
-                                </div>
-                                @endif
-                                @if (!$profile->cnic_back_image)
-                                <div>
-                                    <x-input-label for="cnic_back_image" value="CNIC Photo (Back)" />
-                                    <x-photo-upload-field name="cnic_back_image" :required="true" />
-                                </div>
-                                @endif
+                            <div>
+                                <x-input-label for="cnic_number" value="CNIC Number" />
+                                <x-text-input id="cnic_number" name="cnic_number" type="text" class="w-full mt-1" :value="old('cnic_number')" required
+                                    placeholder="{{ __('db.e.g. 12345-1234567-1') }}" title="{{ __('db.Your 13-digit CNIC number, exactly as printed on your card.') }}" />
+                                <p class="text-xs text-gray-400 mt-1">{{ __('db.Must be unique — one CNIC can only be used for one profile.') }}</p>
                             </div>
                             @endif
                         </div>
@@ -321,9 +304,12 @@
                             <x-input-label for="allow_photo_sharing" value="Allow my photo to be shared with a match after mutual interest is accepted" />
                         </div>
                         <div class="mt-4">
-                            <x-input-label for="photo" value="Your Photo (replace)" />
-                            <input id="photo" name="photo" type="file" accept="image/*" class="w-full mt-1"
+                            <x-input-label for="photo" :value="__('db.Your Nikah Profile Photo — shown to a match only after mutual interest is accepted, and never shown publicly')" />
+                            <input id="photo" name="photo" type="file" accept="image/*" class="w-full mt-1" {{ $profile->photo ? '' : 'required' }}
                                 title="{{ __('db.A clear, recent photo of yourself — kept private and only shown after mutual interest is accepted.') }}" />
+                            @if ($profile->photo)
+                            <p class="text-xs text-gray-400 mt-1">{{ __('db.Leave blank to keep your current photo.') }}</p>
+                            @endif
                         </div>
                     </x-nikah-section>
 

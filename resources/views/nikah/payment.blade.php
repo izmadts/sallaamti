@@ -97,7 +97,7 @@
                 </div>
                 @elseif ($profile->payment_status === 'confirmed')
                 <div class="p-4 bg-green-50 text-green-700 rounded text-sm">
-                    ✅ {{ __('db.Payment confirmed. Your profile will now proceed to CNIC verification.') }}
+                    ✅ {{ __('db.Payment confirmed. Your profile is now awaiting admin verification.') }}
                 </div>
                 @else
                 @if ($profile->payment_status === 'rejected')

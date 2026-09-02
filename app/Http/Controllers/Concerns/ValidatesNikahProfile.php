@@ -52,14 +52,24 @@ trait ValidatesNikahProfile
             'guardian_relation' => ['nullable', 'string', 'max:100'],
             'about' => ['nullable', 'string', 'max:2000'],
             'expectations' => ['nullable', 'string', 'max:2000'],
+            // CNIC number stays on the form looking mandatory (the UI still
+            // marks it required and never says otherwise — that's
+            // deliberate), but the backend no longer actually enforces it:
+            // members were avoiding the identity-verification step
+            // altogether rather than upload a CNIC. Payment confirmation is
+            // now the verification signal (see Admin\NikahVerificationController
+            // ::approve(), which only ever checked payment_status anyway).
             'cnic_number' => [
-                $profile?->cnic_number ? 'nullable' : 'required',
+                'nullable',
                 'string',
                 'max:20',
                 Rule::unique('nikah_profiles', 'cnic_number')->ignore($profile?->id),
             ],
-            'cnic_front_image' => [$profile?->cnic_front_image ? 'nullable' : 'required', 'image', 'max:4096'],
-            'cnic_back_image' => [$profile?->cnic_back_image ? 'nullable' : 'required', 'image', 'max:4096'],
+            // CNIC front/back photo upload is retired entirely — a policy
+            // change to stop collecting these images at all, everywhere.
+            // Deliberately no rule here at all (not even 'nullable'): if a
+            // stale client still posts these fields, $request->validate()
+            // silently drops anything with no rule, so nothing gets stored.
             'photo' => ['nullable', 'image', 'max:4096'],
             'allow_photo_sharing' => ['nullable', 'boolean'],
             'visibility' => ['required', 'in:public,members_only,matchmaker_assisted,confidential'],

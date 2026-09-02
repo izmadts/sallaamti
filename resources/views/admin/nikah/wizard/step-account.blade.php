@@ -15,7 +15,7 @@
 
                 <p class="text-sm text-gray-500 mb-6">
                     For walk-in registrants who can't create their own account — this creates their login and Nikah profile together.
-                    Held to the same requirements as a self-created profile, including CNIC photos.
+                    Held to the same requirements as a self-created profile.
                 </p>
 
                 @if ($errors->any())

@@ -40,9 +40,6 @@ class NikahProfileController extends Controller
         'city' => 'City',
         'guardian_name' => 'Guardian Name',
         'guardian_contact' => 'Guardian Contact Number',
-        'cnic_number' => 'CNIC Number',
-        'cnic_front_image' => 'CNIC front image',
-        'cnic_back_image' => 'CNIC back image',
     ];
 
     private function fieldLabel(string $field): string
@@ -142,18 +139,15 @@ class NikahProfileController extends Controller
             $validated['allow_photo_sharing'] = $request->boolean('allow_photo_sharing');
         }
 
+        // CNIC front/back upload retired — only the profile photo is stored
+        // as a file here now.
         try {
-            foreach (['cnic_front_image', 'cnic_back_image', 'photo'] as $file) {
-                if ($request->hasFile($file)) {
-                    $disk = $file === 'photo' ? 'nikah/photos' : 'nikah/cnic';
-                    $maxDimension = $file === 'photo' ? 1200 : 1600;
-                    $quality = $file === 'photo' ? 82 : 85;
-                    $validated[$file] = ImageOptimizer::store($request->file($file), $disk, 'private', maxDimension: $maxDimension, quality: $quality);
-                }
+            if ($request->hasFile('photo')) {
+                $validated['photo'] = ImageOptimizer::store($request->file('photo'), 'nikah/photos', 'private', maxDimension: 1200, quality: 82);
             }
         } catch (\Throwable $e) {
             report($e);
-            throw ValidationException::withMessages(['photo' => __('db.Sorry, we could not save your uploaded photo(s) — please try again in a moment.')]);
+            throw ValidationException::withMessages(['photo' => __('db.Sorry, we could not save your uploaded photo — please try again in a moment.')]);
         }
 
         if (!$profile) {
@@ -174,22 +168,17 @@ class NikahProfileController extends Controller
 
     // A completeness gate the app calls before moving on to the payment
     // step — doesn't write anything itself, since every field is already
-    // persisted incrementally by store() above.
+    // persisted incrementally by store() above. Used to also require
+    // cnic_number/cnic_front_image/cnic_back_image; CNIC photos are retired
+    // and CNIC number is now optional (payment confirmation is the
+    // verification signal — see ValidatesNikahProfile), so there's nothing
+    // left for this gate to check beyond a profile existing at all.
     public function submit(Request $request): JsonResponse
     {
         $profile = $request->user()->nikahProfile;
 
         if (!$profile) {
             throw ValidationException::withMessages(['profile' => __('db.Create your profile first.')]);
-        }
-
-        $missing = collect(['cnic_number', 'cnic_front_image', 'cnic_back_image'])
-            ->filter(fn ($field) => empty($profile->{$field}));
-
-        if ($missing->isNotEmpty()) {
-            throw ValidationException::withMessages(
-                $missing->mapWithKeys(fn ($f) => [$f => __('db.Please provide your :field before submitting.', ['field' => $this->fieldLabel($f)])])->toArray()
-            );
         }
 
         return response()->json([

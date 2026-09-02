@@ -24,19 +24,15 @@ class NikahProfileController extends Controller
         $validated['height'] = $this->resolveHeight($request);
         $validated['user_id'] = Auth::id();
 
+        // CNIC front/back upload retired — only the profile photo is stored
+        // as a file here now.
         try {
-            if ($request->hasFile('cnic_front_image')) {
-                $validated['cnic_front_image'] = ImageOptimizer::store($request->file('cnic_front_image'), 'nikah/cnic', 'private', maxDimension: 1600, quality: 85);
-            }
-            if ($request->hasFile('cnic_back_image')) {
-                $validated['cnic_back_image'] = ImageOptimizer::store($request->file('cnic_back_image'), 'nikah/cnic', 'private', maxDimension: 1600, quality: 85);
-            }
             if ($request->hasFile('photo')) {
                 $validated['photo'] = ImageOptimizer::store($request->file('photo'), 'nikah/photos', 'private', maxDimension: 1200);
             }
         } catch (\Throwable $e) {
             report($e);
-            return back()->withInput()->withErrors(['photo' => 'Sorry, we could not save your uploaded photo(s) — please try again in a moment. If this keeps happening, contact support.']);
+            return back()->withInput()->withErrors(['photo' => 'Sorry, we could not save your uploaded photo — please try again in a moment. If this keeps happening, contact support.']);
         }
 
         $validated['allow_photo_sharing'] = $request->has('allow_photo_sharing');
@@ -107,19 +103,15 @@ class NikahProfileController extends Controller
             Auth::user()->update(['gender' => $gender]);
         }
 
+        // CNIC front/back upload retired — only the profile photo is stored
+        // as a file here now.
         try {
-            if ($request->hasFile('cnic_front_image')) {
-                $validated['cnic_front_image'] = ImageOptimizer::store($request->file('cnic_front_image'), 'nikah/cnic', 'private', maxDimension: 1600, quality: 85);
-            }
-            if ($request->hasFile('cnic_back_image')) {
-                $validated['cnic_back_image'] = ImageOptimizer::store($request->file('cnic_back_image'), 'nikah/cnic', 'private', maxDimension: 1600, quality: 85);
-            }
             if ($request->hasFile('photo')) {
                 $validated['photo'] = ImageOptimizer::store($request->file('photo'), 'nikah/photos', 'private', maxDimension: 1200);
             }
         } catch (\Throwable $e) {
             report($e);
-            $message = 'Sorry, we could not save your uploaded photo(s) — please try again in a moment. If this keeps happening, contact support.';
+            $message = 'Sorry, we could not save your uploaded photo — please try again in a moment. If this keeps happening, contact support.';
 
             if ($request->wantsJson()) {
                 throw \Illuminate\Validation\ValidationException::withMessages(['photo' => $message]);
