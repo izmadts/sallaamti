@@ -39,9 +39,14 @@ class DashboardController extends Controller
             fn (string $tile) => !isset(self::GATED_BY[$tile]) || $user->{self::GATED_BY[$tile]}
         ));
 
+        $whatsapp = normalize_whatsapp_number(setting('social_whatsapp') ?: setting('site_phone'));
+
         return response()->json([
             'user' => new UserResource($user),
             'modules' => $modules,
+            'support' => [
+                'whatsapp_number' => $whatsapp !== '' ? $whatsapp : null,
+            ],
         ]);
     }
 }
