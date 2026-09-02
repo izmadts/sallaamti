@@ -271,6 +271,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/nikah/interests/{interest}/messages', [NikahGuardianMessageController::class, 'store'])->name('nikah.messages.store');
     Route::get('/nikah/payment', [NikahPaymentController::class, 'show'])->name('nikah.payment');
     Route::post('/nikah/payment', [NikahPaymentController::class, 'store'])->name('nikah.payment.store');
+    Route::post('/nikah/hire-counselor', [\App\Http\Controllers\NikahHireCounselorController::class, 'hire'])->name('nikah.hire-counselor');
+    Route::post('/nikah/package-payment', [\App\Http\Controllers\NikahHireCounselorController::class, 'submitPackage'])->name('nikah.package-payment.store');
     Route::post('/nikah/photos', [NikahPhotoController::class, 'store'])->name('nikah.photos.store');
     Route::delete('/nikah/photos/{photo}', [NikahPhotoController::class, 'destroy'])->name('nikah.photos.destroy');
     Route::post('/nikah/photos/{photo}/primary', [NikahPhotoController::class, 'setPrimary'])->name('nikah.photos.primary');

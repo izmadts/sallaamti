@@ -2,13 +2,16 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Lead;
+use App\Models\MatchmakerApplication;
+use App\Models\NikahPackage;
 use App\Services\ImageOptimizer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class NikahPaymentController extends Controller
 {
-    public function show()
+    public function show(Request $request)
     {
         $profile = Auth::user()->nikahProfile;
 
@@ -35,7 +38,35 @@ class NikahPaymentController extends Controller
             return redirect()->route('dashboard')->with('status', __('db.No verification fee is required right now — your profile is ready.'));
         }
 
-        return view('nikah.payment', compact('profile'));
+        // Once a counselor is hired, the page pivots entirely to the
+        // package-payment state (see nikah/payment.blade.php) — the
+        // self-service fee card and the counselor list are mutually
+        // exclusive with "already hired someone" from that point on.
+        $lead = Lead::where('nikah_profile_id', $profile->id)->whereNotNull('assigned_to')->with('assignedTo', 'nikahPackage')->first();
+
+        $counselors = null;
+        $packages = null;
+
+        if ($lead) {
+            $packages = NikahPackage::active()->ordered()->get()->reject->isOneTime()->values();
+        } else {
+            $city = trim((string) $request->query('city', ''));
+            $gender = $request->query('gender');
+
+            $counselors = MatchmakerApplication::where('status', 'certified')
+                ->with('user')
+                ->get()
+                ->filter(fn (MatchmakerApplication $app) => $app->user && $app->user->hasRole('matchmaker'))
+                ->when($city !== '', fn ($apps) => $apps->filter(
+                    fn (MatchmakerApplication $app) => $app->user->city && str_contains(strtolower($app->user->city), strtolower($city))
+                ))
+                ->when(in_array($gender, ['male', 'female'], true), fn ($apps) => $apps->filter(
+                    fn (MatchmakerApplication $app) => $app->user->gender === $gender
+                ))
+                ->values();
+        }
+
+        return view('nikah.payment', compact('profile', 'lead', 'counselors', 'packages'));
     }
 
     public function store(Request $request)
