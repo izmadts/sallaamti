@@ -8,7 +8,7 @@
     <section class="page-hero relative overflow-hidden flex items-center" style="min-height: 220px; background: linear-gradient(135deg, #0d6b6b 0%, #1a1a2e 100%);">
         <div class="max-w-7xl mx-auto px-4 py-14 relative z-10 text-center w-full">
             <h1 class="text-3xl md:text-4xl font-extrabold text-white mb-2">{{ __('db.Privacy Policy') }}</h1>
-            <p class="text-white/60 text-sm">{{ __('db.Last updated') }}: {{ \Illuminate\Support\Carbon::parse('2026-08-20')->format('d F Y') }}</p>
+            <p class="text-white/60 text-sm">{{ __('db.Last updated') }}: {{ \Illuminate\Support\Carbon::parse('2026-09-02')->format('d F Y') }}</p>
             <nav class="flex justify-center gap-2 mt-4 text-sm text-white/50">
                 <a href="{{ url('/') }}" class="hover:text-white">{{ __('db.Home') }}</a>
                 <span>/</span>
@@ -29,7 +29,7 @@
                 <ul>
                     <li><strong>{{ __('db.Account information') }}:</strong> {{ __('db.name, email address and/or WhatsApp number, and a securely hashed password.') }}</li>
                     <li><strong>{{ __('db.Profile information') }}:</strong> {{ __('db.gender, city, and profile photo, which you can add after registering. If you publish a Community Post, an optional public username and short bio are shown alongside it.') }}</li>
-                    <li><strong>{{ __('db.Nikah profile information') }}:</strong> {{ __('db.family and personal background, religious practice, partner preferences, photos, and identity verification documents (e.g. CNIC) submitted when creating a matrimonial profile.') }}</li>
+                    <li><strong>{{ __('db.Nikah profile information') }}:</strong> {{ __('db.family and personal background, religious practice, partner preferences, a profile photo (shown to a match only after mutual interest, never public), and your CNIC number, used only to confirm one genuine profile per person and never shown to other members.') }}</li>
                     <li><strong>{{ __('db.Course progress') }}:</strong> {{ __('db.your enrollment, lesson progress, and quiz results for Quran and Digital Skills courses, used to issue completion certificates.') }}</li>
                     <li><strong>{{ __('db.Family counseling information') }}:</strong> {{ __('db.the category and description of your concern, preferred contact method, and any details you share with a counselor while booking or attending a session.') }}</li>
                     <li><strong>{{ __('db.Volunteer application information') }}:</strong> {{ __('db.your name, email, phone, city, and area of interest when you apply to volunteer — collected even if you apply without an account.') }}</li>
@@ -38,6 +38,7 @@
                     <li><strong>{{ __('db.Payment information') }}:</strong> {{ __('db.for donations, verification fees, or paid courses, we collect the payment method details you submit (e.g. JazzCash/EasyPaisa transaction reference or bank deposit slip). We do not store full card numbers.') }}</li>
                     <li><strong>{{ __('db.Sign-in via Google or Facebook') }}:</strong> {{ __('db.if you choose to sign in with Google or Facebook, we receive your name, email address, and profile photo from that provider, as permitted by your settings with them.') }}</li>
                     <li><strong>{{ __('db.Usage data') }}:</strong> {{ __('db.pages visited, device and browser type, and similar technical data collected automatically via cookies and analytics tools.') }}</li>
+                    <li><strong>{{ __('db.Mobile app notifications') }}:</strong> {{ __('db.if you use our mobile app, we store a device push-notification token to deliver alerts (e.g. new interests, class reminders, payment updates). You can disable this in your device or app settings at any time.') }}</li>
                 </ul>
 
                 <h2>{{ __('db.2. How We Use Your Information') }}</h2>
@@ -71,7 +72,7 @@
 
                 <h2>{{ __('db.5. Nikah Profile Data — Special Care') }}</h2>
                 <p>
-                    {{ __('db.Because matrimonial data is sensitive, identity verification documents (such as CNIC images) are used only to verify genuine profiles and are never displayed publicly. You control what appears on your public Nikah profile, and you may block or report any member.') }}
+                    {{ __('db.Because matrimonial data is sensitive, your CNIC number is used only to confirm one genuine profile per person and is never shown to other members. Your profile photo is never public — it is only released to another member after you both accept a mutual interest, and never to anyone you have blocked. You control what appears on your public Nikah profile, and you may block or report any member.') }}
                 </p>
 
                 <h2>{{ __('db.6. Data Security') }}</h2>
