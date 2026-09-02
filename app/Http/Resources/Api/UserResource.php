@@ -28,6 +28,11 @@ class UserResource extends JsonResource
             ],
             'has_nikah_profile' => $this->nikahProfile()->exists(),
             'must_change_password' => (bool) $this->must_change_password,
+            // Same test as Post::isAutoPublishedFor() — the app uses this to
+            // decide whether to show the Community Posts feature at all
+            // (common members are pointed at Wall for their own posting
+            // instead); the web itself stays open to any member, unchanged.
+            'can_write_posts' => $this->can('posts.manage') || $this->hasRole('admin'),
             // Only meaningful for counselors — mirrors PerformanceController's
             // own tier lookup so the mobile app's top bar can show the same
             // badge (🥉/🥈/🥇/⭐) without a separate round trip at login.
