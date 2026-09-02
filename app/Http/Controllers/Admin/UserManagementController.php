@@ -2,10 +2,12 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Exceptions\UserDeletionBlockedException;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Rules\ValidPhoneNumber;
 use App\Services\ImageOptimizer;
+use App\Services\UserDeletionService;
 use App\Support\PermissionCatalog;
 use App\Support\UserFilter;
 use Illuminate\Http\Request;
@@ -135,15 +137,21 @@ class UserManagementController extends Controller
         return back()->with('status', $user->name . ' has been ' . ($user->is_active ? 'activated' : 'deactivated') . '.');
     }
 
-    public function destroy(User $user)
+    public function destroy(User $user, UserDeletionService $deletionService)
     {
         if ($user->id === auth()->id()) {
             return back()->with('error', 'You cannot delete your own account.');
         }
 
-        $user->delete();
+        $name = $user->name;
 
-        return redirect()->route('admin.users.index')->with('status', 'User deleted.');
+        try {
+            $deletionService->delete($user);
+        } catch (UserDeletionBlockedException $e) {
+            return back()->with('error', $e->getMessage());
+        }
+
+        return redirect()->route('admin.users.index')->with('status', "{$name} and all associated data have been permanently deleted.");
     }
 
     public function roles()

@@ -150,7 +150,9 @@
                                             {{ $user->is_active ? 'Deactivate' : 'Activate' }}
                                         </button>
                                     </form>
-                                    <form method="POST" action="{{ route('admin.users.destroy', $user) }}" onsubmit="return confirm('Delete {{ $user->name }}? This is permanent.')">
+                                    @php $confirmToken = $user->email ?: $user->phone; @endphp
+                                    <form method="POST" action="{{ route('admin.users.destroy', $user) }}"
+                                        onsubmit="return prompt('This permanently deletes {{ $user->name }} and ALL their data.\nType {{ $confirmToken }} to confirm:') === @json($confirmToken)">
                                         @csrf @method('DELETE')
                                         <button class="text-xs text-red-500 hover:underline">Delete</button>
                                     </form>

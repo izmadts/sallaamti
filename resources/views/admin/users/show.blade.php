@@ -163,10 +163,16 @@
             @if ($user->id !== auth()->id())
             <div class="bg-red-50 border border-red-200 rounded-lg p-6">
                 <h3 class="font-semibold text-red-700 mb-2">Danger Zone</h3>
-                <p class="text-sm text-red-600 mb-3">Permanently delete this user and all associated data. This cannot be undone.</p>
-                <form method="POST" action="{{ route('admin.users.destroy', $user) }}" onsubmit="return confirm('Are you absolutely sure? This deletes ALL data for {{ $user->name }} permanently.')">
+                <p class="text-sm text-red-600 mb-3">Permanently delete this user and everything tied to their account — profile, posts, enrollments, admissions, certificates, messages, and uploaded files. This cannot be undone.</p>
+                @php $confirmToken = $user->email ?: $user->phone; @endphp
+                <form method="POST" action="{{ route('admin.users.destroy', $user) }}" class="space-y-2"
+                    onsubmit="return confirm('Are you absolutely sure? This permanently deletes ALL data for {{ $user->name }}.')">
                     @csrf @method('DELETE')
-                    <button class="bg-red-600 text-white text-sm px-4 py-2 rounded hover:bg-red-700">Delete User Permanently</button>
+                    <label for="delete-confirm-input" class="block text-xs text-red-700">Type <strong>{{ $confirmToken }}</strong> to confirm</label>
+                    <input type="text" id="delete-confirm-input" autocomplete="off" class="border-red-300 rounded-md text-sm w-full sm:w-80"
+                        oninput="document.getElementById('delete-confirm-btn').disabled = (this.value !== @json($confirmToken))">
+                    <button id="delete-confirm-btn" type="submit" disabled
+                        class="bg-red-600 text-white text-sm px-4 py-2 rounded hover:bg-red-700 disabled:opacity-40 disabled:cursor-not-allowed">Delete User Permanently</button>
                 </form>
             </div>
             @endif
