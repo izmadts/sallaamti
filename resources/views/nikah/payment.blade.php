@@ -94,15 +94,47 @@
                             @endforeach
                         </div>
 
-                        <div class="bg-gray-50 border border-gray-200 rounded p-4 text-sm mb-6 space-y-2">
+                        <div class="bg-gray-50 border border-gray-200 rounded p-4 text-sm mb-6 space-y-4">
                             @if (setting('jazzcash_number'))
-                            <p><strong>📱 {{ __('db.JazzCash') }}:</strong> {{ setting('jazzcash_number') }} ({{ setting('jazzcash_account_title') }})</p>
+                            <div>
+                                <p class="font-bold mb-1">📱 {{ __('db.JazzCash') }}</p>
+                                <p class="text-gray-600 mb-0 flex items-center gap-1">
+                                    {{ setting('jazzcash_number') }}
+                                    <x-copy-button :value="setting('jazzcash_number')" />
+                                </p>
+                                <p class="font-semibold text-gray-700 mb-0">{{ setting('jazzcash_account_title') }}</p>
+                            </div>
                             @endif
                             @if (setting('easypaisa_number'))
-                            <p><strong>💚 {{ __('db.EasyPaisa') }}:</strong> {{ setting('easypaisa_number') }}</p>
+                            <div>
+                                <p class="font-bold mb-1">💚 {{ __('db.EasyPaisa') }}</p>
+                                <p class="text-gray-600 mb-0 flex items-center gap-1">
+                                    {{ setting('easypaisa_number') }}
+                                    <x-copy-button :value="setting('easypaisa_number')" />
+                                </p>
+                            </div>
                             @endif
                             @if (setting('bank_name'))
-                            <p><strong>🏦 {{ __('db.Bank') }}:</strong> {{ setting('bank_name') }} — {{ setting('bank_account_title') }} — {{ setting('bank_account_number') }}</p>
+                            <div>
+                                <p class="font-bold mb-1">🏦 {{ __('db.Bank Transfer') }}</p>
+                                <p class="text-gray-600 text-sm mb-0">{{ __('db.Bank:') }} {{ setting('bank_name') }}</p>
+                                <p class="text-gray-600 text-sm mb-0">{{ __('db.Account Title:') }} {{ setting('bank_account_title') }}</p>
+                                @if (setting('bank_account_number'))
+                                <p class="text-gray-600 text-sm mb-0 flex items-center gap-1">
+                                    {{ __('db.Account No:') }} {{ setting('bank_account_number') }}
+                                    <x-copy-button :value="setting('bank_account_number')" />
+                                </p>
+                                @endif
+                                @if (setting('bank_account_iban'))
+                                <p class="text-gray-600 text-sm mb-0 flex items-center gap-1">
+                                    {{ __('db.IBAN:') }} {{ setting('bank_account_iban') }}
+                                    <x-copy-button :value="setting('bank_account_iban')" />
+                                </p>
+                                @endif
+                            </div>
+                            @endif
+                            @if (!setting('jazzcash_number') && !setting('easypaisa_number') && !setting('bank_name'))
+                            <p class="text-red-600">{{ __('db.Payment details have not been configured yet. Please contact support before sending any payment.') }}</p>
                             @endif
                         </div>
 
