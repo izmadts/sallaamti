@@ -11,6 +11,7 @@ use App\Models\User;
 use App\Notifications\NikahCounselorCertified;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
@@ -144,6 +145,32 @@ class MatchmakerApplicationController extends Controller
         abort_unless($path && Storage::disk('private')->exists($path), 404);
 
         return Storage::disk('private')->response($path);
+    }
+
+    // Certifying a counselor creates their account with an unguessable
+    // random password nobody ever sees (RegistersMinimalUsers::
+    // createMinimalUser()'s ?? Str::random(40) fallback) — unlike a client
+    // registered through the walk-in wizard, nothing here ever sent the new
+    // counselor a password-reset link, so there was no way for them to log
+    // in until admin used this. Mirrors Matchmaker\ClientController::
+    // setLoginPassword() exactly (same must_change_password prompt on
+    // first login); the form's own "Generate" button fills in a random
+    // password client-side so admin doesn't have to think one up.
+    public function setPassword(Request $request, MatchmakerApplication $matchmakerApplication)
+    {
+        $user = $matchmakerApplication->user;
+        abort_unless($user, 422, 'This application has no linked Sallaamti account yet — certify it first.');
+
+        $validated = $request->validate([
+            'password' => ['required', 'confirmed', \Illuminate\Validation\Rules\Password::defaults()],
+        ]);
+
+        $user->update([
+            'password' => Hash::make($validated['password']),
+            'must_change_password' => true,
+        ]);
+
+        return back()->with('status', 'Login password set — share it with the counselor now.');
     }
 
     public function reject(Request $request, MatchmakerApplication $matchmakerApplication)

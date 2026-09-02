@@ -171,6 +171,28 @@
                     <button class="text-xs font-semibold px-3 py-1.5 rounded-lg border" style="border-color: #b8962e; color: #b8962e;">Update Level</button>
                 </form>
 
+                {{-- Certifying creates the counselor's account with a random, never-shown password (RegistersMinimalUsers::createMinimalUser()) and no reset link is sent — this is the only way they get real login credentials. Same pattern as admin.leads.show's client password setter. --}}
+                @if ($application->user)
+                <div class="mb-4 pb-4 border-b">
+                    <p class="text-xs font-semibold text-gray-500 uppercase mb-1">🔑 Counselor Login Password</p>
+                    <p class="text-xs text-gray-500 mb-2">Set a temporary password so {{ $application->full_name }} can log into the Nikah Counselor app. They'll be prompted to choose their own on first login.</p>
+                    <form method="POST" action="{{ route('admin.matchmaker-applications.set-password', $application) }}" class="flex flex-wrap items-center gap-2"
+                        onsubmit="document.getElementById('mm-set-password-confirm-{{ $application->id }}').value = document.getElementById('mm-set-password-input-{{ $application->id }}').value; return confirm('Set this as the counselor\'s new login password?')">
+                        @csrf
+                        <input type="text" name="password" id="mm-set-password-input-{{ $application->id }}" required minlength="8"
+                            placeholder="Temporary password" class="border-gray-300 rounded-lg text-sm">
+                        <input type="hidden" name="password_confirmation" id="mm-set-password-confirm-{{ $application->id }}">
+                        <button type="button"
+                            onclick="const chars='ABCDEFGHJKMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789'; let v=''; for(let i=0;i<10;i++){v+=chars[Math.floor(Math.random()*chars.length)];} document.getElementById('mm-set-password-input-{{ $application->id }}').value=v;"
+                            class="text-xs font-semibold px-2 py-1.5 rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-50">🎲 Generate</button>
+                        <button type="button"
+                            onclick="navigator.clipboard.writeText(document.getElementById('mm-set-password-input-{{ $application->id }}').value); this.textContent = '✅ Copied!'; setTimeout(() => this.textContent = '📋 Copy', 1500);"
+                            class="text-xs font-semibold px-2 py-1.5 rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-50">📋 Copy</button>
+                        <button type="submit" class="text-xs font-semibold px-3 py-1.5 rounded-lg bg-gray-800 text-white hover:opacity-90">Set Password</button>
+                    </form>
+                </div>
+                @endif
+
                 <div class="grid sm:grid-cols-3 gap-4 text-sm">
                     <div class="bg-gray-50 rounded-lg p-3">
                         <p class="text-xs text-gray-400 mb-1">Referral Link</p>
