@@ -60,6 +60,13 @@
                     </div>
                 </form>
 
+                @if (auth()->user()->hasRole('admin'))
+                <form method="POST" action="{{ route($routePrefix . '.nikah.profiles.create.step.skip', 'about') }}" class="text-right mt-2">
+                    @csrf
+                    <button type="submit" class="text-xs text-gray-400 hover:text-gray-600 underline">Skip (admin preview — no data saved)</button>
+                </form>
+                @endif
+
             </div>
         </div>
     </div>

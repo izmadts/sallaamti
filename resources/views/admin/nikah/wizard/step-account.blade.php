@@ -18,6 +18,10 @@
                     Held to the same requirements as a self-created profile.
                 </p>
 
+                @if (session('error'))
+                <div class="mb-4 p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">{{ session('error') }}</div>
+                @endif
+
                 @if ($errors->any())
                 <div class="mb-4 p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg">
                     <p class="font-medium text-sm mb-1">Please fix the following:</p>
@@ -59,6 +63,13 @@
                         <x-primary-button>Next: Basic Info →</x-primary-button>
                     </div>
                 </form>
+
+                @if (auth()->user()->hasRole('admin'))
+                <form method="POST" action="{{ route($routePrefix . '.nikah.profiles.create.step.skip', 'account') }}" class="text-right mt-2">
+                    @csrf
+                    <button type="submit" class="text-xs text-gray-400 hover:text-gray-600 underline">Skip (admin preview — no data saved)</button>
+                </form>
+                @endif
 
             </div>
         </div>

@@ -55,6 +55,12 @@ class NikahProfileWizardController extends Controller
         'payment' => ['payment_method', 'payment_reference', 'payment_screenshot'],
     ];
 
+    // Genuinely required to create a real profile — checked at finalize()
+    // regardless of how each step was reached, so an admin who used
+    // skipStep() to preview the wizard can never accidentally create a
+    // real (broken) User/NikahProfile/Lead by finalizing anyway.
+    private const GENUINELY_REQUIRED = ['identifier', 'name', 'gender', 'date_of_birth', 'city', 'guardian_name', 'guardian_contact'];
+
     protected array $stepTitles = [
         'account' => 'Login Account',
         'basic' => 'Basic Info',
@@ -183,6 +189,31 @@ class NikahProfileWizardController extends Controller
         return $this->nextStepRedirect($step, $request);
     }
 
+    /**
+     * Lets a real admin (not just anyone with nikah.create-profile —
+     * matchmakers register real walk-in clients through this same wizard,
+     * and must never have their step validation quietly bypassed) click
+     * through every step, including all the way to the review screen, to
+     * see what each one looks like — without needing to type real data
+     * into required fields first. Marks the step "completed" with
+     * whatever was already there (blank, if never visited) purely so
+     * HasWizardSteps' own completeness check lets admin continue past it;
+     * it never creates anything itself, and finalize() separately refuses
+     * to create a real profile/user/Lead unless GENUINELY_REQUIRED
+     * actually got filled in on some pass through the wizard, so a
+     * preview run can't leave broken data behind even if admin clicks all
+     * the way to "Finalize" afterward.
+     */
+    public function skipStep(string $step)
+    {
+        abort_unless(auth()->user()->hasRole('admin'), 403);
+        abort_unless(array_key_exists($step, $this->wizardStepFields), 404);
+
+        $this->saveWizardStep($step, $this->wizardStepData($step));
+
+        return $this->nextStepRedirect($step);
+    }
+
     // Accepts the request so a step whose view submits via fetch() with
     // AJAX headers gets a JSON redirect instead of a real 302 (useful for
     // turning a browser-level upload failure, e.g. Chrome's
@@ -232,6 +263,23 @@ class NikahProfileWizardController extends Controller
         }
 
         $data = $this->wizardAllData();
+
+        // A step reached via the admin-only skipStep() preview leaves its
+        // fields blank — catch that here rather than let it fall through
+        // to createMinimalUser()/NikahProfile::create() with missing data,
+        // which would otherwise create a real, broken record.
+        $missing = collect(self::GENUINELY_REQUIRED)->filter(fn ($field) => blank($data[$field] ?? null));
+        if ($missing->isNotEmpty()) {
+            // Straight to the first step, not through start() — every step
+            // already reads as "completed" at this point (that's the only
+            // way finalize() was reached at all), so there's no single
+            // "the" incomplete step to single out; and going through
+            // start()'s own redirect would lose this flashed message along
+            // the way (flash data only survives one redirect hop).
+            return redirect()->route("{$this->routeNamePrefix()}.nikah.profiles.create.step", $this->wizardSteps()[0])
+                ->with('error', 'Some required fields are still empty (' . $missing->implode(', ') . ') — looks like one or more steps were skipped rather than filled in. Go back and complete them before finalizing.');
+        }
+
         $accountData = collect($data)->only(['name', 'identifier', 'gender'])->toArray();
         $paymentData = collect($data)->only(['payment_method', 'payment_reference', 'payment_screenshot'])->toArray();
         // Payment fields are handled separately below via

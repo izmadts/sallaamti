@@ -470,6 +470,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::post('/nikah-profiles/create/step/{step}', [AdminNikahProfileWizardController::class, 'saveStep'])->name('nikah.profiles.create.step.save');
     Route::get('/nikah-profiles/create/review', [AdminNikahProfileWizardController::class, 'review'])->name('nikah.profiles.create.review');
     Route::post('/nikah-profiles/create/finalize', [AdminNikahProfileWizardController::class, 'finalize'])->name('nikah.profiles.create.finalize');
+    // Admin-only preview affordance — see skipStep()'s docblock.
+    Route::post('/nikah-profiles/create/step/{step}/skip', [AdminNikahProfileWizardController::class, 'skipStep'])->name('nikah.profiles.create.step.skip');
 
     // Lean matchmaker-assist CRM — see LeadController's class docblock for
     // scope. Gated inside the controller the same way as the walk-in
@@ -722,6 +724,8 @@ Route::middleware(['auth', 'matchmaker'])->prefix('matchmaker')->name('matchmake
     Route::post('/nikah-profiles/create/step/{step}', [\App\Http\Controllers\Admin\NikahProfileWizardController::class, 'saveStep'])->name('nikah.profiles.create.step.save');
     Route::get('/nikah-profiles/create/review', [\App\Http\Controllers\Admin\NikahProfileWizardController::class, 'review'])->name('nikah.profiles.create.review');
     Route::post('/nikah-profiles/create/finalize', [\App\Http\Controllers\Admin\NikahProfileWizardController::class, 'finalize'])->name('nikah.profiles.create.finalize');
+    // Admin-only preview affordance — see skipStep()'s docblock.
+    Route::post('/nikah-profiles/create/step/{step}/skip', [\App\Http\Controllers\Admin\NikahProfileWizardController::class, 'skipStep'])->name('nikah.profiles.create.step.skip');
 
     Route::get('/nikah-profiles/{profile}', [\App\Http\Controllers\Matchmaker\NikahBrowseController::class, 'show'])->name('nikah.show');
     Route::post('/nikah-profiles/{profile}/request-contact', [\App\Http\Controllers\Matchmaker\NikahBrowseController::class, 'requestContact'])->name('nikah.request-contact');
