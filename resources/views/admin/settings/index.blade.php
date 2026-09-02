@@ -352,6 +352,14 @@
                             <x-text-input name="google_client_secret" class="w-full mt-1" :value="$settings['google_client_secret'] ?? ''" placeholder="GOCSPX-..." />
                         </div>
                     </div>
+
+                    <div>
+                        <x-input-label value="Mobile App Client ID(s)" />
+                        <x-text-input name="google_mobile_client_ids" class="w-full mt-1" :value="$settings['google_mobile_client_ids'] ?? ''" placeholder="xxxxxxxx.apps.googleusercontent.com" />
+                        <p class="text-xs text-gray-400 mt-1">
+                            Separate from the Client ID above — this is the "Web application" OAuth client the Sallaamti mobile app(s) use as their <code>serverClientId</code> when signing in with Google. Comma-separate more than one (e.g. if the Nikah Counselor app gets its own).
+                        </p>
+                    </div>
                 </div>
 
                 {{-- Facebook --}}

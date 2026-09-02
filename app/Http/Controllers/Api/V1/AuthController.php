@@ -7,6 +7,7 @@ use App\Http\Controllers\Auth\Concerns\ResolvesSocialLogin;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Api\UserResource;
 use App\Models\OtpCode;
+use App\Models\Setting;
 use App\Models\User;
 use App\Notifications\OtpCodeMail;
 use App\Rules\ValidPhoneNumber;
@@ -213,7 +214,11 @@ class AuthController extends Controller
 
         $info = Http::get('https://oauth2.googleapis.com/tokeninfo', ['id_token' => $request->id_token])->json();
 
-        $allowedAudiences = config('services.google.mobile_client_ids', []);
+        // Same DB-setting-overrides-.env pattern as web login's
+        // Auth\SocialAuthController::isEnabled() — lets admin update this
+        // from Settings > OAuth without server file access.
+        $allowedAudiences = array_filter(explode(',', Setting::get('google_mobile_client_ids') ?: ''))
+            ?: config('services.google.mobile_client_ids', []);
 
         if (!$info || !isset($info['sub']) || (!empty($allowedAudiences) && !in_array($info['aud'] ?? null, $allowedAudiences, true))) {
             throw ValidationException::withMessages(['id_token' => __('db.Could not verify this Google sign-in.')]);

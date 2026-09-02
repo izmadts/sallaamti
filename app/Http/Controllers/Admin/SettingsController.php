@@ -86,6 +86,12 @@ class SettingsController extends Controller
             'google_client_id'       => ['nullable', 'string', 'max:255'],
             'google_client_secret'   => ['nullable', 'string', 'max:255'],
             'google_login_enabled'   => ['nullable', 'boolean'],
+            // The mobile apps' own Web-application OAuth client ID(s) —
+            // separate from google_client_id above (the website's), since
+            // Google Sign-In on Android needs its ID token's `aud` claim
+            // checked against this, not the web login client. Comma-
+            // separate if the counselor app ever gets its own.
+            'google_mobile_client_ids' => ['nullable', 'string', 'max:1000'],
             'facebook_client_id'     => ['nullable', 'string', 'max:255'],
             'facebook_client_secret' => ['nullable', 'string', 'max:255'],
             'facebook_login_enabled' => ['nullable', 'boolean'],
@@ -137,6 +143,7 @@ class SettingsController extends Controller
             'google_client_id'       => 'oauth',
             'google_client_secret'   => 'oauth',
             'google_login_enabled'   => 'oauth',
+            'google_mobile_client_ids' => 'oauth',
             'facebook_client_id'     => 'oauth',
             'facebook_client_secret' => 'oauth',
             'facebook_login_enabled' => 'oauth',
