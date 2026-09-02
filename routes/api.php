@@ -120,6 +120,7 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
             Route::get('my-lead', [NikahHireCounselorController::class, 'myLead'])->name('my-lead');
             Route::get('lead-packages', [NikahHireCounselorController::class, 'packages'])->name('lead-packages');
             Route::post('lead-package', [NikahHireCounselorController::class, 'submitPackage'])->name('lead-package');
+            Route::post('release-counselor', [NikahHireCounselorController::class, 'release'])->name('release-counselor');
         });
 
         // Counselor<->client messaging for a hired Lead — reachable by

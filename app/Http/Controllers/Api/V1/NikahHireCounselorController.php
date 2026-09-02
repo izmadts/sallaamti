@@ -114,6 +114,31 @@ class NikahHireCounselorController extends Controller
         return response()->json(['lead' => $lead ? $this->leadPayload($lead) : null]);
     }
 
+    // Lets a member undo hire() themselves and fall back to self-service —
+    // only while there's no payment in flight for this counselor. Once a
+    // package payment is submitted or confirmed, releasing here would strand
+    // that transaction (admin's confirm flow attributes commission off
+    // assigned_to) or silently abandon money already sent, so that has to
+    // go through admin/support instead.
+    public function release(Request $request): JsonResponse
+    {
+        $profile = $this->myProfile($request);
+        $lead = Lead::where('nikah_profile_id', $profile->id)->whereNotNull('assigned_to')->first();
+        abort_unless($lead, 409, 'You have not hired a Nikah Counselor.');
+        abort_if(
+            in_array($lead->package_payment_status, ['submitted', 'confirmed'], true),
+            422,
+            'You have a package payment in progress with this counselor — contact support to change counselors.'
+        );
+
+        $counselorName = $lead->assignedTo?->name ?? 'your counselor';
+        $lead->update(['assigned_to' => null]);
+
+        MatchmakingTimelineEvent::log($lead, $profile, 'counselor_released', "{$request->user()->name} went back to self-service instead of {$counselorName}.");
+
+        return response()->json(['message' => __('db.You\'re back to self-service.')]);
+    }
+
     private function leadPayload(Lead $lead): array
     {
         $lead->loadMissing('assignedTo');

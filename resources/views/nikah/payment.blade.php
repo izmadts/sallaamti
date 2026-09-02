@@ -40,12 +40,20 @@
                      screen just isn't where it's offered anymore once
                      someone's chosen a counselor instead. --}}
                 <div class="bg-white rounded-lg shadow-sm p-6">
-                    <div class="flex items-center gap-3 mb-4">
-                        <span class="text-2xl">🤝</span>
-                        <div>
-                            <h3 class="font-semibold text-gray-800">{{ __('db.Your Nikah Counselor') }}</h3>
-                            <p class="text-sm text-gray-500">{{ $lead->assignedTo?->name }}</p>
+                    <div class="flex items-center justify-between gap-3 mb-4">
+                        <div class="flex items-center gap-3">
+                            <span class="text-2xl">🤝</span>
+                            <div>
+                                <h3 class="font-semibold text-gray-800">{{ __('db.Your Nikah Counselor') }}</h3>
+                                <p class="text-sm text-gray-500">{{ $lead->assignedTo?->name }}</p>
+                            </div>
                         </div>
+                        @if (!in_array($lead->package_payment_status, ['submitted', 'confirmed'], true))
+                        <form method="POST" action="{{ route('nikah.release-counselor') }}" onsubmit="return confirm('{{ __('db.Go back to self-service? This does not undo any payment already sent.') }}')">
+                            @csrf
+                            <button type="submit" class="text-xs text-gray-400 hover:text-red-600 underline whitespace-nowrap">{{ __('db.← Go back to self-service') }}</button>
+                        </form>
+                        @endif
                     </div>
 
                     @if ($lead->package_payment_status === 'submitted')

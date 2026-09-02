@@ -3,7 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Lead;
-use App\Models\MatchmakerApplication;
 use App\Models\MatchmakingTimelineEvent;
 use App\Models\NikahPackage;
 use App\Models\User;
@@ -68,6 +67,32 @@ class NikahHireCounselorController extends Controller
         }
 
         return back()->with('status', "You've hired {$counselor->name} as your Nikah Counselor — choose a package below to get started.");
+    }
+
+    // Lets a member undo hire() themselves and fall back to self-service —
+    // only while there's no payment in flight for this counselor. Once a
+    // package payment is submitted or confirmed, releasing here would strand
+    // that transaction (admin's confirm flow attributes commission off
+    // assigned_to) or silently abandon money already sent, so that has to
+    // go through admin/support instead. Mirrors
+    // Api\V1\NikahHireCounselorController::release() exactly.
+    public function release()
+    {
+        $profile = $this->myProfile();
+        $lead = Lead::where('nikah_profile_id', $profile->id)->whereNotNull('assigned_to')->first();
+        abort_unless($lead, 409, 'You have not hired a Nikah Counselor.');
+        abort_if(
+            in_array($lead->package_payment_status, ['submitted', 'confirmed'], true),
+            422,
+            'You have a package payment in progress with this counselor — contact support to change counselors.'
+        );
+
+        $counselorName = $lead->assignedTo?->name ?? 'your counselor';
+        $lead->update(['assigned_to' => null]);
+
+        MatchmakingTimelineEvent::log($lead, $profile, 'counselor_released', "{$profile->user->name} went back to self-service instead of {$counselorName}.");
+
+        return redirect()->route('nikah.payment')->with('status', "You're back to self-service.");
     }
 
     public function submitPackage(Request $request)
