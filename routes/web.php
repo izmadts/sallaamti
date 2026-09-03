@@ -102,6 +102,12 @@ Route::get('/team', function () {
 Route::get('/testimonial', fn() => view('testimonial'));
 Route::get('/contact', fn() => view('contact'));
 Route::get('/privacy-policy', fn() => view('privacy-policy'))->name('privacy-policy');
+// Public on purpose — this is the URL Play Console's Data Safety form
+// requires for account deletion, and Google's own crawler checks it while
+// logged out. It must explain the steps in plain text rather than being
+// the actual (auth-gated) settings page itself, which returns 403 to an
+// anonymous visitor.
+Route::get('/delete-account', fn() => view('delete-account'))->name('delete-account');
 Route::get('/terms-of-service', fn() => view('terms-of-service'))->name('terms-of-service');
 
 // Public module pages (browsable without login)
