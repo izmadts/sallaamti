@@ -198,6 +198,8 @@
                     <span class="mx-2 text-gray-600">·</span>
                     <a class="hover:text-white" href="{{ route('privacy-policy') }}">{{ __('db.Privacy Policy') }}</a>
                     <span class="mx-2 text-gray-600">·</span>
+                    <a class="hover:text-white" href="{{ route('delete-account') }}">{{ __('db.Delete Your Account') }}</a>
+                    <span class="mx-2 text-gray-600">·</span>
                     <a class="hover:text-white" href="{{ route('terms-of-service') }}">{{ __('db.Terms of Service') }}</a>
                     <span class="mx-2 text-gray-600">·</span>
                     <a class="hover:text-white" href="{{ route('nikah-counselor.code-of-conduct') }}">{{ __('db.Nikah Counselor Code of Conduct') }}</a>
