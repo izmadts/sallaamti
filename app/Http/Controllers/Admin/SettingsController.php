@@ -75,6 +75,9 @@ class SettingsController extends Controller
             'social_instagram'      => ['nullable', 'url'],
             'social_tiktok'         => ['nullable', 'url'],
             'maintenance_mode'      => ['nullable', 'boolean'],
+            'mobile_app_promo_enabled' => ['nullable', 'boolean'],
+            'mobile_app_android_url'   => ['nullable', 'url', 'max:500'],
+            'mobile_app_ios_url'       => ['nullable', 'url', 'max:500'],
             'gtm_id'                   => ['nullable', 'string', 'max:20'],
             'meta_domain_verification' => ['nullable', 'string', 'max:100'],
             'seo_home_title'       => ['nullable', 'string', 'max:60'],
@@ -113,6 +116,9 @@ class SettingsController extends Controller
             'site_landline'          => 'general',
             'site_address'           => 'general',
             'maintenance_mode'       => 'general',
+            'mobile_app_promo_enabled' => 'general',
+            'mobile_app_android_url'   => 'general',
+            'mobile_app_ios_url'       => 'general',
             'about_heading'          => 'about',
             'about_text'             => 'about',
             'vision_text'            => 'about',
@@ -152,7 +158,7 @@ class SettingsController extends Controller
             'tiktok_login_enabled'       => 'oauth',
         ];
 
-        $checkboxKeys = ['maintenance_mode', 'nikah_payment_required', 'google_login_enabled', 'facebook_login_enabled', 'tiktok_login_enabled'];
+        $checkboxKeys = ['maintenance_mode', 'nikah_payment_required', 'google_login_enabled', 'facebook_login_enabled', 'tiktok_login_enabled', 'mobile_app_promo_enabled'];
 
         // Required fields (validated above, so never blank here) always
         // get written. Everything else is nullable — only overwrite when a

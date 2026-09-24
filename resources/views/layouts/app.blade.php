@@ -125,6 +125,7 @@
  </div>
  @include('partials.footer')
  @include('components.pwa-install-banner')
+ @include('components.mobile-app-promo')
 </body>
 
 </html>

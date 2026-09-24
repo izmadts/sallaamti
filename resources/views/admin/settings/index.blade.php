@@ -197,6 +197,31 @@
                 </div>
             </div>
 
+            {{-- Mobile App Promotion --}}
+            <div class="bg-white rounded-lg shadow-sm p-6 space-y-4 border-l-4" style="border-left-color: #0D6B6B">
+                <h3 class="font-semibold pb-2 border-b flex items-center gap-2" style="color: #0D6B6B">
+                    <span class="w-8 h-8 rounded-lg flex items-center justify-center text-base" style="background: #0D6B6B22">📲</span> Mobile App Promotion
+                </h3>
+                <p class="text-xs text-gray-400">
+                    Shows a dismissible banner to visitors browsing the website on an Android phone or iPhone, pointing them to the native app instead. A platform's "Download App" button only appears once that platform's store URL below is filled in — so it's safe to enable this now and leave the iOS field blank until the App Store listing exists.
+                </p>
+                <div class="flex items-center gap-3">
+                    <input type="checkbox" name="mobile_app_promo_enabled" id="mobile_app_promo_enabled" value="1"
+                        {{ ($settings['mobile_app_promo_enabled'] ?? '0') === '1' ? 'checked' : '' }}
+                        class="rounded border-gray-300 text-teal-600">
+                    <label for="mobile_app_promo_enabled" class="text-sm text-gray-700 font-medium">Show app download banner to mobile visitors</label>
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <x-input-label value="Google Play Store URL (Android)" />
+                        <x-text-input name="mobile_app_android_url" class="w-full mt-1" :value="$settings['mobile_app_android_url'] ?? ''" placeholder="https://play.google.com/store/apps/details?id=com.sallaamti.app" />
+                    </div>
+                    <div>
+                        <x-input-label value="Apple App Store URL (iOS)" />
+                        <x-text-input name="mobile_app_ios_url" class="w-full mt-1" :value="$settings['mobile_app_ios_url'] ?? ''" placeholder="https://apps.apple.com/app/idXXXXXXXXX" />
+                    </div>
+                </div>
+            </div>
 
             {{-- SEO Settings --}}
             <div class="bg-white rounded-xl shadow-sm p-6 mb-6 border-l-4" style="border-left-color: #6D4AAE">
