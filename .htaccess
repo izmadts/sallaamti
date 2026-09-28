@@ -1,3 +1,55 @@
+# ============================================================
+# SECURITY (added 2026-09-28): the document root for this site IS the
+# project root, not public/ - so without this block, anything not
+# inside public/ is directly reachable by browsing straight to its
+# path (.env, storage/logs/*.log, vendor/, composer.json, etc.), even
+# though the rewrite rules below never send real traffic there. Same
+# fix applied to izmafood.com the same day - see that repo's .htaccess
+# for the identical, live-verified block. This has to sit above
+# everything else in this file: Apache serves a request that matches
+# a real existing file before any RewriteRule below even runs.
+# ============================================================
+
+# Every dotfile: .env, .git, editor swapfiles, etc.
+<FilesMatch "^\.">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+    </IfModule>
+</FilesMatch>
+
+# Source/config/dependency directories - the app only ever needs to
+# serve what's under public/.
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteRule ^(app|bootstrap|config|database|resources|routes|storage|tests|vendor|docs)(/|$) - [F,L]
+</IfModule>
+
+# Known sensitive file types, wherever they sit in the tree.
+<FilesMatch "\.(env|log|sql|sqlite|bak|swp|dist|yml|yaml|lock|md|sh|ini|conf)$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+    </IfModule>
+</FilesMatch>
+
+# Known sensitive files by exact name (no useful extension to match on).
+<FilesMatch "^(artisan|composer\.json|composer\.lock|package\.json|package-lock\.json|phpunit\.xml|webpack\.mix\.js|vite\.config\.js|migratephoto\.php)$">
+    <IfModule mod_authz_core.c>
+        Require all denied
+    </IfModule>
+    <IfModule !mod_authz_core.c>
+        Order allow,deny
+        Deny from all
+    </IfModule>
+</FilesMatch>
+
 <IfModule mod_rewrite.c>
     <IfModule mod_negotiation.c>
         Options -MultiViews
