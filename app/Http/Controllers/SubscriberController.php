@@ -1,6 +1,7 @@
 <?php
 namespace App\Http\Controllers;
 use App\Models\Subscriber;
+use App\Support\Recaptcha;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Str;
@@ -12,6 +13,16 @@ class SubscriberController extends Controller
         // auto-fill every input do. Pretend success so the bot doesn't
         // learn to skip the field next time.
         if ($request->filled('website')) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Please check your email to verify subscription.'
+            ]);
+        }
+
+        // Second, invisible layer — some spam bots specifically know to skip
+        // fields named "website"/"url" and leave the honeypot above empty.
+        // No-op until an admin sets up reCAPTCHA v3 keys in Settings.
+        if (!Recaptcha::verify($request->input('recaptcha_token'), 'subscribe')) {
             return response()->json([
                 'success' => true,
                 'message' => 'Please check your email to verify subscription.'

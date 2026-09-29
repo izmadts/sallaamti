@@ -223,6 +223,32 @@
                 </div>
             </div>
 
+            {{-- Bot Protection --}}
+            <div class="bg-white rounded-lg shadow-sm p-6 space-y-4 border-l-4" style="border-left-color: #B91C1C">
+                <h3 class="font-semibold pb-2 border-b flex items-center gap-2" style="color: #B91C1C">
+                    <span class="w-8 h-8 rounded-lg flex items-center justify-center text-base" style="background: #B91C1C22">🛡️</span> Bot Protection (reCAPTCHA v3)
+                </h3>
+                <p class="text-xs text-gray-400">
+                    Adds an invisible spam check to the public Contact and Newsletter Subscribe forms — no puzzle, no checkbox, nothing a real visitor ever sees. The forms already have a basic honeypot trap; this catches the smarter bots that know to skip it. Leave both fields blank to keep bot protection off (forms keep working as they do now).
+                </p>
+                <ol class="text-xs text-gray-500 list-decimal ms-4 space-y-0.5">
+                    <li>Go to <a href="https://www.google.com/recaptcha/admin/create" target="_blank" rel="noopener" class="underline">google.com/recaptcha/admin/create</a> and register a new site.</li>
+                    <li>Choose <span class="font-mono">reCAPTCHA v3</span> as the type.</li>
+                    <li>Add your domain (e.g. <span class="font-mono">sallaamti.com</span>).</li>
+                    <li>Copy the generated Site Key and Secret Key into the two fields below.</li>
+                </ol>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <x-input-label value="Site Key" />
+                        <x-text-input name="recaptcha_site_key" class="w-full mt-1" :value="$settings['recaptcha_site_key'] ?? ''" placeholder="6Lc..." />
+                    </div>
+                    <div>
+                        <x-input-label value="Secret Key" />
+                        <x-text-input name="recaptcha_secret_key" class="w-full mt-1" :value="$settings['recaptcha_secret_key'] ?? ''" placeholder="6Lc..." />
+                    </div>
+                </div>
+            </div>
+
             {{-- SEO Settings --}}
             <div class="bg-white rounded-xl shadow-sm p-6 mb-6 border-l-4" style="border-left-color: #6D4AAE">
                 <h3 class="font-semibold mb-5 pb-2 border-b border-gray-100 flex items-center gap-2" style="color: #6D4AAE">

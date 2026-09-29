@@ -87,13 +87,16 @@
                     </div>
                     @endif
 
-                    <form action="{{ route('contact.store') }}" method="POST" class="space-y-5">
+                    <form action="{{ route('contact.store') }}" method="POST" class="space-y-5" id="contactForm">
                         @csrf
                         {{-- Honeypot: hidden from real visitors, bots that auto-fill every field will trip it --}}
                         <div class="absolute -left-[9999px]" aria-hidden="true">
                             <label for="website">Leave this field empty</label>
                             <input type="text" name="website" id="website" tabindex="-1" autocomplete="off">
                         </div>
+                        {{-- Second, invisible layer: reCAPTCHA v3 token, filled in by JS below just
+                             before submit. Only active once an admin sets up keys in Settings. --}}
+                        <input type="hidden" name="recaptcha_token" id="recaptcha_token">
 
                         {{-- Subject tabs --}}
                         <div x-data="{ subject: '{{ old('subject_type', 'general') }}' }">
@@ -206,6 +209,27 @@
 
                     </form>
                 </div>
+
+                @if (\App\Support\Recaptcha::enabled())
+                <script src="https://www.google.com/recaptcha/api.js?render={{ \App\Support\Recaptcha::siteKey() }}"></script>
+                <script>
+                    document.addEventListener('DOMContentLoaded', function () {
+                        const form = document.getElementById('contactForm');
+                        let ready = false;
+                        form.addEventListener('submit', function (e) {
+                            if (ready) return;
+                            e.preventDefault();
+                            grecaptcha.ready(function () {
+                                grecaptcha.execute('{{ \App\Support\Recaptcha::siteKey() }}', { action: 'contact' }).then(function (token) {
+                                    document.getElementById('recaptcha_token').value = token;
+                                    ready = true;
+                                    form.submit();
+                                });
+                            });
+                        });
+                    });
+                </script>
+                @endif
 
                 {{-- ===== SIDEBAR ===== --}}
                 <div class="space-y-6 wow fadeInRight" data-wow-delay="0.2s">

@@ -16,6 +16,9 @@
                             <label for="subscribe_website">Leave this field empty</label>
                             <input type="text" name="website" id="subscribe_website" tabindex="-1" autocomplete="off">
                         </div>
+                        {{-- Second, invisible layer: reCAPTCHA v3 token, filled in by JS below just
+                             before submit. Only active once an admin sets up keys in Settings. --}}
+                        <input type="hidden" name="recaptcha_token" id="subscribe_recaptcha_token">
                         <div class="relative mx-auto">
                             <input name="email"
                                 type="email"
@@ -229,6 +232,23 @@
         const msg = document.getElementById('subscribe-message');
         form.addEventListener('submit', function(e) {
             e.preventDefault();
+            submitSubscribeForm();
+        });
+
+        function submitSubscribeForm() {
+            @if (\App\Support\Recaptcha::enabled())
+                grecaptcha.ready(function () {
+                    grecaptcha.execute('{{ \App\Support\Recaptcha::siteKey() }}', { action: 'subscribe' }).then(function (token) {
+                        document.getElementById('subscribe_recaptcha_token').value = token;
+                        doSubscribeFetch();
+                    });
+                });
+            @else
+                doSubscribeFetch();
+            @endif
+        }
+
+        function doSubscribeFetch() {
             fetch(form.action, {
                     method: 'POST',
                     headers: {
@@ -253,6 +273,6 @@
                 .catch(() => {
                     msg.innerHTML = '<span class="text-red-400">' + {{ Js::from(__('db.Invalid email address.')) }} + '</span>';
                 });
-        });
+        }
     });
 </script>
