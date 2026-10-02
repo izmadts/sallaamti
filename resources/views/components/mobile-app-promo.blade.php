@@ -5,12 +5,16 @@
      A top slim dismissible banner, not a full-screen interstitial — Google
      penalizes mobile search rankings for app-install interstitials that
      cover the page content, so this deliberately never blocks the page. --}}
-@if (setting('mobile_app_promo_enabled') === '1' && (setting('mobile_app_android_url') || setting('mobile_app_ios_url')))
+@if (setting('mobile_app_promo_enabled') === '1')
 <div
     x-data="{
         show: false,
         platform: null,
-        androidUrl: @js(setting('mobile_app_android_url', '')),
+        {{-- Real published Play Store link as the built-in fallback, so this
+             works the moment the toggle above is switched on — Settings'
+             Android URL field only needs filling in if that link ever
+             changes. iOS has no fallback since that app isn't published yet. --}}
+        androidUrl: @js(setting('mobile_app_android_url', 'https://play.google.com/store/apps/details?id=com.sallaamti.app&pcampaignid=web_share')),
         iosUrl: @js(setting('mobile_app_ios_url', '')),
         init() {
             if (localStorage.getItem('mobileAppPromoDismissed') === '1') return;

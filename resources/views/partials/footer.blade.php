@@ -55,6 +55,15 @@
                     <a class="text-gray-300 hover:text-white" href="{{ setting('social_youtube') }}" target="_blank"><i class="fab fa-youtube"></i></a>
                     <a class="text-gray-300 hover:text-white" href="{{ setting('social_instagram') }}" target="_blank"><i class="fab fa-instagram"></i></a>
                 </div>
+                <a href="https://play.google.com/store/apps/details?id=com.sallaamti.app&pcampaignid=web_share"
+                   target="_blank" rel="noopener"
+                   class="inline-flex items-center gap-2 rounded-md bg-black border border-gray-600 text-white py-2 px-4 mt-4 hover:bg-gray-800 transition w-fit">
+                    <i class="fab fa-google-play text-xl" style="color: #00D7A5"></i>
+                    <span class="leading-tight">
+                        <span class="block text-[9px] text-gray-300">{{ __('db.GET IT ON') }}</span>
+                        <span class="block text-sm font-semibold -mt-0.5">Google Play</span>
+                    </span>
+                </a>
             </div>
 
             <div>
