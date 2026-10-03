@@ -3,6 +3,7 @@
 namespace App\Notifications;
 
 use App\Models\NikahProfile;
+use App\Notifications\Channels\FcmChannel;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Notification;
@@ -16,7 +17,22 @@ class NikahProfileCompletionReminder extends Notification implements ShouldQueue
 
     public function via($notifiable): array
     {
-        return ['database', 'mail'];
+        return ['database', 'mail', FcmChannel::class];
+    }
+
+    public function toFcm($notifiable): array
+    {
+        return [
+            'title' => '💍 Finish your Nikah profile',
+            'body' => $this->profile->payment_status === 'rejected'
+                ? 'Your payment proof was rejected — resubmit it to unlock Nikah features.'
+                : 'Complete your verification fee payment to unlock Nikah features.',
+            // type, not url — a push's data payload never carries the
+            // target url, only this (see notification_route_resolver.dart
+            // on the mobile app, which maps this straight to the payment
+            // screen).
+            'data' => ['type' => 'nikah_payment_reminder'],
+        ];
     }
 
     public function toMail($notifiable): MailMessage
