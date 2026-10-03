@@ -166,6 +166,12 @@ class NikahPaymentAdminController extends Controller
 
         $profile->update($updates);
 
+        try {
+            $profile->user->notify(new \App\Notifications\NikahPaymentRejected($profile));
+        } catch (\Throwable $e) {
+            \Log::error('NikahPaymentRejected notification failed: ' . $e->getMessage());
+        }
+
         return back()->with('status', 'Payment rejected. User will need to resubmit.');
     }
 }
