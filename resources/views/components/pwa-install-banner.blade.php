@@ -1,36 +1,27 @@
-{{-- Installable-app prompt. Chrome/Android fires beforeinstallprompt and we
-     capture it to show our own styled button (the browser's automatic mini-
-     banner is inconsistent and easy to miss). iOS Safari never fires that
-     event at all — there's no programmatic install API there — so it gets
-     static "how to" instructions instead. Dismissal is remembered so this
-     doesn't nag on every visit. --}}
+{{-- Installable-app prompt — iOS only now. This used to also prompt Android
+     visitors to install the site as a PWA (via Chrome's beforeinstallprompt
+     event), but now that the real Sallaamti app is published on Play Store,
+     that competed with and diluted the native-app download path
+     (components.mobile-app-promo) — an Android visitor should be pushed
+     toward the real app, not a home-screen shortcut to the website. We still
+     listen for beforeinstallprompt purely to call preventDefault() on it, so
+     Chrome's own automatic mini-infobar doesn't pop up either.
+     iOS Safari never fires that event at all — there's no App Store app yet
+     to point iPhone visitors at instead, so PWA install stays the best
+     option there, with static "how to" instructions since iOS has no
+     programmatic install API. Dismissal is remembered so this doesn't nag on
+     every visit. --}}
 <div
     x-data="{
         show: false,
-        isIOS: false,
-        deferredPrompt: null,
         init() {
             if (localStorage.getItem('pwaInstallDismissed') === '1') return;
             if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone) return;
 
-            this.isIOS = /iphone|ipad|ipod/i.test(window.navigator.userAgent) && !window.MSStream;
+            window.addEventListener('beforeinstallprompt', (e) => e.preventDefault());
 
-            window.addEventListener('beforeinstallprompt', (e) => {
-                e.preventDefault();
-                this.deferredPrompt = e;
-                this.show = true;
-            });
-
-            if (this.isIOS) {
-                this.show = true;
-            }
-        },
-        async install() {
-            if (!this.deferredPrompt) return;
-            this.deferredPrompt.prompt();
-            await this.deferredPrompt.userChoice;
-            this.deferredPrompt = null;
-            this.show = false;
+            const isIOS = /iphone|ipad|ipod/i.test(window.navigator.userAgent) && !window.MSStream;
+            this.show = isIOS;
         },
         dismiss() {
             this.show = false;
@@ -46,18 +37,8 @@
         <div class="text-3xl flex-shrink-0">📲</div>
         <div class="flex-1 min-w-0">
             <p class="font-semibold text-gray-800 text-sm">{{ __('db.Install Sallaamti') }}</p>
-            <template x-if="!isIOS">
-                <p class="text-xs text-gray-500 mt-0.5">{{ __('db.Add it to your home screen — never miss a match or a class reminder.') }}</p>
-            </template>
-            <template x-if="isIOS">
-                <p class="text-xs text-gray-500 mt-0.5">{{ __('db.Tap the Share button, then "Add to Home Screen".') }}</p>
-            </template>
+            <p class="text-xs text-gray-500 mt-0.5">{{ __('db.Tap the Share button, then "Add to Home Screen".') }}</p>
             <div class="mt-2 flex gap-2">
-                <template x-if="!isIOS">
-                    <button @click="install()" class="text-xs font-semibold text-white px-3 py-1.5 rounded-lg" style="background: var(--teal)">
-                        {{ __('db.Install') }}
-                    </button>
-                </template>
                 <button @click="dismiss()" class="text-xs font-medium text-gray-400 px-3 py-1.5 rounded-lg hover:bg-gray-50">
                     {{ __('db.Not now') }}
                 </button>
