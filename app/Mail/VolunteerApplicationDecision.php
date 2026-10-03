@@ -4,6 +4,7 @@ namespace App\Mail;
 
 use App\Models\VolunteerApplication;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
@@ -11,7 +12,7 @@ use Illuminate\Queue\SerializesModels;
 // and therefore a registered User) can't: an approved GUEST applicant with
 // no account to attach an ID card to, and any rejection at all — QA
 // finding: neither of these sent the applicant any notification before.
-class VolunteerApplicationDecision extends Mailable
+class VolunteerApplicationDecision extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
 

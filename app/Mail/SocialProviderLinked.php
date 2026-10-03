@@ -4,6 +4,7 @@ namespace App\Mail;
 
 use App\Models\User;
 use Illuminate\Bus\Queueable;
+use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 
@@ -12,7 +13,7 @@ use Illuminate\Queue\SerializesModels;
 // themselves, this is the only signal they'd ever get. Sent every time,
 // not just the first time, since a repeat unexpected link is just as worth
 // flagging as the first.
-class SocialProviderLinked extends Mailable
+class SocialProviderLinked extends Mailable implements ShouldQueue
 {
     use Queueable, SerializesModels;
 

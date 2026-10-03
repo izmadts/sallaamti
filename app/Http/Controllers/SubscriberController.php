@@ -45,16 +45,25 @@ class SubscriberController extends Controller
             'verification_token' => $token,
             'unsubscribe_token' => Str::random(64),
         ]);
-        try {
-            Mail::send('emails.subscriber-verification', [
-                'subscriber' => $subscriber
-            ], function ($mail) use ($subscriber) {
-                $mail->to($subscriber->email)
-                    ->subject('Verify your Subscription');
-            });
-        } catch (\Throwable $e) {
-            \Log::error('Subscriber verification email failed: ' . $e->getMessage());
-        }
+        // Deferred to run after the response is already sent to the browser
+        // — this is a raw Mail::send() (no Mailable class to mark
+        // ShouldQueue on), and a live SMTP round-trip here was blocking the
+        // subscribe request until it finished, regardless of what the
+        // internet connection actually looked like. afterResponse() runs
+        // this post-response unconditionally, independent of whether a
+        // queue worker is active.
+        dispatch(function () use ($subscriber) {
+            try {
+                Mail::send('emails.subscriber-verification', [
+                    'subscriber' => $subscriber
+                ], function ($mail) use ($subscriber) {
+                    $mail->to($subscriber->email)
+                        ->subject('Verify your Subscription');
+                });
+            } catch (\Throwable $e) {
+                \Log::error('Subscriber verification email failed: ' . $e->getMessage());
+            }
+        })->afterResponse();
 
         return response()->json([
             'success' => true,
