@@ -357,17 +357,13 @@ class NikahProfileWizardController extends Controller
         }
 
         // CNIC/photo are never collected in this flow (see $wizardStepFields'
-        // comment) — the client always needs their own link to upload those
-        // later, not only in some conditional case.
-        if ($lead && $lead->phone) {
-            if (!$lead->progress_link_token) {
-                $lead->update(['progress_link_token' => Str::random(40)]);
-            }
-            $link = \App\Http\Controllers\Matchmaker\ClientController::progressLink($lead);
-            $status .= " Their CNIC/photo weren't collected today — send them this one secure link and they can upload everything themselves (it also shows their status and proposals): {$link}. They'll enter the last 7 digits of the WhatsApp number on file, every time.";
-        } else {
-            $status .= ' Their CNIC/photo weren\'t collected today, but a phone number is needed to secure a self-upload link — add one to their account, then generate their progress link from the client page.';
-        }
+        // comment) — have them download the app and finish those details
+        // themselves. The old self-service /p/{lead} link still exists
+        // (regenerate it from the client page if you ever need it for
+        // consent/proposal/package-payment self-service), it's just no
+        // longer pushed by default here — a normal app/website login is
+        // simpler to explain than a token link + WhatsApp re-verification.
+        $status .= ' Their CNIC/photo weren\'t collected today — have them download the Sallaamti app (or use the website) and log in with their phone/email and the password above to fill in those and any other remaining details themselves.';
 
         $fee = $profile->applicableVerificationFee();
 

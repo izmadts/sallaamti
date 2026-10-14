@@ -64,17 +64,17 @@
                             </div>
                             @php $guardianRelOptions = ['Self', 'Father', 'Mother', 'Brother', 'Sister', 'Uncle', 'Aunt', 'Grandfather', 'Grandmother']; @endphp
                             <div>
-                                <x-input-label for="guardian_relation" :value="__('db.Guardian Relation')" />
+                                <x-input-label for="guardian_relation" :value="__('db.Guardian Relation (Sarparast Family)')" />
                                 <x-searchable-select name="guardian_relation" :options="$guardianRelOptions" :value="old('guardian_relation', $data['guardian_relation'] ?? '')"
                                     placeholder="{{ __('db.Type to search, scroll, or pick from the list') }}" title="{{ __('db.Your relationship to the guardian named below — pick Self if you\'re acting as your own guardian.') }}" />
                             </div>
                             <div>
-                                <x-input-label for="guardian_name" :value="__('db.Guardian Name')" />
+                                <x-input-label for="guardian_name" :value="__('db.Guardian Name (Sarparast Family)')" />
                                 <x-text-input id="guardian_name" name="guardian_name" type="text" class="w-full mt-1" :value="old('guardian_name', $data['guardian_name'] ?? '')" required
                                     placeholder="{{ __('db.e.g. Muhammad Ahmed') }}" title="{{ __('db.Your Wali/guardian\'s full name — so we can involve your family in the process.') }}" />
                             </div>
                             <div>
-                                <x-input-label for="guardian_contact" :value="__('db.Guardian Contact Number')" />
+                                <x-input-label for="guardian_contact" :value="__('db.Guardian Contact Number (Sarparast Family)')" />
                                 <x-text-input id="guardian_contact" name="guardian_contact" type="text" class="w-full mt-1" :value="old('guardian_contact', $data['guardian_contact'] ?? '')" required
                                     placeholder="{{ __('db.e.g. 03001234567') }}" title="{{ __('db.A number where we or an interested family can reach your guardian.') }}" />
                             </div>

@@ -208,7 +208,9 @@ class Lead extends Model
             return $queue;
         }
 
-        if (empty($this->nikahProfile->cnic_front_image) || empty($this->nikahProfile->cnic_back_image) || empty($this->nikahProfile->cnic_number)) {
+        // CNIC photo upload is retired project-wide — the number is the
+        // only thing this stage still waits on.
+        if (empty($this->nikahProfile->cnic_number)) {
             $queue->push(['type' => 'documents', 'data' => null]);
         }
 

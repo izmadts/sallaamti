@@ -10,22 +10,6 @@
     <div class="py-6">
         <div class="max-w-5xl mx-auto sm:px-6 lg:px-8 space-y-6">
 
-            @if (session('status'))
-            <div class="p-4 bg-green-50 text-green-700 rounded-lg text-sm">{{ session('status') }}</div>
-            @endif
-            @if (session('error'))
-            <div class="p-4 bg-red-50 text-red-700 rounded-lg text-sm">{{ session('error') }}</div>
-            @endif
-            @if ($errors->any())
-            <div class="p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">
-                <ul class="list-disc list-inside">
-                    @foreach ($errors->all() as $error)
-                    <li>{{ $error }}</li>
-                    @endforeach
-                </ul>
-            </div>
-            @endif
-
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
                 {{-- Lead details + editable status/package --}}

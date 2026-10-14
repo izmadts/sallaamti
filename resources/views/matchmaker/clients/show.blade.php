@@ -15,21 +15,6 @@
 
     <div class="max-w-6xl mx-auto space-y-6" x-data="{ tab: '{{ \App\Support\LeadJourney::STAGES[$currentStageKey]['tab'] ?? 'overview' }}' }">
 
-        @if (session('status'))
-        <div class="p-4 bg-green-50 text-green-700 rounded-lg text-sm">{{ session('status') }}</div>
-        @endif
-        @if (session('error'))
-        <div class="p-4 bg-red-50 text-red-700 rounded-lg text-sm">{{ session('error') }}</div>
-        @endif
-        @if ($errors->any())
-        <div class="p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">
-            <ul class="list-disc list-inside">
-                @foreach ($errors->all() as $error)
-                <li>{{ $error }}</li>
-                @endforeach
-            </ul>
-        </div>
-        @endif
 
         {{-- Header card --}}
         <div class="bg-white rounded-xl shadow-sm p-6 flex flex-wrap justify-between items-start gap-4">

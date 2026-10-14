@@ -185,14 +185,6 @@
                             <input type="text" name="cnic_number" value="{{ old('cnic_number') }}" placeholder="{{ __('db.e.g. 12345-1234567-1') }}" class="border-gray-300 rounded-lg w-full text-sm">
                         </div>
                         <div>
-                            <label class="text-xs text-gray-500 block mb-1">{{ __('db.CNIC Photo (Front)') }} <span dir="rtl">/ شناختی کارڈ کی تصویر (اگلا حصہ)</span></label>
-                            <x-photo-upload-field name="cnic_front_image" />
-                        </div>
-                        <div>
-                            <label class="text-xs text-gray-500 block mb-1">{{ __('db.CNIC Photo (Back)') }} <span dir="rtl">/ شناختی کارڈ کی تصویر (پچھلا حصہ)</span></label>
-                            <x-photo-upload-field name="cnic_back_image" />
-                        </div>
-                        <div>
                             <label class="text-xs text-gray-500 block mb-1">{{ __('db.Your Photo (optional)') }} <span dir="rtl">/ آپ کی تصویر (اختیاری)</span></label>
                             <x-photo-upload-field name="photo" />
                         </div>

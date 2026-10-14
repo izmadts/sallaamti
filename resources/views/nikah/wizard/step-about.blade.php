@@ -34,7 +34,7 @@
                             </div>
                             <div>
                                 <x-input-label for="expectations" :value="__('db.What are you looking for in a partner?')" />
-                                <textarea id="expectations" name="expectations" rows="3" class="border-gray-300 rounded-md shadow-sm w-full mt-1"
+                                <textarea id="expectations" name="expectations" rows="3" required class="border-gray-300 rounded-md shadow-sm w-full mt-1"
                                     placeholder="{{ __('db.e.g. Someone practicing, family-oriented, kind-hearted...') }}"
                                     title="{{ __('db.What qualities matter most to you in a spouse.') }}">{{ old('expectations', $data['expectations'] ?? '') }}</textarea>
                             </div>
@@ -72,6 +72,16 @@
                                 <x-input-label for="pref_marital_status" :value="__('db.Preferred Marital Status')" />
                                 <x-text-input id="pref_marital_status" name="pref_marital_status" type="text" class="w-full mt-1" :value="old('pref_marital_status', $data['pref_marital_status'] ?? '')"
                                     placeholder="{{ __('db.e.g. Never Married (leave blank for any)') }}" title="{{ __('db.Leave blank if this doesn\'t matter to you.') }}" />
+                            </div>
+                            <div>
+                                <x-input-label for="pref_income" :value="__('db.Preferred Income / Business Worth')" />
+                                <x-text-input id="pref_income" name="pref_income" type="text" class="w-full mt-1" :value="old('pref_income', $data['pref_income'] ?? '')"
+                                    placeholder="{{ __('db.e.g. PKR 150,000+ monthly (leave blank for any)') }}" title="{{ __('db.Leave blank if this doesn\'t matter to you.') }}" />
+                            </div>
+                            <div class="sm:col-span-2">
+                                <x-input-label for="pref_other" :value="__('db.Other Preferences')" />
+                                <textarea id="pref_other" name="pref_other" rows="2" class="border-gray-300 rounded-md shadow-sm w-full mt-1"
+                                    placeholder="{{ __('db.Anything else you\'re looking for in a partner') }}">{{ old('pref_other', $data['pref_other'] ?? '') }}</textarea>
                             </div>
                         </div>
                     </x-nikah-section>

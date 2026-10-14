@@ -185,8 +185,11 @@ class MatchmakingProgressController extends Controller
         abort_unless($lead->nikahProfile, 404);
         $profile = $lead->nikahProfile;
 
+        // CNIC photo upload is retired project-wide — just the number now,
+        // same as every other Nikah profile entry point. Photo (the profile
+        // photo, not a CNIC image) is still a real upload.
         $rules = collect($this->nikahProfileRules($profile))
-            ->only(['cnic_number', 'cnic_front_image', 'cnic_back_image', 'photo', 'allow_photo_sharing'])
+            ->only(['cnic_number', 'photo', 'allow_photo_sharing'])
             ->toArray();
 
         try {
@@ -195,22 +198,17 @@ class MatchmakingProgressController extends Controller
             return $this->unlockedView($lead, $last7)->withErrors($e->errors());
         }
 
-        foreach (['cnic_front_image', 'cnic_back_image', 'photo'] as $file) {
-            if ($request->hasFile($file)) {
-                $disk = $file === 'photo' ? 'nikah/photos' : 'nikah/cnic';
-                $maxDimension = $file === 'photo' ? 1200 : 1600;
-                $quality = $file === 'photo' ? 82 : 85;
-                $documentData[$file] = ImageOptimizer::store($request->file($file), $disk, 'private', maxDimension: $maxDimension, quality: $quality);
-            } else {
-                unset($documentData[$file]);
-            }
+        if ($request->hasFile('photo')) {
+            $documentData['photo'] = ImageOptimizer::store($request->file('photo'), 'nikah/photos', 'private', maxDimension: 1200, quality: 82);
+        } else {
+            unset($documentData['photo']);
         }
 
         $documentData['allow_photo_sharing'] = $request->boolean('allow_photo_sharing');
         $profile->update($documentData);
 
         MatchmakingLinkAccess::record($lead, 'documents_upload', $request, 'success');
-        MatchmakingTimelineEvent::log($lead, $profile, 'documents_uploaded', 'Client uploaded their CNIC/photo themselves via their secure progress link.');
+        MatchmakingTimelineEvent::log($lead, $profile, 'documents_uploaded', 'Client submitted their CNIC number and photo themselves via their secure progress link.');
 
         User::role('admin')->each(function ($admin) use ($profile) {
             try {

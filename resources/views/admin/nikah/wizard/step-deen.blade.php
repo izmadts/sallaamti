@@ -30,8 +30,8 @@
                     <x-nikah-section title="Deen & Lifestyle" icon="🕌" color="emerald">
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div x-data="{ sect: '{{ old('sect', $data['sect'] ?? '') }}' }">
-                                <x-input-label for="sect" value="Sect (optional)" />
-                                <select id="sect" name="sect" x-model="sect" class="border-gray-300 rounded-md shadow-sm w-full mt-1">
+                                <x-input-label for="sect" value="Sect" />
+                                <select id="sect" name="sect" x-model="sect" required class="border-gray-300 rounded-md shadow-sm w-full mt-1">
                                     <option value="">Select Sect</option>
                                     <option value="Sunni">Sunni</option>
                                     <option value="Shia">Shia</option>

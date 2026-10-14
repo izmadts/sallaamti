@@ -25,10 +25,10 @@
 
                 @php
                 $sections = [
-                    'basic' => ['Age' => 'date_of_birth', 'Height' => 'height', 'Marital Status' => 'marital_status', 'Education' => 'education', 'Profession' => 'profession', 'City' => 'city', 'Country' => 'country'],
-                    'family' => ['Caste' => 'caste', 'Family Type' => 'family_type', 'Ethnicity' => 'ethnicity', 'Language' => 'languages', 'Guardian Name' => 'guardian_name', 'Guardian Contact' => 'guardian_contact', 'Guardian Relation' => 'guardian_relation'],
+                    'basic' => ['Age' => 'date_of_birth', 'Height' => 'height', 'Marital Status' => 'marital_status', 'Education' => 'education', 'Profession' => 'profession', 'City' => 'city', 'Address' => 'address', 'Country' => 'country'],
+                    'family' => ['Caste' => 'caste', 'Family Type' => 'family_type', 'Ethnicity' => 'ethnicity', 'Language' => 'languages', 'Guardian Name (Sarparast Family)' => 'guardian_name', 'Guardian Contact (Sarparast Family)' => 'guardian_contact', 'Guardian Relation (Sarparast Family)' => 'guardian_relation'],
                     'deen' => ['Sect' => 'sect', 'Prayer Frequency' => 'prayer_frequency', 'Hijab/Beard' => 'hijab_or_beard', 'Smokes' => 'smokes', 'Diet' => 'diet', 'Open to Polygamy' => 'open_to_polygamy'],
-                    'about' => ['About' => 'about', 'Expectations' => 'expectations', 'Preferred Age Range' => null, 'Preferred City' => 'pref_city', 'Preferred Sect' => 'pref_sect', 'Preferred Education' => 'pref_education', 'Preferred Marital Status' => 'pref_marital_status'],
+                    'about' => ['About' => 'about', 'Expectations' => 'expectations', 'Preferred Age Range' => null, 'Preferred City' => 'pref_city', 'Preferred Sect' => 'pref_sect', 'Preferred Education' => 'pref_education', 'Preferred Marital Status' => 'pref_marital_status', 'Preferred Income / Business Worth' => 'pref_income', 'Other Preferences' => 'pref_other'],
                     'verification' => ['CNIC Number' => 'cnic_number', 'Visibility' => 'visibility'],
                 ];
                 @endphp

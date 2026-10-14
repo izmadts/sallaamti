@@ -91,21 +91,23 @@
                             </div>
                             @php $educationLevels = ['Matric / O-Levels', 'Intermediate / A-Levels', "Bachelor's", "Master's", 'MPhil / MS', 'PhD', 'Madrassah / Islamic Education']; @endphp
                             <div>
-                                <x-input-label for="education" value="Education (optional)" />
-                                <x-searchable-select name="education" :options="$educationLevels" :value="old('education', $data['education'] ?? '')" placeholder="Type to search or pick" />
+                                <x-input-label for="education" value="Education" />
+                                <x-searchable-select name="education" :options="$educationLevels" :value="old('education', $data['education'] ?? '')" :required="true" placeholder="Type to search or pick" />
                             </div>
                             <div>
                                 <x-input-label for="profession" value="Profession (optional)" />
                                 <x-text-input id="profession" name="profession" type="text" class="w-full mt-1" :value="old('profession', $data['profession'] ?? '')" />
                             </div>
-                            <div>
-                                <x-input-label for="city" value="City" />
-                                <x-text-input id="city" name="city" type="text" class="w-full mt-1" :value="old('city', $data['city'] ?? '')" required />
-                            </div>
-                            <x-country-state-fields
+                            <x-country-state-city-fields
                                 :country-value="old('country', $data['country'] ?? 'Pakistan')"
                                 :state-value="old('state', $data['state'] ?? '')"
+                                :city-value="old('city', $data['city'] ?? '')"
+                                :city-required="true"
                                 :all-states="$countryStates" />
+                            <div>
+                                <x-input-label for="address" value="Address (optional)" />
+                                <x-text-input id="address" name="address" type="text" class="w-full mt-1" :value="old('address', $data['address'] ?? '')" />
+                            </div>
                         </div>
                     </x-nikah-section>
 

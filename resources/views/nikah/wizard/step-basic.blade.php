@@ -104,7 +104,7 @@
                             @php $educationLevels = ['Matric / O-Levels', 'Intermediate / A-Levels', "Bachelor's", "Master's", 'MPhil / MS', 'PhD', 'Madrassah / Islamic Education']; @endphp
                             <div>
                                 <x-input-label for="education" :value="__('db.Education')" />
-                                <x-searchable-select name="education" :options="$educationLevels" :value="old('education', $data['education'] ?? '')"
+                                <x-searchable-select name="education" :options="$educationLevels" :value="old('education', $data['education'] ?? '')" :required="true"
                                     placeholder="{{ __('db.Type to search, scroll, or pick from the list') }}" title="{{ __('db.Start typing to filter, scroll the list, or click one to pick it — you can also type something not listed.') }}" />
                             </div>
                             <div>
@@ -112,15 +112,17 @@
                                 <x-text-input id="profession" name="profession" type="text" class="w-full mt-1" :value="old('profession', $data['profession'] ?? '')"
                                     placeholder="{{ __('db.e.g. Software Engineer, Teacher, Doctor') }}" title="{{ __('db.What you currently do for work.') }}" />
                             </div>
-                            <div>
-                                <x-input-label for="city" :value="__('db.City')" />
-                                <x-text-input id="city" name="city" type="text" class="w-full mt-1" :value="old('city', $data['city'] ?? '')" required
-                                    placeholder="{{ __('db.e.g. Karachi, Lahore, Islamabad') }}" title="{{ __('db.The city you currently live in.') }}" />
-                            </div>
-                            <x-country-state-fields
+                            <x-country-state-city-fields
                                 :country-value="old('country', $data['country'] ?? 'Pakistan')"
                                 :state-value="old('state', $data['state'] ?? '')"
+                                :city-value="old('city', $data['city'] ?? '')"
+                                :city-required="true"
                                 :all-states="$countryStates" />
+                            <div>
+                                <x-input-label for="address" :value="__('db.Address')" />
+                                <x-text-input id="address" name="address" type="text" class="w-full mt-1" :value="old('address', $data['address'] ?? '')"
+                                    placeholder="{{ __('db.Street / area (optional)') }}" title="{{ __('db.Your street address or area — optional, never shown to other members.') }}" />
+                            </div>
                         </div>
                     </x-nikah-section>
 

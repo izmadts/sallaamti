@@ -24,11 +24,11 @@
                 <form method="POST" action="{{ route('nikah.create.step.save', 'deen') }}" class="space-y-6">
                     @csrf
 
-                    <x-nikah-section :title="__('db.Deen & Lifestyle')" icon="🕌" color="emerald" :description="__('db.These help us match you with someone at a similar stage of practice — all optional, but the more you share, the better your matches.')">
+                    <x-nikah-section :title="__('db.Deen & Lifestyle')" icon="🕌" color="emerald" :description="__('db.These help us match you with someone at a similar stage of practice — Sect is required, the rest are optional, but the more you share, the better your matches.')">
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div x-data="{ sect: '{{ old('sect', $data['sect'] ?? '') }}' }">
                                 <x-input-label for="sect" :value="__('db.Sect')" />
-                                <select id="sect" name="sect" x-model="sect" class="border-gray-300 rounded-md shadow-sm w-full mt-1"
+                                <select id="sect" name="sect" x-model="sect" required class="border-gray-300 rounded-md shadow-sm w-full mt-1"
                                     title="{{ __('db.Your school of thought — helps us match you with someone compatible.') }}">
                                     <option value="">{{ __('db.Select Sect') }}</option>
                                     <option value="Sunni">{{ __('db.Sunni') }}</option>

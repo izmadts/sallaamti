@@ -45,14 +45,17 @@
                             <p class="text-sm text-gray-600">{{ $data['education'] ?? '' }}{{ !empty($data['education']) && !empty($data['profession']) ? ' — ' : '' }}{{ $data['profession'] ?? '' }}</p>
                             @endif
                             <p class="text-sm text-gray-600">{{ $data['city'] ?? '' }}, {{ !empty($data['state']) ? $data['state'] . ', ' : '' }}{{ $data['country'] ?? '' }}</p>
+                            @if (!empty($data['address']))
+                            <p class="text-sm text-gray-600">{{ $data['address'] }}</p>
+                            @endif
                         </div>
                         <a href="{{ route($routePrefix . '.nikah.profiles.create.step', 'basic') }}" class="text-xs text-teal-700 hover:underline">Edit</a>
                     </div>
 
                     <div class="border rounded-lg p-4 flex justify-between items-start">
                         <div>
-                            <p class="text-xs text-gray-400">Family & Guardian</p>
-                            <p class="text-sm text-gray-800">Guardian: {{ $data['guardian_name'] }} ({{ $data['guardian_contact'] }})</p>
+                            <p class="text-xs text-gray-400">Family & Guardian (Sarparast Family)</p>
+                            <p class="text-sm text-gray-800">Guardian (Sarparast Family): {{ $data['guardian_name'] }} ({{ $data['guardian_contact'] }})</p>
                             @if (!empty($data['guardian_relation']))
                             <p class="text-sm text-gray-600">Relation: {{ $data['guardian_relation'] }}</p>
                             @endif
@@ -85,6 +88,20 @@
                             @if (!empty($data['expectations']))
                             <p class="text-sm text-gray-600 mt-1">Looking for: {{ $data['expectations'] }}</p>
                             @endif
+                            @php
+                                $prefSummary = collect([
+                                    (!empty($data['pref_min_age']) || !empty($data['pref_max_age'])) ? 'Age: ' . ($data['pref_min_age'] ?? '—') . '–' . ($data['pref_max_age'] ?? '—') : null,
+                                    !empty($data['pref_city']) ? 'City: ' . $data['pref_city'] : null,
+                                    !empty($data['pref_sect']) ? 'Sect: ' . $data['pref_sect'] : null,
+                                    !empty($data['pref_education']) ? 'Education: ' . $data['pref_education'] : null,
+                                    !empty($data['pref_marital_status']) ? 'Marital status: ' . $data['pref_marital_status'] : null,
+                                    !empty($data['pref_income']) ? 'Income: ' . $data['pref_income'] : null,
+                                    !empty($data['pref_other']) ? 'Other: ' . $data['pref_other'] : null,
+                                ])->filter();
+                            @endphp
+                            @if ($prefSummary->isNotEmpty())
+                            <p class="text-sm text-gray-600 mt-1">Preferences — {{ $prefSummary->implode(' · ') }}</p>
+                            @endif
                         </div>
                         <a href="{{ route($routePrefix . '.nikah.profiles.create.step', 'about') }}" class="text-xs text-teal-700 hover:underline">Edit</a>
                     </div>
@@ -92,7 +109,7 @@
                     <div class="border rounded-lg p-4 flex justify-between items-start">
                         <div>
                             <p class="text-xs text-gray-400">Verification & Visibility</p>
-                            <p class="text-sm text-blue-700">🔗 Client will upload their CNIC/photo themselves via a secure link after registration.</p>
+                            <p class="text-sm text-blue-700">📱 The client can finish any remaining details (including their CNIC and photo) themselves by downloading the app and logging in with the temporary password you'll set on the next page.</p>
                             <p class="text-sm text-gray-600">Visibility: {{ match($data['visibility'] ?? null) {
                                 'public' => 'Public',
                                 'members_only' => 'Members Only',

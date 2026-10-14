@@ -27,7 +27,7 @@
                 <form method="POST" action="{{ route($routePrefix . '.nikah.profiles.create.step.save', 'family') }}" class="space-y-6">
                     @csrf
 
-                    <x-nikah-section title="Family & Guardian Information" icon="👨‍👩‍👧" color="amber">
+                    <x-nikah-section title="Family & Guardian Information (Sarparast Family)" icon="👨‍👩‍👧" color="amber">
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                                 <x-input-label for="caste" value="Caste (optional)" />
@@ -44,15 +44,15 @@
                             </div>
                             @php $guardianRelOptions = ['Self', 'Father', 'Mother', 'Brother', 'Sister', 'Uncle', 'Aunt', 'Grandfather', 'Grandmother']; @endphp
                             <div>
-                                <x-input-label for="guardian_relation" value="Guardian Relation (optional)" />
+                                <x-input-label for="guardian_relation" value="Guardian Relation (Sarparast Family) (optional)" />
                                 <x-searchable-select name="guardian_relation" :options="$guardianRelOptions" :value="old('guardian_relation', $data['guardian_relation'] ?? '')" placeholder="Type to search or pick" />
                             </div>
                             <div>
-                                <x-input-label for="guardian_name" value="Guardian Name" />
+                                <x-input-label for="guardian_name" value="Guardian Name (Sarparast Family)" />
                                 <x-text-input id="guardian_name" name="guardian_name" type="text" class="w-full mt-1" :value="old('guardian_name', $data['guardian_name'] ?? '')" required />
                             </div>
                             <div>
-                                <x-input-label for="guardian_contact" value="Guardian Contact" />
+                                <x-input-label for="guardian_contact" value="Guardian Contact (Sarparast Family)" />
                                 <x-text-input id="guardian_contact" name="guardian_contact" type="text" class="w-full mt-1" :value="old('guardian_contact', $data['guardian_contact'] ?? '')" required />
                             </div>
                         </div>
