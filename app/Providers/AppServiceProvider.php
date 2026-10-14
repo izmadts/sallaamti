@@ -20,14 +20,17 @@ class AppServiceProvider extends ServiceProvider
         // Fix for shared hosting MySQL key length limit
         Schema::defaultStringLength(191);
 
-        // The 'admin' role is always a full, unrestricted bypass for every
-        // permission check (via $user->can(...), @can, can: middleware,
-        // authorize()) — granular permissions (see PermissionCatalog) exist
-        // to hand a LIMITED staff role access to specific admin areas
-        // without also granting them the full admin role; they never
-        // narrow what an actual admin can already do.
+        // The 'admin' and 'super_admin' roles are always a full,
+        // unrestricted bypass for every permission check (via
+        // $user->can(...), @can, can: middleware, authorize()) — granular
+        // permissions (see PermissionCatalog) exist to hand a LIMITED staff
+        // role access to specific admin areas without also granting them
+        // the full admin role; they never narrow what an actual admin can
+        // already do. super_admin has the exact same access as admin — the
+        // only difference is it's protected from being touched by a plain
+        // admin (see UserManagementController).
         Gate::before(function ($user, string $ability) {
-            return $user->hasRole('admin') ? true : null;
+            return $user->hasRole(['admin', 'super_admin']) ? true : null;
         });
 
         // Lets Notification classes return 'webpush' from via() the same way

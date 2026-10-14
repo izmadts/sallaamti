@@ -25,7 +25,12 @@ class AuthenticatedSessionController extends Controller
      */
     public function store(LoginRequest $request): RedirectResponse
     {
-        $request->authenticate();
+        if (!$request->authenticate()) {
+            // Credential checked out but this is a Super Admin account —
+            // no session yet, an emailed code is required first (see
+            // LoginRequest::completeLogin()).
+            return redirect()->route('super-admin.2fa.verify');
+        }
 
         $request->session()->regenerate();
 

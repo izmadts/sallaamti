@@ -108,6 +108,15 @@ class UserManagementController extends Controller
             : back()->with('error', 'Could not send the reset link: ' . __($status));
     }
 
+    // A plain admin can manage every other account — including other
+    // admins — but not a super_admin's. Only another super_admin (or the
+    // account itself, for the self-checks already in each method below)
+    // can touch a super_admin's role, active status, or existence.
+    private function blockedBySuperAdminProtection(User $target): bool
+    {
+        return $target->hasRole('super_admin') && !auth()->user()->hasRole('super_admin');
+    }
+
     public function updateRole(Request $request, User $user)
     {
         $request->validate([
@@ -115,9 +124,26 @@ class UserManagementController extends Controller
             'roles.*' => ['exists:roles,name'],
         ]);
 
-        // Prevent removing your own admin role
-        if ($user->id === auth()->id() && !in_array('admin', $request->roles)) {
-            return back()->with('error', 'You cannot remove your own admin role.');
+        if ($this->blockedBySuperAdminProtection($user)) {
+            return back()->with('error', 'Only a Super Admin can change another Super Admin\'s roles.');
+        }
+
+        // Granting or revoking super_admin itself is likewise restricted to
+        // existing super_admins — a plain admin could otherwise just check
+        // the box and promote themselves or anyone else.
+        $togglingSuperAdmin = $user->hasRole('super_admin') !== in_array('super_admin', $request->roles);
+        if ($togglingSuperAdmin && !auth()->user()->hasRole('super_admin')) {
+            return back()->with('error', 'Only a Super Admin can grant or revoke the Super Admin role.');
+        }
+
+        // Prevent removing your own admin/super_admin role
+        if ($user->id === auth()->id()) {
+            if (!in_array('admin', $request->roles)) {
+                return back()->with('error', 'You cannot remove your own admin role.');
+            }
+            if ($user->hasRole('super_admin') && !in_array('super_admin', $request->roles)) {
+                return back()->with('error', 'You cannot remove your own Super Admin role.');
+            }
         }
 
         $user->syncRoles($request->roles);
@@ -132,6 +158,10 @@ class UserManagementController extends Controller
             return back()->with('error', 'You cannot deactivate your own account.');
         }
 
+        if ($this->blockedBySuperAdminProtection($user)) {
+            return back()->with('error', 'Only a Super Admin can deactivate another Super Admin.');
+        }
+
         $user->update(['is_active' => !$user->is_active]);
 
         return back()->with('status', $user->name . ' has been ' . ($user->is_active ? 'activated' : 'deactivated') . '.');
@@ -141,6 +171,10 @@ class UserManagementController extends Controller
     {
         if ($user->id === auth()->id()) {
             return back()->with('error', 'You cannot delete your own account.');
+        }
+
+        if ($this->blockedBySuperAdminProtection($user)) {
+            return back()->with('error', 'Only a Super Admin can delete another Super Admin.');
         }
 
         $name = $user->name;
@@ -178,13 +212,14 @@ class UserManagementController extends Controller
         return back()->with('status', 'Role created.');
     }
 
-    // The 'admin' role is intentionally not editable here — it's a full
-    // bypass for every permission check (see AppServiceProvider's
-    // Gate::before), so toggling individual permissions for it would look
-    // like it does something and actually do nothing.
+    // The 'admin' and 'super_admin' roles are intentionally not editable
+    // here — both are a full bypass for every permission check (see
+    // AppServiceProvider's Gate::before), so toggling individual
+    // permissions for either would look like it does something and
+    // actually do nothing.
     public function updatePermissions(Request $request, Role $role)
     {
-        abort_if($role->name === 'admin', 422, "The admin role already has full access — it can't be restricted.");
+        abort_if(in_array($role->name, ['admin', 'super_admin']), 422, "This role already has full access — it can't be restricted.");
 
         $validated = $request->validate([
             'permissions' => ['nullable', 'array'],

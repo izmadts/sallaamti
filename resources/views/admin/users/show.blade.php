@@ -98,27 +98,54 @@
             </div>
 
             {{-- Role Assignment --}}
+            @php $protectedFromMe = $user->hasRole('super_admin') && !auth()->user()->hasRole('super_admin'); @endphp
             <div class="bg-white rounded-lg shadow-sm p-6">
                 <h3 class="font-semibold text-gray-700 mb-4">Assign Roles</h3>
+                @if ($protectedFromMe)
+                <p class="text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded-lg p-3">
+                    🛡️ This is a Super Admin account — only another Super Admin can change its roles.
+                </p>
+                @else
                 <form method="POST" action="{{ route('admin.users.role', $user) }}">
                     @csrf @method('PUT')
                     <div class="grid grid-cols-2 gap-3 mb-4">
                         @foreach ($allRoles as $role)
+                        {{-- The super_admin option itself is only shown to an
+                             actor who already has it — a plain admin can't
+                             even attempt to grant it (also enforced
+                             server-side in updateRole()). --}}
+                        @if ($role->name === 'super_admin' && !auth()->user()->hasRole('super_admin'))
+                        @continue
+                        @endif
                         <label class="flex items-center gap-2 text-sm">
                             <input type="checkbox" name="roles[]" value="{{ $role->name }}"
                                 {{ $user->hasRole($role->name) ? 'checked' : '' }}
-                                {{ $user->id === auth()->id() && $role->name === 'admin' ? 'disabled' : '' }}>
+                                {{ $user->id === auth()->id() && in_array($role->name, ['admin', 'super_admin']) ? 'disabled' : '' }}>
                             <span class="text-xs px-2 py-0.5 rounded-full
-                                    {{ $role->name === 'admin' ? 'bg-red-100 text-red-700' :
+                                    {{ $role->name === 'super_admin' ? 'bg-amber-100 text-amber-800' :
+                                       ($role->name === 'admin' ? 'bg-red-100 text-red-700' :
                                        ($role->name === 'teacher' ? 'bg-purple-100 text-purple-700' :
-                                       ($role->name === 'family_counselor' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-600')) }}">
-                                {{ ucwords(str_replace('_', ' ', $role->name)) }}
+                                       ($role->name === 'family_counselor' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-600'))) }}">
+                                {{ $role->name === 'super_admin' ? '👑 Super Admin' : ucwords(str_replace('_', ' ', $role->name)) }}
                             </span>
                         </label>
                         @endforeach
                     </div>
+                    {{-- A disabled checkbox never submits its value — without
+                         this, saving the form above while your own
+                         admin/super_admin box is disabled-but-checked would
+                         silently strip that role from the request. --}}
+                    @if ($user->id === auth()->id())
+                        @if ($user->hasRole('admin'))
+                        <input type="hidden" name="roles[]" value="admin">
+                        @endif
+                        @if ($user->hasRole('super_admin'))
+                        <input type="hidden" name="roles[]" value="super_admin">
+                        @endif
+                    @endif
                     <x-primary-button>Update Roles</x-primary-button>
                 </form>
+                @endif
             </div>
 
             {{-- Account Status --}}
@@ -127,7 +154,7 @@
                 <p class="text-sm text-gray-500 mb-3">
                     Current: <span class="font-medium {{ $user->is_active ? 'text-green-600' : 'text-red-600' }}">{{ $user->is_active ? 'Active' : 'Inactive' }}</span>
                 </p>
-                @if ($user->id !== auth()->id())
+                @if ($user->id !== auth()->id() && !$protectedFromMe)
                 <form method="POST" action="{{ route('admin.users.toggle-active', $user) }}">
                     @csrf @method('PUT')
                     <button class="text-sm px-4 py-2 rounded {{ $user->is_active ? 'bg-orange-100 text-orange-700 hover:bg-orange-200' : 'bg-green-100 text-green-700 hover:bg-green-200' }}">
@@ -160,7 +187,7 @@
             @endif
 
             {{-- Danger Zone --}}
-            @if ($user->id !== auth()->id())
+            @if ($user->id !== auth()->id() && !$protectedFromMe)
             <div class="bg-red-50 border border-red-200 rounded-lg p-6">
                 <h3 class="font-semibold text-red-700 mb-2">Danger Zone</h3>
                 <p class="text-sm text-red-600 mb-3">Permanently delete this user and everything tied to their account — profile, posts, enrollments, admissions, certificates, messages, and uploaded files. This cannot be undone.</p>

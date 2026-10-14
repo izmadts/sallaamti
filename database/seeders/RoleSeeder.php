@@ -10,6 +10,11 @@ class RoleSeeder extends Seeder
     public function run(): void
     {
         Role::firstOrCreate(['name' => 'admin']);
+        // Full Gate::before bypass, same as 'admin' (see AppServiceProvider),
+        // but protected from being touched (role changed, deactivated,
+        // deleted) by a plain admin — only another super_admin, or the
+        // account itself, can do that. See UserManagementController.
+        Role::firstOrCreate(['name' => 'super_admin']);
         Role::firstOrCreate(['name' => 'family_counselor']);
         Role::firstOrCreate(['name' => 'teacher']);
         Role::firstOrCreate(['name' => 'member']);

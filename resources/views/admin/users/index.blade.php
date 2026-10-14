@@ -102,10 +102,11 @@
                                 <div class="flex flex-wrap gap-1">
                                     @forelse ($user->roles as $role)
                                     <span class="text-xs px-2 py-0.5 rounded-full
-                                                {{ $role->name === 'admin' ? 'bg-red-100 text-red-700' :
+                                                {{ $role->name === 'super_admin' ? 'bg-amber-100 text-amber-800' :
+                                                   ($role->name === 'admin' ? 'bg-red-100 text-red-700' :
                                                    ($role->name === 'teacher' ? 'bg-purple-100 text-purple-700' :
-                                                   ($role->name === 'family_counselor' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-600')) }}">
-                                        {{ ucwords(str_replace('_', ' ', $role->name)) }}
+                                                   ($role->name === 'family_counselor' ? 'bg-blue-100 text-blue-700' : 'bg-gray-100 text-gray-600'))) }}">
+                                        {{ $role->name === 'super_admin' ? '👑 Super Admin' : ucwords(str_replace('_', ' ', $role->name)) }}
                                     </span>
                                     @empty
                                     <span class="text-xs text-gray-400">No role</span>
@@ -143,7 +144,7 @@
                                 <div class="flex gap-2">
                                     <a href="{{ route('admin.users.show', $user) }}" class="text-xs text-blue-600 hover:underline">Manage</a>
 
-                                    @if ($user->id !== auth()->id())
+                                    @if ($user->id !== auth()->id() && !($user->hasRole('super_admin') && !auth()->user()->hasRole('super_admin')))
                                     <form method="POST" action="{{ route('admin.users.toggle-active', $user) }}">
                                         @csrf @method('PUT')
                                         <button class="text-xs {{ $user->is_active ? 'text-orange-500' : 'text-green-600' }} hover:underline">
