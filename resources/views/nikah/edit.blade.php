@@ -61,8 +61,8 @@
                             @endphp
                             <div>
                                 <x-input-label for="height" :value="__('db.Height')" />
-                                <x-searchable-select name="height" :options="$heightOptions" :value="old('height', $profile->height)"
-                                    placeholder="{{ __('db.Type to search, scroll, or pick from the list') }}" title="{{ __('db.Optional — a fixed list keeps this consistent for matching, but you can type any value.') }}" />
+                                <x-searchable-select name="height" :options="$heightOptions" :value="old('height', $profile->height)" :required="true"
+                                    placeholder="{{ __('db.Type to search, scroll, or pick from the list') }}" title="{{ __('db.A fixed list keeps this consistent for matching, but you can type any value.') }}" />
                             </div>
                             <div>
                                 <x-input-label for="marital_status" :value="__('db.Marital Status')" />
@@ -182,23 +182,27 @@
                             @php $educationLevels = ['Matric / O-Levels', 'Intermediate / A-Levels', "Bachelor's", "Master's", 'MPhil / MS', 'PhD', 'Madrassah / Islamic Education']; @endphp
                             <div>
                                 <x-input-label for="education" :value="__('db.Education')" />
-                                <x-searchable-select name="education" :options="$educationLevels" :value="old('education', $profile->education)"
+                                <x-searchable-select name="education" :options="$educationLevels" :value="old('education', $profile->education)" :required="true"
                                     placeholder="{{ __('db.Type to search, scroll, or pick from the list') }}" title="{{ __('db.Start typing to filter, scroll the list, or click one to pick it — you can also type something not listed.') }}" />
                             </div>
                             <div>
                                 <x-input-label for="profession" :value="__('db.Profession')" />
-                                <x-text-input id="profession" name="profession" type="text" class="w-full mt-1" :value="old('profession', $profile->profession)"
+                                <x-text-input id="profession" name="profession" type="text" class="w-full mt-1" :value="old('profession', $profile->profession)" required
                                     placeholder="{{ __('db.e.g. Software Engineer, Teacher, Doctor') }}" title="{{ __('db.What you currently do for work.') }}" />
                             </div>
-                            <div>
-                                <x-input-label for="city" :value="__('db.City')" />
-                                <x-text-input id="city" name="city" type="text" class="w-full mt-1" :value="old('city', $profile->city ?: auth()->user()->city)" required
-                                    placeholder="{{ __('db.e.g. Karachi, Lahore, Islamabad') }}" title="{{ __('db.The city you currently live in.') }}" />
-                            </div>
-                            <x-country-state-fields
+                            <x-country-state-city-fields
                                 :country-value="old('country', $profile->country ?: 'Pakistan')"
                                 :state-value="old('state', $profile->state)"
+                                :city-value="old('city', $profile->city ?: auth()->user()->city)"
+                                :country-required="true"
+                                :state-required="true"
+                                :city-required="true"
                                 :all-states="$countryStates" />
+                            <div>
+                                <x-input-label for="address" :value="__('db.Address')" />
+                                <x-text-input id="address" name="address" type="text" class="w-full mt-1" :value="old('address', $profile->address)"
+                                    placeholder="{{ __('db.Street / area (optional)') }}" title="{{ __('db.Your street address or area — optional, never shown to other members.') }}" />
+                            </div>
                             <div>
                                 <x-input-label for="ethnicity" :value="__('db.Ethnicity (optional)')" />
                                 <x-text-input id="ethnicity" name="ethnicity" type="text" class="w-full mt-1" :value="old('ethnicity', $profile->ethnicity)" placeholder="{{ __('db.e.g. Punjabi, Pashtun, Sindhi, Muhajir') }}"
@@ -246,17 +250,17 @@
                             </div>
                             @php $guardianRelOptions = ['Self', 'Father', 'Mother', 'Brother', 'Sister', 'Uncle', 'Aunt', 'Grandfather', 'Grandmother']; @endphp
                             <div>
-                                <x-input-label for="guardian_relation" :value="__('db.Guardian Relation')" />
+                                <x-input-label for="guardian_relation" :value="__('db.Guardian Relation (Sarparast Family)')" />
                                 <x-searchable-select name="guardian_relation" :options="$guardianRelOptions" :value="old('guardian_relation', $profile->guardian_relation)"
                                     placeholder="{{ __('db.Type to search, scroll, or pick from the list') }}" title="{{ __('db.Your relationship to the guardian named below — pick Self if you\'re acting as your own guardian.') }}" />
                             </div>
                             <div>
-                                <x-input-label for="guardian_name" :value="__('db.Guardian Name')" />
+                                <x-input-label for="guardian_name" :value="__('db.Guardian Name (Sarparast Family)')" />
                                 <x-text-input id="guardian_name" name="guardian_name" type="text" class="w-full mt-1" :value="old('guardian_name', $profile->guardian_name)" required
                                     placeholder="{{ __('db.e.g. Muhammad Ahmed') }}" title="{{ __('db.Your Wali/guardian\'s full name — so we can involve your family in the process.') }}" />
                             </div>
                             <div>
-                                <x-input-label for="guardian_contact" :value="__('db.Guardian Contact')" />
+                                <x-input-label for="guardian_contact" :value="__('db.Guardian Contact Number (Sarparast Family)')" />
                                 <x-text-input id="guardian_contact" name="guardian_contact" type="text" class="w-full mt-1" :value="old('guardian_contact', $profile->guardian_contact)" required
                                     placeholder="{{ __('db.e.g. 03001234567') }}" title="{{ __('db.A number where we or an interested family can reach your guardian.') }}" />
                             </div>
@@ -273,7 +277,7 @@
                             </div>
                             <div>
                                 <x-input-label for="expectations" :value="__('db.Looking For')" />
-                                <textarea id="expectations" name="expectations" rows="3" class="border-gray-300 rounded-md shadow-sm w-full mt-1"
+                                <textarea id="expectations" name="expectations" rows="3" required class="border-gray-300 rounded-md shadow-sm w-full mt-1"
                                     placeholder="{{ __('db.e.g. Someone practicing, family-oriented, kind-hearted...') }}"
                                     title="{{ __('db.What qualities matter most to you in a spouse.') }}">{{ old('expectations', $profile->expectations) }}</textarea>
                             </div>
@@ -360,7 +364,18 @@
                                     <option value="never_married" {{ old('pref_marital_status', $profile->pref_marital_status) === 'never_married' ? 'selected' : '' }}>Never Married</option>
                                     <option value="divorced" {{ old('pref_marital_status', $profile->pref_marital_status) === 'divorced' ? 'selected' : '' }}>Divorced</option>
                                     <option value="widowed" {{ old('pref_marital_status', $profile->pref_marital_status) === 'widowed' ? 'selected' : '' }}>Widowed</option>
+                                    <option value="separated" {{ old('pref_marital_status', $profile->pref_marital_status) === 'separated' ? 'selected' : '' }}>Separated</option>
                                 </select>
+                            </div>
+                            <div>
+                                <x-input-label value="Preferred Income / Business Worth" />
+                                <x-text-input name="pref_income" class="w-full mt-1" :value="old('pref_income', $profile->pref_income)"
+                                    placeholder="{{ __('db.e.g. PKR 150,000+ monthly (leave blank for any)') }}" title="{{ __('db.Leave blank if this doesn\'t matter to you.') }}" />
+                            </div>
+                            <div class="sm:col-span-2">
+                                <x-input-label value="Other Preferences" />
+                                <textarea name="pref_other" rows="2" class="border-gray-300 rounded-md shadow-sm w-full mt-1"
+                                    placeholder="{{ __('db.Anything else you\'re looking for in a partner') }}">{{ old('pref_other', $profile->pref_other) }}</textarea>
                             </div>
                         </div>
                     </x-nikah-section>

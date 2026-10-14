@@ -51,8 +51,8 @@
                                 }
                             @endphp
                             <div>
-                                <x-input-label for="height" value="Height (optional)" />
-                                <x-searchable-select name="height" :options="$heightOptions" :value="old('height', $data['height'] ?? '')" placeholder="Type to search or pick" />
+                                <x-input-label for="height" value="Height" />
+                                <x-searchable-select name="height" :options="$heightOptions" :value="old('height', $data['height'] ?? '')" :required="true" placeholder="Type to search or pick" />
                             </div>
                             <div>
                                 <x-input-label for="marital_status" value="Marital Status" />
@@ -95,13 +95,15 @@
                                 <x-searchable-select name="education" :options="$educationLevels" :value="old('education', $data['education'] ?? '')" :required="true" placeholder="Type to search or pick" />
                             </div>
                             <div>
-                                <x-input-label for="profession" value="Profession (optional)" />
-                                <x-text-input id="profession" name="profession" type="text" class="w-full mt-1" :value="old('profession', $data['profession'] ?? '')" />
+                                <x-input-label for="profession" value="Profession" />
+                                <x-text-input id="profession" name="profession" type="text" class="w-full mt-1" :value="old('profession', $data['profession'] ?? '')" required />
                             </div>
                             <x-country-state-city-fields
                                 :country-value="old('country', $data['country'] ?? 'Pakistan')"
                                 :state-value="old('state', $data['state'] ?? '')"
                                 :city-value="old('city', $data['city'] ?? '')"
+                                :country-required="true"
+                                :state-required="true"
                                 :city-required="true"
                                 :all-states="$countryStates" />
                             <div>

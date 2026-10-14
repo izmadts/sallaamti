@@ -7,6 +7,7 @@
     'cityValue' => '',
     'allStates' => [],
     'countryRequired' => false,
+    'stateRequired' => false,
     'cityRequired' => false,
     'labelClass' => 'block font-medium text-sm text-gray-700',
     'inputClass' => 'border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm w-full mt-1',
@@ -87,7 +88,7 @@
         <div class="relative" @click.outside="stateOpen = false">
             <input type="text" id="{{ $stateName }}" name="{{ $stateName }}" x-model="state"
                 @focus="stateOpen = true" @click="stateOpen = true" @keydown.escape="stateOpen = false"
-                autocomplete="off"
+                autocomplete="off" {{ $stateRequired ? 'required' : '' }}
                 class="{{ $inputClass }}"
                 :placeholder="stateOptions.length ? '{{ __('db.Type to search or select') }}' : '{{ __('db.Type your state / province') }}'"
                 title="{{ __('db.Updates automatically to that country\'s states/provinces once you pick a Country above — you can still type your own if it\'s not listed.') }}">

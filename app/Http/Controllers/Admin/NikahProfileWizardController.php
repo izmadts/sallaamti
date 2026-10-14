@@ -59,7 +59,7 @@ class NikahProfileWizardController extends Controller
     // regardless of how each step was reached, so an admin who used
     // skipStep() to preview the wizard can never accidentally create a
     // real (broken) User/NikahProfile/Lead by finalizing anyway.
-    private const GENUINELY_REQUIRED = ['identifier', 'name', 'gender', 'date_of_birth', 'city', 'education', 'sect', 'guardian_name', 'guardian_contact', 'expectations'];
+    private const GENUINELY_REQUIRED = ['identifier', 'name', 'gender', 'date_of_birth', 'height', 'profession', 'city', 'state', 'country', 'education', 'sect', 'guardian_name', 'guardian_contact', 'expectations'];
 
     protected array $stepTitles = [
         'account' => 'Login Account',

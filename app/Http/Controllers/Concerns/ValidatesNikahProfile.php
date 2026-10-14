@@ -23,7 +23,7 @@ trait ValidatesNikahProfile
                 'before_or_equal:' . now()->subYears(18)->toDateString(),
                 'after:' . now()->subYears(100)->toDateString(),
             ],
-            'height' => ['nullable', 'string', 'max:20'],
+            'height' => ['required', 'string', 'max:20'],
             'height_other' => ['nullable', 'required_if:height,Other', 'string', 'max:30'],
             'marital_status' => ['required', 'string', 'in:never_married,divorced,widowed,married,separated'],
             'has_children' => ['required_if:marital_status,divorced,widowed,separated,married', 'nullable', 'boolean'],
@@ -38,7 +38,7 @@ trait ValidatesNikahProfile
             'smokes' => ['nullable', 'string', 'in:no,occasionally,yes'],
             'diet' => ['nullable', 'string', 'in:halal_only,halal_mostly,no_restriction'],
             'education' => ['required', 'string', 'max:255'],
-            'profession' => ['nullable', 'string', 'max:255'],
+            'profession' => ['required', 'string', 'max:255'],
             // Not constrained to the cities table with `exists:` — same
             // reasoning as education above being a pick-or-type combo
             // rather than a strict enum: the ~150k imported cities aren't
@@ -46,9 +46,12 @@ trait ValidatesNikahProfile
             // typed that we just don't have would be worse than accepting
             // free text here.
             'city' => ['required', 'string', 'max:100'],
+            // The one deliberately optional field in Basic Information —
+            // everything else there (height, profession, country, state,
+            // city) is required.
             'address' => ['nullable', 'string', 'max:255'],
-            'state' => ['nullable', 'string', 'max:100'],
-            'country' => ['nullable', 'string', 'max:100'],
+            'state' => ['required', 'string', 'max:100'],
+            'country' => ['required', 'string', 'max:100'],
             'ethnicity' => ['nullable', 'string', 'max:100'],
             'languages' => ['nullable', 'array'],
             'languages.*' => ['string', 'max:50'],

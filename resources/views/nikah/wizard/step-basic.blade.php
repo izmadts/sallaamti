@@ -61,8 +61,8 @@
                             @endphp
                             <div>
                                 <x-input-label for="height" :value="__('db.Height')" />
-                                <x-searchable-select name="height" :options="$heightOptions" :value="old('height', $data['height'] ?? '')"
-                                    placeholder="{{ __('db.Type to search, scroll, or pick from the list') }}" title="{{ __('db.Optional — a fixed list keeps this consistent for matching, but you can type any value.') }}" />
+                                <x-searchable-select name="height" :options="$heightOptions" :value="old('height', $data['height'] ?? '')" :required="true"
+                                    placeholder="{{ __('db.Type to search, scroll, or pick from the list') }}" title="{{ __('db.A fixed list keeps this consistent for matching, but you can type any value.') }}" />
                             </div>
                             <div>
                                 <x-input-label for="marital_status" :value="__('db.Marital Status')" />
@@ -109,13 +109,15 @@
                             </div>
                             <div>
                                 <x-input-label for="profession" :value="__('db.Profession')" />
-                                <x-text-input id="profession" name="profession" type="text" class="w-full mt-1" :value="old('profession', $data['profession'] ?? '')"
+                                <x-text-input id="profession" name="profession" type="text" class="w-full mt-1" :value="old('profession', $data['profession'] ?? '')" required
                                     placeholder="{{ __('db.e.g. Software Engineer, Teacher, Doctor') }}" title="{{ __('db.What you currently do for work.') }}" />
                             </div>
                             <x-country-state-city-fields
                                 :country-value="old('country', $data['country'] ?? 'Pakistan')"
                                 :state-value="old('state', $data['state'] ?? '')"
                                 :city-value="old('city', $data['city'] ?? '')"
+                                :country-required="true"
+                                :state-required="true"
                                 :city-required="true"
                                 :all-states="$countryStates" />
                             <div>
