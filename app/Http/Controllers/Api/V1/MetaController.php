@@ -3,10 +3,12 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
+use App\Models\City;
 use App\Models\MatchmakerApplication;
 use App\Support\CountryStates;
 use App\Support\PakistanCities;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\Request;
 
 // Static reference data the app needs for form dropdowns (Country/State on
 // the Nikah wizard, matching the web's <x-country-state-fields> exactly) —
@@ -18,6 +20,29 @@ class MetaController extends Controller
         return response()->json([
             'countries' => CountryStates::countries(),
             'states' => CountryStates::map(),
+        ]);
+    }
+
+    // Live-search, not a preloaded list like countryStates() above — the
+    // cities table has ~150k rows, too many to ship in one response. Same
+    // pick-or-type combo UX as Education's <x-searchable-select> on the web
+    // wizard, just backed by a real query instead of a fixed short list.
+    public function cities(Request $request): JsonResponse
+    {
+        $query = City::query();
+
+        if ($request->filled('country')) {
+            $query->where('country', $request->string('country'));
+        }
+        if ($request->filled('state')) {
+            $query->where('state', $request->string('state'));
+        }
+        if ($request->filled('search')) {
+            $query->where('name', 'like', $request->string('search') . '%');
+        }
+
+        return response()->json([
+            'cities' => $query->orderBy('name')->limit(20)->pluck('name'),
         ]);
     }
 

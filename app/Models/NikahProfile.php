@@ -30,6 +30,7 @@ class NikahProfile extends Model
         'education',
         'profession',
         'city',
+        'address',
         'state',
         'country',
         'ethnicity',
@@ -70,6 +71,8 @@ class NikahProfile extends Model
         'pref_sect',
         'pref_education',
         'pref_marital_status',
+        'pref_income',
+        'pref_other',
     ];
 
     protected function casts(): array

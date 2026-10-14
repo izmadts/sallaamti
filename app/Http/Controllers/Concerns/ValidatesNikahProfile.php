@@ -30,16 +30,23 @@ trait ValidatesNikahProfile
             'children_count' => ['nullable', 'integer', 'min:1', 'max:20'],
             'living_situation' => ['required_if:marital_status,divorced,widowed,separated,married', 'nullable', 'string', 'in:alone,with_mother,with_father,with_maternal_grandparents,with_paternal_grandparents,with_children,other'],
             'open_to_polygamy' => ['nullable', 'boolean'],
-            'sect' => ['nullable', 'string', 'in:Sunni,Shia,Ahle Hadith,Deobandi,Other'],
+            'sect' => ['required', 'string', 'in:Sunni,Shia,Ahle Hadith,Deobandi,Other'],
             'sect_other' => ['nullable', 'required_if:sect,Other', 'string', 'max:100'],
             'caste' => ['nullable', 'string', 'max:100'],
             'prayer_frequency' => ['nullable', 'string', 'in:always,usually,sometimes,rarely'],
             'hijab_or_beard' => ['nullable', 'string', 'in:yes,no,sometimes'],
             'smokes' => ['nullable', 'string', 'in:no,occasionally,yes'],
             'diet' => ['nullable', 'string', 'in:halal_only,halal_mostly,no_restriction'],
-            'education' => ['nullable', 'string', 'max:255'],
+            'education' => ['required', 'string', 'max:255'],
             'profession' => ['nullable', 'string', 'max:255'],
+            // Not constrained to the cities table with `exists:` — same
+            // reasoning as education above being a pick-or-type combo
+            // rather than a strict enum: the ~150k imported cities aren't
+            // perfectly complete, and hard-rejecting a real city a member
+            // typed that we just don't have would be worse than accepting
+            // free text here.
             'city' => ['required', 'string', 'max:100'],
+            'address' => ['nullable', 'string', 'max:255'],
             'state' => ['nullable', 'string', 'max:100'],
             'country' => ['nullable', 'string', 'max:100'],
             'ethnicity' => ['nullable', 'string', 'max:100'],
@@ -51,7 +58,7 @@ trait ValidatesNikahProfile
             'guardian_contact' => ['required', 'string', 'max:20'],
             'guardian_relation' => ['nullable', 'string', 'max:100'],
             'about' => ['nullable', 'string', 'max:2000'],
-            'expectations' => ['nullable', 'string', 'max:2000'],
+            'expectations' => ['required', 'string', 'max:2000'],
             // CNIC number stays on the form looking mandatory (the UI still
             // marks it required and never says otherwise — that's
             // deliberate), but the backend no longer actually enforces it:
@@ -79,6 +86,8 @@ trait ValidatesNikahProfile
             'pref_sect' => ['nullable', 'string', 'max:100'],
             'pref_education' => ['nullable', 'string', 'max:100'],
             'pref_marital_status' => ['nullable', 'string'],
+            'pref_income' => ['nullable', 'string', 'max:255'],
+            'pref_other' => ['nullable', 'string', 'max:1000'],
         ];
     }
 

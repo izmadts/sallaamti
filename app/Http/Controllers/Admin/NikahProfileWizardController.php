@@ -43,10 +43,10 @@ class NikahProfileWizardController extends Controller
     // for how they get a real login to do that with).
     protected array $wizardStepFields = [
         'account' => ['name', 'identifier', 'gender'],
-        'basic' => ['date_of_birth', 'height', 'height_other', 'marital_status', 'has_children', 'children_count', 'living_situation', 'education', 'profession', 'city', 'state', 'country'],
+        'basic' => ['date_of_birth', 'height', 'height_other', 'marital_status', 'has_children', 'children_count', 'living_situation', 'education', 'profession', 'city', 'address', 'state', 'country'],
         'family' => ['caste', 'family_type', 'guardian_name', 'guardian_contact', 'guardian_relation', 'ethnicity'],
         'deen' => ['sect', 'sect_other', 'prayer_frequency', 'hijab_or_beard', 'smokes', 'diet', 'open_to_polygamy'],
-        'about' => ['about', 'expectations', 'visibility'],
+        'about' => ['about', 'expectations', 'visibility', 'pref_min_age', 'pref_max_age', 'pref_city', 'pref_sect', 'pref_education', 'pref_marital_status', 'pref_income', 'pref_other'],
         // Optional — a matchmaker collecting payment on the spot can submit
         // it right here; skippable if the client isn't paying today (they
         // can pay later themselves, or it can be submitted afterward from
@@ -59,7 +59,7 @@ class NikahProfileWizardController extends Controller
     // regardless of how each step was reached, so an admin who used
     // skipStep() to preview the wizard can never accidentally create a
     // real (broken) User/NikahProfile/Lead by finalizing anyway.
-    private const GENUINELY_REQUIRED = ['identifier', 'name', 'gender', 'date_of_birth', 'city', 'guardian_name', 'guardian_contact'];
+    private const GENUINELY_REQUIRED = ['identifier', 'name', 'gender', 'date_of_birth', 'city', 'education', 'sect', 'guardian_name', 'guardian_contact', 'expectations'];
 
     protected array $stepTitles = [
         'account' => 'Login Account',
