@@ -17,9 +17,13 @@ return new class extends Migration
         // table queried through a live-search endpoint instead.
         Schema::create('cities', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('state')->nullable();
-            $table->string('country');
+            // Lengths kept short on purpose: the composite index below sums
+            // all three columns' byte length, and production MySQL caps a
+            // single index at 1000 bytes. With utf8mb4 (4 bytes/char),
+            // 60+85+100 = 245 chars -> 980 bytes, just under the cap.
+            $table->string('name', 100);
+            $table->string('state', 85)->nullable();
+            $table->string('country', 60);
             $table->timestamps();
 
             $table->index(['country', 'state', 'name']);
