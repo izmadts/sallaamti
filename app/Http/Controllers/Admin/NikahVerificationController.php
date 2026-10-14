@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\MatchmakerApplication;
 use App\Models\NikahContactRequest;
 use App\Models\NikahProfile;
+use App\Support\CountryStates;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
@@ -182,6 +183,35 @@ class NikahVerificationController extends Controller
             $query->where('is_active', $request->active === 'active');
         }
 
+        // Match-finding filters — on top of the moderation-focused ones
+        // above, so an admin or Nikah Counselor can narrow down to
+        // actual candidates for a specific client, not just manage queue
+        // state.
+        if ($request->filled('city')) {
+            $query->where('city', 'like', '%' . $request->city . '%');
+        }
+        if ($request->filled('sect')) {
+            $query->where('sect', $request->sect);
+        }
+        if ($request->filled('education')) {
+            $query->where('education', $request->education);
+        }
+        if ($request->filled('marital_status')) {
+            $query->where('marital_status', $request->marital_status);
+        }
+        if ($request->filled('min_age')) {
+            $query->where('age', '>=', $request->min_age);
+        }
+        if ($request->filled('max_age')) {
+            $query->where('age', '<=', $request->max_age);
+        }
+        if ($request->filled('country')) {
+            $query->where('country', $request->country);
+        }
+        if ($request->filled('state')) {
+            $query->where('state', 'like', '%' . $request->state . '%');
+        }
+
         $profiles = $query->latest()->paginate(25)->withQueryString();
 
         $stats = [
@@ -190,7 +220,10 @@ class NikahVerificationController extends Controller
             'suspended' => NikahProfile::whereNotNull('suspended_at')->count(),
         ];
 
-        return view('admin.nikah.all-profiles', compact('profiles', 'stats'));
+        $countries = CountryStates::countries();
+        $educationLevels = ['Matric / O-Levels', 'Intermediate / A-Levels', "Bachelor's", "Master's", 'MPhil / MS', 'PhD', 'Madrassah / Islamic Education'];
+
+        return view('admin.nikah.all-profiles', compact('profiles', 'stats', 'countries', 'educationLevels'));
     }
 
     public function show(NikahProfile $profile)

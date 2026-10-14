@@ -67,6 +67,68 @@
                 </div>
                 <button class="bg-gray-800 text-white text-sm px-4 py-2 rounded">Filter</button>
                 <a href="{{ route('admin.nikah.profiles') }}" class="text-sm text-gray-500 px-2">Reset</a>
+
+                {{-- Match-finding filters — separate row, visually distinct
+                     from the moderation filters above, so an admin or Nikah
+                     Counselor narrowing down candidates for a specific
+                     client doesn't confuse this with the queue-management
+                     filters. --}}
+                <div class="w-full border-t border-gray-100 pt-3 mt-1 flex flex-wrap gap-3 items-end">
+                    <div>
+                        <label class="text-xs text-gray-500">City</label>
+                        <input type="text" name="city" value="{{ request('city') }}" placeholder="e.g. Lahore" class="border-gray-300 rounded text-sm block w-32">
+                    </div>
+                    <div>
+                        <label class="text-xs text-gray-500">Sect</label>
+                        <select name="sect" class="border-gray-300 rounded text-sm block">
+                            <option value="">Any</option>
+                            @foreach (['Sunni', 'Shia', 'Ahle Hadith', 'Deobandi', 'Other'] as $sect)
+                            <option value="{{ $sect }}" {{ request('sect') === $sect ? 'selected' : '' }}>{{ $sect }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-xs text-gray-500">Education</label>
+                        <select name="education" class="border-gray-300 rounded text-sm block">
+                            <option value="">Any</option>
+                            @foreach ($educationLevels as $level)
+                            <option value="{{ $level }}" {{ request('education') === $level ? 'selected' : '' }}>{{ $level }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-xs text-gray-500">Marital Status</label>
+                        <select name="marital_status" class="border-gray-300 rounded text-sm block">
+                            <option value="">Any</option>
+                            @foreach (['never_married' => 'Never Married', 'divorced' => 'Divorced', 'widowed' => 'Widowed', 'separated' => 'Separated', 'married' => 'Married'] as $val => $label)
+                            <option value="{{ $val }}" {{ request('marital_status') === $val ? 'selected' : '' }}>{{ $label }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="flex gap-2">
+                        <div>
+                            <label class="text-xs text-gray-500">Min Age</label>
+                            <input type="number" name="min_age" value="{{ request('min_age') }}" class="w-20 border-gray-300 rounded text-sm block">
+                        </div>
+                        <div>
+                            <label class="text-xs text-gray-500">Max Age</label>
+                            <input type="number" name="max_age" value="{{ request('max_age') }}" class="w-20 border-gray-300 rounded text-sm block">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="text-xs text-gray-500">Country</label>
+                        <select name="country" class="border-gray-300 rounded text-sm block">
+                            <option value="">Any</option>
+                            @foreach ($countries as $country)
+                            <option value="{{ $country }}" {{ request('country') === $country ? 'selected' : '' }}>{{ $country }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-xs text-gray-500">State / Province</label>
+                        <input type="text" name="state" value="{{ request('state') }}" placeholder="e.g. Punjab" class="border-gray-300 rounded text-sm block w-32">
+                    </div>
+                </div>
             </form>
 
             <!-- Table -->

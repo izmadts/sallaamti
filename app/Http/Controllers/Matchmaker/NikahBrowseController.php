@@ -11,6 +11,7 @@ use App\Models\NikahContactRequest;
 use App\Models\NikahInterest;
 use App\Models\NikahProfile;
 use App\Services\ImageOptimizer;
+use App\Support\CountryStates;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -46,10 +47,22 @@ class NikahBrowseController extends Controller
         if ($request->filled('max_age')) {
             $query->where('age', '<=', $request->max_age);
         }
+        if ($request->filled('education')) {
+            $query->where('education', $request->education);
+        }
+        if ($request->filled('country')) {
+            $query->where('country', $request->country);
+        }
+        if ($request->filled('state')) {
+            $query->where('state', 'like', '%' . $request->state . '%');
+        }
 
         $profiles = $query->orderByDesc('created_at')->paginate(15)->withQueryString();
 
-        return view('matchmaker.nikah.index', compact('profiles'));
+        $countries = CountryStates::countries();
+        $educationLevels = ['Matric / O-Levels', 'Intermediate / A-Levels', "Bachelor's", "Master's", 'MPhil / MS', 'PhD', 'Madrassah / Islamic Education'];
+
+        return view('matchmaker.nikah.index', compact('profiles', 'countries', 'educationLevels'));
     }
 
     // A matchmaker previously had no way to see their own request history

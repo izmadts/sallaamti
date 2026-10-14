@@ -33,7 +33,21 @@
                 </div>
                 <div>
                     <label class="text-xs font-semibold text-gray-500 block mb-1">{{ __('db.Sect') }}</label>
-                    <input type="text" name="sect" value="{{ request('sect') }}" class="border-gray-200 rounded-lg text-sm">
+                    <select name="sect" class="border-gray-200 rounded-lg text-sm">
+                        <option value="">{{ __('db.Any') }}</option>
+                        @foreach (['Sunni', 'Shia', 'Ahle Hadith', 'Deobandi', 'Other'] as $sect)
+                        <option value="{{ $sect }}" {{ request('sect') === $sect ? 'selected' : '' }}>{{ __('db.' . $sect) }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div>
+                    <label class="text-xs font-semibold text-gray-500 block mb-1">{{ __('db.Education') }}</label>
+                    <select name="education" class="border-gray-200 rounded-lg text-sm">
+                        <option value="">{{ __('db.Any') }}</option>
+                        @foreach ($educationLevels as $level)
+                        <option value="{{ $level }}" {{ request('education') === $level ? 'selected' : '' }}>{{ $level }}</option>
+                        @endforeach
+                    </select>
                 </div>
                 <div>
                     <label class="text-xs font-semibold text-gray-500 block mb-1">{{ __('db.Marital Status') }}</label>
@@ -48,8 +62,21 @@
                     <input type="number" name="min_age" placeholder="{{ __('db.Min age') }}" value="{{ request('min_age') }}" class="w-24 border-gray-200 rounded-lg text-sm">
                     <input type="number" name="max_age" placeholder="{{ __('db.Max age') }}" value="{{ request('max_age') }}" class="w-24 border-gray-200 rounded-lg text-sm">
                 </div>
+                <div>
+                    <label class="text-xs font-semibold text-gray-500 block mb-1">{{ __('db.Country') }}</label>
+                    <select name="country" class="border-gray-200 rounded-lg text-sm">
+                        <option value="">{{ __('db.Any') }}</option>
+                        @foreach ($countries as $country)
+                        <option value="{{ $country }}" {{ request('country') === $country ? 'selected' : '' }}>{{ $country }}</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div>
+                    <label class="text-xs font-semibold text-gray-500 block mb-1">{{ __('db.State / Province') }}</label>
+                    <input type="text" name="state" value="{{ request('state') }}" class="border-gray-200 rounded-lg text-sm">
+                </div>
                 <button class="px-4 py-2 rounded-lg text-white text-sm font-semibold" style="background: #0d6b6b">{{ __('db.Filter') }}</button>
-                @if (request()->hasAny(['gender', 'city', 'sect', 'marital_status', 'min_age', 'max_age']))
+                @if (request()->hasAny(['gender', 'city', 'sect', 'education', 'marital_status', 'min_age', 'max_age', 'country', 'state']))
                 <a href="{{ route('matchmaker.nikah.index') }}" class="text-sm text-gray-400 hover:text-gray-600">✕ {{ __('db.Clear') }}</a>
                 @endif
             </form>
