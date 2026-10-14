@@ -120,10 +120,7 @@ class NikahBrowseController extends Controller
             return $blocked;
         }
 
-        abort_unless($profile->isSearchable(), 404);
         abort_if(NikahBlock::existsBetween($myProfile->id, $profile->id), 404);
-
-        $breakdown = $profile->matchBreakdownWith($myProfile);
 
         $interest = \App\Models\NikahInterest::where(function ($q) use ($myProfile, $profile) {
             $q->where('sender_profile_id', $myProfile->id)->where('receiver_profile_id', $profile->id);
@@ -131,8 +128,15 @@ class NikahBrowseController extends Controller
             $q->where('receiver_profile_id', $myProfile->id)->where('sender_profile_id', $profile->id);
         })->first();
 
-        $isSaved = NikahSavedProfile::where('nikah_profile_id', $myProfile->id)->where('saved_profile_id', $profile->id)->exists();
         $hasAcceptedInterest = $interest && $interest->status === 'accepted';
+
+        // "Hidden from search" shouldn't 404 a profile you already have a
+        // mutual accepted interest with — see isViewableGivenAcceptedInterest().
+        abort_unless($profile->isViewableGivenAcceptedInterest($hasAcceptedInterest), 404);
+
+        $breakdown = $profile->matchBreakdownWith($myProfile);
+
+        $isSaved = NikahSavedProfile::where('nikah_profile_id', $myProfile->id)->where('saved_profile_id', $profile->id)->exists();
 
         return response()->json([
             'profile' => $this->cardPayload($profile, [], [], detailed: true),

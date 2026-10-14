@@ -205,6 +205,25 @@ class NikahProfile extends Model
             && in_array($this->visibility, ['public', 'members_only'], true);
     }
 
+    // Same gate as isSearchable(), except for viewing a profile's own page
+    // (not the browse list) when the viewer already has a mutually accepted
+    // interest with them. "Hidden from search" (is_active = false) is a
+    // discoverability preference, not a safety action — pausing it
+    // shouldn't retroactively 404 someone already talking to this profile.
+    // Suspension and a non-public visibility tier still always block: those
+    // are deliberate safety/privacy decisions, not just "don't show me to
+    // new people".
+    public function isViewableGivenAcceptedInterest(bool $hasAcceptedInterest): bool
+    {
+        if ($this->isSuspended()) {
+            return false;
+        }
+        if (!in_array($this->visibility, ['public', 'members_only'], true) && !$hasAcceptedInterest) {
+            return false;
+        }
+        return $this->is_active || $hasAcceptedInterest;
+    }
+
     // Is this profile visible when a MATCHMAKER searches/browses (their own
     // Browse Profiles page, shortlist search, or compatibility suggestions)?
     // Everything except 'confidential' — a matchmaker can still be handed a

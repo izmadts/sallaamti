@@ -348,9 +348,6 @@ class NikahProfileController extends Controller
             return $blocked;
         }
 
-        // Only show verified, active, non-suspended, public profiles
-        abort_unless($profile->isSearchable(), 404);
-
         abort_if(\App\Models\NikahBlock::existsBetween($myProfile->id, $profile->id), 404);
 
         // Check if there's a mutual accepted interest
@@ -368,6 +365,11 @@ class NikahProfileController extends Controller
 
             $hasAcceptedInterest = $interest && $interest->status === 'accepted';
         }
+
+        // Only show verified, active, non-suspended, public profiles — with
+        // an exception for "active" when the two of you already have a
+        // mutual accepted interest (see isViewableGivenAcceptedInterest()).
+        abort_unless($profile->isViewableGivenAcceptedInterest($hasAcceptedInterest), 404);
 
         $sentInterest = $myProfile
             ? \App\Models\NikahInterest::where('sender_profile_id', $myProfile->id)
