@@ -208,6 +208,7 @@ class NikahProfileController extends Controller
             'education' => $profile->education,
             'profession' => $profile->profession,
             'city' => $profile->city,
+            'address' => $profile->address,
             'state' => $profile->state,
             'country' => $profile->country,
             'ethnicity' => $profile->ethnicity,
@@ -246,6 +247,8 @@ class NikahProfileController extends Controller
             'pref_sect' => $profile->pref_sect,
             'pref_education' => $profile->pref_education,
             'pref_marital_status' => $profile->pref_marital_status,
+            'pref_income' => $profile->pref_income,
+            'pref_other' => $profile->pref_other,
             'completeness_percentage' => $profile->completenessPercentage(),
             'can_browse' => $profile->payment_status === 'confirmed' && $profile->verification_status === 'verified',
         ];
