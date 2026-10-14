@@ -38,11 +38,16 @@ class NikahBrowseController extends Controller
 
         $myProfile = $user->nikahProfile;
 
-        if ($blocked = $this->browsingBlockedResponse($myProfile)) {
+        // Unlike show()/toggleSave()/sendInterest(), the list itself is a
+        // teaser for a member who hasn't created a profile yet — a reason to
+        // create one, not something gated behind having one. The
+        // payment/verification gates still apply once a profile exists
+        // (an incomplete/unverified profile isn't "no profile").
+        if ($myProfile && $blocked = $this->browsingBlockedResponse($myProfile)) {
             return $blocked;
         }
 
-        $blockedIds = $myProfile->blockedProfiles()->pluck('blocked_profile_id')->toArray();
+        $blockedIds = $myProfile ? $myProfile->blockedProfiles()->pluck('blocked_profile_id')->toArray() : [];
 
         $query = NikahProfile::memberSearchable()
             ->where('user_id', '!=', $user->id)
@@ -79,18 +84,24 @@ class NikahBrowseController extends Controller
 
         $profiles = $query->orderByDesc('created_at')->limit(300)->get();
 
-        $profiles = $profiles->map(function ($profile) use ($myProfile) {
-            $breakdown = $profile->matchBreakdownWith($myProfile);
-            $profile->match_percentage = $breakdown['percentage'];
-            return $profile;
-        })->sortByDesc('match_percentage')->values();
+        // No profile yet means nothing to compare preferences against —
+        // every card is an equal, unranked teaser rather than a 0% match
+        // (which would read as "none of these suit you" instead of "create
+        // a profile to see compatibility").
+        $profiles = $myProfile
+            ? $profiles->map(function ($profile) use ($myProfile) {
+                $breakdown = $profile->matchBreakdownWith($myProfile);
+                $profile->match_percentage = $breakdown['percentage'];
+                return $profile;
+            })->sortByDesc('match_percentage')->values()
+            : $profiles;
 
         $page = max(1, (int) $request->input('page', 1));
         $perPage = 9;
         $pageItems = $profiles->forPage($page, $perPage)->values();
 
-        $sentInterestIds = $myProfile->sentInterests()->pluck('receiver_profile_id')->toArray();
-        $savedProfileIds = $myProfile->savedProfiles()->pluck('saved_profile_id')->toArray();
+        $sentInterestIds = $myProfile ? $myProfile->sentInterests()->pluck('receiver_profile_id')->toArray() : [];
+        $savedProfileIds = $myProfile ? $myProfile->savedProfiles()->pluck('saved_profile_id')->toArray() : [];
 
         return response()->json([
             'profiles' => $pageItems->map(fn ($p) => $this->cardPayload($p, $sentInterestIds, $savedProfileIds)),
