@@ -31,7 +31,7 @@ class NikahGuardianMessageController extends Controller
         abort_if(
             NikahBlock::existsBetween($interest->sender_profile_id, $interest->receiver_profile_id),
             403,
-            'This conversation is no longer available.'
+            'This conversation is no longer available — one of you has blocked the other. Check your Blocked Profiles list if this seems wrong.'
         );
     }
 
