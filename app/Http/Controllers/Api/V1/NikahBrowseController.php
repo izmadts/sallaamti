@@ -38,14 +38,12 @@ class NikahBrowseController extends Controller
 
         $myProfile = $user->nikahProfile;
 
-        // Unlike show()/toggleSave()/sendInterest(), the list itself is a
-        // teaser for a member who hasn't created a profile yet — a reason to
-        // create one, not something gated behind having one. The
-        // payment/verification gates still apply once a profile exists
-        // (an incomplete/unverified profile isn't "no profile").
-        if ($myProfile && $blocked = $this->browsingBlockedResponse($myProfile)) {
-            return $blocked;
-        }
+        // The list itself is always a teaser — whether there's no profile
+        // yet, or a profile that exists but is still unpaid/unverified.
+        // Viewing a specific profile's full detail, saving, or sending
+        // interest still require full eligibility — see
+        // show()/savedProfiles() (still gated) and NikahInterestController
+        // (gated via canInteract()).
 
         $blockedIds = $myProfile ? $myProfile->blockedProfiles()->pluck('blocked_profile_id')->toArray() : [];
 
