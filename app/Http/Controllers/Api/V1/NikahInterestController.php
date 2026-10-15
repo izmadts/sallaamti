@@ -122,6 +122,22 @@ class NikahInterestController extends Controller
         return response()->json(['message' => __('db.Interest declined.'), 'status' => 'declined']);
     }
 
+    // Only the sender, and only while still pending — see the web
+    // controller's cancel() for why this deletes rather than soft-cancels.
+    public function cancel(Request $request, NikahInterest $interest): JsonResponse
+    {
+        $myProfile = $request->user()->nikahProfile;
+        abort_unless($myProfile && (int) $interest->sender_profile_id === (int) $myProfile->id, 403);
+
+        if ($interest->status !== 'pending') {
+            return response()->json(['message' => __('db.This interest has already been responded to and can\'t be cancelled.')], 409);
+        }
+
+        $interest->delete();
+
+        return response()->json(['message' => __('db.Interest request cancelled.')]);
+    }
+
     private function interestPayload(NikahInterest $interest, NikahProfile $otherProfile): array
     {
         return [

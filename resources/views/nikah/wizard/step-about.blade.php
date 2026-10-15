@@ -68,10 +68,16 @@
                                 <x-text-input id="pref_education" name="pref_education" type="text" class="w-full mt-1" :value="old('pref_education', $data['pref_education'] ?? '')"
                                     placeholder="{{ __('db.e.g. Graduate or above (leave blank for any)') }}" title="{{ __('db.Leave blank if education level doesn\'t matter to you.') }}" />
                             </div>
+                            @php $prefMs = old('pref_marital_status', $data['pref_marital_status'] ?? ''); @endphp
                             <div>
                                 <x-input-label for="pref_marital_status" :value="__('db.Preferred Marital Status')" />
-                                <x-text-input id="pref_marital_status" name="pref_marital_status" type="text" class="w-full mt-1" :value="old('pref_marital_status', $data['pref_marital_status'] ?? '')"
-                                    placeholder="{{ __('db.e.g. Never Married (leave blank for any)') }}" title="{{ __('db.Leave blank if this doesn\'t matter to you.') }}" />
+                                <select id="pref_marital_status" name="pref_marital_status" class="border-gray-300 rounded-md shadow-sm w-full mt-1"
+                                    title="{{ __('db.Leave as Any if this doesn\'t matter to you.') }}">
+                                    <option value="" {{ $prefMs === '' ? 'selected' : '' }}>{{ __('db.Any') }}</option>
+                                    @foreach (['never_married' => __('db.Never Married'), 'divorced' => __('db.Divorced'), 'widowed' => __('db.Widowed'), 'separated' => __('db.Separated'), 'married' => __('db.Married')] as $val => $label)
+                                    <option value="{{ $val }}" {{ $prefMs === $val ? 'selected' : '' }}>{{ $label }}</option>
+                                    @endforeach
+                                </select>
                             </div>
                             <div>
                                 <x-input-label for="pref_income" :value="__('db.Preferred Income / Business Worth')" />

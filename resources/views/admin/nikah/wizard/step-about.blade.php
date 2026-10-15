@@ -62,9 +62,15 @@
                                 <x-input-label for="pref_education" value="Preferred Education (optional)" />
                                 <x-text-input id="pref_education" name="pref_education" type="text" class="w-full mt-1" :value="old('pref_education', $data['pref_education'] ?? '')" />
                             </div>
+                            @php $prefMs = old('pref_marital_status', $data['pref_marital_status'] ?? ''); @endphp
                             <div>
                                 <x-input-label for="pref_marital_status" value="Preferred Marital Status (optional)" />
-                                <x-text-input id="pref_marital_status" name="pref_marital_status" type="text" class="w-full mt-1" :value="old('pref_marital_status', $data['pref_marital_status'] ?? '')" />
+                                <select id="pref_marital_status" name="pref_marital_status" class="border-gray-300 rounded-md shadow-sm w-full mt-1">
+                                    <option value="" {{ $prefMs === '' ? 'selected' : '' }}>Any</option>
+                                    @foreach (['never_married' => 'Never Married', 'divorced' => 'Divorced', 'widowed' => 'Widowed', 'separated' => 'Separated', 'married' => 'Married'] as $val => $label)
+                                    <option value="{{ $val }}" {{ $prefMs === $val ? 'selected' : '' }}>{{ $label }}</option>
+                                    @endforeach
+                                </select>
                             </div>
                             <div>
                                 <x-input-label for="pref_income" value="Preferred Income / Business Worth (optional)" />

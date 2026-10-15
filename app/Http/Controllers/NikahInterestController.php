@@ -85,4 +85,23 @@ class NikahInterestController extends Controller
 
         return back()->with('status', 'Interest declined.');
     }
+
+    // Only the sender, and only before the other side has acted on it —
+    // once accepted/declined, that's a real decision already made and
+    // notified, not something to quietly undo. Deleting (not soft-
+    // cancelling) the row lets the sender send interest to this profile
+    // again later, same as if they'd never sent it.
+    public function cancel(NikahInterest $interest)
+    {
+        $myProfile = Auth::user()->nikahProfile;
+        abort_unless($myProfile && (int) $interest->sender_profile_id === (int) $myProfile->id, 403);
+
+        if ($interest->status !== 'pending') {
+            return back()->with('error', 'This interest has already been responded to and can\'t be cancelled.');
+        }
+
+        $interest->delete();
+
+        return back()->with('status', 'Interest request cancelled.');
+    }
 }

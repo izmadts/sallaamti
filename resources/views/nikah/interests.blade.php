@@ -75,9 +75,18 @@
                                                 <a href="{{ route('nikah.profile.view', $interest->receiver) }}" class="text-xs font-semibold mt-1 inline-block" style="color: var(--teal)">{{ __('db.View Full Profile') }} →</a>
                                             </div>
                                         </div>
-                                        <span class="text-xs px-2 py-1 rounded-full {{ $interest->status === 'accepted' ? 'bg-green-100 text-green-800' : ($interest->status === 'declined' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800') }}">
-                                            {{ ucfirst($interest->status) }}
-                                        </span>
+                                        <div class="flex items-center gap-2">
+                                            <span class="text-xs px-2 py-1 rounded-full {{ $interest->status === 'accepted' ? 'bg-green-100 text-green-800' : ($interest->status === 'declined' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800') }}">
+                                                {{ ucfirst($interest->status) }}
+                                            </span>
+                                            @if ($interest->status === 'pending')
+                                            <form method="POST" action="{{ route('nikah.interest.cancel', $interest) }}" class="inline"
+                                                onsubmit="return confirm('{{ __('db.Cancel this interest request?') }}')">
+                                                @csrf @method('DELETE')
+                                                <button class="text-xs text-gray-500 hover:text-red-600 hover:underline">{{ __('db.Cancel') }}</button>
+                                            </form>
+                                            @endif
+                                        </div>
                                     </div>
                                     @empty
                                     <p class="text-gray-500">{{ __('db.No interests sent yet.') }}</p>

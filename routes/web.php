@@ -273,6 +273,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/nikah/interests', [NikahInterestController::class, 'index'])->name('nikah.interests');
     Route::post('/nikah/interests/{interest}/accept', [NikahInterestController::class, 'accept'])->name('nikah.interest.accept');
     Route::post('/nikah/interests/{interest}/decline', [NikahInterestController::class, 'decline'])->name('nikah.interest.decline');
+    Route::delete('/nikah/interests/{interest}/cancel', [NikahInterestController::class, 'cancel'])->name('nikah.interest.cancel');
     Route::get('/nikah/interests/{interest}/messages', [NikahGuardianMessageController::class, 'show'])->name('nikah.messages.show');
     Route::post('/nikah/interests/{interest}/messages', [NikahGuardianMessageController::class, 'store'])->name('nikah.messages.store');
     Route::get('/nikah/payment', [NikahPaymentController::class, 'show'])->name('nikah.payment');

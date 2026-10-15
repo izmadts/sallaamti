@@ -103,6 +103,7 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
             Route::get('interests', [NikahInterestController::class, 'index'])->name('interests.index');
             Route::post('interests/{interest}/accept', [NikahInterestController::class, 'accept'])->name('interests.accept');
             Route::post('interests/{interest}/decline', [NikahInterestController::class, 'decline'])->name('interests.decline');
+            Route::delete('interests/{interest}/cancel', [NikahInterestController::class, 'cancel'])->name('interests.cancel');
 
             Route::get('interests/{interest}/messages', [NikahGuardianMessageController::class, 'index'])->name('messages.index');
             Route::post('interests/{interest}/messages', [NikahGuardianMessageController::class, 'store'])->name('messages.store');
