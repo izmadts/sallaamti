@@ -192,6 +192,8 @@ class NikahProfileController extends Controller
         return [
             'id' => $profile->id,
             'public_token' => $profile->public_token,
+            'gender' => $profile->user?->gender,
+            'date_of_birth' => $profile->date_of_birth?->toDateString(),
             'age' => $profile->age,
             'height' => $profile->height,
             'marital_status' => $profile->marital_status,
