@@ -11,9 +11,11 @@ use App\Services\UserDeletionService;
 use App\Support\PermissionCatalog;
 use App\Support\UserFilter;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
+use Illuminate\Validation\Rules;
 use Spatie\Permission\Models\Role;
 
 class UserManagementController extends Controller
@@ -106,6 +108,33 @@ class UserManagementController extends Controller
         return $status === Password::RESET_LINK_SENT
             ? back()->with('status', "Password reset link sent to {$user->email}.")
             : back()->with('error', 'Could not send the reset link: ' . __($status));
+    }
+
+    // Super Admin only — directly sets a user's password to a value the
+    // admin chooses, rather than sending a reset link/email. Exists for
+    // cases the normal flow can't reach (no email on file, a member locked
+    // out and unable to receive an OTP) — the Super Admin hands the new
+    // password to them directly (call, WhatsApp, in person); nothing here
+    // forces a change afterward, they can keep using it or change it
+    // themselves anytime. Existing API tokens are revoked, same as a
+    // normal self-service password reset, in case the account was the one
+    // that needed resetting because it was compromised.
+    public function setPassword(Request $request, User $user)
+    {
+        abort_unless(auth()->user()->hasRole('super_admin'), 403, 'Only a Super Admin can set a password directly.');
+
+        $validated = $request->validate([
+            'password' => ['required', 'confirmed', Rules\Password::defaults()],
+        ]);
+
+        $user->forceFill([
+            'password' => Hash::make($validated['password']),
+            'must_change_password' => true,
+        ])->save();
+
+        $user->tokens()->delete();
+
+        return back()->with('status', "Password set for {$user->name}. Share it with them directly — they can use it right away or change it anytime.");
     }
 
     // A plain admin can manage every other account — including other

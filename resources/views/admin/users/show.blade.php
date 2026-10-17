@@ -95,6 +95,47 @@
                     @endunless
                 </form>
                 @endif
+
+                {{-- Super Admin only — sets the password directly instead of
+                     emailing a reset link, for accounts the normal flow
+                     can't reach (no email, locked out). The value is plain
+                     text, not masked, since you need to read it back to
+                     hand it to the member yourself. --}}
+                @if (auth()->user()->hasRole('super_admin'))
+                <div class="mt-4 pt-4 border-t border-gray-100">
+                    <p class="text-xs font-semibold text-amber-700 mb-2">🛡️ Set Password Directly (Super Admin)</p>
+                    <form method="POST" action="{{ route('admin.users.set-password', $user) }}" class="space-y-2" id="set-password-form"
+                        onsubmit="return confirm('Set a new password for {{ $user->name }}? Their current password stops working immediately.')">
+                        @csrf @method('PUT')
+                        <div class="flex flex-wrap gap-2 items-end">
+                            <div>
+                                <label for="set-password-input" class="block text-xs text-gray-500">New Password</label>
+                                <input type="text" name="password" id="set-password-input" autocomplete="off" required
+                                    class="border-gray-300 rounded-md text-sm w-56 @error('password') border-red-400 @enderror">
+                            </div>
+                            <div>
+                                <label for="set-password-confirm" class="block text-xs text-gray-500">Confirm</label>
+                                <input type="text" name="password_confirmation" id="set-password-confirm" autocomplete="off" required
+                                    class="border-gray-300 rounded-md text-sm w-56">
+                            </div>
+                            <button type="button" onclick="sallaamtiGeneratePassword()" class="text-xs text-gray-500 border border-gray-300 rounded px-3 py-2 hover:bg-gray-50">Generate</button>
+                        </div>
+                        @error('password')
+                        <p class="text-xs text-red-600">{{ $message }}</p>
+                        @enderror
+                        <x-secondary-button type="submit">Set Password</x-secondary-button>
+                    </form>
+                    <script>
+                        function sallaamtiGeneratePassword() {
+                            const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789';
+                            let value = '';
+                            for (let i = 0; i < 10; i++) value += chars[Math.floor(Math.random() * chars.length)];
+                            document.getElementById('set-password-input').value = value;
+                            document.getElementById('set-password-confirm').value = value;
+                        }
+                    </script>
+                </div>
+                @endif
             </div>
 
             {{-- Role Assignment --}}
