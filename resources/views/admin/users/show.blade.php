@@ -196,11 +196,27 @@
                     onsubmit="return confirm('Are you absolutely sure? This permanently deletes ALL data for {{ $user->name }}.')">
                     @csrf @method('DELETE')
                     <label for="delete-confirm-input" class="block text-xs text-red-700">Type <strong>{{ $confirmToken }}</strong> to confirm</label>
-                    <input type="text" id="delete-confirm-input" autocomplete="off" class="border-red-300 rounded-md text-sm w-full sm:w-80"
-                        oninput="document.getElementById('delete-confirm-btn').disabled = (this.value !== @json($confirmToken))">
+                    <input type="text" id="delete-confirm-input" autocomplete="off" class="border-red-300 rounded-md text-sm w-full sm:w-80">
                     <button id="delete-confirm-btn" type="submit" disabled
                         class="bg-red-600 text-white text-sm px-4 py-2 rounded hover:bg-red-700 disabled:opacity-40 disabled:cursor-not-allowed">Delete User Permanently</button>
                 </form>
+                {{-- A bare oninput="..." attribute only fires on the 'input'
+                     event — browser autofill (very likely here, since this
+                     field's expected value is literally the email/phone
+                     already showing on the page) can set the value without
+                     ever firing it, leaving the button stuck disabled even
+                     though the text visually matches. Listening on several
+                     events, plus trimming stray whitespace, covers that. --}}
+                <script>
+                    (function () {
+                        const input = document.getElementById('delete-confirm-input');
+                        const btn = document.getElementById('delete-confirm-btn');
+                        const expected = @json($confirmToken);
+                        const check = () => { btn.disabled = (input.value.trim() !== expected); };
+                        ['input', 'keyup', 'change', 'paste'].forEach((evt) => input.addEventListener(evt, () => setTimeout(check, 0)));
+                        check();
+                    })();
+                </script>
             </div>
             @endif
 
