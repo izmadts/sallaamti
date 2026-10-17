@@ -34,7 +34,7 @@
                  columns regardless of which row it falls on. --}}
             <form method="GET" class="bg-white p-4 rounded-lg shadow-sm">
                 <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3">Moderation</p>
-                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
                     <div class="col-span-2 sm:col-span-1 lg:col-span-2">
                         <label class="text-xs text-gray-500">Search (name, email, phone, city, or #ID)</label>
                         <input type="text" name="search" value="{{ request('search') }}" placeholder="e.g. 123 or #123" class="border-gray-300 rounded text-sm block w-full">
