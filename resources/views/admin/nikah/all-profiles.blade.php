@@ -65,9 +65,6 @@
                         <option value="inactive" {{ request('active') === 'inactive' ? 'selected' : '' }}>Inactive</option>
                     </select>
                 </div>
-                <button class="bg-gray-800 text-white text-sm px-4 py-2 rounded">Filter</button>
-                <a href="{{ route('admin.nikah.profiles') }}" class="text-sm text-gray-500 px-2">Reset</a>
-
                 {{-- Match-finding filters — separate row, visually distinct
                      from the moderation filters above, so an admin or Nikah
                      Counselor narrowing down candidates for a specific
@@ -128,6 +125,11 @@
                         <label class="text-xs text-gray-500">State / Province</label>
                         <input type="text" name="state" value="{{ request('state') }}" placeholder="e.g. Punjab" class="border-gray-300 rounded text-sm block w-32">
                     </div>
+                </div>
+
+                <div class="w-full flex items-center gap-3 pt-1">
+                    <button class="bg-gray-800 text-white text-sm px-4 py-2 rounded">Filter</button>
+                    <a href="{{ route('admin.nikah.profiles') }}" class="text-sm text-gray-500 px-2">Reset</a>
                 </div>
             </form>
 
