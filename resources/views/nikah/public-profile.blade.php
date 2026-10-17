@@ -1,4 +1,4 @@
-<x-guest-layout :title="__('db.:age years, :city — Sallaamti Nikah', ['age' => $profile->age, 'city' => $profile->city])" :description="__('db.Verified Nikah profile on Sallaamti: :age years old, :city, :status. Sign up to view the full profile.', ['age' => $profile->age, 'city' => $profile->city, 'status' => ucfirst(str_replace('_', ' ', $profile->marital_status))])">
+<x-guest-layout :title="__('db.:age years, :city — Sallaamti Nikah', ['age' => $profile->age, 'city' => $profile->city])" :description="__('db.Nikah profile on Sallaamti: :age years old, :city, :status. Sign up to view the full profile.', ['age' => $profile->age, 'city' => $profile->city, 'status' => ucfirst(str_replace('_', ' ', $profile->marital_status))])">
 
     <div class="py-12 bg-cream">
         <div class="max-w-2xl mx-auto sm:px-6 lg:px-8 space-y-6">
@@ -9,9 +9,15 @@
                         {{ $profile->user?->gender === 'female' ? '👩' : '👨' }}
                     </div>
                     <div class="absolute top-2 left-1">
+                        @if ($profile->verification_status === 'verified')
                         <span class="flex items-center gap-1 bg-green-500 text-white text-xs font-semibold px-3 py-1.5 rounded-full shadow">
                             ✅ {{ __('db.Verified Profile') }}
                         </span>
+                        @else
+                        <span class="flex items-center gap-1 bg-amber-500 text-white text-xs font-semibold px-3 py-1.5 rounded-full shadow">
+                            ⏳ {{ __('db.Pending Verification') }}
+                        </span>
+                        @endif
                     </div>
                 </div>
 

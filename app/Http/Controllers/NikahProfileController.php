@@ -406,12 +406,13 @@ class NikahProfileController extends Controller
         // control here, so this deliberately ignores `visibility` — a Private
         // profile is hidden from search/browse but must still open via the
         // personal link its owner explicitly shared, otherwise "Private" is a
-        // one-way trap with no way to ever be seen by anyone. Suspension still
-        // applies though — a moderation action must hide the profile everywhere.
-        abort_unless(
-            $profile->verification_status === 'verified' && $profile->is_active && !$profile->isSuspended(),
-            404
-        );
+        // one-way trap with no way to ever be seen by anyone. Suspension and
+        // is_active still hard-block though — those are real moderation/
+        // owner actions that must hide the profile everywhere, unlike
+        // verification_status (shown on-page as a Verified/Pending badge
+        // instead of gating access) — a counselor sharing a just-created
+        // client's card shouldn't 404 before an admin gets to review it.
+        abort_unless($profile->is_active && !$profile->isSuspended(), 404);
 
         // Remember this page so that if a visitor registers or logs in from
         // here (e.g. to show interest), they land back on this exact profile
