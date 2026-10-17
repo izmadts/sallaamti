@@ -26,20 +26,21 @@
 
             <!-- Filters -->
             {{-- One form, one Filter button, every field below submits
-                 together — split into two labeled groups purely for
+                 together — split into two labeled rows purely for
                  scanability (moderation/queue filters vs. match-finding
-                 filters), not because they're handled separately. A
-                 consistent grid (instead of flex-wrap with ad-hoc widths)
-                 keeps every field the same size and aligned into clean
-                 columns regardless of which row it falls on. --}}
+                 filters), not because they're handled separately.
+                 flex-wrap with each field sized to its own content (not a
+                 fixed grid column) so as many fields as actually fit pack
+                 into one row before wrapping, rather than an even column
+                 count leaving a field stranded alone on its own row. --}}
             <form method="GET" class="bg-white p-4 rounded-lg shadow-sm">
                 <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3">Moderation</p>
-                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
-                    <div class="col-span-2 sm:col-span-1 lg:col-span-2">
+                <div class="flex flex-wrap gap-3 items-end">
+                    <div class="w-56">
                         <label class="text-xs text-gray-500">Search (name, email, phone, city, or #ID)</label>
                         <input type="text" name="search" value="{{ request('search') }}" placeholder="e.g. 123 or #123" class="border-gray-300 rounded text-sm block w-full">
                     </div>
-                    <div>
+                    <div class="w-28">
                         <label class="text-xs text-gray-500">Gender</label>
                         <select name="gender" class="border-gray-300 rounded text-sm block w-full">
                             <option value="">All</option>
@@ -47,7 +48,7 @@
                             <option value="female" {{ request('gender') === 'female' ? 'selected' : '' }}>Female</option>
                         </select>
                     </div>
-                    <div>
+                    <div class="w-32">
                         <label class="text-xs text-gray-500">Verification</label>
                         <select name="verification_status" class="border-gray-300 rounded text-sm block w-full">
                             <option value="">All</option>
@@ -56,7 +57,7 @@
                             <option value="rejected" {{ request('verification_status') === 'rejected' ? 'selected' : '' }}>Rejected</option>
                         </select>
                     </div>
-                    <div>
+                    <div class="w-32">
                         <label class="text-xs text-gray-500">Payment</label>
                         <select name="payment_status" class="border-gray-300 rounded text-sm block w-full">
                             <option value="">All</option>
@@ -66,7 +67,7 @@
                             <option value="rejected" {{ request('payment_status') === 'rejected' ? 'selected' : '' }}>Rejected</option>
                         </select>
                     </div>
-                    <div>
+                    <div class="w-28">
                         <label class="text-xs text-gray-500">Status</label>
                         <select name="active" class="border-gray-300 rounded text-sm block w-full">
                             <option value="">All</option>
@@ -77,12 +78,20 @@
                 </div>
 
                 <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3 mt-5 pt-4 border-t border-gray-100">Match-Finding</p>
-                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
-                    <div>
+                <div class="flex flex-wrap gap-3 items-end">
+                    <div class="w-20">
+                        <label class="text-xs text-gray-500">Min Age</label>
+                        <input type="number" name="min_age" value="{{ request('min_age') }}" class="border-gray-300 rounded text-sm block w-full">
+                    </div>
+                    <div class="w-20">
+                        <label class="text-xs text-gray-500">Max Age</label>
+                        <input type="number" name="max_age" value="{{ request('max_age') }}" class="border-gray-300 rounded text-sm block w-full">
+                    </div>
+                    <div class="w-28">
                         <label class="text-xs text-gray-500">City</label>
                         <input type="text" name="city" value="{{ request('city') }}" placeholder="e.g. Lahore" class="border-gray-300 rounded text-sm block w-full">
                     </div>
-                    <div>
+                    <div class="w-28">
                         <label class="text-xs text-gray-500">Sect</label>
                         <select name="sect" class="border-gray-300 rounded text-sm block w-full">
                             <option value="">Any</option>
@@ -91,7 +100,7 @@
                             @endforeach
                         </select>
                     </div>
-                    <div>
+                    <div class="w-36">
                         <label class="text-xs text-gray-500">Education</label>
                         <select name="education" class="border-gray-300 rounded text-sm block w-full">
                             <option value="">Any</option>
@@ -100,7 +109,7 @@
                             @endforeach
                         </select>
                     </div>
-                    <div>
+                    <div class="w-32">
                         <label class="text-xs text-gray-500">Marital Status</label>
                         <select name="marital_status" class="border-gray-300 rounded text-sm block w-full">
                             <option value="">Any</option>
@@ -109,7 +118,7 @@
                             @endforeach
                         </select>
                     </div>
-                    <div>
+                    <div class="w-32">
                         <label class="text-xs text-gray-500">Country</label>
                         <select name="country" class="border-gray-300 rounded text-sm block w-full">
                             <option value="">Any</option>
@@ -118,21 +127,10 @@
                             @endforeach
                         </select>
                     </div>
-                    <div>
+                    <div class="w-28">
                         <label class="text-xs text-gray-500">State / Province</label>
                         <input type="text" name="state" value="{{ request('state') }}" placeholder="e.g. Punjab" class="border-gray-300 rounded text-sm block w-full">
                     </div>
-                    <div>
-                        <label class="text-xs text-gray-500">Min Age</label>
-                        <input type="number" name="min_age" value="{{ request('min_age') }}" class="border-gray-300 rounded text-sm block w-full">
-                    </div>
-                    <div>
-                        <label class="text-xs text-gray-500">Max Age</label>
-                        <input type="number" name="max_age" value="{{ request('max_age') }}" class="border-gray-300 rounded text-sm block w-full">
-                    </div>
-                </div>
-
-                <div class="flex items-center gap-3 mt-5 pt-4 border-t border-gray-100">
                     <button class="bg-gray-800 text-white text-sm px-4 py-2 rounded">Filter</button>
                     <a href="{{ route('admin.nikah.profiles') }}" class="text-sm text-gray-500 px-2">Reset</a>
                 </div>
