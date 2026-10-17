@@ -28,26 +28,42 @@ class OtpCode extends Model
         ]);
     }
 
+    // Checks every still-outstanding (unconsumed, unexpired, not yet
+    // attempt-maxed) code for this identifier+purpose, not just the most
+    // recently generated one. generateFor() never invalidates a prior
+    // code when a new one is issued — e.g. tapping "Resend code" — so
+    // without this, a genuinely correct, still-fresh code from an earlier
+    // email would get rejected the instant a newer one existed, since the
+    // old lookup only ever looked at the latest row.
     public static function verify(string $identifier, string $code, string $purpose): bool
     {
-        $otp = static::where('identifier', $identifier)
+        $candidates = static::where('identifier', $identifier)
             ->where('purpose', $purpose)
             ->whereNull('consumed_at')
-            ->latest('id')
-            ->first();
+            ->orderByDesc('id')
+            ->get();
 
-        if (!$otp || $otp->attempts >= self::MAX_ATTEMPTS) {
+        $attemptable = $candidates->filter(
+            fn (self $otp) => $otp->attempts < self::MAX_ATTEMPTS && $otp->expires_at->isFuture()
+        );
+
+        if ($attemptable->isEmpty()) {
             return false;
         }
 
-        $otp->increment('attempts');
+        foreach ($attemptable as $otp) {
+            if (hash_equals($otp->code, $code)) {
+                $otp->update(['consumed_at' => Carbon::now()]);
 
-        if ($otp->expires_at->isPast() || !hash_equals($otp->code, $code)) {
-            return false;
+                return true;
+            }
         }
 
-        $otp->update(['consumed_at' => Carbon::now()]);
+        // No match against any outstanding code — count it as a failed
+        // attempt on the most recently issued one, since that's the code
+        // the user most likely just received.
+        $attemptable->first()->increment('attempts');
 
-        return true;
+        return false;
     }
 }
