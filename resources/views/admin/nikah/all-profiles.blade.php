@@ -25,59 +25,66 @@
             </div>
 
             <!-- Filters -->
-            <form method="GET" class="bg-white p-4 rounded-lg shadow-sm flex flex-wrap gap-3 items-end">
-                <div>
-                    <label class="text-xs text-gray-500">Search (name, email, phone, city, or #ID)</label>
-                    <input type="text" name="search" value="{{ request('search') }}" placeholder="e.g. 123 or #123" class="border-gray-300 rounded text-sm block w-56">
+            {{-- One form, one Filter button, every field below submits
+                 together — split into two labeled groups purely for
+                 scanability (moderation/queue filters vs. match-finding
+                 filters), not because they're handled separately. A
+                 consistent grid (instead of flex-wrap with ad-hoc widths)
+                 keeps every field the same size and aligned into clean
+                 columns regardless of which row it falls on. --}}
+            <form method="GET" class="bg-white p-4 rounded-lg shadow-sm">
+                <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3">Moderation</p>
+                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+                    <div class="col-span-2 sm:col-span-1 lg:col-span-2">
+                        <label class="text-xs text-gray-500">Search (name, email, phone, city, or #ID)</label>
+                        <input type="text" name="search" value="{{ request('search') }}" placeholder="e.g. 123 or #123" class="border-gray-300 rounded text-sm block w-full">
+                    </div>
+                    <div>
+                        <label class="text-xs text-gray-500">Gender</label>
+                        <select name="gender" class="border-gray-300 rounded text-sm block w-full">
+                            <option value="">All</option>
+                            <option value="male" {{ request('gender') === 'male' ? 'selected' : '' }}>Male</option>
+                            <option value="female" {{ request('gender') === 'female' ? 'selected' : '' }}>Female</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-xs text-gray-500">Verification</label>
+                        <select name="verification_status" class="border-gray-300 rounded text-sm block w-full">
+                            <option value="">All</option>
+                            <option value="pending" {{ request('verification_status') === 'pending' ? 'selected' : '' }}>Pending</option>
+                            <option value="verified" {{ request('verification_status') === 'verified' ? 'selected' : '' }}>Verified</option>
+                            <option value="rejected" {{ request('verification_status') === 'rejected' ? 'selected' : '' }}>Rejected</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-xs text-gray-500">Payment</label>
+                        <select name="payment_status" class="border-gray-300 rounded text-sm block w-full">
+                            <option value="">All</option>
+                            <option value="unpaid" {{ request('payment_status') === 'unpaid' ? 'selected' : '' }}>Unpaid</option>
+                            <option value="submitted" {{ request('payment_status') === 'submitted' ? 'selected' : '' }}>Submitted</option>
+                            <option value="confirmed" {{ request('payment_status') === 'confirmed' ? 'selected' : '' }}>Confirmed</option>
+                            <option value="rejected" {{ request('payment_status') === 'rejected' ? 'selected' : '' }}>Rejected</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="text-xs text-gray-500">Status</label>
+                        <select name="active" class="border-gray-300 rounded text-sm block w-full">
+                            <option value="">All</option>
+                            <option value="active" {{ request('active') === 'active' ? 'selected' : '' }}>Active</option>
+                            <option value="inactive" {{ request('active') === 'inactive' ? 'selected' : '' }}>Inactive</option>
+                        </select>
+                    </div>
                 </div>
-                <div>
-                    <label class="text-xs text-gray-500">Gender</label>
-                    <select name="gender" class="border-gray-300 rounded text-sm block">
-                        <option value="">All</option>
-                        <option value="male" {{ request('gender') === 'male' ? 'selected' : '' }}>Male</option>
-                        <option value="female" {{ request('gender') === 'female' ? 'selected' : '' }}>Female</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="text-xs text-gray-500">Verification</label>
-                    <select name="verification_status" class="border-gray-300 rounded text-sm block">
-                        <option value="">All</option>
-                        <option value="pending" {{ request('verification_status') === 'pending' ? 'selected' : '' }}>Pending</option>
-                        <option value="verified" {{ request('verification_status') === 'verified' ? 'selected' : '' }}>Verified</option>
-                        <option value="rejected" {{ request('verification_status') === 'rejected' ? 'selected' : '' }}>Rejected</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="text-xs text-gray-500">Payment</label>
-                    <select name="payment_status" class="border-gray-300 rounded text-sm block">
-                        <option value="">All</option>
-                        <option value="unpaid" {{ request('payment_status') === 'unpaid' ? 'selected' : '' }}>Unpaid</option>
-                        <option value="submitted" {{ request('payment_status') === 'submitted' ? 'selected' : '' }}>Submitted</option>
-                        <option value="confirmed" {{ request('payment_status') === 'confirmed' ? 'selected' : '' }}>Confirmed</option>
-                        <option value="rejected" {{ request('payment_status') === 'rejected' ? 'selected' : '' }}>Rejected</option>
-                    </select>
-                </div>
-                <div>
-                    <label class="text-xs text-gray-500">Status</label>
-                    <select name="active" class="border-gray-300 rounded text-sm block">
-                        <option value="">All</option>
-                        <option value="active" {{ request('active') === 'active' ? 'selected' : '' }}>Active</option>
-                        <option value="inactive" {{ request('active') === 'inactive' ? 'selected' : '' }}>Inactive</option>
-                    </select>
-                </div>
-                {{-- Match-finding filters — separate row, visually distinct
-                     from the moderation filters above, so an admin or Nikah
-                     Counselor narrowing down candidates for a specific
-                     client doesn't confuse this with the queue-management
-                     filters. --}}
-                <div class="w-full border-t border-gray-100 pt-3 mt-1 flex flex-wrap gap-3 items-end">
+
+                <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3 mt-5 pt-4 border-t border-gray-100">Match-Finding</p>
+                <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
                     <div>
                         <label class="text-xs text-gray-500">City</label>
-                        <input type="text" name="city" value="{{ request('city') }}" placeholder="e.g. Lahore" class="border-gray-300 rounded text-sm block w-32">
+                        <input type="text" name="city" value="{{ request('city') }}" placeholder="e.g. Lahore" class="border-gray-300 rounded text-sm block w-full">
                     </div>
                     <div>
                         <label class="text-xs text-gray-500">Sect</label>
-                        <select name="sect" class="border-gray-300 rounded text-sm block">
+                        <select name="sect" class="border-gray-300 rounded text-sm block w-full">
                             <option value="">Any</option>
                             @foreach (['Sunni', 'Shia', 'Ahle Hadith', 'Deobandi', 'Other'] as $sect)
                             <option value="{{ $sect }}" {{ request('sect') === $sect ? 'selected' : '' }}>{{ $sect }}</option>
@@ -86,7 +93,7 @@
                     </div>
                     <div>
                         <label class="text-xs text-gray-500">Education</label>
-                        <select name="education" class="border-gray-300 rounded text-sm block">
+                        <select name="education" class="border-gray-300 rounded text-sm block w-full">
                             <option value="">Any</option>
                             @foreach ($educationLevels as $level)
                             <option value="{{ $level }}" {{ request('education') === $level ? 'selected' : '' }}>{{ $level }}</option>
@@ -95,26 +102,16 @@
                     </div>
                     <div>
                         <label class="text-xs text-gray-500">Marital Status</label>
-                        <select name="marital_status" class="border-gray-300 rounded text-sm block">
+                        <select name="marital_status" class="border-gray-300 rounded text-sm block w-full">
                             <option value="">Any</option>
                             @foreach (['never_married' => 'Never Married', 'divorced' => 'Divorced', 'widowed' => 'Widowed', 'separated' => 'Separated', 'married' => 'Married'] as $val => $label)
                             <option value="{{ $val }}" {{ request('marital_status') === $val ? 'selected' : '' }}>{{ $label }}</option>
                             @endforeach
                         </select>
                     </div>
-                    <div class="flex gap-2">
-                        <div>
-                            <label class="text-xs text-gray-500">Min Age</label>
-                            <input type="number" name="min_age" value="{{ request('min_age') }}" class="w-20 border-gray-300 rounded text-sm block">
-                        </div>
-                        <div>
-                            <label class="text-xs text-gray-500">Max Age</label>
-                            <input type="number" name="max_age" value="{{ request('max_age') }}" class="w-20 border-gray-300 rounded text-sm block">
-                        </div>
-                    </div>
                     <div>
                         <label class="text-xs text-gray-500">Country</label>
-                        <select name="country" class="border-gray-300 rounded text-sm block">
+                        <select name="country" class="border-gray-300 rounded text-sm block w-full">
                             <option value="">Any</option>
                             @foreach ($countries as $country)
                             <option value="{{ $country }}" {{ request('country') === $country ? 'selected' : '' }}>{{ $country }}</option>
@@ -123,11 +120,19 @@
                     </div>
                     <div>
                         <label class="text-xs text-gray-500">State / Province</label>
-                        <input type="text" name="state" value="{{ request('state') }}" placeholder="e.g. Punjab" class="border-gray-300 rounded text-sm block w-32">
+                        <input type="text" name="state" value="{{ request('state') }}" placeholder="e.g. Punjab" class="border-gray-300 rounded text-sm block w-full">
+                    </div>
+                    <div>
+                        <label class="text-xs text-gray-500">Min Age</label>
+                        <input type="number" name="min_age" value="{{ request('min_age') }}" class="border-gray-300 rounded text-sm block w-full">
+                    </div>
+                    <div>
+                        <label class="text-xs text-gray-500">Max Age</label>
+                        <input type="number" name="max_age" value="{{ request('max_age') }}" class="border-gray-300 rounded text-sm block w-full">
                     </div>
                 </div>
 
-                <div class="w-full flex items-center gap-3 pt-1">
+                <div class="flex items-center gap-3 mt-5 pt-4 border-t border-gray-100">
                     <button class="bg-gray-800 text-white text-sm px-4 py-2 rounded">Filter</button>
                     <a href="{{ route('admin.nikah.profiles') }}" class="text-sm text-gray-500 px-2">Reset</a>
                 </div>
