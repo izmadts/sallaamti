@@ -39,6 +39,9 @@
                     @if ($profile->height)
                     <div class="flex justify-between"><dt class="text-gray-500">{{ __('db.Height') }}</dt><dd>{{ $profile->height }}</dd></div>
                     @endif
+                    @if ($profile->sect)
+                    <div class="flex justify-between"><dt class="text-gray-500">{{ __('db.Sect') }}</dt><dd>{{ $profile->sect }}</dd></div>
+                    @endif
                     @if ($profile->education)
                     <div class="flex justify-between"><dt class="text-gray-500">{{ __('db.Education') }}</dt><dd>{{ $profile->education }}</dd></div>
                     @endif
@@ -48,12 +51,65 @@
                     @if ($profile->family_type)
                     <div class="flex justify-between"><dt class="text-gray-500">{{ __('db.Family Type') }}</dt><dd>{{ $profile->family_type }}</dd></div>
                     @endif
+                    @if ($profile->caste)
+                    <div class="flex justify-between"><dt class="text-gray-500">{{ __('db.Caste') }}</dt><dd>{{ $profile->caste }}</dd></div>
+                    @endif
+                    @if ($profile->ethnicity)
+                    <div class="flex justify-between"><dt class="text-gray-500">{{ __('db.Ethnicity') }}</dt><dd>{{ $profile->ethnicity }}</dd></div>
+                    @endif
+                    @if ($profile->language)
+                    <div class="flex justify-between"><dt class="text-gray-500">{{ __('db.Languages') }}</dt><dd>{{ $profile->language }}</dd></div>
+                    @endif
+                    @if ($profile->prayer_frequency)
+                    <div class="flex justify-between"><dt class="text-gray-500">{{ __('db.Prayer') }}</dt><dd>{{ ucfirst($profile->prayer_frequency) }}</dd></div>
+                    @endif
+                    @if ($profile->hijab_or_beard)
+                    <div class="flex justify-between"><dt class="text-gray-500">{{ __('db.Hijab / Beard') }}</dt><dd>{{ ucfirst($profile->hijab_or_beard) }}</dd></div>
+                    @endif
+                    @if ($profile->smokes)
+                    <div class="flex justify-between"><dt class="text-gray-500">{{ __('db.Smoking') }}</dt><dd>{{ ucfirst($profile->smokes) }}</dd></div>
+                    @endif
+                    @if ($profile->diet)
+                    <div class="flex justify-between"><dt class="text-gray-500">{{ __('db.Diet') }}</dt><dd>{{ ucfirst(str_replace('_', ' ', $profile->diet)) }}</dd></div>
+                    @endif
+                    @if ($profile->open_to_polygamy)
+                    <div class="flex justify-between"><dt class="text-gray-500">{{ __('db.Open to Polygamy') }}</dt><dd>{{ __('db.Yes') }}</dd></div>
+                    @endif
                 </dl>
 
                 @if ($profile->about)
                 <div class="mt-4 pt-4 border-t">
                     <h5 class="font-semibold text-gray-700 mb-2 text-sm">{{ __('db.About') }}</h5>
                     <p class="text-gray-600 text-sm leading-relaxed">{{ $profile->about }}</p>
+                </div>
+                @endif
+
+                @if ($profile->expectations)
+                <div class="mt-4 pt-4 border-t">
+                    <h5 class="font-semibold text-gray-700 mb-2 text-sm">{{ __('db.Looking For') }}</h5>
+                    <p class="text-gray-600 text-sm leading-relaxed">{{ $profile->expectations }}</p>
+                </div>
+                @endif
+
+                @php
+                    $prefLines = array_filter([
+                        ($profile->pref_min_age || $profile->pref_max_age) ? __('db.Age') . ': ' . ($profile->pref_min_age ?: __('db.any')) . '–' . ($profile->pref_max_age ?: __('db.any')) : null,
+                        $profile->pref_city ? __('db.City') . ': ' . $profile->pref_city : null,
+                        $profile->pref_sect ? __('db.Sect') . ': ' . $profile->pref_sect : null,
+                        $profile->pref_education ? __('db.Education') . ': ' . $profile->pref_education : null,
+                        $profile->pref_marital_status ? __('db.Marital Status') . ': ' . ucfirst(str_replace('_', ' ', $profile->pref_marital_status)) : null,
+                        $profile->pref_income ? __('db.Income') . ': ' . $profile->pref_income : null,
+                        $profile->pref_other ? __('db.Other') . ': ' . $profile->pref_other : null,
+                    ]);
+                @endphp
+                @if ($prefLines)
+                <div class="mt-4 pt-4 border-t">
+                    <h5 class="font-semibold text-gray-700 mb-2 text-sm">🎯 {{ __('db.Partner Preferences') }}</h5>
+                    <ul class="text-gray-600 text-sm leading-relaxed list-disc list-inside space-y-0.5">
+                        @foreach ($prefLines as $line)
+                        <li>{{ $line }}</li>
+                        @endforeach
+                    </ul>
                 </div>
                 @endif
             </div>

@@ -455,22 +455,50 @@ class NikahProfile extends Model
             '💼 Profession: ' . $field($this->profession),
             '🏙️ City: ' . $field($this->city) . ($this->state ? ', ' . $this->state : '') . ($this->country ? ', ' . $this->country : ''),
             '👪 Family Type: ' . $field($this->family_type),
+            '🌍 Ethnicity: ' . $field($this->ethnicity),
+            '🪪 Caste: ' . $field($this->caste),
+            '🗣️ Languages: ' . $field($this->language),
             '🙏 Prayer: ' . $field($this->prayer_frequency ? ucfirst($this->prayer_frequency) : null),
             '🧕 Hijab/Beard: ' . $field($this->hijab_or_beard ? ucfirst($this->hijab_or_beard) : null),
             '🚭 Smoking: ' . $field($this->smokes ? ucfirst($this->smokes) : null),
             '🍽️ Diet: ' . $field($this->diet ? ucfirst(str_replace('_', ' ', $this->diet)) : null),
+            '💍 Open to Polygamy: ' . ($this->open_to_polygamy ? 'Yes' : 'No'),
             '',
             '📝 *About:*',
             $field($this->about),
             '',
             '🔎 *Looking For:*',
             $field($this->expectations),
+        ];
+
+        // Only shown if at least one preference was actually set — an
+        // empty "Partner Preferences" block with every line reading *****
+        // would just be noise on an otherwise real profile card.
+        $preferences = array_filter([
+            $this->pref_min_age || $this->pref_max_age ? 'Age: ' . ($this->pref_min_age ?: 'any') . '–' . ($this->pref_max_age ?: 'any') : null,
+            $this->pref_city ? 'City: ' . $this->pref_city : null,
+            $this->pref_sect ? 'Sect: ' . $this->pref_sect : null,
+            $this->pref_education ? 'Education: ' . $this->pref_education : null,
+            $this->pref_marital_status ? 'Marital Status: ' . ucfirst(str_replace('_', ' ', $this->pref_marital_status)) : null,
+            $this->pref_income ? 'Income: ' . $this->pref_income : null,
+            $this->pref_other ? 'Other: ' . $this->pref_other : null,
+        ]);
+
+        if ($preferences) {
+            $lines[] = '';
+            $lines[] = '🎯 *Partner Preferences:*';
+            foreach ($preferences as $line) {
+                $lines[] = '• ' . $line;
+            }
+        }
+
+        $lines = array_merge($lines, [
             '',
             '👀 View full profile & show interest:',
             route('nikah.public-view', $this->public_token),
             '',
             '✨ Register or log in free on Sallaamti.com to connect directly.',
-        ];
+        ]);
 
         return implode("\n", $lines);
     }
