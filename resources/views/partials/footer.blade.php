@@ -125,6 +125,7 @@
                     <a class="text-gray-300 hover:text-white mb-2" href="{{ route('quran-live.index') }}"><i class="fa fa-check text-[--teal] mr-2"></i>{{ __('db.Live Quran Classes') }}</a>
                     <a class="text-gray-300 hover:text-white mb-2" href="{{ route('skills.index') }}"><i class="fa fa-check text-[--teal] mr-2"></i>{{ __('db.Digital Skills') }}</a>
                     <a class="text-gray-300 hover:text-white mb-2" href="{{ route('nikah.create') }}"><i class="fa fa-check text-[--teal] mr-2"></i>{{ __('db.Sallaamti Nikah') }}</a>
+                    <a class="text-gray-300 hover:text-white mb-2" href="{{ route('nikah.packages') }}"><i class="fa fa-check text-[--teal] mr-2"></i>{{ __('db.Nikah Packages') }}</a>
                     <a class="text-gray-300 hover:text-white mb-2" href="{{ auth()->check() ? route('counseling.book.start') : route('register') }}"><i class="fa fa-check text-[--teal] mr-2"></i>{{ __('db.Family Support') }}</a>
                 </div>
             </div>
