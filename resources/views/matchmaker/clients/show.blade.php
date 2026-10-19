@@ -346,6 +346,12 @@
                             @if ($item->note)
                             <p class="text-xs text-gray-500 mt-0.5">{{ $item->note }}</p>
                             @endif
+                            <p class="text-xs text-gray-400 mt-0.5">
+                                {{ __('db.Shared :time', ['time' => $item->created_at->diffForHumans()]) }}
+                                @if ($item->sent_at)
+                                · {{ __('db.Marked sent :time', ['time' => $item->sent_at->diffForHumans()]) }}
+                                @endif
+                            </p>
                         </div>
                         <form method="POST" action="{{ route('matchmaker.clients.shortlist.remove', [$lead, $item]) }}" onsubmit="return confirm({{ Js::from(__('db.Remove from shortlist?')) }})">
                             @csrf
@@ -488,6 +494,9 @@
                 @if ($lead->nikah_package_id)
                 <div class="text-xs px-3 py-2 rounded-lg {{ $lead->packageExpired() ? 'bg-red-50 text-red-700' : 'bg-gray-50 text-gray-600' }}">
                     📦 {{ $lead->nikahPackage->name }}
+                    @if ($lead->package_started_at)
+                    — {{ __('db.started :date', ['date' => $lead->package_started_at->format('d M Y')]) }}
+                    @endif
                     @if ($lead->packageExpired())
                     — <strong>{{ __('db.expired') }}</strong> {{ $lead->package_expires_at->format('d M Y') }}
                     @elseif ($lead->package_expires_at)

@@ -29,6 +29,24 @@ class NikahBrowseController extends Controller
     {
         $query = NikahProfile::with('user')->matchmakerVisible();
 
+        // Deliberately NOT a name/email/phone search like admin's — those
+        // fields are never shown to a matchmaker on this page at all (see
+        // this controller's own privacy note), so searching by them would
+        // let a matchmaker fish out a specific person's profile by name
+        // even though it's hidden everywhere else here. A profile ID is the
+        // one identifier that's already meant to be shared externally (see
+        // NikahProfile::shareSummary()'s "Profile #" line).
+        if ($request->filled('search')) {
+            $possibleId = ltrim(trim($request->search), '#');
+            $query->where('id', ctype_digit($possibleId) ? $possibleId : 0);
+        }
+        if ($request->filled('verification_status')) {
+            $query->where('verification_status', $request->verification_status);
+        }
+        if ($request->filled('payment_status')) {
+            $query->where('payment_status', $request->payment_status);
+        }
+
         if ($request->filled('gender')) {
             $query->whereHas('user', fn ($q) => $q->where('gender', $request->gender));
         }

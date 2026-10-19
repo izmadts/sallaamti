@@ -75,6 +75,8 @@
                             <th class="px-4 py-3">{{ __('db.Progress') }}</th>
                             <th class="px-4 py-3">{{ __('db.Follow-up') }}</th>
                             <th class="px-4 py-3">{{ __('db.Linked Profile') }}</th>
+                            <th class="px-4 py-3">{{ __('db.Profiles Shared') }}</th>
+                            <th class="px-4 py-3">{{ __('db.Package') }}</th>
                             @if ($canManageTeam)
                             <th class="px-4 py-3">{{ __('db.Nikah Counselor') }}</th>
                             @endif
@@ -115,6 +117,22 @@
                             <td class="px-4 py-3 text-xs text-gray-500">
                                 {{ $lead->nikahProfile?->user?->name ?? '—' }}
                             </td>
+                            <td class="px-4 py-3 text-xs text-gray-500">
+                                {{ $lead->shortlistItems->count() }}
+                            </td>
+                            <td class="px-4 py-3 text-xs">
+                                @if ($lead->nikahPackage)
+                                <p class="text-gray-700 font-medium">{{ $lead->nikahPackage->name }}</p>
+                                <p class="text-gray-400 whitespace-nowrap">
+                                    {{ $lead->package_started_at?->format('d M Y') ?? '—' }} – {{ $lead->package_expires_at?->format('d M Y') ?? __('db.No expiry') }}
+                                </p>
+                                @if ($lead->packageExpired())
+                                <span class="text-red-600">{{ __('db.Expired') }}</span>
+                                @endif
+                                @else
+                                <span class="text-gray-400">—</span>
+                                @endif
+                            </td>
                             @if ($canManageTeam)
                             <td class="px-4 py-3 text-xs text-gray-500">
                                 {{ $lead->assignedTo?->name ?? __('db.Unassigned') }}
@@ -126,7 +144,7 @@
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="{{ $canManageTeam ? 7 : 6 }}" class="px-4 py-8 text-center text-gray-400 text-sm">{{ __('db.No clients yet.') }} <a href="{{ route('matchmaker.clients.create') }}" class="hover:underline" style="color: var(--mm-plum);">{{ __('db.Add your first one') }}</a>.</td>
+                            <td colspan="{{ $canManageTeam ? 9 : 8 }}" class="px-4 py-8 text-center text-gray-400 text-sm">{{ __('db.No clients yet.') }} <a href="{{ route('matchmaker.clients.create') }}" class="hover:underline" style="color: var(--mm-plum);">{{ __('db.Add your first one') }}</a>.</td>
                         </tr>
                         @endforelse
                     </tbody>
