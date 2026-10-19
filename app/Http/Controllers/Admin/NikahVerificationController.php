@@ -136,7 +136,16 @@ class NikahVerificationController extends Controller
             });
         }
 
-        $profiles = $query->latest()->paginate(10)->withQueryString();
+        // Payment confirmed + verification still pending is exactly the
+        // "ready to approve right now" queue — surface it ahead of
+        // everything else (newest first within that) instead of leaving it
+        // mixed into the plain latest-first list, where it can be pages
+        // behind brand-new unpaid signups.
+        $profiles = $query
+            ->orderByRaw("(payment_status = 'confirmed' and verification_status = 'pending') desc")
+            ->latest()
+            ->paginate(10)
+            ->withQueryString();
 
         // Guardian-phone reuse is a soft fraud signal, not a hard block —
         // siblings can legitimately share one guardian's contact number, so
