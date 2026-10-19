@@ -79,6 +79,22 @@ class OtpController extends Controller
         }
 
         if ($pending['purpose'] === 'registration') {
+            // This phone number is new, but the email typed alongside it
+            // might not be — e.g. they already have an email+password
+            // account and are now trying phone+OTP, not realizing it
+            // creates a second, disconnected one. createMinimalUser() would
+            // otherwise either crash on email's unique constraint or (with
+            // a different email) silently succeed and create that very
+            // duplicate — catch it here with a clear message instead.
+            $existingByEmail = $pending['email'] ? User::where('email', $pending['email'])->first() : null;
+
+            if ($existingByEmail) {
+                session()->forget('otp_pending');
+                return redirect()->route('login')->withErrors([
+                    'email' => __('db.An account already exists with that email. Please log in instead — you can then add this phone number to it from your profile.'),
+                ]);
+            }
+
             $user = $this->createMinimalUser($pending['name'], $pending['email'], $pending['phone'], provider: 'whatsapp', mustChangePassword: true);
             $this->attributeReferral($user);
         } else {

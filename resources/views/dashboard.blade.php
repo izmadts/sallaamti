@@ -89,6 +89,41 @@
         </div>
         @endif
 
+        {{-- A phone-only or email-only account is how two separate accounts
+             for the same person end up getting created later — e.g. signing
+             up with email+password once, then with phone+OTP another time,
+             with no way for either to know about the other. Closing the gap
+             right after signup (rather than only at the point a duplicate
+             would've been created) is the real fix; dismissible per visit,
+             same as the banner above. --}}
+        @if (!Auth::user()->phone || !Auth::user()->email)
+        <div x-data="{ show: true }" x-show="show" x-cloak class="mb-6">
+            <div class="relative bg-blue-50 border border-blue-200 rounded-xl p-5 flex items-center justify-between gap-4 flex-wrap">
+                <div class="flex items-center gap-3">
+                    <span class="text-3xl">🔗</span>
+                    <div>
+                        <p class="font-semibold text-blue-800">
+                            @if (!Auth::user()->phone)
+                            {{ __('db.Add your mobile number') }}
+                            @else
+                            {{ __('db.Add your email address') }}
+                            @endif
+                        </p>
+                        <p class="text-sm text-blue-700">
+                            {{ __('db.So you can always log in with either one, and so you never end up with two separate accounts.') }}
+                        </p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3">
+                    <a href="{{ route('profile.edit') }}" class="bg-blue-600 text-white text-sm font-semibold px-4 py-2 rounded-lg hover:bg-blue-700 transition">
+                        {{ __('db.Add Now') }} →
+                    </a>
+                    <button type="button" @click="show = false" class="text-blue-600 hover:text-blue-800 text-2xl leading-none flex-shrink-0" aria-label="Dismiss">&times;</button>
+                </div>
+            </div>
+        </div>
+        @endif
+
         <div class="flex gap-6 items-start">
 
         <x-dashboard-sidebar :nikahProfile="$nikahProfile" />

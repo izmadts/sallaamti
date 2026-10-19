@@ -115,6 +115,19 @@ class AuthController extends Controller
             if (blank($validated['name'] ?? null)) {
                 throw ValidationException::withMessages(['name' => __('db.Your name is required to finish registering.')]);
             }
+
+            // This phone number is new, but the email typed alongside it
+            // might not be — e.g. they already registered through the
+            // email+password screen and are now trying phone+OTP, not
+            // realizing it creates a second, disconnected account. Catch it
+            // here with a clear message instead of crashing on email's
+            // unique constraint or silently creating that duplicate.
+            if (User::where('email', $validated['email'])->exists()) {
+                throw ValidationException::withMessages([
+                    'email' => __('db.An account already exists with that email. Please log in instead — you can then add this phone number to it from your profile.'),
+                ]);
+            }
+
             $user = $this->createMinimalUser($validated['name'], $validated['email'], $validated['phone'], provider: 'whatsapp', mustChangePassword: true);
         }
 
