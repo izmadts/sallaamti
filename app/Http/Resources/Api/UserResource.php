@@ -28,6 +28,10 @@ class UserResource extends JsonResource
             ],
             'has_nikah_profile' => $this->nikahProfile()->exists(),
             'must_change_password' => (bool) $this->must_change_password,
+            // When false, "Change Password" shouldn't ask for a current one
+            // — there's no real password yet to check it against (e.g. a
+            // phone+OTP self-signup) — see updatePassword()'s own comment.
+            'has_real_password' => (bool) $this->has_real_password,
             // Same test as Post::isAutoPublishedFor() — the app uses this to
             // decide whether to show the Community Posts feature at all
             // (common members are pointed at Wall for their own posting

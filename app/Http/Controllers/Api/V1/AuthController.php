@@ -115,7 +115,7 @@ class AuthController extends Controller
             if (blank($validated['name'] ?? null)) {
                 throw ValidationException::withMessages(['name' => __('db.Your name is required to finish registering.')]);
             }
-            $user = $this->createMinimalUser($validated['name'], $validated['email'], $validated['phone'], provider: 'whatsapp');
+            $user = $this->createMinimalUser($validated['name'], $validated['email'], $validated['phone'], provider: 'whatsapp', mustChangePassword: true);
         }
 
         if (!$user->email) {
@@ -187,9 +187,12 @@ class AuthController extends Controller
         }
 
         $user->password = Hash::make($validated['password']);
-        // A counselor-set temporary password is exactly what someone would be
-        // escaping here, so the nag to change it no longer applies.
+        // A counselor-set temporary password (or an unguessable random one
+        // from a phone+OTP signup) is exactly what someone would be
+        // escaping here, so the nag to change it no longer applies, and
+        // this is now a real, known password.
         $user->must_change_password = false;
+        $user->has_real_password = true;
         $user->save();
 
         // Resetting a password is the moment you want every other session

@@ -168,6 +168,7 @@ class MatchmakerApplicationController extends Controller
         $user->update([
             'password' => Hash::make($validated['password']),
             'must_change_password' => true,
+            'has_real_password' => true,
         ]);
 
         return back()->with('status', 'Login password set — share it with the counselor now.');

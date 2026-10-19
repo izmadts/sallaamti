@@ -130,6 +130,7 @@ class UserManagementController extends Controller
         $user->forceFill([
             'password' => Hash::make($validated['password']),
             'must_change_password' => true,
+            'has_real_password' => true,
         ])->save();
 
         $user->tokens()->delete();

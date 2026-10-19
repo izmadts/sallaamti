@@ -15,14 +15,22 @@ class PasswordController extends Controller
      */
     public function update(Request $request): RedirectResponse
     {
-        $validated = $request->validateWithBag('updatePassword', [
-            'current_password' => ['required', 'current_password'],
-            'password' => ['required', Password::defaults(), 'confirmed'],
-        ]);
+        $rules = ['password' => ['required', Password::defaults(), 'confirmed']];
+
+        // A real current_password only exists to check once the account has
+        // one — a phone+OTP self-signup's stored password is an unguessable
+        // random string nobody, including the user, has ever seen, so
+        // demanding it here would make this form impossible to ever use.
+        if ($request->user()->has_real_password) {
+            $rules['current_password'] = ['required', 'current_password'];
+        }
+
+        $validated = $request->validateWithBag('updatePassword', $rules);
 
         $request->user()->update([
             'password' => Hash::make($validated['password']),
             'must_change_password' => false,
+            'has_real_password' => true,
         ]);
 
         return back()->with('status', 'password-updated');

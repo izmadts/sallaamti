@@ -79,7 +79,7 @@ class OtpController extends Controller
         }
 
         if ($pending['purpose'] === 'registration') {
-            $user = $this->createMinimalUser($pending['name'], $pending['email'], $pending['phone'], provider: 'whatsapp');
+            $user = $this->createMinimalUser($pending['name'], $pending['email'], $pending['phone'], provider: 'whatsapp', mustChangePassword: true);
             $this->attributeReferral($user);
         } else {
             $user = User::findOrFail($pending['user_id']);

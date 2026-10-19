@@ -65,14 +65,22 @@ class ProfileController extends Controller
     {
         $user = $request->user();
 
-        $validated = $request->validate([
-            'current_password' => ['required', 'current_password'],
-            'password' => ['required', 'confirmed', Password::defaults()],
-        ]);
+        $rules = ['password' => ['required', 'confirmed', Password::defaults()]];
+
+        // Same reasoning as the web PasswordController: a phone+OTP
+        // self-signup's stored password is an unguessable random string
+        // nobody has ever seen, so there's nothing legitimate to check it
+        // against yet.
+        if ($user->has_real_password) {
+            $rules['current_password'] = ['required', 'current_password'];
+        }
+
+        $validated = $request->validate($rules);
 
         $user->update([
             'password' => Hash::make($validated['password']),
             'must_change_password' => false,
+            'has_real_password' => true,
         ]);
 
         return response()->json(['user' => new UserResource($user->fresh())]);

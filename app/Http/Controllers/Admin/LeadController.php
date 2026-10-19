@@ -427,6 +427,7 @@ class LeadController extends Controller
         $user->update([
             'password' => \Illuminate\Support\Facades\Hash::make($validated['password']),
             'must_change_password' => true,
+            'has_real_password' => true,
         ]);
 
         MatchmakingTimelineEvent::log($lead, $lead->nikahProfile, 'login_password_set', 'A temporary login password was set for this client by admin.');
