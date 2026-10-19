@@ -114,6 +114,15 @@ class NikahVerificationController extends Controller
             });
         }
 
+        // Lets an admin jump straight to "payment confirmed, not yet
+        // approved" (or still-pending/rejected payments) right after
+        // confirming one — otherwise the just-paid profile is just
+        // somewhere in the full latest-first list with no way to narrow
+        // down to it quickly.
+        if ($request->filled('payment_status') && $request->payment_status !== 'all') {
+            $query->where('payment_status', $request->payment_status);
+        }
+
         // Search by name, email, city, or CNIC number
         if ($request->filled('search')) {
             $search = $request->search;

@@ -95,6 +95,17 @@
                         <option value="female" {{ request('gender') === 'female' ? 'selected' : '' }}>Female</option>
                     </select>
                 </div>
+                <div>
+                    <label class="text-xs text-gray-500">Payment</label>
+                    <select name="payment_status" class="border-gray-300 rounded text-sm block"
+                        title="Find a profile right after confirming its payment, without scrolling the full list.">
+                        <option value="all" {{ request('payment_status', 'all') === 'all' ? 'selected' : '' }}>All</option>
+                        <option value="submitted" {{ request('payment_status') === 'submitted' ? 'selected' : '' }}>Pending Review</option>
+                        <option value="confirmed" {{ request('payment_status') === 'confirmed' ? 'selected' : '' }}>Confirmed</option>
+                        <option value="rejected" {{ request('payment_status') === 'rejected' ? 'selected' : '' }}>Rejected</option>
+                        <option value="unpaid" {{ request('payment_status') === 'unpaid' ? 'selected' : '' }}>Unpaid</option>
+                    </select>
+                </div>
                 <button class="bg-gray-800 text-white text-sm px-4 py-2 rounded">Filter</button>
                 <a href="{{ route('admin.nikah.verifications') }}" class="text-sm text-gray-500 px-2">Reset</a>
             </form>
