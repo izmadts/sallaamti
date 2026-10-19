@@ -520,6 +520,10 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
         Route::post('/nikah-verifications/{profile}/remind', [NikahVerificationController::class, 'sendReminder'])->name('nikah.remind');
         Route::post('/nikah-verifications/bulk-remind', [NikahVerificationController::class, 'bulkRemind'])->name('nikah.verifications.bulk-remind');
         Route::post('/nikah-verifications/{profile}/notes', [NikahVerificationController::class, 'addNote'])->name('nikah.notes.store');
+        Route::post('/nikah-verifications/{profile}/share', [NikahVerificationController::class, 'recordShare'])->name('nikah.share');
+        Route::put('/nikah-verifications/{profile}/toggle-active', [NikahVerificationController::class, 'toggleActive'])->name('nikah.toggle-active');
+        Route::get('/nikah-verifications/{profile}/edit', [NikahVerificationController::class, 'edit'])->name('nikah.edit');
+        Route::put('/nikah-verifications/{profile}', [NikahVerificationController::class, 'update'])->name('nikah.update');
         Route::post('/nikah-verifications/{profile}/unsuspend', [NikahSafetyController::class, 'unsuspendProfile'])->name('nikah.unsuspend');
         Route::post('/nikah-payments/bulk-confirm', [NikahPaymentAdminController::class, 'bulkConfirm'])->name('nikah.payments.bulk-confirm');
         Route::post('/nikah-payments/{profile}/confirm', [NikahPaymentAdminController::class, 'confirm'])->name('nikah.payments.confirm');

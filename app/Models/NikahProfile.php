@@ -433,6 +433,13 @@ class NikahProfile extends Model
         return $this->hasMany(NikahModerationNote::class)->latest();
     }
 
+    // Log of every time staff posted this profile's shareSummary() card to
+    // an external marketing channel — see NikahProfileShare's own comment.
+    public function shares()
+    {
+        return $this->hasMany(NikahProfileShare::class)->latest();
+    }
+
     // A ready-to-paste, plain-text profile card for admins to share in
     // WhatsApp groups / Messenger / elsewhere while matchmaking. Deliberately
     // excludes CNIC, guardian contact, and payment info — those stay

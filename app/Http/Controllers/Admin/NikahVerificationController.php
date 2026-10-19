@@ -2,16 +2,21 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Http\Controllers\Concerns\ValidatesNikahProfile;
 use App\Http\Controllers\Controller;
 use App\Models\MatchmakerApplication;
 use App\Models\NikahContactRequest;
 use App\Models\NikahProfile;
+use App\Services\ImageOptimizer;
 use App\Support\CountryStates;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Validation\Rule;
 
 class NikahVerificationController extends Controller
 {
+    use ValidatesNikahProfile;
+
     // Walk-in profile creation moved to NikahProfileWizardController (step
     // wizard, same session-per-step pattern as the member-facing Nikah
     // wizard) — see routes/web.php's admin.nikah.profiles.create.* group.
@@ -228,7 +233,7 @@ class NikahVerificationController extends Controller
 
     public function show(NikahProfile $profile)
     {
-        $profile->load(['user', 'moderationNotes.admin']);
+        $profile->load(['user', 'moderationNotes.admin', 'shares.sharedBy']);
 
         return view('admin.nikah.show', compact('profile'));
     }
@@ -333,6 +338,100 @@ class NikahVerificationController extends Controller
         ]);
 
         return back()->with('status', 'Note added.');
+    }
+
+    // Logs that staff posted this profile's share card to an external
+    // channel — see NikahProfileShare's own comment for why this exists.
+    // Doesn't touch the profile itself, purely a record for staff visibility.
+    public function recordShare(Request $request, NikahProfile $profile)
+    {
+        $validated = $request->validate([
+            'channel' => ['required', 'string', Rule::in(array_keys(\App\Models\NikahProfileShare::CHANNELS))],
+            'note' => ['nullable', 'string', 'max:255'],
+        ]);
+
+        $profile->shares()->create([
+            'shared_by' => auth()->id(),
+            'channel' => $validated['channel'],
+            'note' => $validated['note'] ?? null,
+        ]);
+
+        return back()->with('status', 'Logged — profile #' . $profile->id . ' marked as shared on ' . \App\Models\NikahProfileShare::CHANNELS[$validated['channel']] . '.');
+    }
+
+    // Lets staff toggle a client's "visible in search" status on their
+    // behalf — previously only the member themselves could do this (see
+    // NikahSafetyController::toggleActive()). A separate lever from
+    // Suspend: suspension is a one-way moderation action tied to a report,
+    // this is the same reversible on/off switch a member has for
+    // themselves, just usable by staff for a client who asked them to
+    // pause/resume their own visibility.
+    public function toggleActive(NikahProfile $profile)
+    {
+        abort_if($profile->isSuspended(), 422, 'This profile is suspended — unsuspend it first.');
+
+        $profile->update(['is_active' => !$profile->is_active]);
+
+        return back()->with('status', 'Profile is now ' . ($profile->is_active ? 'active and visible in search.' : 'hidden from search.'));
+    }
+
+    // Lets staff edit a client's Nikah profile on their behalf — e.g. the
+    // client dictated changes over a call/WhatsApp, or a Nikah Counselor is
+    // correcting something for a profile they created. Shares the exact
+    // same validation rules/field-resolution helpers as the member's own
+    // self-service edit (NikahProfileController::edit()/update()) via
+    // ValidatesNikahProfile, just scoped to an arbitrary {profile} instead
+    // of the authenticated user's own.
+    public function edit(NikahProfile $profile)
+    {
+        return view('admin.nikah.edit', [
+            'profile' => $profile,
+            'countries' => CountryStates::countries(),
+            'countryStates' => CountryStates::map(),
+        ]);
+    }
+
+    public function update(Request $request, NikahProfile $profile)
+    {
+        $validated = $this->validateProfile($request, $profile);
+        $validated['sect'] = $this->resolveSect($request);
+        $validated['language'] = $this->resolveLanguage($request);
+        $validated['height'] = $this->resolveHeight($request);
+        $validated['allow_photo_sharing'] = $request->has('allow_photo_sharing');
+        $validated['open_to_polygamy'] = $request->has('open_to_polygamy');
+
+        // Gender isn't a NikahProfile column — it lives on the client's
+        // account — so this writes it there instead, same as the member's
+        // own edit form does for themselves.
+        $gender = $request->validate(['gender' => ['required', 'in:male,female']])['gender'];
+        if ($profile->user && $gender !== $profile->user->gender) {
+            $profile->user->update(['gender' => $gender]);
+        }
+
+        try {
+            if ($request->hasFile('photo')) {
+                $validated['photo'] = ImageOptimizer::store($request->file('photo'), 'nikah/photos', 'private', maxDimension: 1200);
+            }
+        } catch (\Throwable $e) {
+            report($e);
+            $message = 'Sorry, we could not save the uploaded photo — please try again in a moment.';
+
+            if ($request->wantsJson()) {
+                throw \Illuminate\Validation\ValidationException::withMessages(['photo' => $message]);
+            }
+
+            return back()->withInput()->withErrors(['photo' => $message]);
+        }
+
+        $profile->update($validated);
+
+        // See nikah/edit.blade.php's script (reused as-is for this admin
+        // view) for why this form submits via fetch() and expects JSON back.
+        if ($request->wantsJson()) {
+            return response()->json(['redirect' => route('admin.nikah.show', $profile)]);
+        }
+
+        return redirect()->route('admin.nikah.show', $profile)->with('status', 'Profile updated.');
     }
 
     public function bulkApprove(Request $request)

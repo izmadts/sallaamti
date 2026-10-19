@@ -54,6 +54,8 @@
                         {{ ucfirst($profile->verification_status) }}
                     </span>
                     <div class="flex gap-2">
+                        <a href="{{ route('admin.nikah.edit', $profile) }}"
+                            class="bg-indigo-600 text-white text-xs px-3 py-1.5 rounded hover:bg-indigo-700">✏️ Edit Profile</a>
                         @if ($profile->verification_status !== 'verified')
                         <form method="POST" action="{{ route('admin.nikah.approve', $profile) }}">
                             @csrf
@@ -68,6 +70,15 @@
                             class="bg-red-600 text-white text-xs px-3 py-1.5 rounded hover:bg-red-700">Reject</button>
                         @endif
                     </div>
+                    <form method="POST" action="{{ route('admin.nikah.toggle-active', $profile) }}"
+                        title="{{ $profile->isSuspended() ? 'Suspended profiles must be unsuspended first.' : 'Reversible — same switch the member has for themselves.' }}">
+                        @csrf
+                        @method('PUT')
+                        <button class="text-xs px-3 py-1.5 rounded border {{ $profile->is_active ? 'border-gray-300 text-gray-600 hover:bg-gray-50' : 'border-amber-300 text-amber-700 bg-amber-50 hover:bg-amber-100' }}"
+                            {{ $profile->isSuspended() ? 'disabled' : '' }}>
+                            {{ $profile->is_active ? '👁️ Visible in search — click to hide' : '🙈 Hidden from search — click to show' }}
+                        </button>
+                    </form>
                 </div>
             </div>
 
@@ -114,6 +125,47 @@
                         📤 Share (Messenger & more)
                     </button>
                 </div>
+            </div>
+
+            {{-- Marketing share log --}}
+            <div class="bg-white rounded-xl shadow-sm p-6">
+                <h4 class="font-semibold text-gray-700 mb-1 border-b pb-2">📣 Marketing Share Log</h4>
+                <p class="text-xs text-gray-400 mt-2 mb-3">
+                    Log it here every time this profile's card gets posted to a WhatsApp Channel, Facebook page, or
+                    anywhere else outside the system — so the team can see at a glance how many times, where, and how
+                    long ago it was shared.
+                </p>
+
+                <form method="POST" action="{{ route('admin.nikah.share', $profile) }}" class="flex gap-2 flex-wrap">
+                    @csrf
+                    <select name="channel" required class="border-gray-300 rounded-lg text-sm px-2 py-2">
+                        @foreach (\App\Models\NikahProfileShare::CHANNELS as $value => $label)
+                        <option value="{{ $value }}">{{ $label }}</option>
+                        @endforeach
+                    </select>
+                    <input type="text" name="note" placeholder="Optional note (e.g. group name)"
+                        class="flex-1 min-w-[160px] border-gray-300 rounded-lg text-sm px-3 py-2">
+                    <button class="bg-teal-600 text-white text-sm px-4 py-2 rounded-lg hover:bg-teal-700">Log Share</button>
+                </form>
+
+                @if ($profile->shares->isNotEmpty())
+                <div class="mt-4 space-y-1.5 max-h-48 overflow-y-auto">
+                    @foreach ($profile->shares as $share)
+                    <div class="flex justify-between items-center bg-gray-50 rounded px-3 py-1.5 text-xs text-gray-600">
+                        <span>
+                            {{ \App\Models\NikahProfileShare::CHANNELS[$share->channel] ?? $share->channel }}
+                            @if ($share->note)
+                            <span class="text-gray-400">— {{ $share->note }}</span>
+                            @endif
+                        </span>
+                        <span class="text-gray-400 whitespace-nowrap ml-2">{{ $share->created_at->diffForHumans() }} · {{ $share->sharedBy?->name ?? 'Unknown' }}</span>
+                    </div>
+                    @endforeach
+                </div>
+                <p class="text-xs text-gray-400 mt-2">Shared {{ $profile->shares->count() }} time(s) — most recent {{ $profile->shares->first()->created_at->diffForHumans() }}.</p>
+                @else
+                <p class="text-xs text-gray-400 mt-3">Not logged as shared anywhere yet.</p>
+                @endif
             </div>
 
             <script>

@@ -1,0 +1,435 @@
+<x-admin-layout>
+    <x-slot name="header">
+        <div class="flex items-center gap-2 text-sm">
+            <a href="{{ route('admin.nikah.show', $profile) }}" class="text-gray-400 hover:text-gray-600">{{ $profile->user?->name ?? 'Deleted account' }}</a>
+            <span class="text-gray-300">›</span>
+            <span class="text-gray-700 font-semibold">{{ __('db.Edit Nikah Profile') }}</span>
+        </div>
+    </x-slot>
+
+    <div class="py-12">
+        <div class="max-w-3xl mx-auto sm:px-6 lg:px-8">
+            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg p-6">
+
+                <p class="text-sm text-gray-500 mb-6">{{ __('db.Editing this profile on behalf of') }} {{ $profile->user?->name ?? 'this client' }}.</p>
+
+                <div id="verification-errors" class="mb-4 p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg {{ $errors->any() ? '' : 'hidden' }}">
+                    <p class="font-medium text-sm mb-1">{{ __('db.Please fix the following before saving:') }}</p>
+                    <ul class="list-disc list-inside text-sm">
+                        @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
+
+                <form id="verification-form" method="POST" action="{{ route('admin.nikah.update', $profile) }}" enctype="multipart/form-data" class="space-y-6">
+                    @csrf
+                    @method('PUT')
+
+                    @php
+                        $ms = old('marital_status', $profile->marital_status);
+                        $hasKidsRaw = old('has_children', $profile->has_children);
+                        $hasKids = $hasKidsRaw === null || $hasKidsRaw === '' ? '' : ($hasKidsRaw ? '1' : '0');
+                        $livingVal = old('living_situation', $profile->living_situation);
+                    @endphp
+                    <x-nikah-section :title="__('db.Basic Information')" icon="🧍" color="blue">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4" x-data="{ maritalStatus: '{{ $ms }}', hasChildren: '{{ $hasKids }}' }">
+                            <div>
+                                <x-input-label for="date_of_birth" :value="__('db.Date of Birth')" />
+                                <x-text-input id="date_of_birth" name="date_of_birth" type="date" class="w-full mt-1"
+                                    :value="old('date_of_birth', $profile->date_of_birth?->toDateString())" required
+                                    max="{{ now()->subYears(18)->toDateString() }}" min="{{ now()->subYears(100)->toDateString() }}"
+                                    title="{{ __('db.You must be at least 18 years old to create a Nikah profile.') }}" />
+                            </div>
+                            <div>
+                                <x-input-label for="gender" :value="__('db.Gender')" />
+                                @php $genderVal = old('gender', $profile->user?->gender); @endphp
+                                <select id="gender" name="gender" required class="border-gray-300 rounded-md shadow-sm w-full mt-1">
+                                    <option value="">{{ __('db.Select') }}</option>
+                                    <option value="male" {{ $genderVal === 'male' ? 'selected' : '' }}>{{ __('db.Male') }}</option>
+                                    <option value="female" {{ $genderVal === 'female' ? 'selected' : '' }}>{{ __('db.Female') }}</option>
+                                </select>
+                                <p class="text-xs text-gray-400 mt-1">{{ __('db.This also updates their account — used for opposite-gender matching.') }}</p>
+                            </div>
+                            @php
+                                $heightOptions = [];
+                                for ($ft = 4; $ft <= 7; $ft++) {
+                                    for ($in = 0; $in <= 11; $in++) {
+                                        if ($ft === 7 && $in > 0) break;
+                                        $heightOptions[] = $ft . "'" . $in . '"';
+                                    }
+                                }
+                            @endphp
+                            <div>
+                                <x-input-label for="height" :value="__('db.Height')" />
+                                <x-searchable-select name="height" :options="$heightOptions" :value="old('height', $profile->height)" :required="true"
+                                    placeholder="{{ __('db.Type to search, scroll, or pick from the list') }}" />
+                            </div>
+                            <div>
+                                <x-input-label for="marital_status" :value="__('db.Marital Status')" />
+                                <select id="marital_status" name="marital_status" required x-model="maritalStatus" class="border-gray-300 rounded-md shadow-sm w-full mt-1">
+                                    @foreach (['never_married' => __('db.Never Married'), 'divorced' => __('db.Divorced'), 'widowed' => __('db.Widowed'), 'separated' => __('db.Separated'), 'married' => __('db.Married (Second Wife)')] as $val => $label)
+                                    <option value="{{ $val }}" {{ $ms === $val ? 'selected' : '' }}>{{ $label }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div x-show="['divorced','widowed','separated','married'].includes(maritalStatus)" x-cloak>
+                                <x-input-label for="has_children" :value="__('db.Do You Have Children?')" />
+                                <select id="has_children" name="has_children" x-model="hasChildren" x-bind:required="['divorced','widowed','separated','married'].includes(maritalStatus)" class="border-gray-300 rounded-md shadow-sm w-full mt-1">
+                                    <option value="">{{ __('db.Select') }}</option>
+                                    <option value="1" {{ $hasKids === '1' ? 'selected' : '' }}>{{ __('db.Yes') }}</option>
+                                    <option value="0" {{ $hasKids === '0' ? 'selected' : '' }}>{{ __('db.No') }}</option>
+                                </select>
+                            </div>
+                            <div x-show="['divorced','widowed','separated','married'].includes(maritalStatus) && hasChildren === '1'" x-cloak>
+                                <x-input-label for="children_count" :value="__('db.Number of Children')" />
+                                <x-text-input id="children_count" name="children_count" type="number" min="1" max="20" class="w-full mt-1"
+                                    :value="old('children_count', $profile->children_count)" />
+                            </div>
+                            <div x-show="['divorced','widowed','separated','married'].includes(maritalStatus)" x-cloak>
+                                <x-input-label for="living_situation" :value="__('db.Who Do You Currently Live With?')" />
+                                <select id="living_situation" name="living_situation" x-bind:required="['divorced','widowed','separated','married'].includes(maritalStatus)" class="border-gray-300 rounded-md shadow-sm w-full mt-1">
+                                    <option value="">{{ __('db.Select') }}</option>
+                                    <option value="alone" {{ $livingVal === 'alone' ? 'selected' : '' }}>{{ __('db.Alone') }}</option>
+                                    <option value="with_mother" {{ $livingVal === 'with_mother' ? 'selected' : '' }}>{{ __('db.With Mother') }}</option>
+                                    <option value="with_father" {{ $livingVal === 'with_father' ? 'selected' : '' }}>{{ __('db.With Father') }}</option>
+                                    <option value="with_maternal_grandparents" {{ $livingVal === 'with_maternal_grandparents' ? 'selected' : '' }}>{{ __('db.With Maternal Grandparents') }}</option>
+                                    <option value="with_paternal_grandparents" {{ $livingVal === 'with_paternal_grandparents' ? 'selected' : '' }}>{{ __('db.With Paternal Grandparents') }}</option>
+                                    <option value="with_children" {{ $livingVal === 'with_children' ? 'selected' : '' }}>{{ __('db.With My Children') }}</option>
+                                    <option value="other" {{ $livingVal === 'other' ? 'selected' : '' }}>{{ __('db.Other') }}</option>
+                                </select>
+                            </div>
+                            @php
+                                $knownSects = ['Sunni', 'Shia', 'Ahle Hadith', 'Deobandi'];
+                                $currentSect = old('sect', $profile->sect);
+                                $isOtherSect = $currentSect && !in_array($currentSect, $knownSects);
+                            @endphp
+                            <div x-data="{ sect: @js($isOtherSect ? 'Other' : $currentSect) }">
+                                <x-input-label for="sect" :value="__('db.Sect')" />
+                                <select id="sect" name="sect" x-model="sect" required class="border-gray-300 rounded-md shadow-sm w-full mt-1">
+                                    <option value="">{{ __('db.Select Sect') }}</option>
+                                    <option value="Sunni">{{ __('db.Sunni') }}</option>
+                                    <option value="Shia">{{ __('db.Shia') }}</option>
+                                    <option value="Ahle Hadith">{{ __('db.Ahle Hadith') }}</option>
+                                    <option value="Deobandi">{{ __('db.Deobandi') }}</option>
+                                    <option value="Other">{{ __('db.Other') }}</option>
+                                </select>
+                                <div x-show="sect === 'Other'" x-cloak class="mt-2">
+                                    <x-text-input name="sect_other" type="text" class="w-full" placeholder="{{ __('db.Please specify sect') }}" :value="old('sect_other', $isOtherSect ? $currentSect : '')" />
+                                </div>
+                            </div>
+                            <div>
+                                <x-input-label for="caste" :value="__('db.Caste (optional)')" />
+                                <x-text-input id="caste" name="caste" type="text" class="w-full mt-1" :value="old('caste', $profile->caste)"
+                                    placeholder="{{ __('db.e.g. Rajput, Sheikh, Syed') }}" />
+                            </div>
+                        </div>
+                        <div class="mt-4 flex items-center gap-2">
+                            <input type="checkbox" id="open_to_polygamy" name="open_to_polygamy" value="1" {{ old('open_to_polygamy', $profile->open_to_polygamy) ? 'checked' : '' }} class="rounded">
+                            <x-input-label for="open_to_polygamy" :value="__('db.Open to a polygamous marriage (e.g. as/marrying a second wife)')" />
+                        </div>
+                    </x-nikah-section>
+
+                    <x-nikah-section :title="__('db.Deen & Lifestyle')" icon="🕌" color="emerald">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <x-input-label for="prayer_frequency" :value="__('db.Prayer (Salah) Regularity')" />
+                                <select id="prayer_frequency" name="prayer_frequency" class="border-gray-300 rounded-md shadow-sm w-full mt-1">
+                                    <option value="">{{ __('db.Prefer not to say') }}</option>
+                                    @foreach (['always' => __('db.Always — 5 times a day'), 'usually' => __('db.Usually'), 'sometimes' => __('db.Sometimes'), 'rarely' => __('db.Rarely')] as $val => $label)
+                                    <option value="{{ $val }}" {{ old('prayer_frequency', $profile->prayer_frequency) === $val ? 'selected' : '' }}>{{ $label }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div>
+                                <x-input-label for="hijab_or_beard" :value="__('db.Hijab (for sisters) / Beard (for brothers)')" />
+                                <select id="hijab_or_beard" name="hijab_or_beard" class="border-gray-300 rounded-md shadow-sm w-full mt-1">
+                                    <option value="">{{ __('db.Prefer not to say') }}</option>
+                                    @foreach (['yes' => __('db.Yes'), 'sometimes' => __('db.Sometimes'), 'no' => __('db.No')] as $val => $label)
+                                    <option value="{{ $val }}" {{ old('hijab_or_beard', $profile->hijab_or_beard) === $val ? 'selected' : '' }}>{{ $label }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div>
+                                <x-input-label for="smokes" :value="__('db.Smoking')" />
+                                <select id="smokes" name="smokes" class="border-gray-300 rounded-md shadow-sm w-full mt-1">
+                                    <option value="">{{ __('db.Prefer not to say') }}</option>
+                                    @foreach (['no' => __('db.No'), 'occasionally' => __('db.Occasionally'), 'yes' => __('db.Yes')] as $val => $label)
+                                    <option value="{{ $val }}" {{ old('smokes', $profile->smokes) === $val ? 'selected' : '' }}>{{ $label }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div>
+                                <x-input-label for="diet" :value="__('db.Diet')" />
+                                <select id="diet" name="diet" class="border-gray-300 rounded-md shadow-sm w-full mt-1">
+                                    <option value="">{{ __('db.Prefer not to say') }}</option>
+                                    @foreach (['halal_only' => __('db.Halal only'), 'halal_mostly' => __('db.Halal, mostly'), 'no_restriction' => __('db.No restriction')] as $val => $label)
+                                    <option value="{{ $val }}" {{ old('diet', $profile->diet) === $val ? 'selected' : '' }}>{{ $label }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                        </div>
+                    </x-nikah-section>
+
+                    <x-nikah-section :title="__('db.Education & Profession')" icon="🎓" color="indigo">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            @php $educationLevels = ['Matric / O-Levels', 'Intermediate / A-Levels', "Bachelor's", "Master's", 'MPhil / MS', 'PhD', 'Madrassah / Islamic Education']; @endphp
+                            <div>
+                                <x-input-label for="education" :value="__('db.Education')" />
+                                <x-searchable-select name="education" :options="$educationLevels" :value="old('education', $profile->education)" :required="true"
+                                    placeholder="{{ __('db.Type to search, scroll, or pick from the list') }}" />
+                            </div>
+                            <div>
+                                <x-input-label for="profession" :value="__('db.Profession')" />
+                                <x-text-input id="profession" name="profession" type="text" class="w-full mt-1" :value="old('profession', $profile->profession)" required
+                                    placeholder="{{ __('db.e.g. Software Engineer, Teacher, Doctor') }}" />
+                            </div>
+                            <x-country-state-city-fields
+                                :country-value="old('country', $profile->country ?: 'Pakistan')"
+                                :state-value="old('state', $profile->state)"
+                                :city-value="old('city', $profile->city ?: $profile->user?->city)"
+                                :country-required="true"
+                                :state-required="true"
+                                :city-required="true"
+                                :all-states="$countryStates" />
+                            <div>
+                                <x-input-label for="address" :value="__('db.Address')" />
+                                <x-text-input id="address" name="address" type="text" class="w-full mt-1" :value="old('address', $profile->address)"
+                                    placeholder="{{ __('db.Street / area (optional)') }}" />
+                            </div>
+                            <div>
+                                <x-input-label for="ethnicity" :value="__('db.Ethnicity (optional)')" />
+                                <x-text-input id="ethnicity" name="ethnicity" type="text" class="w-full mt-1" :value="old('ethnicity', $profile->ethnicity)" placeholder="{{ __('db.e.g. Punjabi, Pashtun, Sindhi, Muhajir') }}" />
+                            </div>
+                            @php
+                                $commonLanguages = ['Urdu', 'English', 'Punjabi', 'Pashto', 'Sindhi', 'Saraiki', 'Balochi'];
+                                if (old('languages') !== null || old('language_other') !== null) {
+                                    $checkedLanguages = old('languages', []);
+                                    $otherLanguageText = old('language_other', '');
+                                } else {
+                                    $profileLangParts = array_filter(array_map('trim', explode(',', $profile->language ?? '')));
+                                    $checkedLanguages = array_intersect($profileLangParts, $commonLanguages);
+                                    $otherLanguageText = implode(', ', array_diff($profileLangParts, $commonLanguages));
+                                }
+                            @endphp
+                            <div class="sm:col-span-2" x-data="{ other: {{ $otherLanguageText ? 'true' : 'false' }} }">
+                                <x-input-label :value="__('db.Language(s) Spoken (optional)')" />
+                                <div class="flex flex-wrap gap-2 mt-1">
+                                    @foreach ($commonLanguages as $lang)
+                                    <label class="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1.5 rounded-full border cursor-pointer transition hover:bg-gray-50" style="border-color: #d1d5db">
+                                        <input type="checkbox" name="languages[]" value="{{ $lang }}" {{ in_array($lang, $checkedLanguages) ? 'checked' : '' }} class="rounded">
+                                        {{ __('db.' . $lang) }}
+                                    </label>
+                                    @endforeach
+                                    <label class="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1.5 rounded-full border cursor-pointer transition hover:bg-gray-50" style="border-color: #d1d5db">
+                                        <input type="checkbox" x-model="other" class="rounded">
+                                        {{ __('db.Other') }}
+                                    </label>
+                                </div>
+                                <div x-show="other" x-cloak class="mt-2">
+                                    <x-text-input name="language_other" type="text" class="w-full" placeholder="{{ __('db.e.g. Balti, Hindko, Arabic') }}" value="{{ $otherLanguageText }}" />
+                                </div>
+                            </div>
+                        </div>
+                    </x-nikah-section>
+
+                    <x-nikah-section :title="__('db.Family & Guardian Information (Sarparast Family)')" icon="👨‍👩‍👧" color="amber">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            @php $familyTypeOptions = ['Joint Family', 'Nuclear Family', 'Living with In-Laws']; @endphp
+                            <div>
+                                <x-input-label for="family_type" :value="__('db.Family Type')" />
+                                <x-searchable-select name="family_type" :options="$familyTypeOptions" :value="old('family_type', $profile->family_type)"
+                                    placeholder="{{ __('db.Type to search, scroll, or pick from the list') }}" />
+                            </div>
+                            @php $guardianRelOptions = ['Self', 'Father', 'Mother', 'Brother', 'Sister', 'Uncle', 'Aunt', 'Grandfather', 'Grandmother']; @endphp
+                            <div>
+                                <x-input-label for="guardian_relation" :value="__('db.Guardian Relation (Sarparast Family)')" />
+                                <x-searchable-select name="guardian_relation" :options="$guardianRelOptions" :value="old('guardian_relation', $profile->guardian_relation)"
+                                    placeholder="{{ __('db.Type to search, scroll, or pick from the list') }}" />
+                            </div>
+                            <div>
+                                <x-input-label for="guardian_name" :value="__('db.Guardian Name (Sarparast Family)')" />
+                                <x-text-input id="guardian_name" name="guardian_name" type="text" class="w-full mt-1" :value="old('guardian_name', $profile->guardian_name)" required
+                                    placeholder="{{ __('db.e.g. Muhammad Ahmed') }}" />
+                            </div>
+                            <div>
+                                <x-input-label for="guardian_contact" :value="__('db.Guardian Contact Number (Sarparast Family)')" />
+                                <x-text-input id="guardian_contact" name="guardian_contact" type="text" class="w-full mt-1" :value="old('guardian_contact', $profile->guardian_contact)" required
+                                    placeholder="{{ __('db.e.g. 03001234567') }}" />
+                            </div>
+                        </div>
+                    </x-nikah-section>
+
+                    <x-nikah-section :title="__('db.About')" icon="💬" color="purple">
+                        <div class="space-y-4">
+                            <div>
+                                <x-input-label for="about" :value="__('db.About')" />
+                                <textarea id="about" name="about" rows="3" class="border-gray-300 rounded-md shadow-sm w-full mt-1">{{ old('about', $profile->about) }}</textarea>
+                            </div>
+                            <div>
+                                <x-input-label for="expectations" :value="__('db.Looking For')" />
+                                <textarea id="expectations" name="expectations" rows="3" required class="border-gray-300 rounded-md shadow-sm w-full mt-1">{{ old('expectations', $profile->expectations) }}</textarea>
+                            </div>
+                        </div>
+                    </x-nikah-section>
+
+                    <x-nikah-section :title="__('db.Verification')" icon="🪪" color="rose">
+                        <div>
+                            @if ($profile->cnic_number)
+                            <div class="bg-white border border-rose-200 rounded-lg p-4 text-sm text-gray-600">
+                                <p class="font-medium text-gray-700 mb-1">🔒 CNIC Verification Submitted</p>
+                                <p>CNIC Number: {{ $profile->cnic_number }}</p>
+                                <p class="mt-1">Locked here — change it via a support/account action if genuinely needed.</p>
+                            </div>
+                            @else
+                            <div>
+                                <x-input-label for="cnic_number" value="CNIC Number" />
+                                <x-text-input id="cnic_number" name="cnic_number" type="text" class="w-full mt-1" :value="old('cnic_number')" required
+                                    placeholder="{{ __('db.e.g. 12345-1234567-1') }}" />
+                            </div>
+                            @endif
+                        </div>
+                        <hr class="mt-4 border-rose-200">
+                        <div class="mt-4 flex items-center gap-2">
+                            <input type="checkbox" id="allow_photo_sharing" name="allow_photo_sharing" value="1" {{ old('allow_photo_sharing', $profile->allow_photo_sharing) ? 'checked' : '' }} class="rounded">
+                            <x-input-label for="allow_photo_sharing" value="Allow this profile's photo to be shared with a match after mutual interest is accepted" />
+                        </div>
+                        <div class="mt-4">
+                            <x-input-label for="photo" :value="__('db.Profile Photo — shown to a match only after mutual interest is accepted, never shown publicly')" />
+                            <input id="photo" name="photo" type="file" accept="image/*" class="w-full mt-1" {{ $profile->photo ? '' : 'required' }} />
+                            @if ($profile->photo)
+                            <p class="text-xs text-gray-400 mt-1">{{ __('db.Leave blank to keep the current photo.') }}</p>
+                            @endif
+                        </div>
+                    </x-nikah-section>
+
+                    <x-nikah-section :title="__('db.Profile Visibility')" icon="👁️" color="teal">
+                        @php $vis = old('visibility', $profile->visibility); @endphp
+                        <select id="visibility" name="visibility" required class="border-gray-300 rounded-md shadow-sm w-full">
+                            <option value="public" {{ $vis === 'public' ? 'selected' : '' }}>{{ __('db.Anyone can find them (shows in search, and in Google results)') }}</option>
+                            <option value="members_only" {{ $vis === 'members_only' ? 'selected' : '' }}>{{ __('db.Sallaamti members only (shows in search, but not on Google)') }}</option>
+                            <option value="matchmaker_assisted" {{ $vis === 'matchmaker_assisted' ? 'selected' : '' }}>{{ __('db.Only their Nikah Counselor can find them') }}</option>
+                            <option value="confidential" {{ $vis === 'confidential' ? 'selected' : '' }}>{{ __('db.Nobody can find them by searching (fully hidden)') }}</option>
+                        </select>
+                    </x-nikah-section>
+
+                    <x-nikah-section :title="__('db.Match Preferences')" icon="🎯" color="sky">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <div>
+                                <x-input-label for="pref_min_age" value="Preferred Min Age" />
+                                <x-text-input id="pref_min_age" name="pref_min_age" type="number" class="w-full mt-1" :value="old('pref_min_age', $profile->pref_min_age)" placeholder="{{ __('db.e.g. 22') }}" />
+                            </div>
+                            <div>
+                                <x-input-label value="Preferred Max Age" />
+                                <x-text-input name="pref_max_age" type="number" class="w-full mt-1" :value="old('pref_max_age', $profile->pref_max_age)" placeholder="{{ __('db.e.g. 30') }}" />
+                            </div>
+                            <div>
+                                <x-input-label value="Preferred City" />
+                                <x-text-input name="pref_city" class="w-full mt-1" :value="old('pref_city', $profile->pref_city)" placeholder="{{ __('db.e.g. Karachi (leave blank for any city)') }}" />
+                            </div>
+                            <div>
+                                <x-input-label value="Preferred Sect" />
+                                <x-text-input name="pref_sect" class="w-full mt-1" :value="old('pref_sect', $profile->pref_sect)" placeholder="{{ __('db.e.g. Sunni (leave blank for any)') }}" />
+                            </div>
+                            <div>
+                                <x-input-label value="Preferred Education Level" />
+                                <x-text-input name="pref_education" class="w-full mt-1" :value="old('pref_education', $profile->pref_education)" placeholder="{{ __('db.e.g. Graduate or above (leave blank for any)') }}" />
+                            </div>
+                            <div>
+                                <x-input-label value="Preferred Marital Status" />
+                                <select name="pref_marital_status" class="border-gray-300 rounded-md w-full mt-1">
+                                    <option value="">No preference</option>
+                                    <option value="never_married" {{ old('pref_marital_status', $profile->pref_marital_status) === 'never_married' ? 'selected' : '' }}>Never Married</option>
+                                    <option value="divorced" {{ old('pref_marital_status', $profile->pref_marital_status) === 'divorced' ? 'selected' : '' }}>Divorced</option>
+                                    <option value="widowed" {{ old('pref_marital_status', $profile->pref_marital_status) === 'widowed' ? 'selected' : '' }}>Widowed</option>
+                                    <option value="separated" {{ old('pref_marital_status', $profile->pref_marital_status) === 'separated' ? 'selected' : '' }}>Separated</option>
+                                </select>
+                            </div>
+                            <div>
+                                <x-input-label value="Preferred Income / Business Worth" />
+                                <x-text-input name="pref_income" class="w-full mt-1" :value="old('pref_income', $profile->pref_income)" placeholder="{{ __('db.e.g. PKR 150,000+ monthly (leave blank for any)') }}" />
+                            </div>
+                            <div class="sm:col-span-2">
+                                <x-input-label value="Other Preferences" />
+                                <textarea name="pref_other" rows="2" class="border-gray-300 rounded-md shadow-sm w-full mt-1">{{ old('pref_other', $profile->pref_other) }}</textarea>
+                            </div>
+                        </div>
+                    </x-nikah-section>
+
+                    <div class="flex justify-end gap-3 pt-2">
+                        <a href="{{ route('admin.nikah.show', $profile) }}" class="px-4 py-2 text-sm text-gray-600">Cancel</a>
+                        <x-primary-button id="verification-submit">{{ __('db.Save Changes') }}</x-primary-button>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+
+    {{-- Same fetch()-based submit as the member's own edit page, and for the
+         same reason — see nikah/edit.blade.php's script comment. --}}
+    @php
+        $uploadChangedMessageText = __("db.We couldn't upload the file. This can happen if a selected photo was moved, renamed, or changed since it was picked. Please choose the CNIC/photo files again and submit.");
+        $uploadingLabelText = __('db.Saving…');
+        $errorHeadingText = __('db.Please fix the following before saving:');
+    @endphp
+    <script>
+        (function () {
+            const form = document.getElementById('verification-form');
+            const errorsBox = document.getElementById('verification-errors');
+            const submitBtn = document.getElementById('verification-submit');
+            if (!form || !errorsBox || !submitBtn) return;
+
+            const uploadChangedMessage = @json($uploadChangedMessageText);
+            const uploadingLabel = @json($uploadingLabelText);
+            const errorHeading = @json($errorHeadingText);
+            const originalLabel = submitBtn.innerHTML;
+
+            function showErrors(html) {
+                errorsBox.innerHTML = '<p class="font-medium text-sm mb-1">' + errorHeading + '</p>' + html;
+                errorsBox.classList.remove('hidden');
+                errorsBox.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }
+
+            form.addEventListener('submit', async function (e) {
+                e.preventDefault();
+
+                errorsBox.classList.add('hidden');
+                errorsBox.innerHTML = '';
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = uploadingLabel;
+
+                try {
+                    const response = await fetch(form.action, {
+                        method: 'POST',
+                        body: new FormData(form),
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Accept': 'application/json',
+                        },
+                    });
+
+                    if (response.ok) {
+                        const data = await response.json();
+                        window.location.href = data.redirect;
+                        return;
+                    }
+
+                    if (response.status === 422) {
+                        const data = await response.json();
+                        const messages = Object.values(data.errors || {}).flat();
+                        showErrors('<ul class="list-disc list-inside text-sm">' +
+                            messages.map((m) => '<li>' + m + '</li>').join('') + '</ul>');
+                    } else {
+                        throw new Error('Unexpected response status ' + response.status);
+                    }
+                } catch (err) {
+                    showErrors('<p>' + uploadChangedMessage + '</p>');
+                } finally {
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalLabel;
+                }
+            });
+        })();
+    </script>
+</x-admin-layout>
