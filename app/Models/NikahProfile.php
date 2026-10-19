@@ -452,6 +452,12 @@ class NikahProfile extends Model
         $lines = [
             '💍 *Sallaamti Nikah Profile* 💍',
             '🆔 Profile #' . $this->id,
+            // Prominent either way — whoever receives this card on WhatsApp
+            // should immediately know whether Sallaamti has verified this
+            // profile or not, not have to ask.
+            $this->verification_status === 'verified'
+                ? '✅✅ *VERIFIED PROFILE* ✅✅'
+                : '⚠️ *Not Yet Verified*',
             '',
             '⚧ Gender: ' . $field($this->user?->gender ? ucfirst($this->user->gender) : null),
             '👤 Age: ' . $field($this->age),
