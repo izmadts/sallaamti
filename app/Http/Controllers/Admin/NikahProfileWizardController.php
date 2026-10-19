@@ -44,7 +44,7 @@ class NikahProfileWizardController extends Controller
     protected array $wizardStepFields = [
         'account' => ['name', 'identifier', 'gender'],
         'basic' => ['date_of_birth', 'height', 'height_other', 'marital_status', 'has_children', 'children_count', 'living_situation', 'education', 'profession', 'city', 'address', 'state', 'country'],
-        'family' => ['caste', 'family_type', 'guardian_name', 'guardian_contact', 'guardian_relation', 'ethnicity'],
+        'family' => ['caste', 'family_type', 'guardian_name', 'guardian_contact', 'guardian_relation', 'ethnicity', 'languages', 'language_other'],
         'deen' => ['sect', 'sect_other', 'prayer_frequency', 'hijab_or_beard', 'smokes', 'diet', 'open_to_polygamy'],
         'about' => ['about', 'expectations', 'visibility', 'pref_min_age', 'pref_max_age', 'pref_city', 'pref_sect', 'pref_education', 'pref_marital_status', 'pref_income', 'pref_other'],
         // Optional — a matchmaker collecting payment on the spot can submit
@@ -59,7 +59,10 @@ class NikahProfileWizardController extends Controller
     // regardless of how each step was reached, so an admin who used
     // skipStep() to preview the wizard can never accidentally create a
     // real (broken) User/NikahProfile/Lead by finalizing anyway.
-    private const GENUINELY_REQUIRED = ['identifier', 'name', 'gender', 'date_of_birth', 'height', 'profession', 'city', 'state', 'country', 'education', 'sect', 'guardian_name', 'guardian_contact', 'expectations'];
+    // guardian_contact and expectations are deliberately NOT in this list —
+    // see saveStep()'s own comment on why they're relaxed to optional for a
+    // walk-in/phone intake, unlike the member's own self-service wizard.
+    private const GENUINELY_REQUIRED = ['identifier', 'name', 'gender', 'date_of_birth', 'height', 'profession', 'city', 'state', 'country', 'education', 'sect', 'guardian_name'];
 
     protected array $stepTitles = [
         'account' => 'Login Account',
@@ -173,10 +176,29 @@ class NikahProfileWizardController extends Controller
 
         $rules = collect($this->nikahProfileRules())->only($this->wizardStepFields[$step])->toArray();
 
+        // Required for a client filling in their own profile (the shared
+        // ValidatesNikahProfile rule, used as-is by the member wizard) —
+        // but a counselor taking down a rushed phone-call/walk-in intake
+        // may not have the guardian's contact number or a reflective
+        // "what are you looking for" answer on hand yet. Relaxed to
+        // optional here only; the client fills them in themselves later
+        // (self-service edit already requires them again at that point),
+        // or a counselor adds them afterward via the profile's Edit action.
+        if (isset($rules['guardian_contact'])) {
+            $rules['guardian_contact'] = ['nullable', 'string', 'max:20'];
+        }
+        if (isset($rules['expectations'])) {
+            $rules['expectations'] = ['nullable', 'string', 'max:2000'];
+        }
+
         $validated = $request->validate($rules, $this->nikahProfileMessages());
 
         if ($step === 'basic') {
             $validated['height'] = $this->resolveHeight($request);
+        }
+
+        if ($step === 'family') {
+            $validated['language'] = $this->resolveLanguage($request);
         }
 
         if ($step === 'deen') {

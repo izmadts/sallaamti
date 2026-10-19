@@ -31,16 +31,36 @@
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                                 <x-input-label for="caste" value="Caste (optional)" />
-                                <x-text-input id="caste" name="caste" type="text" class="w-full mt-1" :value="old('caste', $data['caste'] ?? '')" />
+                                <x-text-input id="caste" name="caste" type="text" class="w-full mt-1" :value="old('caste', $data['caste'] ?? '')" placeholder="e.g. Rajput, Sheikh, Syed" />
                             </div>
                             <div>
                                 <x-input-label for="ethnicity" value="Ethnicity (optional)" />
-                                <x-text-input id="ethnicity" name="ethnicity" type="text" class="w-full mt-1" :value="old('ethnicity', $data['ethnicity'] ?? '')" />
+                                <x-text-input id="ethnicity" name="ethnicity" type="text" class="w-full mt-1" :value="old('ethnicity', $data['ethnicity'] ?? '')" placeholder="e.g. Punjabi, Pashtun, Sindhi, Muhajir" />
                             </div>
                             @php $familyTypeOptions = ['Joint Family', 'Nuclear Family', 'Living with In-Laws']; @endphp
                             <div>
                                 <x-input-label for="family_type" value="Family Type (optional)" />
                                 <x-searchable-select name="family_type" :options="$familyTypeOptions" :value="old('family_type', $data['family_type'] ?? '')" placeholder="Type to search or pick" />
+                            </div>
+                            <div class="sm:col-span-2" x-data="{ other: {{ old('language_other', $data['language_other'] ?? '') ? 'true' : 'false' }} }">
+                                <x-input-label value="Language(s) Spoken (optional)" />
+                                @php $existingLanguages = old('languages', $data['languages'] ?? []); @endphp
+                                <div class="flex flex-wrap gap-2 mt-1">
+                                    @foreach (['Urdu', 'English', 'Punjabi', 'Pashto', 'Sindhi', 'Saraiki', 'Balochi'] as $lang)
+                                    <label class="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1.5 rounded-full border cursor-pointer transition hover:bg-gray-50"
+                                        style="border-color: #d1d5db">
+                                        <input type="checkbox" name="languages[]" value="{{ $lang }}" {{ in_array($lang, $existingLanguages) ? 'checked' : '' }} class="rounded">
+                                        {{ $lang }}
+                                    </label>
+                                    @endforeach
+                                    <label class="inline-flex items-center gap-1.5 text-xs font-medium px-2.5 py-1.5 rounded-full border cursor-pointer transition hover:bg-gray-50" style="border-color: #d1d5db">
+                                        <input type="checkbox" x-model="other" class="rounded">
+                                        Other
+                                    </label>
+                                </div>
+                                <div x-show="other" x-cloak class="mt-2">
+                                    <x-text-input name="language_other" type="text" class="w-full" placeholder="e.g. Balti, Hindko, Arabic" :value="old('language_other', $data['language_other'] ?? '')" />
+                                </div>
                             </div>
                             @php $guardianRelOptions = ['Self', 'Father', 'Mother', 'Brother', 'Sister', 'Uncle', 'Aunt', 'Grandfather', 'Grandmother']; @endphp
                             <div>
@@ -49,11 +69,13 @@
                             </div>
                             <div>
                                 <x-input-label for="guardian_name" value="Guardian Name (Sarparast Family)" />
-                                <x-text-input id="guardian_name" name="guardian_name" type="text" class="w-full mt-1" :value="old('guardian_name', $data['guardian_name'] ?? '')" required />
+                                <x-text-input id="guardian_name" name="guardian_name" type="text" class="w-full mt-1" :value="old('guardian_name', $data['guardian_name'] ?? '')" required
+                                    placeholder="e.g. Muhammad Ahmed" />
                             </div>
                             <div>
-                                <x-input-label for="guardian_contact" value="Guardian Contact (Sarparast Family)" />
-                                <x-text-input id="guardian_contact" name="guardian_contact" type="text" class="w-full mt-1" :value="old('guardian_contact', $data['guardian_contact'] ?? '')" required />
+                                <x-input-label for="guardian_contact" value="Guardian Contact (Sarparast Family) (optional)" />
+                                <x-text-input id="guardian_contact" name="guardian_contact" type="text" class="w-full mt-1" :value="old('guardian_contact', $data['guardian_contact'] ?? '')"
+                                    placeholder="e.g. 03001234567" title="Fill this in now if you have it, or leave blank and add it later — the client can also add it themselves once logged in." />
                             </div>
                         </div>
                     </x-nikah-section>

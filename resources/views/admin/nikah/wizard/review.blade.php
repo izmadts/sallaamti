@@ -55,12 +55,18 @@
                     <div class="border rounded-lg p-4 flex justify-between items-start">
                         <div>
                             <p class="text-xs text-gray-400">Family & Guardian (Sarparast Family)</p>
-                            <p class="text-sm text-gray-800">Guardian (Sarparast Family): {{ $data['guardian_name'] }} ({{ $data['guardian_contact'] }})</p>
+                            <p class="text-sm text-gray-800">Guardian (Sarparast Family): {{ $data['guardian_name'] }}{{ !empty($data['guardian_contact']) ? ' (' . $data['guardian_contact'] . ')' : '' }}</p>
+                            @if (empty($data['guardian_contact']))
+                            <p class="text-xs text-amber-600">⚠ No guardian contact number yet — add it later from the profile's Edit action.</p>
+                            @endif
                             @if (!empty($data['guardian_relation']))
                             <p class="text-sm text-gray-600">Relation: {{ $data['guardian_relation'] }}</p>
                             @endif
                             @if (!empty($data['family_type']) || !empty($data['caste']) || !empty($data['ethnicity']))
                             <p class="text-sm text-gray-600">{{ collect([$data['family_type'] ?? null, $data['caste'] ?? null, $data['ethnicity'] ?? null])->filter()->implode(' · ') }}</p>
+                            @endif
+                            @if (!empty($data['language']))
+                            <p class="text-sm text-gray-600">Languages: {{ $data['language'] }}</p>
                             @endif
                         </div>
                         <a href="{{ route($routePrefix . '.nikah.profiles.create.step', 'family') }}" class="text-xs text-teal-700 hover:underline">Edit</a>
@@ -87,6 +93,8 @@
                             <p class="text-sm text-gray-600 italic">{{ $data['about'] ?? '—' }}</p>
                             @if (!empty($data['expectations']))
                             <p class="text-sm text-gray-600 mt-1">Looking for: {{ $data['expectations'] }}</p>
+                            @else
+                            <p class="text-xs text-amber-600 mt-1">⚠ No "Looking For" answer yet — add it later from the profile's Edit action.</p>
                             @endif
                             @php
                                 $prefSummary = collect([

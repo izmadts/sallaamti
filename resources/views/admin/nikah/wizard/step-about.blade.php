@@ -31,11 +31,13 @@
                         <div class="space-y-4">
                             <div>
                                 <x-input-label for="about" value="About (optional)" />
-                                <textarea id="about" name="about" rows="3" class="border-gray-300 rounded-md shadow-sm w-full mt-1">{{ old('about', $data['about'] ?? '') }}</textarea>
+                                <textarea id="about" name="about" rows="3" class="border-gray-300 rounded-md shadow-sm w-full mt-1"
+                                    placeholder="A few lines about their personality, values, daily routine...">{{ old('about', $data['about'] ?? '') }}</textarea>
                             </div>
                             <div>
-                                <x-input-label for="expectations" value="Looking For" />
-                                <textarea id="expectations" name="expectations" rows="3" required class="border-gray-300 rounded-md shadow-sm w-full mt-1">{{ old('expectations', $data['expectations'] ?? '') }}</textarea>
+                                <x-input-label for="expectations" value="Looking For (optional)" />
+                                <textarea id="expectations" name="expectations" rows="3" class="border-gray-300 rounded-md shadow-sm w-full mt-1"
+                                    placeholder="e.g. Someone practicing, family-oriented, kind-hearted..." title="Fill this in now if they've told you, or leave blank and add it later — the client can also add it themselves once logged in.">{{ old('expectations', $data['expectations'] ?? '') }}</textarea>
                             </div>
                         </div>
                     </x-nikah-section>
@@ -44,23 +46,23 @@
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                                 <x-input-label for="pref_min_age" value="Minimum Age (optional)" />
-                                <x-text-input id="pref_min_age" name="pref_min_age" type="number" class="w-full mt-1" :value="old('pref_min_age', $data['pref_min_age'] ?? '')" />
+                                <x-text-input id="pref_min_age" name="pref_min_age" type="number" class="w-full mt-1" :value="old('pref_min_age', $data['pref_min_age'] ?? '')" placeholder="e.g. 22" />
                             </div>
                             <div>
                                 <x-input-label for="pref_max_age" value="Maximum Age (optional)" />
-                                <x-text-input id="pref_max_age" name="pref_max_age" type="number" class="w-full mt-1" :value="old('pref_max_age', $data['pref_max_age'] ?? '')" />
+                                <x-text-input id="pref_max_age" name="pref_max_age" type="number" class="w-full mt-1" :value="old('pref_max_age', $data['pref_max_age'] ?? '')" placeholder="e.g. 30" />
                             </div>
                             <div>
                                 <x-input-label for="pref_city" value="Preferred City (optional)" />
-                                <x-text-input id="pref_city" name="pref_city" type="text" class="w-full mt-1" :value="old('pref_city', $data['pref_city'] ?? '')" />
+                                <x-text-input id="pref_city" name="pref_city" type="text" class="w-full mt-1" :value="old('pref_city', $data['pref_city'] ?? '')" placeholder="e.g. Karachi (leave blank for any city)" />
                             </div>
                             <div>
                                 <x-input-label for="pref_sect" value="Preferred Sect (optional)" />
-                                <x-text-input id="pref_sect" name="pref_sect" type="text" class="w-full mt-1" :value="old('pref_sect', $data['pref_sect'] ?? '')" />
+                                <x-text-input id="pref_sect" name="pref_sect" type="text" class="w-full mt-1" :value="old('pref_sect', $data['pref_sect'] ?? '')" placeholder="e.g. Sunni (leave blank for any)" />
                             </div>
                             <div>
                                 <x-input-label for="pref_education" value="Preferred Education (optional)" />
-                                <x-text-input id="pref_education" name="pref_education" type="text" class="w-full mt-1" :value="old('pref_education', $data['pref_education'] ?? '')" />
+                                <x-text-input id="pref_education" name="pref_education" type="text" class="w-full mt-1" :value="old('pref_education', $data['pref_education'] ?? '')" placeholder="e.g. Graduate or above (leave blank for any)" />
                             </div>
                             @php $prefMs = old('pref_marital_status', $data['pref_marital_status'] ?? ''); @endphp
                             <div>
@@ -74,11 +76,11 @@
                             </div>
                             <div>
                                 <x-input-label for="pref_income" value="Preferred Income / Business Worth (optional)" />
-                                <x-text-input id="pref_income" name="pref_income" type="text" class="w-full mt-1" :value="old('pref_income', $data['pref_income'] ?? '')" />
+                                <x-text-input id="pref_income" name="pref_income" type="text" class="w-full mt-1" :value="old('pref_income', $data['pref_income'] ?? '')" placeholder="e.g. PKR 150,000+ monthly (leave blank for any)" />
                             </div>
                             <div class="sm:col-span-2">
                                 <x-input-label for="pref_other" value="Other Preferences (optional)" />
-                                <textarea id="pref_other" name="pref_other" rows="2" class="border-gray-300 rounded-md shadow-sm w-full mt-1">{{ old('pref_other', $data['pref_other'] ?? '') }}</textarea>
+                                <textarea id="pref_other" name="pref_other" rows="2" class="border-gray-300 rounded-md shadow-sm w-full mt-1" placeholder="Anything else they're looking for in a partner">{{ old('pref_other', $data['pref_other'] ?? '') }}</textarea>
                             </div>
                         </div>
                     </x-nikah-section>

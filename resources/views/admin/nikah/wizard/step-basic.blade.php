@@ -28,7 +28,7 @@
                     @csrf
 
                     @php
-                        $ms = old('marital_status', $data['marital_status'] ?? '');
+                        $ms = old('marital_status', $data['marital_status'] ?? 'never_married');
                         $hasKidsRaw = old('has_children', $data['has_children'] ?? null);
                         $hasKids = $hasKidsRaw === null || $hasKidsRaw === '' ? '' : ($hasKidsRaw ? '1' : '0');
                         $livingVal = old('living_situation', $data['living_situation'] ?? '');
@@ -96,7 +96,8 @@
                             </div>
                             <div>
                                 <x-input-label for="profession" value="Profession" />
-                                <x-text-input id="profession" name="profession" type="text" class="w-full mt-1" :value="old('profession', $data['profession'] ?? '')" required />
+                                <x-text-input id="profession" name="profession" type="text" class="w-full mt-1" :value="old('profession', $data['profession'] ?? '')" required
+                                    placeholder="e.g. Software Engineer, Teacher, Doctor" />
                             </div>
                             <x-country-state-city-fields
                                 :country-value="old('country', $data['country'] ?? 'Pakistan')"
