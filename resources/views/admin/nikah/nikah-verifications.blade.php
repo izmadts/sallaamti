@@ -226,7 +226,10 @@
                     @if ($profile->verification_status !== 'verified')
                     <form method="POST" action="{{ route('admin.nikah.approve', $profile) }}">
                         @csrf
-                        <button class="bg-green-600 text-white text-sm px-4 py-2 rounded hover:bg-green-700">Approve</button>
+                        <button class="bg-green-600 text-white text-sm px-4 py-2 rounded hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                            {{ $profile->payment_status !== 'confirmed' ? 'disabled title=Payment+must+be+confirmed+first' : '' }}>
+                            Approve
+                        </button>
                     </form>
                     @endif
 
