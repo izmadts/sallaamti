@@ -74,6 +74,7 @@
                             <option value="pending" {{ request('status') === 'pending' ? 'selected' : '' }}>Pending</option>
                             <option value="approved" {{ request('status') === 'approved' ? 'selected' : '' }}>Approved</option>
                             <option value="paid" {{ request('status') === 'paid' ? 'selected' : '' }}>Paid</option>
+                            <option value="voided" {{ request('status') === 'voided' ? 'selected' : '' }}>Voided</option>
                         </select>
                     </div>
                     <div>
@@ -109,6 +110,9 @@
                         @if ($entry->isFlagged())
                         <p class="text-xs text-red-600 mt-1">🚩 Flagged: {{ $entry->flag_reason }} (by {{ $entry->flaggedBy?->name }})</p>
                         @endif
+                        @if ($entry->status === 'voided')
+                        <p class="text-xs text-gray-500 mt-1">↩️ Voided: {{ $entry->void_reason }} (by {{ $entry->voidedBy?->name ?? '—' }}, {{ $entry->voided_at?->format('d M Y') }})</p>
+                        @endif
                         <p class="text-xs text-gray-400 mt-1">Created {{ $entry->created_at->format('d M Y') }}
                             @if ($entry->status === 'pending' && $entry->eligible_at)
                             · Eligible for approval from {{ $entry->eligible_at->format('d M Y') }}
@@ -121,6 +125,7 @@
                             {{ match($entry->status) {
                                 'paid' => 'bg-green-100 text-green-800',
                                 'approved' => 'bg-blue-100 text-blue-800',
+                                'voided' => 'bg-gray-200 text-gray-600',
                                 default => 'bg-amber-100 text-amber-800',
                             } }}">
                             {{ ucfirst($entry->status) }}

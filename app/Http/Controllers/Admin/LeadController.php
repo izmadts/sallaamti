@@ -465,19 +465,52 @@ class LeadController extends Controller
         return back()->with('status', 'Package payment confirmed — package is now active.');
     }
 
+    // Also doubles as "undo a mistaken Confirm" — unlike the plain-reject
+    // case (submitted -> rejected, nothing else active yet), undoing a
+    // confirm has to unwind everything confirmPackagePayment() set: the
+    // package itself (nikah_package_id/price/dates), restoring
+    // pending_package_id so the original request is still visible to
+    // review properly, and voiding the commission that confirming already
+    // fired.
     public function rejectPackagePayment(Request $request, Lead $lead)
     {
         $this->authorize_();
-        abort_unless($lead->package_payment_status === 'submitted', 422, 'No package payment awaiting review.');
+        abort_unless(in_array($lead->package_payment_status, ['submitted', 'confirmed']), 422, 'No package payment awaiting review.');
 
         $validated = $request->validate([
             'reason' => ['required', 'string', 'max:500'],
         ]);
 
-        $lead->update([
+        $wasConfirmed = $lead->package_payment_status === 'confirmed';
+
+        $updates = [
             'package_payment_status' => 'rejected',
             'package_payment_rejection_reason' => $validated['reason'],
-        ]);
+        ];
+
+        if ($wasConfirmed) {
+            $updates['pending_package_id'] = $lead->nikah_package_id;
+            $updates['nikah_package_id'] = null;
+            $updates['package_price'] = null;
+            $updates['package_started_at'] = null;
+            $updates['package_expires_at'] = null;
+        }
+
+        $lead->update($updates);
+
+        if ($wasConfirmed) {
+            $commissionResult = $this->voidCommissionFor(Lead::class, $lead->id, 'package', 'Package payment confirmation reversed: ' . $validated['reason']);
+
+            $message = match ($commissionResult) {
+                'voided' => 'Package payment confirmation undone — the matchmaker\'s commission for it was voided too.',
+                'already_paid' => 'Package payment confirmation undone — but a commission for it was already marked Paid. That will need to be clawed back manually.',
+                default => 'Package payment confirmation undone.',
+            };
+
+            MatchmakingTimelineEvent::log($lead, $lead->nikahProfile, 'package_payment_rejected', 'Package payment confirmation reversed: ' . $validated['reason']);
+
+            return back()->with('status', $message);
+        }
 
         MatchmakingTimelineEvent::log($lead, $lead->nikahProfile, 'package_payment_rejected', 'Package payment rejected: ' . $validated['reason']);
 

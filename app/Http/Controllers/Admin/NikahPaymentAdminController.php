@@ -150,6 +150,11 @@ class NikahPaymentAdminController extends Controller
     {
         $request->validate(['payment_rejection_reason' => 'required|string|max:500']);
 
+        // Also doubles as "undo a mistaken Confirm" — this method has no
+        // guard on the current payment_status, so it already works from
+        // 'confirmed' as much as from 'submitted'.
+        $wasConfirmed = $profile->payment_status === 'confirmed';
+
         $updates = [
             'payment_status' => 'rejected',
             'payment_rejection_reason' => $request->payment_rejection_reason,
@@ -157,8 +162,9 @@ class NikahPaymentAdminController extends Controller
 
         // If this payment was previously confirmed and the profile already went
         // through verification off the back of it, a retroactive rejection (e.g.
-        // fraud discovered later) must pull the profile back out of the public
-        // browse results — verified status can't outlive its own payment.
+        // fraud discovered later, or undoing a mistaken confirm) must pull the
+        // profile back out of the public browse results — verified status
+        // can't outlive its own payment.
         if ($profile->verification_status === 'verified') {
             $updates['verification_status'] = 'rejected';
             $updates['rejection_reason'] = 'Payment confirmation was revoked: ' . $request->payment_rejection_reason;
@@ -166,12 +172,24 @@ class NikahPaymentAdminController extends Controller
 
         $profile->update($updates);
 
+        $status = 'Payment rejected. User will need to resubmit.';
+
+        if ($wasConfirmed) {
+            $commissionResult = $this->voidCommissionFor(NikahProfile::class, $profile->id, 'verified_profile', 'Payment confirmation reversed: ' . $request->payment_rejection_reason);
+
+            $status = match ($commissionResult) {
+                'voided' => 'Payment confirmation undone — the matchmaker\'s commission for it was voided too.',
+                'already_paid' => 'Payment confirmation undone — but a commission for it was already marked Paid. That will need to be clawed back manually.',
+                default => 'Payment confirmation undone.',
+            };
+        }
+
         try {
             $profile->user->notify(new \App\Notifications\NikahPaymentRejected($profile));
         } catch (\Throwable $e) {
             \Log::error('NikahPaymentRejected notification failed: ' . $e->getMessage());
         }
 
-        return back()->with('status', 'Payment rejected. User will need to resubmit.');
+        return back()->with('status', $status);
     }
 }

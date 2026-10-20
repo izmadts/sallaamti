@@ -139,6 +139,45 @@ trait RecordsCommission
         $this->notifyCommissionEarned($matchmaker, $entry);
     }
 
+    // Called when a payment that had already been confirmed (and so already
+    // fired a commission) gets walked back — e.g. Admin\NikahPaymentAdminController
+    // ::reject() or Admin\LeadController::rejectPackagePayment() undoing a
+    // mistaken confirm. Deliberately never touches an entry that's already
+    // 'paid' — the money's already gone out the door by then, so that case
+    // is surfaced back to the caller instead of silently voided, and needs
+    // a human (claw back from the counselor, or let it stand) rather than
+    // an automatic decision.
+    // Returns 'voided', 'already_paid' (caller should warn admin to handle
+    // the clawback manually), or 'none' (nothing was ever recorded, e.g.
+    // no commission rule was configured at confirmation time) — so the
+    // caller can tell the admin exactly what happened rather than staying
+    // silent about money.
+    private function voidCommissionFor(string $sourceType, int $sourceId, string $ruleType, string $reason): string
+    {
+        $entry = CommissionLedgerEntry::where('source_type', $sourceType)
+            ->where('source_id', $sourceId)
+            ->where('rule_type', $ruleType)
+            ->whereIn('status', ['pending', 'approved', 'paid'])
+            ->first();
+
+        if (!$entry) {
+            return 'none';
+        }
+
+        if ($entry->status === 'paid') {
+            return 'already_paid';
+        }
+
+        $entry->update([
+            'status' => 'voided',
+            'voided_at' => now(),
+            'void_reason' => $reason,
+            'voided_by' => auth()->id(),
+        ]);
+
+        return 'voided';
+    }
+
     private function notifyCommissionEarned(User $matchmaker, CommissionLedgerEntry $entry): void
     {
         try {

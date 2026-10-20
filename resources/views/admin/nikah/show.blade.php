@@ -336,6 +336,21 @@
                         </a>
                         @endif
 
+                        {{-- Undo a mistaken Confirm — admin.nikah.payments.reject has no
+                             guard on the current status, so this reuses that same action;
+                             it also voids the commission that firing already created. --}}
+                        @if ($profile->payment_status === 'confirmed')
+                        <details class="mt-3">
+                            <summary class="text-xs text-red-600 hover:underline cursor-pointer text-center">↩️ Confirmed by mistake? Undo it</summary>
+                            <form method="POST" action="{{ route('admin.nikah.payments.reject', $profile) }}" class="mt-2 space-y-2"
+                                onsubmit="return confirm('Undo this payment confirmation? If the profile was already approved off the back of it, approval will be revoked too, and any commission already recorded for it will be voided.')">
+                                @csrf
+                                <input type="text" name="payment_rejection_reason" required placeholder="Reason (e.g. confirmed by mistake)" class="w-full border-gray-300 rounded text-xs px-2 py-1.5">
+                                <button class="w-full bg-red-50 border border-red-300 text-red-700 text-xs px-3 py-1.5 rounded hover:bg-red-100">Undo Confirmation</button>
+                            </form>
+                        </details>
+                        @endif
+
                         @if (in_array($profile->payment_status, ['unpaid', 'rejected']))
                         <div class="mt-4 pt-4 border-t border-gray-100">
                             <p class="text-xs font-semibold text-gray-500 mb-1">📲 Received Payment Another Way?</p>

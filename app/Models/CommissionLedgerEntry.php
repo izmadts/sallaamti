@@ -12,6 +12,7 @@ class CommissionLedgerEntry extends Model
         'rate_type', 'rate_value', 'base_amount', 'commission_amount',
         'status', 'eligible_at', 'approved_at', 'approved_by',
         'paid_at', 'paid_by', 'flagged_at', 'flag_reason', 'flagged_by',
+        'voided_at', 'void_reason', 'voided_by',
         'notes',
     ];
 
@@ -26,6 +27,7 @@ class CommissionLedgerEntry extends Model
             'approved_at' => 'datetime',
             'paid_at' => 'datetime',
             'flagged_at' => 'datetime',
+            'voided_at' => 'datetime',
         ];
     }
 
@@ -57,6 +59,11 @@ class CommissionLedgerEntry extends Model
     public function flaggedBy()
     {
         return $this->belongsTo(User::class, 'flagged_by');
+    }
+
+    public function voidedBy()
+    {
+        return $this->belongsTo(User::class, 'voided_by');
     }
 
     public function isFlagged(): bool

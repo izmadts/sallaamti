@@ -190,6 +190,21 @@
             </div>
             @endif
 
+            {{-- Confirmed package payment — lets admin undo a mistaken Confirm click. Deliberately a collapsed <details>, not a prominent button, since this is a rare correction, not a normal next step. --}}
+            @if ($lead->package_payment_status === 'confirmed')
+            <div class="bg-white rounded-xl shadow-sm p-4" style="border-left: 4px solid #16a34a">
+                <details>
+                    <summary class="text-xs text-red-600 hover:underline cursor-pointer">↩️ Package payment confirmed by mistake? Undo it</summary>
+                    <form method="POST" action="{{ route('admin.leads.package-payment.reject', $lead) }}" class="mt-2 flex gap-2"
+                        onsubmit="return confirm('Undo this package payment confirmation? The package will be deactivated and any commission already recorded for it will be voided.')">
+                        @csrf
+                        <input type="text" name="reason" required placeholder="Reason (e.g. confirmed by mistake)" class="border-gray-300 rounded-lg text-sm flex-1">
+                        <button class="text-sm font-semibold px-4 py-2 rounded-lg border border-red-300 text-red-600 hover:bg-red-50 whitespace-nowrap">Undo Confirmation</button>
+                    </form>
+                </details>
+            </div>
+            @endif
+
             {{-- Rejected package payment — the review card above only shows while status is 'submitted', so a rejection otherwise vanishes from this page entirely except a buried timeline line. This keeps it visible until the client resubmits (package_payment_status flips back to 'submitted') or a new package activates. --}}
             @if ($lead->package_payment_status === 'rejected')
             <div class="bg-white rounded-xl shadow-sm p-6" style="border-left: 4px solid #dc2626">
