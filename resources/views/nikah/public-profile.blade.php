@@ -1,4 +1,5 @@
 <x-guest-layout :title="__('db.:age years, :city — Sallaamti Nikah', ['age' => $profile->age, 'city' => $profile->city])" :description="__('db.Nikah profile on Sallaamti: :age years old, :city, :status. Sign up to view the full profile.', ['age' => $profile->age, 'city' => $profile->city, 'status' => ucfirst(str_replace('_', ' ', $profile->marital_status))])">
+    @section('robots', 'noindex, nofollow')
 
     <div class="py-12 bg-cream">
         <div class="max-w-2xl mx-auto sm:px-6 lg:px-8 space-y-6">

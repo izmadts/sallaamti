@@ -4,11 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\BlogPost;
 use App\Models\Course;
-use App\Models\NikahProfile;
 use App\Models\Post;
 use App\Models\QuranLiveCourse;
 use App\Models\User;
-use Illuminate\Support\Str;
 
 class SitemapController extends Controller
 {
@@ -91,21 +89,9 @@ class SitemapController extends Controller
                 ]);
             });
 
-        NikahProfile::where('verification_status', 'verified')
-            ->where('is_active', true)
-            ->where('visibility', 'public')
-            ->get(['id', 'public_token', 'updated_at'])
-            ->each(function ($profile) use ($urls) {
-                if (!$profile->public_token) {
-                    $profile->update(['public_token' => Str::random(32)]);
-                }
-                $urls->push([
-                    'loc' => url('/nikah/p/' . $profile->public_token),
-                    'lastmod' => $profile->updated_at->toDateString(),
-                    'changefreq' => 'monthly',
-                    'priority' => '0.4',
-                ]);
-            });
+        // Nikah profiles are deliberately NOT in the sitemap: they show a member's age,
+        // city and marital status, so they must not be searchable in Google (privacy).
+        // The profile page itself also sends noindex (see NikahProfileController::publicView).
 
         return response()
             ->view('sitemap', ['urls' => $urls])
