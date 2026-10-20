@@ -44,8 +44,13 @@ trait ValidatesNikahProfile
             // rather than a strict enum: the ~150k imported cities aren't
             // perfectly complete, and hard-rejecting a real city a member
             // typed that we just don't have would be worse than accepting
-            // free text here.
-            'city' => ['required', 'string', 'max:100'],
+            // free text here. Still blocks the obviously-not-a-city entries
+            // the live-search's free-text fallback was letting through
+            // (e.g. "30", a stray digit someone fat-fingered) — a real
+            // city name always has at least one letter and more than one
+            // character; this can't catch a non-numeric typo like a
+            // mistyped username, only the unambiguous garbage.
+            'city' => ['required', 'string', 'min:2', 'max:100', 'regex:/[a-zA-Z]/'],
             // The one deliberately optional field in Basic Information —
             // everything else there (height, profession, country, state,
             // city) is required.
@@ -102,6 +107,7 @@ trait ValidatesNikahProfile
             'date_of_birth.after' => __('db.Please enter a valid date of birth.'),
             'has_children.required_if' => __('db.Please let us know if you have children.'),
             'living_situation.required_if' => __('db.Please let us know who you currently live with.'),
+            'city.regex' => __('db.Please enter a real city name.'),
         ];
     }
 
