@@ -128,8 +128,10 @@
                             <p class="text-sm text-gray-500">{{ $profile->user?->email }}</p>
                             <p class="text-sm text-gray-500">{{ $profile->age }} yrs, {{ ucfirst($profile->user?->gender ?? '—') }}, {{ $profile->city }}</p>
                             <p class="text-sm text-gray-500">CNIC: {{ $profile->cnic_number }}</p>
-                            <p class="text-sm text-gray-500">
-                                Guardian: {{ $profile->guardian_name }} ({{ $profile->guardian_contact }})
+                            <p class="text-sm text-gray-500 flex items-center gap-1 flex-wrap">
+                                <span>Guardian: {{ $profile->guardian_name }} (</span>
+                                <x-phone-actions :phone="$profile->guardian_contact" />
+                                <span>)</span>
                                 @if ($profile->isGuardianVerified())
                                 <span class="text-purple-600">✓ Verified</span>
                                 @else

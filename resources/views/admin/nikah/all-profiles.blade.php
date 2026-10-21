@@ -158,7 +158,13 @@
                             <td class="px-4 py-3 text-xs font-mono text-gray-400">#{{ $profile->id }}</td>
                             <td class="px-4 py-3">
                                 <p class="font-medium text-gray-800">{{ $profile->user?->name ?? 'Deleted account' }}</p>
-                                <p class="text-xs text-gray-400">{{ $profile->user?->email ?: $profile->user?->phone }}</p>
+                                <p class="text-xs text-gray-400">
+                                    @if ($profile->user?->email)
+                                    {{ $profile->user->email }}
+                                    @elseif ($profile->user?->phone)
+                                    <x-phone-actions :phone="$profile->user->phone" />
+                                    @endif
+                                </p>
                             </td>
                             <td class="px-4 py-3 text-gray-600">{{ $profile->age }} / {{ ucfirst($profile->user?->gender ?? '—') }}</td>
                             <td class="px-4 py-3 text-gray-600">{{ $profile->city ?: '—' }}</td>

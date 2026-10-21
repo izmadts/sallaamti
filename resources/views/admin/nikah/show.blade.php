@@ -39,7 +39,14 @@
                             <h2 class="text-xl font-bold text-gray-800">{{ $profile->user?->name ?? 'Deleted account' }}</h2>
                             <span class="text-xs font-mono text-gray-400 bg-gray-50 border border-gray-200 rounded-full px-2 py-0.5" title="This profile's unique ID — also shown on its share summary">Profile #{{ $profile->id }}</span>
                         </div>
-                        <p class="text-sm text-gray-500">{{ $profile->user?->email ?: '— no email —' }} · {{ $profile->user?->phone ?: '— no phone —' }}</p>
+                        <p class="text-sm text-gray-500 flex items-center gap-1 flex-wrap">
+                            <span>{{ $profile->user?->email ?: '— no email —' }} ·</span>
+                            @if ($profile->user?->phone)
+                            <x-phone-actions :phone="$profile->user->phone" />
+                            @else
+                            <span>— no phone —</span>
+                            @endif
+                        </p>
                         <p class="text-sm text-gray-500">{{ $profile->age }} yrs, {{ ucfirst($profile->user?->gender ?? '—') }}, {{ $profile->city }}, {{ $profile->country }}</p>
                         <p class="text-xs text-gray-400 mt-1">Profile created {{ $profile->created_at->format('d M Y') }} @if ($profile->user) · Account created {{ $profile->user->created_at->format('d M Y') }} @endif</p>
                         @if ($profile->isWalkIn())
@@ -272,7 +279,7 @@
                         <dl class="text-sm space-y-2">
                             <div class="flex justify-between"><dt class="text-gray-400">Name</dt><dd>{{ $profile->guardian_name ?: '—' }}</dd></div>
                             <div class="flex justify-between"><dt class="text-gray-400">Relation</dt><dd>{{ $profile->guardian_relation ?: '—' }}</dd></div>
-                            <div class="flex justify-between"><dt class="text-gray-400">Contact</dt><dd>{{ $profile->guardian_contact ?: '—' }}</dd></div>
+                            <div class="flex justify-between items-center"><dt class="text-gray-400">Contact</dt><dd><x-phone-actions :phone="$profile->guardian_contact" /></dd></div>
                         </dl>
                         @if ($profile->isGuardianVerified())
                         <p class="text-xs text-purple-600 mt-2">✓ Verified {{ $profile->guardian_verified_at->format('d M Y') }}</p>
