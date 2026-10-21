@@ -9,7 +9,9 @@
      static content regardless of DOM order — without that, either the link
      would swallow every click, or the buttons would swallow the link. --}}
 @php $badges = $profile->trustBadges(); @endphp
-<div class="group relative bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden transition duration-300 hover:shadow-xl hover:-translate-y-1">
+<div class="group relative bg-white rounded-2xl overflow-hidden transition duration-300 hover:-translate-y-1
+            {{ $badges['cnic'] ? 'border-2 shadow-md hover:shadow-xl' : 'border border-gray-100 shadow-sm hover:shadow-xl' }}"
+     @if ($badges['cnic']) style="border-color: #10B981; box-shadow: 0 0 0 3px rgba(16,185,129,0.1), 0 4px 10px rgba(16,185,129,0.12)" @endif>
 
     <a href="{{ route('nikah.profile.view', $profile) }}" class="absolute inset-0 z-0" aria-label="{{ __('db.View full profile') }}"></a>
 
@@ -45,7 +47,7 @@
             <span class="text-[11px] font-semibold bg-emerald-500 text-white px-2 py-0.5 rounded-full shadow flex items-center gap-1" title="{{ __('db.CNIC verified by our team') }}">🪪 {{ __('db.CNIC Verified') }}</span>
             @endif
             @if ($badges['payment'])
-            <span class="text-[11px] font-semibold bg-blue-500 text-white px-2 py-0.5 rounded-full shadow flex items-center gap-1" title="{{ __('db.Verification fee payment confirmed') }}">💳 {{ __('db.Payment Verified') }}</span>
+            <span class="text-[11px] font-semibold bg-blue-500 text-white px-2 py-0.5 rounded-full shadow flex items-center gap-1" title="{{ __('db.Verification fee payment confirmed') }}">🛡️ {{ __('db.Trusted Verified') }}</span>
             @endif
             @if ($badges['guardian'])
             <span class="text-[11px] font-semibold bg-purple-500 text-white px-2 py-0.5 rounded-full shadow flex items-center gap-1" title="{{ __('db.Guardian contact confirmed by our team') }}">👨‍👩‍👦 {{ __('db.Guardian Verified') }}</span>
