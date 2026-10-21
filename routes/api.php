@@ -91,6 +91,7 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
             Route::get('profile', [NikahProfileController::class, 'show'])->name('profile.show');
             Route::post('profile', [NikahProfileController::class, 'store'])->name('profile.store');
             Route::post('profile/submit', [NikahProfileController::class, 'submit'])->name('profile.submit');
+            Route::post('profile/extend-payment-deadline', [NikahProfileController::class, 'extendPaymentDeadline'])->name('profile.extend-payment-deadline');
             Route::post('payment', [NikahPaymentController::class, 'store'])->name('payment.store');
 
             Route::get('browse', [NikahBrowseController::class, 'index'])->name('browse.index');

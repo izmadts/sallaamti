@@ -290,6 +290,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::delete('/nikah/block/{block}', [NikahSafetyController::class, 'unblock'])->name('nikah.unblock');
     Route::post('/nikah/report/{profile}', [NikahSafetyController::class, 'report'])->name('nikah.report');
     Route::post('/nikah/toggle-active', [NikahSafetyController::class, 'toggleActive'])->name('nikah.toggle-active');
+    Route::post('/nikah/extend-payment-deadline', [NikahSafetyController::class, 'extendPaymentDeadline'])->name('nikah.extend-payment-deadline');
     });
 
     // --- QURAN COURSES ---

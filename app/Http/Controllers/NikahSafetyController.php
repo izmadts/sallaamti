@@ -100,6 +100,25 @@ class NikahSafetyController extends Controller
         return back()->with('status', $message);
     }
 
+    // Self-service, no admin approval — same spirit as toggleActive() above.
+    // Reachable even though the profile is currently is_active=false (that's
+    // exactly the state this exists to fix), unlike toggleActive() which a
+    // paused-for-non-payment member wouldn't see a meaningful option in
+    // anyway (see NikahProfile::isPausedForNonPayment()).
+    public function extendPaymentDeadline()
+    {
+        $profile = Auth::user()->nikahProfile;
+        abort_unless($profile, 404);
+        abort_if($profile->isSuspended(), 403, 'Your profile has been suspended by our moderation team. Please contact support.');
+        abort_unless($profile->payment_deadline_at, 422, 'This profile was never on a payment deadline.');
+        abort_unless($profile->canExtendPaymentDeadline(), 422, 'You\'ve already used all ' . NikahProfile::MAX_PAYMENT_DEADLINE_EXTENSIONS . ' self-service extensions. Please contact us on WhatsApp to reactivate your profile: ' . whatsapp_link('Hi, my Nikah profile was paused and I\'ve used all my self-service extensions — can you help reactivate it?'));
+
+        $profile->extendPaymentDeadline();
+
+        $remaining = NikahProfile::MAX_PAYMENT_DEADLINE_EXTENSIONS - $profile->payment_deadline_extensions_used;
+        return back()->with('status', "Your profile is active again — you now have 7 more days to complete the verification fee payment. ({$remaining} self-service extension(s) left after this.)");
+    }
+
     public function adminReports()
     {
         $reports = NikahReport::with(['reporter.user', 'reported.user'])

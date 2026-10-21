@@ -62,6 +62,9 @@ class NikahProfile extends Model
         'payment_screenshot',
         'payment_rejection_reason',
         'payment_confirmed_at',
+        'payment_deadline_at',
+        'payment_deadline_passed_at',
+        'payment_deadline_extensions_used',
         'fee_waived',
         'fee_waived_by',
         'fee_waived_reason',
@@ -98,6 +101,8 @@ class NikahProfile extends Model
             'guardian_verified_at' => 'datetime',
             'last_active_at' => 'datetime',
             'payment_confirmed_at' => 'datetime',
+            'payment_deadline_at' => 'datetime',
+            'payment_deadline_passed_at' => 'datetime',
             'fee_waived' => 'boolean',
         ];
     }
@@ -143,6 +148,51 @@ class NikahProfile extends Model
     public function applicableVerificationFee(): float
     {
         return static::feeForMaritalStatus($this->marital_status);
+    }
+
+    // Self-service only — a counselor/admin-created walk-in profile
+    // (created_by set) is excluded, since the counselor usually collects
+    // payment offline at their own pace, not within a fixed window. Also a
+    // no-op when nothing is actually owed (fee waived / 100% discount) —
+    // see applicableVerificationFee().
+    public function startsPaymentDeadline(): bool
+    {
+        return $this->created_by === null && $this->applicableVerificationFee() > 0;
+    }
+
+    // Past this many self-service extensions, the member is pointed at
+    // WhatsApp support instead of getting another automatic 7 days — a
+    // profile can't sit unpaid and unverified in search forever just by
+    // repeatedly clicking Extend.
+    public const MAX_PAYMENT_DEADLINE_EXTENSIONS = 3;
+
+    public function canExtendPaymentDeadline(): bool
+    {
+        return $this->payment_deadline_extensions_used < self::MAX_PAYMENT_DEADLINE_EXTENSIONS;
+    }
+
+    // Called once at creation (not counted as a use), and again
+    // (self-service, no admin approval needed — see
+    // SendNikahPaymentDeadlineReminders' own comment) when the member
+    // clicks "Extend 7 Days" after an auto-pause, up to the cap above.
+    public function extendPaymentDeadline(int $days = 7): void
+    {
+        $this->update([
+            'payment_deadline_at' => now()->addDays($days),
+            'payment_deadline_passed_at' => null,
+            'is_active' => true,
+            'payment_deadline_extensions_used' => $this->payment_deadline_extensions_used + 1,
+        ]);
+    }
+
+    // Distinguishes "paused because the payment deadline passed" from the
+    // member's own separate voluntary is_active toggle (NikahSafetyController
+    // ::toggleActive()) — both end up with is_active=false, but only this
+    // one should show the "Extend 7 Days" prompt instead of a plain
+    // "you turned this off yourself" message.
+    public function isPausedForNonPayment(): bool
+    {
+        return $this->payment_deadline_passed_at !== null;
     }
 
     // `age` (an integer column) stays the source browse/search filtering

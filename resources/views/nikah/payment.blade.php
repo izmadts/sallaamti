@@ -24,7 +24,31 @@
             </div>
             @endif
 
-            @if (in_array($profile->payment_status, ['unpaid', 'rejected']) && !$lead)
+            {{-- Paused because the 7-day payment window ran out — takes
+                 priority over the plain "Final Step" badge below, since a
+                 paused member needs to know WHY and what to do about it,
+                 not just that payment is the last step. --}}
+            @if ($profile->isPausedForNonPayment())
+            <div class="bg-amber-50 border border-amber-200 rounded-lg p-5">
+                <p class="font-semibold text-amber-800 mb-1">⏸️ {{ __('db.Your profile is paused') }}</p>
+                <p class="text-sm text-amber-700 mb-3">{{ __('db.The 7-day window to complete this payment ran out, so your profile is hidden from search. Nothing is lost — it\'s all still saved.') }}</p>
+                @if ($profile->canExtendPaymentDeadline())
+                <form method="POST" action="{{ route('nikah.extend-payment-deadline') }}">
+                    @csrf
+                    <button class="bg-amber-600 text-white text-sm font-semibold px-4 py-2 rounded-lg hover:bg-amber-700">
+                        {{ __('db.Extend 7 Days') }}
+                    </button>
+                    <span class="text-xs text-amber-600 ml-2">{{ __('db.:count self-service extension(s) left after this.', ['count' => \App\Models\NikahProfile::MAX_PAYMENT_DEADLINE_EXTENSIONS - $profile->payment_deadline_extensions_used - 1]) }}</span>
+                </form>
+                @else
+                <a href="{{ whatsapp_link('Hi, my Nikah profile was paused and I\'ve used all my self-service extensions — can you help reactivate it?') }}" target="_blank"
+                    class="inline-flex items-center gap-2 bg-green-600 text-white text-sm font-semibold px-4 py-2 rounded-lg hover:bg-green-700">
+                    💬 {{ __('db.Contact Support on WhatsApp') }}
+                </a>
+                <p class="text-xs text-amber-600 mt-2">{{ __('db.You\'ve used all your self-service extensions — our team can reactivate it for you.') }}</p>
+                @endif
+            </div>
+            @elseif (in_array($profile->payment_status, ['unpaid', 'rejected']) && !$lead)
             <div class="flex items-center gap-2">
                 <span class="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wide px-3 py-1 rounded-full text-white" style="background: var(--teal)">
                     🎯 {{ __('db.Final Step') }}

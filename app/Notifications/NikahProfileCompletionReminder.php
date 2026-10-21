@@ -13,7 +13,11 @@ class NikahProfileCompletionReminder extends Notification implements ShouldQueue
 {
     use Queueable;
 
-    public function __construct(public NikahProfile $profile) {}
+    // Set only by the daily SendNikahPaymentDeadlineReminders command — the
+    // existing admin-triggered sendReminder()/bulkRemind() actions still
+    // call this with no day count and get the original, deadline-free
+    // wording below.
+    public function __construct(public NikahProfile $profile, public ?int $daysRemaining = null) {}
 
     public function via($notifiable): array
     {
@@ -22,11 +26,19 @@ class NikahProfileCompletionReminder extends Notification implements ShouldQueue
 
     public function toFcm($notifiable): array
     {
+        $body = $this->profile->payment_status === 'rejected'
+            ? 'Your payment proof was rejected — resubmit it to unlock Nikah features.'
+            : 'Complete your verification fee payment to unlock Nikah features.';
+
+        if ($this->daysRemaining !== null) {
+            $body .= $this->daysRemaining === 1
+                ? ' Just 1 day left before your profile is paused.'
+                : " {$this->daysRemaining} days left before your profile is paused.";
+        }
+
         return [
             'title' => '💍 Finish your Nikah profile',
-            'body' => $this->profile->payment_status === 'rejected'
-                ? 'Your payment proof was rejected — resubmit it to unlock Nikah features.'
-                : 'Complete your verification fee payment to unlock Nikah features.',
+            'body' => $body,
             // type, not url — a push's data payload never carries the
             // target url, only this (see notification_route_resolver.dart
             // on the mobile app, which maps this straight to the payment
@@ -49,6 +61,12 @@ class NikahProfileCompletionReminder extends Notification implements ShouldQueue
         } else {
             $mail->line('Please complete your verification fee payment so our team can verify your CNIC and activate your profile in search.')
                 ->action('Complete Payment', route('nikah.payment'));
+        }
+
+        if ($this->daysRemaining !== null) {
+            $mail->line($this->daysRemaining === 1
+                ? '⏰ Just 1 day left — your profile will be automatically paused and hidden from search tomorrow if payment isn\'t completed.'
+                : "⏰ {$this->daysRemaining} days left — your profile will be automatically paused and hidden from search once this runs out.");
         }
 
         return $mail->line('Once verified, your profile becomes visible to serious, verified matches — we don\'t want you to miss out. May Allah make this journey easy for you, and best of luck finding your match, InshaAllah!');

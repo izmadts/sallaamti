@@ -156,6 +156,10 @@ class NikahProfileController extends Controller
             $validated['payment_amount'] = NikahProfile::feeForMaritalStatus($validated['marital_status'] ?? null);
             $profile = NikahProfile::create($validated);
 
+            if ($profile->startsPaymentDeadline()) {
+                $profile->update(['payment_deadline_at' => now()->addDays(7)]);
+            }
+
             if (!$user->city && !empty($validated['city'])) {
                 $user->update(['city' => $validated['city']]);
             }
@@ -185,6 +189,30 @@ class NikahProfileController extends Controller
             'message' => __('db.Profile submitted for verification.'),
             'profile' => $this->profilePayload($profile),
         ]);
+    }
+
+    // Self-service, no admin approval, capped at NikahProfile::
+    // MAX_PAYMENT_DEADLINE_EXTENSIONS — see that model's own comments and
+    // the web equivalent, NikahSafetyController::extendPaymentDeadline().
+    // A dedicated JSON-returning method rather than reusing that web
+    // controller directly — it responds with back(), which has no
+    // meaningful target for a token-authenticated app request.
+    public function extendPaymentDeadline(Request $request): JsonResponse
+    {
+        $profile = $request->user()->nikahProfile;
+        abort_unless($profile, 404);
+        abort_if($profile->isSuspended(), 403, __('db.Your profile has been suspended by our moderation team. Please contact support.'));
+        abort_unless($profile->payment_deadline_at, 422, __('db.This profile was never on a payment deadline.'));
+
+        if (!$profile->canExtendPaymentDeadline()) {
+            throw ValidationException::withMessages([
+                'extend' => __('db.You\'ve used all :count self-service extensions. Please contact us on WhatsApp to reactivate your profile.', ['count' => NikahProfile::MAX_PAYMENT_DEADLINE_EXTENSIONS]),
+            ]);
+        }
+
+        $profile->extendPaymentDeadline();
+
+        return response()->json(['profile' => $this->profilePayload($profile->fresh())]);
     }
 
     public function profilePayload(NikahProfile $profile): array
@@ -232,6 +260,12 @@ class NikahProfileController extends Controller
             'is_active' => $profile->is_active,
             'payment_status' => $profile->payment_status,
             'fee_waived' => $profile->fee_waived,
+            'payment_deadline_at' => $profile->payment_deadline_at?->toIso8601String(),
+            'is_paused_for_non_payment' => $profile->isPausedForNonPayment(),
+            'can_extend_payment_deadline' => $profile->canExtendPaymentDeadline(),
+            'payment_deadline_extensions_used' => $profile->payment_deadline_extensions_used,
+            'max_payment_deadline_extensions' => NikahProfile::MAX_PAYMENT_DEADLINE_EXTENSIONS,
+            'support_whatsapp_link' => whatsapp_link('Hi, my Nikah profile was paused and I\'ve used all my self-service extensions — can you help reactivate it?'),
             'payment_amount' => $profile->payment_status === 'confirmed'
                 ? $profile->payment_amount
                 : $profile->applicableVerificationFee(),

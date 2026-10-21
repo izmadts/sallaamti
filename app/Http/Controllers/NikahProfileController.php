@@ -40,7 +40,11 @@ class NikahProfileController extends Controller
         $validated['payment_amount'] = NikahProfile::feeForMaritalStatus($validated['marital_status'] ?? null);
         $validated['public_token'] = Str::random(32);
 
-        NikahProfile::create($validated);
+        $profile = NikahProfile::create($validated);
+
+        if ($profile->startsPaymentDeadline()) {
+            $profile->update(['payment_deadline_at' => now()->addDays(7)]);
+        }
 
         session()->flash('conversion_event', 'nikah_profile_created');
 
