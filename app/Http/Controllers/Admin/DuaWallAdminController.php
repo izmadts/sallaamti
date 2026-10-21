@@ -54,4 +54,16 @@ class DuaWallAdminController extends Controller
 
         return back()->with('status', 'Dua permanently deleted.');
     }
+
+    public function bulkDestroy(Request $request)
+    {
+        $request->validate([
+            'ids' => ['required', 'array'],
+            'ids.*' => ['integer', 'exists:dua_requests,id'],
+        ]);
+
+        $count = DuaRequest::whereIn('id', $request->ids)->delete();
+
+        return back()->with('status', "$count dua(s) permanently deleted.");
+    }
 }

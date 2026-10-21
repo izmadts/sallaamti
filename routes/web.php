@@ -612,6 +612,10 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('wall', [DuaWallAdminController::class, 'index'])->name('wall.index')->middleware('can:wall.view');
     Route::post('wall/{duaRequest}/approve', [DuaWallAdminController::class, 'approve'])->name('wall.approve')->middleware('can:wall.manage');
     Route::post('wall/{duaRequest}/reject', [DuaWallAdminController::class, 'reject'])->name('wall.reject')->middleware('can:wall.manage');
+    // Must stay above wall/{duaRequest} — Laravel matches routes in
+    // registration order, so a literal segment declared after a parameter
+    // route at the same position never gets a chance to match.
+    Route::delete('wall/bulk-destroy', [DuaWallAdminController::class, 'bulkDestroy'])->name('wall.bulk-destroy')->middleware('can:wall.delete');
     Route::delete('wall/{duaRequest}', [DuaWallAdminController::class, 'destroy'])->name('wall.destroy')->middleware('can:wall.delete');
 
     // Public Posts moderation (permission-gated, see App\Support\PermissionCatalog)

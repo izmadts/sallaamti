@@ -17,9 +17,38 @@
                 @endforeach
             </div>
 
+            <div x-data="{ selected: [], all: @js($duas->pluck('id')) }">
+                {{-- Bulk delete form lives outside the list so each row's own
+                     Approve/Hide/Delete forms below don't end up nested
+                     inside it (invalid HTML, breaks form submission) — its
+                     checkboxes reference this form by id instead. --}}
+                <form id="wall-bulk-form" method="POST" action="{{ route('admin.wall.bulk-destroy') }}"
+                    onsubmit="return confirm('Permanently delete the selected dua(s)? This cannot be undone.')">
+                    @csrf
+                    @method('DELETE')
+                </form>
+
+                @if ($duas->isNotEmpty())
+                <div class="flex items-center justify-between mb-2">
+                    <label class="flex items-center gap-2 text-xs text-gray-500 cursor-pointer select-none">
+                        <input type="checkbox" class="rounded border-gray-300"
+                            @change="selected = $event.target.checked ? [...all] : []"
+                            :checked="selected.length === all.length && all.length > 0">
+                        {{ __('db.Select all on this page') }}
+                    </label>
+                    <button type="submit" form="wall-bulk-form" x-show="selected.length > 0" x-cloak
+                        class="bg-red-600 text-white text-xs font-semibold px-3 py-1.5 rounded-lg hover:bg-red-700">
+                        🗑️ {{ __('db.Delete Selected') }} (<span x-text="selected.length"></span>)
+                    </button>
+                </div>
+                @endif
+
             <div class="bg-white rounded-lg shadow-sm divide-y">
                 @forelse ($duas as $dua)
                 <div class="p-5 flex justify-between items-start flex-wrap gap-3">
+                    <div class="flex gap-3 flex-1 min-w-0">
+                        <input type="checkbox" form="wall-bulk-form" name="ids[]" value="{{ $dua->id }}" x-model="selected"
+                            class="mt-1.5 rounded border-gray-300 text-red-600 focus:ring-red-500">
                     <div class="flex-1 min-w-0">
                         <p class="font-medium text-gray-800">
                             {{ $dua->is_anonymous ? 'Anonymous' : $dua->user->name }}
@@ -37,6 +66,7 @@
                         <p class="text-xs text-red-600 mt-1.5">Hidden reason: {{ $dua->rejection_reason }}</p>
                         @endif
                         <p class="text-xs text-gray-400 mt-1.5">Submitted {{ $dua->created_at->format('d M Y, h:i A') }}</p>
+                    </div>
                     </div>
 
                     <div class="flex flex-col items-end gap-2">
@@ -76,6 +106,7 @@
             </div>
 
             {{ $duas->links() }}
+            </div>
         </div>
     </div>
 </x-admin-layout>
