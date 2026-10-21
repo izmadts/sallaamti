@@ -28,6 +28,11 @@
                             @endif
                         </p>
                         <p class="text-sm text-gray-700 mt-1.5 whitespace-pre-line">{{ $dua->body }}</p>
+                        @if ($dua->image)
+                        <a href="{{ \Illuminate\Support\Facades\Storage::url($dua->image) }}" target="_blank" rel="noopener" class="inline-block mt-2">
+                            <img src="{{ \Illuminate\Support\Facades\Storage::url($dua->image) }}" alt="" class="h-32 rounded-lg border border-gray-200 object-cover hover:opacity-90 transition">
+                        </a>
+                        @endif
                         @if ($dua->rejection_reason)
                         <p class="text-xs text-red-600 mt-1.5">Hidden reason: {{ $dua->rejection_reason }}</p>
                         @endif
