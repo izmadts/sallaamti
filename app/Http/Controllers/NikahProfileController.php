@@ -189,8 +189,10 @@ class NikahProfileController extends Controller
             return $blocked;
         }
 
-        // Get blocked IDs BEFORE running the query
-        $blockedIds = $myProfile->blockedProfiles()->pluck('blocked_profile_id')->toArray();
+        // Both directions of a block — not just profiles I blocked, but
+        // also whoever blocked me, so their card doesn't dead-end into a
+        // 404 the moment it's clicked. See NikahBlock::excludedProfileIds().
+        $blockedIds = \App\Models\NikahBlock::excludedProfileIds($myProfile->id);
 
         // Deliberately not filtering on verification_status here — profiles
         // still awaiting admin review show up too (with a "Verification
@@ -352,7 +354,7 @@ class NikahProfileController extends Controller
             return $blocked;
         }
 
-        abort_if(\App\Models\NikahBlock::existsBetween($myProfile->id, $profile->id), 404);
+        abort_if(\App\Models\NikahBlock::existsBetween($myProfile->id, $profile->id), 404, __('db.This profile is no longer available to you.'));
 
         // Check if there's a mutual accepted interest
         $hasAcceptedInterest = false;

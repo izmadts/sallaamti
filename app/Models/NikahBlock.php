@@ -31,4 +31,22 @@ class NikahBlock extends Model
                 ->where('blocked_profile_id', $profileIdA);
         })->exists();
     }
+
+    // Every profile ID to hide from this one's Browse grid — both sides of
+    // a block. A browse list filtered only on `blockedProfiles()` (profiles
+    // THIS profile blocked) still shows the card of someone who blocked
+    // THIS profile: the viewer could tap it and hit show()'s
+    // existsBetween() 404, a dead-end that looks like a broken/blank
+    // screen rather than the card simply not being there.
+    public static function excludedProfileIds(int $profileId): array
+    {
+        return static::where('blocker_profile_id', $profileId)
+            ->orWhere('blocked_profile_id', $profileId)
+            ->get(['blocker_profile_id', 'blocked_profile_id'])
+            ->flatMap(fn ($block) => [$block->blocker_profile_id, $block->blocked_profile_id])
+            ->unique()
+            ->reject(fn ($id) => $id === $profileId)
+            ->values()
+            ->all();
+    }
 }

@@ -45,7 +45,10 @@ class NikahBrowseController extends Controller
         // show()/savedProfiles() (still gated) and NikahInterestController
         // (gated via canInteract()).
 
-        $blockedIds = $myProfile ? $myProfile->blockedProfiles()->pluck('blocked_profile_id')->toArray() : [];
+        // Both directions of a block — not just profiles I blocked, but
+        // also whoever blocked me, so their card doesn't dead-end into a
+        // 404 the moment it's tapped. See NikahBlock::excludedProfileIds().
+        $blockedIds = $myProfile ? NikahBlock::excludedProfileIds($myProfile->id) : [];
 
         $query = NikahProfile::memberSearchable()
             ->where('user_id', '!=', $user->id)
@@ -118,7 +121,7 @@ class NikahBrowseController extends Controller
             return $blocked;
         }
 
-        abort_if(NikahBlock::existsBetween($myProfile->id, $profile->id), 404);
+        abort_if(NikahBlock::existsBetween($myProfile->id, $profile->id), 404, __('db.This profile is no longer available to you.'));
 
         $interest = \App\Models\NikahInterest::where(function ($q) use ($myProfile, $profile) {
             $q->where('sender_profile_id', $myProfile->id)->where('receiver_profile_id', $profile->id);
