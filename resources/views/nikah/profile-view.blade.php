@@ -129,12 +129,22 @@
                     </div>
 
                     {{-- Report Form --}}
-                    <div id="report-form" class="hidden mt-3">
-                        <form method="POST" action="{{ route('nikah.report', $profile) }}" class="flex gap-2">
+                    <div id="report-form" class="hidden mt-3" x-data="{ reason: '' }">
+                        <form method="POST" action="{{ route('nikah.report', $profile) }}" class="flex flex-col gap-2">
                             @csrf
-                            <input type="text" name="reason" placeholder="{{ __('db.Reason for reporting') }}"
-                                class="flex-1 border-gray-300 rounded text-sm px-3 py-2" required>
-                            <button class="bg-red-600 text-white px-3 py-2 rounded text-sm">{{ __('db.Submit Report') }}</button>
+                            <select name="reason" x-model="reason" required class="w-full border-gray-300 rounded text-sm px-3 py-2">
+                                <option value="" disabled selected>{{ __('db.Why are you reporting this profile?') }}</option>
+                                <option value="Fake profile / not a real person">{{ __('db.Fake profile / not a real person') }}</option>
+                                <option value="Suspected fake matchmaker / mass outreach">{{ __('db.Suspected fake matchmaker / mass outreach') }}</option>
+                                <option value="Inappropriate or offensive content">{{ __('db.Inappropriate or offensive content') }}</option>
+                                <option value="Asking for money or financial details">{{ __('db.Asking for money or financial details') }}</option>
+                                <option value="Harassment or unwanted contact">{{ __('db.Harassment or unwanted contact') }}</option>
+                                <option value="Other">{{ __('db.Other') }}</option>
+                            </select>
+                            <input type="text" name="details" x-show="reason === 'Other'" x-cloak
+                                placeholder="{{ __('db.Please describe the issue') }}"
+                                class="w-full border-gray-300 rounded text-sm px-3 py-2">
+                            <button class="bg-red-600 text-white px-3 py-2 rounded text-sm self-start">{{ __('db.Submit Report') }}</button>
                         </form>
                     </div>
                 </div>

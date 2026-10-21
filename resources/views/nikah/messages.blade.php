@@ -52,6 +52,8 @@
                     <option value="Harassment or inappropriate messages">{{ __('db.Harassment or inappropriate messages') }}</option>
                     <option value="Misleading profile information">{{ __('db.Misleading profile information') }}</option>
                     <option value="Requesting money or personal financial details">{{ __('db.Requesting money or personal financial details') }}</option>
+                    <option value="Suspected fake matchmaker / mass outreach">{{ __('db.Suspected fake matchmaker / mass outreach') }}</option>
+                    <option value="Asked to move the conversation outside the app">{{ __('db.Asked to move the conversation outside the app') }}</option>
                     <option value="Other">{{ __('db.Other') }}</option>
                 </select>
                 <label class="block text-sm text-gray-600 mb-1" for="report-details">{{ __('db.Details (optional)') }}</label>

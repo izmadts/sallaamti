@@ -253,7 +253,39 @@ class NikahVerificationController extends Controller
     {
         $profile->load(['user', 'moderationNotes.admin', 'shares.sharedBy']);
 
-        return view('admin.nikah.show', compact('profile'));
+        // Guardian-phone reuse is a soft fraud signal (fake matchmakers
+        // running several "client" profiles off one contact number), not a
+        // hard block — siblings can legitimately share one guardian's
+        // number, so this is surfaced for admin judgment, not validated
+        // away. See NikahProfile::guardianContactSharedCount().
+        $guardianSharedCount = $profile->guardian_contact
+            ? NikahProfile::where('guardian_contact', $profile->guardian_contact)->where('id', '!=', $profile->id)->count()
+            : 0;
+
+        return view('admin.nikah.show', compact('profile', 'guardianSharedCount'));
+    }
+
+    // All OTHER profiles sharing one guardian contact number — the
+    // drill-down an admin reaches by clicking the "N profiles share this
+    // contact" flag, so they can compare names/cities/ages side by side
+    // before deciding whether it's a real family or a fake-matchmaker ring
+    // running several "client" profiles off one number.
+    public function guardianGroup(string $contact)
+    {
+        $profiles = NikahProfile::with('user')
+            ->where('guardian_contact', $contact)
+            ->latest()
+            ->get();
+
+        abort_if($profiles->isEmpty(), 404);
+
+        // All created within the same calendar day is a much stronger
+        // red flag than the count alone — a real family adds its children's
+        // profiles over months/years as each becomes marriage-age, not all
+        // in one sitting.
+        $allSameDay = $profiles->pluck('created_at')->map->toDateString()->unique()->count() === 1;
+
+        return view('admin.nikah.guardian-group', compact('profiles', 'contact', 'allSameDay'));
     }
 
     // Complete, irreversible wipe — the user account itself stays intact,

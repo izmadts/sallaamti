@@ -281,6 +281,12 @@
                             <div class="flex justify-between"><dt class="text-gray-400">Relation</dt><dd>{{ $profile->guardian_relation ?: '—' }}</dd></div>
                             <div class="flex justify-between items-center"><dt class="text-gray-400">Contact</dt><dd><x-phone-actions :phone="$profile->guardian_contact" /></dd></div>
                         </dl>
+                        @if ($guardianSharedCount > 0)
+                        <a href="{{ route('admin.nikah.guardian-group', $profile->guardian_contact) }}"
+                            class="block mt-2 text-xs font-semibold {{ $guardianSharedCount >= 4 ? 'text-red-600' : 'text-amber-600' }} hover:underline">
+                            ⚠ Shared with {{ $guardianSharedCount }} other {{ Str::plural('profile', $guardianSharedCount) }} — review →
+                        </a>
+                        @endif
                         @if ($profile->isGuardianVerified())
                         <p class="text-xs text-purple-600 mt-2">✓ Verified {{ $profile->guardian_verified_at->format('d M Y') }}</p>
                         @else

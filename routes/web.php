@@ -470,6 +470,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
         Route::get('/nikah-profiles', [NikahVerificationController::class, 'directory'])->name('nikah.profiles');
         Route::get('/nikah-verifications', [NikahVerificationController::class, 'index'])->name('nikah.verifications');
         Route::get('/nikah-verifications/{profile}', [NikahVerificationController::class, 'show'])->name('nikah.show');
+        Route::get('/nikah-guardian-group/{contact}', [NikahVerificationController::class, 'guardianGroup'])->name('nikah.guardian-group')->where('contact', '.*');
         Route::get('/nikah-payments', [NikahPaymentAdminController::class, 'index'])->name('nikah.payments');
         Route::get('nikah-reports', [NikahSafetyController::class, 'adminReports'])->name('nikah.reports');
         Route::get('nikah-reports/{report}/conversation', [NikahSafetyController::class, 'reportConversation'])->name('nikah.reports.conversation');

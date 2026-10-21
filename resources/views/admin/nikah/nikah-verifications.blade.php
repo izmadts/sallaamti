@@ -142,7 +142,10 @@
                                 @endif
                             </p>
                             @if (($guardianContactCounts[$profile->guardian_contact] ?? 0) > 1)
-                            <p class="text-xs text-orange-600 mt-1">⚠ This guardian contact number appears on {{ $guardianContactCounts[$profile->guardian_contact] }} profiles on this page — review for possible duplicate/fake accounts.</p>
+                            <a href="{{ route('admin.nikah.guardian-group', $profile->guardian_contact) }}"
+                                class="block text-xs font-semibold mt-1 hover:underline {{ $guardianContactCounts[$profile->guardian_contact] >= 4 ? 'text-red-600' : 'text-orange-600' }}">
+                                ⚠ This guardian contact appears on {{ $guardianContactCounts[$profile->guardian_contact] }} profiles — review for possible duplicate/fake accounts →
+                            </a>
                             @endif
                             @if ($profile->isSuspended())
                             <p class="text-xs text-red-600 mt-1">⛔ Suspended: {{ $profile->suspension_reason }}
