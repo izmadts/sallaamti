@@ -44,15 +44,12 @@
         {{-- Trust badge stack — independently-earned signals instead of one binary "Verified" --}}
         <div class="absolute top-2 start-2 flex flex-col gap-1 items-start">
             @if ($badges['cnic'])
-            <span class="text-[11px] font-semibold bg-emerald-500 text-white px-2 py-0.5 rounded-full shadow flex items-center gap-1" title="{{ __('db.CNIC verified by our team') }}">🪪 {{ __('db.CNIC Verified') }}</span>
-            @endif
-            @if ($badges['payment'])
-            <span class="text-[11px] font-semibold bg-blue-500 text-white px-2 py-0.5 rounded-full shadow flex items-center gap-1" title="{{ __('db.Verification fee payment confirmed') }}">🛡️ {{ __('db.Trusted Verified') }}</span>
+            <span class="text-[11px] font-semibold bg-emerald-500 text-white px-2 py-0.5 rounded-full shadow flex items-center gap-1" title="{{ __('db.CNIC verified by our team') }}">🪪 {{ __('db.Trusted') }}</span>
             @endif
             @if ($badges['guardian'])
             <span class="text-[11px] font-semibold bg-purple-500 text-white px-2 py-0.5 rounded-full shadow flex items-center gap-1" title="{{ __('db.Guardian contact confirmed by our team') }}">👨‍👩‍👦 {{ __('db.Guardian Verified') }}</span>
             @endif
-            @if (!$badges['cnic'] && !$badges['payment'] && !$badges['guardian'])
+            @if (!$badges['cnic'] && !$badges['guardian'])
             <span class="text-[11px] font-semibold bg-gray-500/90 text-white px-2 py-0.5 rounded-full shadow flex items-center gap-1" title="{{ __("db.Our team hasn't finished reviewing this profile yet") }}">⏳ {{ __('db.Verification Pending') }}</span>
             @endif
         </div>

@@ -36,10 +36,7 @@
                     @php $badges = $profile->trustBadges(); @endphp
                     <div class="absolute top-2 left-1 flex flex-col gap-1 items-start">
                         @if ($badges['cnic'])
-                        <span class="flex items-center gap-1 bg-green-500 text-white text-xs font-semibold px-3 py-1.5 rounded-full shadow">🪪 {{ __('db.CNIC Verified') }}</span>
-                        @endif
-                        @if ($badges['payment'])
-                        <span class="flex items-center gap-1 bg-blue-500 text-white text-xs font-semibold px-3 py-1.5 rounded-full shadow">🛡️ {{ __('db.Trusted Verified') }}</span>
+                        <span class="flex items-center gap-1 bg-green-500 text-white text-xs font-semibold px-3 py-1.5 rounded-full shadow">🪪 {{ __('db.Trusted') }}</span>
                         @endif
                         @if ($badges['guardian'])
                         <span class="flex items-center gap-1 bg-purple-500 text-white text-xs font-semibold px-3 py-1.5 rounded-full shadow">👨‍👩‍👦 {{ __('db.Guardian Verified') }}</span>
