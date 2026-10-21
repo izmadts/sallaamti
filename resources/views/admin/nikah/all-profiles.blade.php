@@ -145,6 +145,7 @@
                             <th class="px-4 py-3 text-left">Member</th>
                             <th class="px-4 py-3 text-left">Age / Gender</th>
                             <th class="px-4 py-3 text-left">City</th>
+                            <th class="px-4 py-3 text-left">Marital Status</th>
                             <th class="px-4 py-3 text-left">Verification</th>
                             <th class="px-4 py-3 text-left">Payment</th>
                             <th class="px-4 py-3 text-left">Status</th>
@@ -168,6 +169,7 @@
                             </td>
                             <td class="px-4 py-3 text-gray-600">{{ $profile->age }} / {{ ucfirst($profile->user?->gender ?? '—') }}</td>
                             <td class="px-4 py-3 text-gray-600">{{ $profile->city ?: '—' }}</td>
+                            <td class="px-4 py-3 text-gray-600">{{ $profile->marital_status ? ucfirst(str_replace('_', ' ', $profile->marital_status)) : '—' }}</td>
                             <td class="px-4 py-3">
                                 <span class="text-xs px-2 py-1 rounded-full
                                         {{ $profile->verification_status === 'verified' ? 'bg-green-100 text-green-800' :
@@ -199,14 +201,28 @@
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="9" class="px-4 py-8 text-center text-gray-400">No profiles match your filters.</td>
+                            <td colspan="10" class="px-4 py-8 text-center text-gray-400">No profiles match your filters.</td>
                         </tr>
                         @endforelse
                     </tbody>
                 </table>
             </div>
 
-            {{ $profiles->links() }}
+            <div class="flex items-center justify-between gap-3 flex-wrap">
+                <form method="GET" class="flex items-center gap-2 text-xs text-gray-500">
+                    @foreach (request()->except(['per_page', 'page']) as $key => $value)
+                    <input type="hidden" name="{{ $key }}" value="{{ $value }}">
+                    @endforeach
+                    <label for="per_page">Rows per page</label>
+                    <select id="per_page" name="per_page" onchange="this.form.submit()" class="border-gray-300 rounded text-xs">
+                        @foreach ([10, 25, 50, 100] as $size)
+                        <option value="{{ $size }}" {{ $perPage === $size ? 'selected' : '' }}>{{ $size }}</option>
+                        @endforeach
+                    </select>
+                    <span>of {{ number_format($profiles->total()) }}</span>
+                </form>
+                {{ $profiles->links() }}
+            </div>
         </div>
     </div>
 </x-admin-layout>

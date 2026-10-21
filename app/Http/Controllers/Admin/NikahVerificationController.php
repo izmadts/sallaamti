@@ -235,7 +235,14 @@ class NikahVerificationController extends Controller
             $query->where('state', 'like', '%' . $request->state . '%');
         }
 
-        $profiles = $query->latest()->paginate(25)->withQueryString();
+        // Only a fixed set of page sizes, not whatever's in the query string
+        // — an admin could otherwise request per_page=999999 and force one
+        // request to load the entire table.
+        $perPage = in_array((int) $request->get('per_page'), [10, 25, 50, 100], true)
+            ? (int) $request->per_page
+            : 25;
+
+        $profiles = $query->latest()->paginate($perPage)->withQueryString();
 
         $stats = [
             'total' => NikahProfile::count(),
@@ -246,7 +253,7 @@ class NikahVerificationController extends Controller
         $countries = CountryStates::countries();
         $educationLevels = ['Matric / O-Levels', 'Intermediate / A-Levels', "Bachelor's", "Master's", 'MPhil / MS', 'PhD', 'Madrassah / Islamic Education'];
 
-        return view('admin.nikah.all-profiles', compact('profiles', 'stats', 'countries', 'educationLevels'));
+        return view('admin.nikah.all-profiles', compact('profiles', 'stats', 'countries', 'educationLevels', 'perPage'));
     }
 
     public function show(NikahProfile $profile)
