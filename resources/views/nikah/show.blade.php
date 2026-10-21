@@ -7,6 +7,14 @@
 
     <div class="py-12">
         <div class="max-w-6xl mx-auto sm:px-6 lg:px-8">
+            <x-first-visit-tour storage-key="hub" :steps="[
+                ['emoji' => '💍', 'title' => __('db.Your profile is live!'), 'description' => __('db.Verified members can now find and send interest in your profile. Sallaamti is for serious proposals — your guardian stays involved at every step, as it should be.')],
+                ['emoji' => '🔎', 'title' => __('db.Browse Matches'), 'description' => __('db.Search verified profiles filtered by what actually matters to you — sect, education, city, and more.')],
+                ['emoji' => '💌', 'title' => __('db.Interests & Messages'), 'description' => __('db.When someone shows interest in you, or you in them, it shows up here. Accept it and guardian contact details are shared so families can connect.')],
+                ['emoji' => '🔖', 'title' => __('db.Saved Profiles'), 'description' => __('db.Found someone promising while browsing? Save their profile to come back to it later.')],
+                ['emoji' => '✏️', 'title' => __('db.Edit Profile'), 'description' => __('db.Update your details any time — a complete, honest profile gets better, more serious matches.')],
+            ]" />
+
             <div class="flex flex-col lg:flex-row gap-6">
             <x-module-nav module="nikah" />
             <div class="flex-1 min-w-0">
