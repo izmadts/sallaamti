@@ -58,15 +58,30 @@
                                 <x-text-input id="pref_city" name="pref_city" type="text" class="w-full mt-1" :value="old('pref_city', $data['pref_city'] ?? '')"
                                     placeholder="{{ __('db.e.g. Karachi (leave blank for any city)') }}" title="{{ __('db.Leave blank if the city doesn\'t matter to you.') }}" />
                             </div>
+                            @php $prefSect = old('pref_sect', $data['pref_sect'] ?? ''); @endphp
                             <div>
                                 <x-input-label for="pref_sect" :value="__('db.Preferred Sect')" />
-                                <x-text-input id="pref_sect" name="pref_sect" type="text" class="w-full mt-1" :value="old('pref_sect', $data['pref_sect'] ?? '')"
-                                    placeholder="{{ __('db.e.g. Sunni (leave blank for any)') }}" title="{{ __('db.Leave blank if sect doesn\'t matter to you.') }}" />
+                                <select id="pref_sect" name="pref_sect" class="border-gray-300 rounded-md shadow-sm w-full mt-1"
+                                    title="{{ __('db.Leave as Any if sect doesn\'t matter to you.') }}">
+                                    <option value="">{{ __('db.Any') }}</option>
+                                    @foreach (['Sunni', 'Shia', 'Ahle Hadith', 'Deobandi', 'Other'] as $sect)
+                                    <option value="{{ $sect }}" {{ $prefSect === $sect ? 'selected' : '' }}>{{ __('db.' . $sect) }}</option>
+                                    @endforeach
+                                </select>
                             </div>
+                            @php
+                                $prefEducation = old('pref_education', $data['pref_education'] ?? '');
+                                $educationLevels = ['Matric / O-Levels', 'Intermediate / A-Levels', "Bachelor's", "Master's", 'MPhil / MS', 'PhD', 'Madrassah / Islamic Education'];
+                            @endphp
                             <div>
                                 <x-input-label for="pref_education" :value="__('db.Preferred Education')" />
-                                <x-text-input id="pref_education" name="pref_education" type="text" class="w-full mt-1" :value="old('pref_education', $data['pref_education'] ?? '')"
-                                    placeholder="{{ __('db.e.g. Graduate or above (leave blank for any)') }}" title="{{ __('db.Leave blank if education level doesn\'t matter to you.') }}" />
+                                <select id="pref_education" name="pref_education" class="border-gray-300 rounded-md shadow-sm w-full mt-1"
+                                    title="{{ __('db.Leave as Any if education level doesn\'t matter to you.') }}">
+                                    <option value="">{{ __('db.Any') }}</option>
+                                    @foreach ($educationLevels as $level)
+                                    <option value="{{ $level }}" {{ $prefEducation === $level ? 'selected' : '' }}>{{ $level }}</option>
+                                    @endforeach
+                                </select>
                             </div>
                             @php $prefMs = old('pref_marital_status', $data['pref_marital_status'] ?? ''); @endphp
                             <div>

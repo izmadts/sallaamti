@@ -56,13 +56,28 @@
                                 <x-input-label for="pref_city" value="Preferred City (optional)" />
                                 <x-text-input id="pref_city" name="pref_city" type="text" class="w-full mt-1" :value="old('pref_city', $data['pref_city'] ?? '')" placeholder="e.g. Karachi (leave blank for any city)" />
                             </div>
+                            @php $prefSect = old('pref_sect', $data['pref_sect'] ?? ''); @endphp
                             <div>
                                 <x-input-label for="pref_sect" value="Preferred Sect (optional)" />
-                                <x-text-input id="pref_sect" name="pref_sect" type="text" class="w-full mt-1" :value="old('pref_sect', $data['pref_sect'] ?? '')" placeholder="e.g. Sunni (leave blank for any)" />
+                                <select id="pref_sect" name="pref_sect" class="border-gray-300 rounded-md shadow-sm w-full mt-1">
+                                    <option value="">Any</option>
+                                    @foreach (['Sunni', 'Shia', 'Ahle Hadith', 'Deobandi', 'Other'] as $sect)
+                                    <option value="{{ $sect }}" {{ $prefSect === $sect ? 'selected' : '' }}>{{ $sect }}</option>
+                                    @endforeach
+                                </select>
                             </div>
+                            @php
+                                $prefEducation = old('pref_education', $data['pref_education'] ?? '');
+                                $educationLevels = ['Matric / O-Levels', 'Intermediate / A-Levels', "Bachelor's", "Master's", 'MPhil / MS', 'PhD', 'Madrassah / Islamic Education'];
+                            @endphp
                             <div>
                                 <x-input-label for="pref_education" value="Preferred Education (optional)" />
-                                <x-text-input id="pref_education" name="pref_education" type="text" class="w-full mt-1" :value="old('pref_education', $data['pref_education'] ?? '')" placeholder="e.g. Graduate or above (leave blank for any)" />
+                                <select id="pref_education" name="pref_education" class="border-gray-300 rounded-md shadow-sm w-full mt-1">
+                                    <option value="">Any</option>
+                                    @foreach ($educationLevels as $level)
+                                    <option value="{{ $level }}" {{ $prefEducation === $level ? 'selected' : '' }}>{{ $level }}</option>
+                                    @endforeach
+                                </select>
                             </div>
                             @php $prefMs = old('pref_marital_status', $data['pref_marital_status'] ?? ''); @endphp
                             <div>
