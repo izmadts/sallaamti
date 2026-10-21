@@ -29,7 +29,8 @@
                             </div>
                             <div>
                                 @if ($interest->status === 'pending')
-                                <form method="POST" action="{{ route('nikah.interest.accept', $interest) }}" class="inline">
+                                <form method="POST" action="{{ route('nikah.interest.accept', $interest) }}" class="inline"
+                                    onsubmit="return confirm('{{ __('db.Accepting will share your guardian\'s contact details with this person. Please check their verification badges on their full profile first. Accept this interest?') }}')">
                                     @csrf
                                     <button class="bg-green-600 text-white text-sm px-3 py-1.5 rounded">{{ __('db.Accept') }}</button>
                                 </form>

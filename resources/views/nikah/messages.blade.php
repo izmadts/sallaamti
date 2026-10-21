@@ -14,6 +14,22 @@
                 </button>
             </div>
 
+            {{-- Safety tips — zero tolerance for trust breaches, so this stays
+                 right where the actual risk is: once a conversation is open,
+                 not buried in a help page nobody visits. --}}
+            <details class="bg-teal-50 border border-teal-200 rounded-lg text-sm">
+                <summary class="cursor-pointer px-3 py-2.5 font-semibold text-teal-800">🛡️ {{ __('db.Safety tips before you continue') }}</summary>
+                <ul class="px-3 pb-3 space-y-2 text-teal-900 list-none">
+                    <li>🪪 {{ __('db.The "CNIC Verified" and "Trusted Verified" badges mean our team has confirmed real identity documents and payment. A profile still "Pending" deserves extra caution.') }}</li>
+                    <li>👨‍👩‍👦 {{ __('db.Tell your guardian before accepting any serious interest. A real family always wants guardian involvement — anyone rushing you past that is a red flag.') }}</li>
+                    <li>💬 {{ __('db.All conversation happens through Guardian Messages. If someone pushes to move to WhatsApp or a phone call before your guardian is involved, that\'s a warning sign.') }}</li>
+                    <li>🚫 {{ __('db.No genuine match or guardian will ever ask you for bank details, a verification code, or money.') }}</li>
+                    <li>👤 {{ __('db.If someone says they\'re "helping a friend or relative" from their own account, or seems to be running multiple profiles, be cautious and report it.') }}</li>
+                    <li>🐢 {{ __('db.Genuine families take time — multiple conversations, questions, a family introduction. Pressure to decide quickly is a major warning sign.') }}</li>
+                    <li>⚑ {{ __('db.If something feels wrong, report it right away — we take every report seriously and have zero tolerance for trust breaches.') }}</li>
+                </ul>
+            </details>
+
             <div class="bg-white rounded-lg shadow-sm p-5 space-y-4">
                 @forelse ($messages as $msg)
                 <div class="flex {{ $msg->sender_id === auth()->id() ? 'justify-end' : 'justify-start' }}">
