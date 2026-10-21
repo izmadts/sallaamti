@@ -91,6 +91,8 @@ class NikahProfile extends Model
             'age' => 'integer',
             'pref_min_age' => 'integer',
             'pref_max_age' => 'integer',
+            'children_count' => 'integer',
+            'payment_deadline_extensions_used' => 'integer',
             'date_of_birth' => 'date',
             'has_children' => 'boolean',
             'open_to_polygamy' => 'boolean',
