@@ -197,6 +197,20 @@ class NikahProfile extends Model
         return $this->payment_deadline_passed_at !== null;
     }
 
+    // Whole days left before the 7-day window runs out and the profile
+    // auto-pauses — null once there's no deadline to count down (no fee
+    // owed, already paid, or already paused). Same rounding as
+    // SendNikahPaymentDeadlineReminders' own daysRemaining so the in-app
+    // banner and the daily reminder notification always agree.
+    public function paymentDeadlineDaysRemaining(): ?int
+    {
+        if (!$this->payment_deadline_at || $this->payment_deadline_at->isPast()) {
+            return null;
+        }
+
+        return max(1, (int) ceil(now()->diffInHours($this->payment_deadline_at) / 24));
+    }
+
     // `age` (an integer column) stays the source browse/search filtering
     // queries directly against — recomputing it here whenever
     // date_of_birth changes means every existing age-based query keeps

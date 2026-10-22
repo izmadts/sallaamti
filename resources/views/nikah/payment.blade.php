@@ -49,12 +49,26 @@
                 @endif
             </div>
             @elseif (in_array($profile->payment_status, ['unpaid', 'rejected']) && !$lead)
-            <div class="flex items-center gap-2">
+            <div class="flex items-center gap-2 flex-wrap">
                 <span class="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wide px-3 py-1 rounded-full text-white" style="background: var(--teal)">
                     🎯 {{ __('db.Final Step') }}
                 </span>
                 <span class="text-sm text-gray-500">{{ __('db.This is the only thing standing between you and a live, searchable profile.') }}</span>
             </div>
+            @if ($profile->paymentDeadlineDaysRemaining())
+            <div class="bg-amber-50 border border-amber-200 rounded-lg p-4 flex items-center gap-4">
+                {{-- A countdown chip, not just a sentence buried in text — this is the one
+                     thing a pending member should notice at a glance. --}}
+                <div class="flex flex-col items-center justify-center bg-amber-500 text-white rounded-xl px-4 py-2 shrink-0 shadow-sm min-w-[64px]">
+                    <span class="text-2xl font-extrabold leading-none">{{ $profile->paymentDeadlineDaysRemaining() }}</span>
+                    <span class="text-[10px] uppercase tracking-wide font-semibold">{{ __('db.Day(s) Left') }}</span>
+                </div>
+                <p class="text-sm text-amber-800">
+                    ⏳ {{ __('db.Complete this payment before the timer runs out.') }}
+                    {{ __('db.If it\'s not done in time, your profile is automatically paused and hidden from search — nothing is lost, you can always extend or pay later.') }}
+                </p>
+            </div>
+            @endif
             @endif
 
             @if ($lead)

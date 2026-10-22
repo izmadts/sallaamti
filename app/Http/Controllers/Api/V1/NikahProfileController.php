@@ -261,6 +261,7 @@ class NikahProfileController extends Controller
             'payment_status' => $profile->payment_status,
             'fee_waived' => $profile->fee_waived,
             'payment_deadline_at' => $profile->payment_deadline_at?->toIso8601String(),
+            'payment_deadline_days_remaining' => $profile->paymentDeadlineDaysRemaining(),
             'is_paused_for_non_payment' => $profile->isPausedForNonPayment(),
             'can_extend_payment_deadline' => $profile->canExtendPaymentDeadline(),
             'payment_deadline_extensions_used' => $profile->payment_deadline_extensions_used,
