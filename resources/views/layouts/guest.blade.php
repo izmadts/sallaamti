@@ -25,6 +25,9 @@
      $pageTitle = $title ?? setting('seo_home_title', setting('site_name') . ' | ' . setting('site_tagline'));
      $pageDescription = $description ?? setting('seo_home_description', 'Learn Quran online with Sallaamti.');
      $defaultOgImage = $image ?? (setting('seo_og_image') ? \Illuminate\Support\Facades\Storage::disk('public')->url(setting('seo_og_image')) : asset('img/og-default.jpg'));
+     // Storage::url() returns a relative path ("/storage/...") on this
+     // disk; Facebook/WhatsApp ignore a relative og:image, so make it absolute.
+     $defaultOgImage = url($defaultOgImage);
  @endphp
  <title>@yield('title', $pageTitle)</title>
  <meta name="description" content="@yield('description', $pageDescription)">
@@ -76,9 +79,7 @@
  ];
  @endphp
  <script type="application/ld+json">
- {
- !!json_encode($structuredData, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) !!
- }
+ {!! json_encode($structuredData, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT | JSON_HEX_TAG) !!}
  </script>
  {{-- Page-specific structured data --}}
  @stack('schema')
