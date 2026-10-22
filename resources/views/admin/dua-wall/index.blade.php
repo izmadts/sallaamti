@@ -51,9 +51,9 @@
                             class="mt-1.5 rounded border-gray-300 text-red-600 focus:ring-red-500">
                     <div class="flex-1 min-w-0">
                         <p class="font-medium text-gray-800">
-                            {{ $dua->is_anonymous ? 'Anonymous' : $dua->user->name }}
+                            {{ $dua->is_anonymous ? 'Anonymous' : ($dua->user?->name ?? 'Deleted account') }}
                             @if ($dua->is_anonymous)
-                            <span class="text-xs text-gray-400">({{ $dua->user->name }} — hidden from public)</span>
+                            <span class="text-xs text-gray-400">({{ $dua->user?->name ?? 'Deleted account' }} — hidden from public)</span>
                             @endif
                         </p>
                         <p class="text-sm text-gray-700 mt-1.5 whitespace-pre-line">{{ $dua->body }}</p>
