@@ -156,7 +156,8 @@ class NikahProfileController extends Controller
         }
 
         if ($myProfile->payment_status !== 'confirmed') {
-            return redirect()->route('nikah.payment')->with('status', 'A small step that protects everyone — please complete your verification fee first. It keeps this space free of fake entries, reserved only for those truly serious about Nikah.');
+            $fee = number_format(NikahProfile::feeForMaritalStatus($myProfile->marital_status));
+            return redirect()->route('nikah.payment')->with('status', "A small step that protects everyone — we're Pakistan's first Islamic matrimonial platform, built so families can trust every profile they see. The one-time Rs. {$fee} verification fee keeps this space free of fake entries and casual browsing, reserved only for those truly serious about Nikah.");
         }
 
         if ($myProfile->verification_status !== 'verified') {
