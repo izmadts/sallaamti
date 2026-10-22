@@ -6,10 +6,6 @@
     <div class="py-12">
         <div class="max-w-5xl mx-auto sm:px-6 lg:px-8 space-y-4">
 
-            @if (session('status'))
-            <div class="p-4 bg-green-50 text-green-700 rounded-lg text-sm">{{ session('status') }}</div>
-            @endif
-
             @php $activeStatus = $status ?? 'pending'; @endphp
             <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
                 @foreach (['pending' => $stats['pending'], 'published' => $stats['published'], 'rejected' => $stats['rejected'], 'all' => $stats['total']] as $s => $count)

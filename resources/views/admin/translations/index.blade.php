@@ -9,10 +9,6 @@
 
     <div class="max-w-5xl space-y-4">
 
-        @if (session('status'))
-        <div class="p-3 bg-green-50 border border-green-200 text-green-700 rounded-lg text-sm">{{ session('status') }}</div>
-        @endif
-
         <div class="bg-white rounded-lg shadow-sm p-5 flex flex-wrap items-center gap-4">
             <form method="GET" action="{{ route('admin.translations.index') }}" class="flex items-center gap-3">
                 <label for="locale" class="text-sm font-medium text-gray-600 shrink-0">Language</label>

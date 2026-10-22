@@ -8,10 +8,6 @@
     <div class="py-12">
         <div class="max-w-2xl mx-auto sm:px-6 lg:px-8 space-y-4">
 
-            @if (session('status'))
-            <div class="p-4 bg-green-50 text-green-700 rounded-lg text-sm">{{ session('status') }}</div>
-            @endif
-
             @if ($booking->status === 'requested')
             <div class="rounded-xl p-4 flex items-start gap-3" style="background: var(--teal-light); border: 1px solid #0d6b6b33">
                 <span class="text-xl">🕊️</span>

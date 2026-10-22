@@ -4,13 +4,6 @@
     </x-slot>
     <div class="max-w-3xl space-y-6">
 
-        @if (session('status'))
-        <div class="p-4 bg-green-50 text-green-700 rounded-lg text-sm">{{ session('status') }}</div>
-        @endif
-        @if (session('error'))
-        <div class="p-4 bg-red-50 text-red-700 rounded-lg text-sm">{{ session('error') }}</div>
-        @endif
-
         <div class="bg-white rounded-xl shadow-sm p-6">
             <div class="flex justify-between items-start mb-4">
                 <div>

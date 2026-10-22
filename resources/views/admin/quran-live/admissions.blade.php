@@ -6,9 +6,6 @@
     <div class="py-12">
         <div class="max-w-6xl mx-auto sm:px-6 lg:px-8 space-y-4">
 
-            @if (session('status'))<div class="p-4 bg-green-50 text-green-700 rounded">{{ session('status') }}</div>@endif
-            @if (session('error'))<div class="p-4 bg-red-50 text-red-700 rounded">{{ session('error') }}</div>@endif
-
             @forelse ($admissions as $admission)
             <div class="bg-white shadow-sm rounded-lg p-5">
                 <div class="flex justify-between items-start flex-wrap gap-3">

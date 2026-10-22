@@ -13,10 +13,6 @@
     <section class="py-16 bg-cream">
         <div class="max-w-6xl mx-auto px-4">
 
-            @if (session('status'))
-            <div class="mb-8 p-4 rounded-xl text-center text-white font-semibold" style="background: #0d6b6b">{{ session('status') }}</div>
-            @endif
-
             <div class="grid lg:grid-cols-3 gap-8">
 
                 {{-- Form --}}

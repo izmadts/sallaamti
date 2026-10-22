@@ -4,13 +4,6 @@
     </x-slot>
     <div class="space-y-6 max-w-6xl">
 
-        @if (session('status'))
-        <div class="p-4 bg-green-50 text-green-700 rounded-lg text-sm">{{ session('status') }}</div>
-        @endif
-        @if (session('error'))
-        <div class="p-4 bg-red-50 text-red-700 rounded-lg text-sm">{{ session('error') }}</div>
-        @endif
-
         {{-- Filters --}}
         <form method="GET" class="bg-white rounded-xl shadow-sm p-4 flex flex-wrap gap-3 items-end">
             <div>

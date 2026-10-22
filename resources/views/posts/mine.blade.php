@@ -6,10 +6,6 @@
     <div class="py-12">
         <div class="max-w-3xl mx-auto sm:px-6 lg:px-8 space-y-4">
 
-            @if (session('status'))
-            <div class="p-4 bg-green-50 text-green-700 rounded-lg text-sm">{{ session('status') }}</div>
-            @endif
-
             <div class="flex justify-end">
                 <a href="{{ route('posts.create') }}" class="btn-base bg-teal-700 text-white text-sm px-4 py-2 rounded-md hover:bg-teal-800">+ {{ __('db.Write a Post') }}</a>
             </div>

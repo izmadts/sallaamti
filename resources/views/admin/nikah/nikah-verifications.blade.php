@@ -49,13 +49,6 @@
                 </div>
             </div>
 
-            @if (session('status'))
-            <div class="p-4 bg-green-50 text-green-700 rounded-lg text-sm">{{ session('status') }}</div>
-            @endif
-            @if (session('error'))
-            <div class="p-4 bg-red-50 text-red-700 rounded-lg text-sm">{{ session('error') }}</div>
-            @endif
-
             <!-- Bulk approve (checkboxes below attach via the form="" attribute) -->
             <form id="bulkApproveForm" method="POST" action="{{ route('admin.nikah.verifications.bulk-approve') }}">@csrf</form>
             <div class="bg-white p-3 rounded-lg shadow-sm flex items-center justify-between">

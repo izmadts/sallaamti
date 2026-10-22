@@ -18,9 +18,6 @@
                     Held to the same requirements as a self-created profile.
                 </p>
 
-                @if (session('error'))
-                <div class="mb-4 p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg text-sm">{{ session('error') }}</div>
-                @endif
 
                 @if ($errors->any())
                 <div class="mb-4 p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg">

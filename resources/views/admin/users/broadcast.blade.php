@@ -22,9 +22,6 @@
             </div>
             @endif
 
-            @if (session('error'))
-            <div class="p-4 bg-red-50 text-red-700 rounded-lg text-sm">{{ session('error') }}</div>
-            @endif
 
             <div class="bg-white rounded-lg shadow-sm p-4">
                 <p class="text-sm text-gray-700">

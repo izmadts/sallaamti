@@ -6,10 +6,6 @@
     <div class="py-6">
         <div class="max-w-4xl mx-auto sm:px-6 lg:px-8 space-y-4">
 
-            @if (session('status'))
-            <div class="p-4 bg-green-50 text-green-700 rounded-lg text-sm">{{ session('status') }}</div>
-            @endif
-
             <div class="flex gap-2 border-b border-gray-200">
                 <a href="{{ route('admin.nikah.contact-requests') }}"
                    class="px-4 py-2 text-sm font-semibold border-b-2 -mb-px {{ $type === 'contact' ? 'border-teal-600 text-teal-700' : 'border-transparent text-gray-500 hover:text-gray-700' }}">

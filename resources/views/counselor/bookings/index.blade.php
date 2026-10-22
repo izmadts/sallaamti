@@ -8,13 +8,6 @@
     <div class="py-12">
         <div class="max-w-4xl mx-auto sm:px-6 lg:px-8 space-y-6">
 
-            @if (session('status'))
-            <div class="p-4 bg-green-50 text-green-700 rounded-lg text-sm">{{ session('status') }}</div>
-            @endif
-            @if (session('error'))
-            <div class="p-4 bg-red-50 text-red-700 rounded-lg text-sm">{{ session('error') }}</div>
-            @endif
-
             <div class="flex justify-between items-center">
                 <h3 class="font-semibold text-gray-700">{{ __('db.Upcoming') }}</h3>
                 <a href="{{ route('counselor.availability.index') }}" class="text-sm text-teal-700 hover:underline">{{ __('db.Manage Availability') }} →</a>

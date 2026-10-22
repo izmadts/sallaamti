@@ -6,10 +6,6 @@
     <div class="py-12">
         <div class="max-w-3xl mx-auto sm:px-6 lg:px-8 space-y-6">
 
-            @if (session('status'))
-            <div class="p-4 bg-green-50 text-green-700 rounded-lg text-sm">{{ session('status') }}</div>
-            @endif
-
             @if ($groupStudents->isEmpty())
             <div class="bg-white rounded-lg shadow-sm p-6">
                 <p class="text-gray-600 font-medium mb-2">

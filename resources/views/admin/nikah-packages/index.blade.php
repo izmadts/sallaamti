@@ -12,13 +12,6 @@
     <div class="py-12">
         <div class="max-w-5xl mx-auto sm:px-6 lg:px-8 space-y-4">
 
-            @if (session('status'))
-            <div class="p-4 bg-green-50 text-green-700 rounded-lg text-sm">{{ session('status') }}</div>
-            @endif
-            @if (session('error'))
-            <div class="p-4 bg-red-50 text-red-700 rounded-lg text-sm">{{ session('error') }}</div>
-            @endif
-
             <div class="rounded-xl p-4 bg-white border border-gray-200 text-sm text-gray-600">
                 Everything here is editable at any time — price, duration, proposal limits, and the feature list shown on the public pricing page. Deactivate a package (rather than deleting it) to stop it being assignable while keeping the history of clients already on it.
             </div>

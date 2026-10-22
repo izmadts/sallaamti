@@ -6,10 +6,6 @@
     <div class="py-12">
         <div class="max-w-4xl mx-auto sm:px-6 lg:px-8 space-y-4">
 
-            @if (session('status'))
-            <div class="p-4 bg-green-50 text-green-700 rounded-lg text-sm">{{ session('status') }}</div>
-            @endif
-
             <div class="bg-white rounded-lg shadow-sm overflow-x-auto">
                 <table class="min-w-full text-sm">
                     <thead class="bg-gray-50 text-gray-500 text-xs uppercase">

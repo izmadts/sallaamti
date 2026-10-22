@@ -28,10 +28,6 @@
             <a href="{{ route('matchmaker.clients.create') }}" class="text-white text-sm font-semibold px-4 py-2.5 rounded-lg hover:opacity-90 hover:-translate-y-0.5 transition shadow-sm whitespace-nowrap" style="background: var(--mm-plum);">➕ {{ __('db.Add Client') }}</a>
         </div>
 
-        @if (session('status'))
-        <div class="p-4 bg-green-50 text-green-700 rounded-lg text-sm">{{ session('status') }}</div>
-        @endif
-
         <div class="bg-white rounded-xl shadow-sm p-4">
             <form method="GET" class="flex flex-wrap gap-3 items-end">
                 <div>

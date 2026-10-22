@@ -12,10 +12,6 @@
     <div class="py-12">
         <div class="max-w-5xl mx-auto sm:px-6 lg:px-8 space-y-4">
 
-            @if (session('status'))
-            <div class="p-4 bg-green-50 text-green-700 rounded-lg text-sm">{{ session('status') }}</div>
-            @endif
-
             <div class="bg-white rounded-lg shadow-sm p-3 flex flex-wrap gap-2">
                 <a href="{{ route('admin.faqs.index') }}"
                     class="px-3 py-1.5 rounded-full text-sm font-medium transition {{ $activeModule === '' ? 'bg-teal-600 text-white' : 'bg-gray-100 text-gray-600 hover:bg-gray-200' }}">

@@ -4,7 +4,6 @@
     </x-slot>
     <div class="py-12">
         <div class="max-w-4xl mx-auto sm:px-6 lg:px-8 space-y-4">
-            @if (session('status'))<div class="p-4 bg-green-50 text-green-700 rounded">{{ session('status') }}</div>@endif
             @forelse ($subscriptions as $sub)
             <div class="bg-white shadow-sm rounded-lg p-5">
                 <div class="flex justify-between items-start">
