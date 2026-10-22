@@ -20,7 +20,7 @@ class NikahBrowseController extends Controller
             return response()->json(['code' => 'no_profile', 'message' => __('db.Create your Nikah profile first to explore matches.')], 409);
         }
         if ($myProfile->payment_status !== 'confirmed') {
-            return response()->json(['code' => 'payment_required', 'message' => __('db.Please complete your verification fee payment before you can explore other profiles.')], 402);
+            return response()->json(['code' => 'payment_required', 'message' => __('db.A small step that protects everyone — please complete your verification fee first. It keeps this space free of fake entries, reserved only for those truly serious about Nikah.')], 402);
         }
         if ($myProfile->verification_status !== 'verified') {
             return response()->json(['code' => 'pending_verification', 'message' => __('db.Your profile is still awaiting verification by our team.')], 403);

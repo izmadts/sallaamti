@@ -156,7 +156,7 @@ class NikahProfileController extends Controller
         }
 
         if ($myProfile->payment_status !== 'confirmed') {
-            return redirect()->route('nikah.payment')->with('status', 'Please complete your verification fee payment before you can explore other profiles.');
+            return redirect()->route('nikah.payment')->with('status', 'A small step that protects everyone — please complete your verification fee first. It keeps this space free of fake entries, reserved only for those truly serious about Nikah.');
         }
 
         if ($myProfile->verification_status !== 'verified') {
