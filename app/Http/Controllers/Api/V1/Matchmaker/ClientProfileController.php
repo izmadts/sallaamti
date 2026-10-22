@@ -165,7 +165,7 @@ class ClientProfileController extends Controller
             $validated['user_id'] = $user->id;
             $validated['public_token'] = Str::random(32);
             $validated['created_by'] = auth()->id();
-            $validated['payment_amount'] = NikahProfile::feeForMaritalStatus($validated['marital_status'] ?? null);
+            $validated['payment_amount'] = NikahProfile::feeForMaritalStatus($validated['marital_status'] ?? null, $gender, $validated['city'] ?? null);
             $profile = NikahProfile::create($validated);
 
             $lead->update(['nikah_profile_id' => $profile->id, 'status' => 'registered']);

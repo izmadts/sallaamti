@@ -160,6 +160,27 @@
                         </label>
                         @endforeach
                     </div>
+
+                    {{-- Optional — leave every box unchecked to apply to both
+                         genders, unchanged from the original behavior. --}}
+                    <p class="text-xs text-gray-500 mb-1">Limit to gender (optional — leave both unchecked to apply to everyone):</p>
+                    @php $discountGenders = explode(',', $settings['nikah_discount_genders'] ?? ''); @endphp
+                    <div class="flex flex-wrap gap-3 mb-3">
+                        @foreach (['male' => 'Male', 'female' => 'Female'] as $val => $label)
+                        <label class="flex items-center gap-1.5 text-sm text-gray-700">
+                            <input type="checkbox" name="nikah_discount_genders[]" value="{{ $val }}" {{ in_array($val, $discountGenders) ? 'checked' : '' }} class="rounded border-gray-300 text-green-600">
+                            {{ $label }}
+                        </label>
+                        @endforeach
+                    </div>
+
+                    {{-- Also optional — free text since city isn't a fixed
+                         list; blank applies to every city, same as before. --}}
+                    <div class="mb-3">
+                        <x-input-label value="Limit to cities (optional, comma-separated — blank applies to every city)" />
+                        <x-text-input name="nikah_discount_cities" class="w-full mt-1" placeholder="e.g. Lahore, Karachi, Islamabad" :value="$settings['nikah_discount_cities'] ?? ''" />
+                    </div>
+
                     <div class="max-w-xs">
                         <x-input-label value="Discount Percentage (100 = fully free)" />
                         <x-text-input name="nikah_discount_percent" type="number" min="0" max="100" class="w-full mt-1" :value="$settings['nikah_discount_percent'] ?? '0'" />

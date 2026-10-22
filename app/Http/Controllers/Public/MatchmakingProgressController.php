@@ -145,7 +145,7 @@ class MatchmakingProgressController extends Controller
             'city' => $validated['city'],
             'guardian_name' => $validated['guardian_name'],
             'guardian_contact' => $validated['guardian_contact'],
-            'payment_amount' => NikahProfile::feeForMaritalStatus($validated['marital_status']),
+            'payment_amount' => NikahProfile::feeForMaritalStatus($validated['marital_status'], $validated['gender'], $validated['city']),
             'public_token' => Str::random(32),
         ]);
 

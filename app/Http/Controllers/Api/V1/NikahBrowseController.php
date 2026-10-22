@@ -20,7 +20,7 @@ class NikahBrowseController extends Controller
             return response()->json(['code' => 'no_profile', 'message' => __('db.Create your Nikah profile first to explore matches.')], 409);
         }
         if ($myProfile->payment_status !== 'confirmed') {
-            $fee = NikahProfile::feeForMaritalStatus($myProfile->marital_status);
+            $fee = $myProfile->applicableVerificationFee();
             return response()->json(['code' => 'payment_required', 'message' => __("db.A small step that protects everyone\n\nWe're Pakistan's first Islamic matrimonial platform — built so families can trust every profile they see. The one-time Rs. :amount verification fee keeps this space free of fake entries and casual browsing, reserved only for those truly serious about Nikah.", ['amount' => number_format($fee)])], 402);
         }
         if ($myProfile->verification_status !== 'verified') {

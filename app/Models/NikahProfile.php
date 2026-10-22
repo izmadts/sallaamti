@@ -125,7 +125,7 @@ class NikahProfile extends Model
     // so the site-wide switch and the discount rule both apply everywhere
     // consistently (creation-time amount, live display, and the payment
     // page) rather than needing separate checks scattered per call site.
-    public static function feeForMaritalStatus(?string $maritalStatus): float
+    public static function feeForMaritalStatus(?string $maritalStatus, ?string $gender = null, ?string $city = null): float
     {
         if (!setting('nikah_payment_required', true)) {
             return 0.0;
@@ -144,12 +144,36 @@ class NikahProfile extends Model
             return $baseFee;
         }
 
+        // Optional extra filters on top of marital status — e.g. a widow/
+        // divorcee discount meant only for women, or only for members in a
+        // specific set of cities. An empty setting (the default, never
+        // configured) means no restriction on that dimension at all, so
+        // this stays fully backward-compatible with every deployment that
+        // only ever set marital statuses.
+        $discountGenders = array_filter(explode(',', (string) setting('nikah_discount_genders', '')));
+        if ($discountGenders && (!$gender || !in_array($gender, $discountGenders, true))) {
+            return $baseFee;
+        }
+
+        // City names are free text (no fixed list — see the city field's
+        // own validation), so this compares case-/whitespace-insensitively
+        // rather than requiring an exact byte match against what the admin
+        // typed in Settings.
+        $discountCities = array_filter(array_map('trim', explode(',', (string) setting('nikah_discount_cities', ''))));
+        if ($discountCities) {
+            $normalizedCity = $city ? mb_strtolower(trim($city)) : null;
+            $normalizedDiscountCities = array_map(fn ($c) => mb_strtolower($c), $discountCities);
+            if (!$normalizedCity || !in_array($normalizedCity, $normalizedDiscountCities, true)) {
+                return $baseFee;
+            }
+        }
+
         return round($baseFee * (1 - min($percent, 100) / 100), 2);
     }
 
     public function applicableVerificationFee(): float
     {
-        return static::feeForMaritalStatus($this->marital_status);
+        return static::feeForMaritalStatus($this->marital_status, $this->user?->gender, $this->city);
     }
 
     // Self-service only — a counselor/admin-created walk-in profile

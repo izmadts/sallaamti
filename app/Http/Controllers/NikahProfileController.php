@@ -37,7 +37,7 @@ class NikahProfileController extends Controller
 
         $validated['allow_photo_sharing'] = $request->has('allow_photo_sharing');
         $validated['open_to_polygamy'] = $request->has('open_to_polygamy');
-        $validated['payment_amount'] = NikahProfile::feeForMaritalStatus($validated['marital_status'] ?? null);
+        $validated['payment_amount'] = NikahProfile::feeForMaritalStatus($validated['marital_status'] ?? null, Auth::user()->gender, $validated['city'] ?? null);
         $validated['public_token'] = Str::random(32);
 
         $profile = NikahProfile::create($validated);
@@ -156,7 +156,7 @@ class NikahProfileController extends Controller
         }
 
         if ($myProfile->payment_status !== 'confirmed') {
-            $fee = number_format(NikahProfile::feeForMaritalStatus($myProfile->marital_status));
+            $fee = number_format($myProfile->applicableVerificationFee());
             return redirect()->route('nikah.payment')->with('status', "A small step that protects everyone — we're Pakistan's first Islamic matrimonial platform, built so families can trust every profile they see. The one-time Rs. {$fee} verification fee keeps this space free of fake entries and casual browsing, reserved only for those truly serious about Nikah.");
         }
 

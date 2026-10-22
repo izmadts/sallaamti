@@ -153,7 +153,7 @@ class NikahProfileController extends Controller
         if (!$profile) {
             $validated['user_id'] = $user->id;
             $validated['public_token'] = Str::random(32);
-            $validated['payment_amount'] = NikahProfile::feeForMaritalStatus($validated['marital_status'] ?? null);
+            $validated['payment_amount'] = NikahProfile::feeForMaritalStatus($validated['marital_status'] ?? null, $user->gender, $validated['city'] ?? null);
             $profile = NikahProfile::create($validated);
 
             if ($profile->startsPaymentDeadline()) {

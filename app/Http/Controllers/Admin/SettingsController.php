@@ -68,6 +68,9 @@ class SettingsController extends Controller
             'nikah_payment_required' => ['nullable', 'boolean'],
             'nikah_discount_marital_statuses' => ['nullable', 'array'],
             'nikah_discount_marital_statuses.*' => ['in:never_married,divorced,widowed,separated,married'],
+            'nikah_discount_genders' => ['nullable', 'array'],
+            'nikah_discount_genders.*' => ['in:male,female'],
+            'nikah_discount_cities' => ['nullable', 'string', 'max:500'],
             'nikah_discount_percent' => ['nullable', 'integer', 'min:0', 'max:100'],
             'social_facebook'       => ['nullable', 'url'],
             'social_youtube'        => ['nullable', 'url'],
@@ -200,11 +203,14 @@ class SettingsController extends Controller
             }
         }
 
-        // Array of checkboxes, not a single scalar like the rest of
-        // $groups — always written (even empty) so unchecking every box
-        // actually clears the discount instead of the last-saved value
+        // Arrays of checkboxes (and the free-text cities field below), not a
+        // single scalar like the rest of $groups — always written (even
+        // empty) so unchecking every box, or clearing the cities list,
+        // actually clears the restriction instead of the last-saved value
         // silently sticking around forever.
         Setting::set('nikah_discount_marital_statuses', implode(',', $request->input('nikah_discount_marital_statuses', [])), 'payment');
+        Setting::set('nikah_discount_genders', implode(',', $request->input('nikah_discount_genders', [])), 'payment');
+        Setting::set('nikah_discount_cities', trim((string) $request->input('nikah_discount_cities', '')), 'payment');
 
         if ($request->hasFile('seo_og_image')) {
             if (setting('seo_og_image')) {

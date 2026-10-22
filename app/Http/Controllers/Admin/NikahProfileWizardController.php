@@ -120,7 +120,7 @@ class NikahProfileWizardController extends Controller
             'countries' => $step === 'basic' ? CountryStates::countries() : [],
             'countryStates' => $step === 'basic' ? CountryStates::map() : [],
             'routePrefix' => $this->routeNamePrefix(),
-            'expectedFee' => $step === 'payment' ? NikahProfile::feeForMaritalStatus($this->wizardStepData('basic')['marital_status'] ?? null) : null,
+            'expectedFee' => $step === 'payment' ? NikahProfile::feeForMaritalStatus($this->wizardStepData('basic')['marital_status'] ?? null, $this->wizardStepData('account')['gender'] ?? null, $this->wizardStepData('basic')['city'] ?? null) : null,
         ]);
     }
 
@@ -324,7 +324,7 @@ class NikahProfileWizardController extends Controller
         $profileData['created_by'] = auth()->id();
         $profileData['allow_photo_sharing'] = (bool) ($profileData['allow_photo_sharing'] ?? false);
         $profileData['open_to_polygamy'] = (bool) ($profileData['open_to_polygamy'] ?? false);
-        $profileData['payment_amount'] = NikahProfile::feeForMaritalStatus($profileData['marital_status'] ?? null);
+        $profileData['payment_amount'] = NikahProfile::feeForMaritalStatus($profileData['marital_status'] ?? null, $accountData['gender'] ?? null, $profileData['city'] ?? null);
         $profileData['public_token'] = Str::random(32);
 
         $profile = NikahProfile::create($profileData);
