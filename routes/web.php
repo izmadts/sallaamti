@@ -111,6 +111,12 @@ Route::get('/delete-account', fn() => view('delete-account'))->name('delete-acco
 Route::get('/terms-of-service', fn() => view('terms-of-service'))->name('terms-of-service');
 
 // Public module pages (browsable without login)
+// The bare /nikah URL has no page of its own — only POST /nikah (profile
+// creation, auth-gated, further down) was ever registered on that exact
+// path, so a visitor landing here directly (a marketing link, SEO article,
+// or just typing the obvious URL) got a bare 405 instead of a page. Redirect
+// to the one existing public page about the module.
+Route::get('/nikah', fn () => redirect()->route('nikah.packages'))->name('nikah.landing');
 Route::get('/nikah/packages', function () {
     $packages = \App\Models\NikahPackage::public()->ordered()->get();
 
