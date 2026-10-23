@@ -1,5 +1,5 @@
 {{-- resources/views/team.blade.php --}}
-<x-guest-layout>
+<x-guest-layout :title="__('db.Our Team | Sallaamti')" :description="__('db.Meet the teachers and volunteers behind Sallaamti\'s Quran courses, live classes and community work.')">
     <section class="page-hero relative overflow-hidden flex items-center"
         style="min-height: 280px; background: linear-gradient(135deg, #0d6b6b 0%, #1a1a2e 100%);">
         <div class="max-w-7xl mx-auto px-4 py-16 relative z-10 text-center w-full">

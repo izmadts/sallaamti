@@ -1,4 +1,4 @@
-<x-guest-layout :title="__('db.Volunteer With Us')" :description="__('db.Serve the Muslim Ummah as a Sallaamti volunteer — teaching, tech, counseling, outreach and more.')">
+<x-guest-layout :title="__('db.Volunteer With Sallaamti')" :description="__('db.Serve the Muslim Ummah as a Sallaamti volunteer — teaching, tech, counseling, outreach and more.')">
 
     {{-- Page Hero --}}
     <section class="page-hero relative overflow-hidden flex items-center" style="min-height: 280px; background: linear-gradient(135deg, #0d6b6b 0%, #1a1a2e 100%);">

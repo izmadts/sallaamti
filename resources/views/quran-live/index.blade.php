@@ -1,4 +1,4 @@
-<x-guest-layout>
+<x-guest-layout :title="__('db.Live Quran Classes Online with Teachers | Sallaamti')" :description="__('db.Learn the Quran face-to-face with a qualified teacher over live video: small groups and real-time feedback. See class timings and apply online.')">
 
     {{-- ============================================================ --}}
     {{-- PAGE HERO --}}

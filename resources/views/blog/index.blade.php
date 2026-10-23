@@ -1,5 +1,5 @@
 {{-- resources/views/blog/index.blade.php --}}
-<x-guest-layout :title="__('db.Blog')" :description="__('db.Reflections, reminders and articles on Quran, Islamic living and community from Sallaamti.')">
+<x-guest-layout :title="__('db.Blog: Quran, Islamic Living & Community | Sallaamti')" :description="__('db.Reflections, reminders and articles on Quran, Islamic living and community from Sallaamti.')">
 
     {{-- ============================================================ --}}
     {{-- PAGE HERO --}}
