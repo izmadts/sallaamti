@@ -1,6 +1,30 @@
 {{-- resources/views/blog/show.blade.php --}}
 <x-guest-layout :title="$post->title" :description="$post->excerpt ?? Str::limit(strip_tags($post->content), 155)" :image="$post->cover_image ? Storage::url($post->cover_image) : null">
 
+    @push('schema')
+    @php
+    $blogSchema = [
+    '@context' => 'https://schema.org',
+    '@type' => 'BlogPosting',
+    'headline' => $post->title,
+    'description' => $post->excerpt ?? Str::limit(strip_tags($post->content), 155),
+    'image' => $post->cover_image ? url(Storage::url($post->cover_image)) : asset('img/og-default.jpg'),
+    'datePublished' => $post->published_at?->toIso8601String(),
+    'dateModified' => $post->updated_at?->toIso8601String(),
+    'author' => ['@type' => 'Organization', 'name' => setting('site_name', 'Sallaamti'), 'url' => config('app.url')],
+    'publisher' => [
+    '@type' => 'Organization',
+    'name' => setting('site_name', 'Sallaamti'),
+    'logo' => ['@type' => 'ImageObject', 'url' => asset('img/logo.png')],
+    ],
+    'mainEntityOfPage' => url()->current(),
+    ];
+    @endphp
+    <script type="application/ld+json">
+        {!! json_encode(array_filter($blogSchema), JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT | JSON_HEX_TAG) !!}
+    </script>
+    @endpush
+
     {{-- ============================================================ --}}
     {{-- PAGE HERO --}}
     {{-- ============================================================ --}}
