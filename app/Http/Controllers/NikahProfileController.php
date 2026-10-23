@@ -428,6 +428,10 @@ class NikahProfileController extends Controller
             session(['url.intended' => url()->current()]);
         }
 
-        return view('nikah.public-profile', compact('profile'));
+        // Shareable by link, but never indexed: members' age/city/marital status
+        // must not show up in search engines.
+        return response()
+            ->view('nikah.public-profile', compact('profile'))
+            ->header('X-Robots-Tag', 'noindex, nofollow');
     }
 }
