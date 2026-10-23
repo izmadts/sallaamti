@@ -1,4 +1,4 @@
-<x-dynamic-component :component="auth()->check() ? 'app-layout' : 'guest-layout'">
+<x-dynamic-component :component="auth()->check() ? 'app-layout' : 'guest-layout'" :title="__('db.Sallaamti Wall: Duas & Community')" :description="__('db.Duas, reminders, activities and updates from the Sallaamti community.')">
     @if (auth()->check())
     <x-slot name="header">
         <h2 class="font-semibold text-xl text-gray-800">🤲 {{ __('db.Sallaamti Wall') }}</h2>

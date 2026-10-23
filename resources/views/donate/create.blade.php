@@ -1,4 +1,4 @@
-<x-guest-layout>
+<x-guest-layout :title="__('db.Donate to Support Quran Education | Sallaamti')" :description="__('db.Support free Quran lessons, digital skills training and community work at Sallaamti. Sadaqah Jariyah by bank transfer in Pakistan or abroad.')">
 
     {{-- ============================================================ --}}
     {{-- HERO --}}

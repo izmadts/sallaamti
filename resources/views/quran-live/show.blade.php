@@ -1,6 +1,6 @@
-<x-app-layout>
+<x-app-layout :title="$course->title . ' · ' . __('db.Live Quran Class')" :description="Str::limit(trim(preg_replace('/[\s•✅]+/u', ' ', strip_tags($course->description ?? ''))), 155) ?: null">
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800">{{ $course->title }}</h2>
+        <h1 class="font-semibold text-xl text-gray-800">{{ $course->title }}</h1>
     </x-slot>
     <div class="py-12">
         <div class="max-w-2xl mx-auto sm:px-6 lg:px-8 space-y-6">

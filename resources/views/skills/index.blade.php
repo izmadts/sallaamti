@@ -1,4 +1,4 @@
-<x-guest-layout>
+<x-guest-layout :title="__('db.Free Digital Skills Courses | Sallaamti')" :description="__('db.Free online digital skills training, including a complete WordPress course from zero to advanced. Learn at your own pace and earn a certificate.')">
 
     {{-- ============================================================ --}}
     {{-- PAGE HERO --}}

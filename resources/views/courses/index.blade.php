@@ -1,4 +1,4 @@
-<x-guest-layout>
+<x-guest-layout :title="__('db.Online Quran Courses: Reading to Understanding | Sallaamti')" :description="__('db.Self-paced Quran courses: Naazira, Tajweed, word-by-word translation and Quranic Arabic. Learn at your own pace and earn a certificate.')">
 
     {{-- ============================================================ --}}
     {{-- PAGE HERO --}}

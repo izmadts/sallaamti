@@ -1,6 +1,6 @@
-<x-app-layout :title="$course->title" :description="Str::limit(strip_tags($course->description), 155)" :image="$course->thumbnail ? Storage::url($course->thumbnail) : null">
+<x-app-layout :title="$course->title" :description="Str::limit(trim(preg_replace('/[\s•✅]+/u', ' ', strip_tags($course->description ?? ''))), 155)" :image="$course->thumbnail ? Storage::url($course->thumbnail) : null">
     @php
-    $courseDescription = Str::limit(strip_tags($course->description ?? 'Learn ' . $course->title . ' with Sallaamti — expert Quran education online.'), 160);
+    $courseDescription = Str::limit(trim(preg_replace('/[\s•✅]+/u', ' ', strip_tags($course->description ?? 'Learn ' . $course->title . ' with Sallaamti — expert Quran education online.'))), 160);
     $courseDescriptionLong = Str::limit(strip_tags($course->description ?? ''), 200);
     @endphp
 
@@ -46,7 +46,7 @@
     </script>
     @endpush
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">{{ $course->title }}</h2>
+        <h1 class="font-semibold text-xl text-gray-800 leading-tight">{{ $course->title }}</h1>
     </x-slot>
 
     <div class="py-12">

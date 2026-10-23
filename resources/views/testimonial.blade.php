@@ -1,10 +1,10 @@
 {{-- resources/views/testimonial.blade.php --}}
-<x-guest-layout>
+<x-guest-layout :title="__('db.Student Testimonials | Sallaamti')" :description="__('db.What students and families say about learning the Quran with Sallaamti.')">
     <section class="page-hero relative overflow-hidden flex items-center"
         style="min-height: 280px; background: linear-gradient(135deg, #b8962e 0%, #0d6b6b 100%);">
         <div class="max-w-7xl mx-auto px-4 py-16 relative z-10 text-center w-full">
             <span class="section-eyebrow" style="color: rgba(255,255,255,0.7)">{{ __('db.What People Say') }}</span>
-            <h1 class="text-4xl md:text-5xl font-extrabold text-white mt-2 mb-3">⭐ {{ __('db.Testimonials') }}</h1>
+            <h1 class="text-4xl md:text-5xl font-extrabold text-white mt-2 mb-3">{{ __('db.Testimonials') }}</h1>
             <p class="text-white/70 text-lg max-w-xl mx-auto">
                 {{ __('db.Real stories from our community — students, parents, and families who found value in Sallaamti.') }}
             </p>
