@@ -269,7 +269,12 @@ class NikahVerificationController extends Controller
             ? NikahProfile::where('guardian_contact', $profile->guardian_contact)->where('id', '!=', $profile->id)->count()
             : 0;
 
-        return view('admin.nikah.show', compact('profile', 'guardianSharedCount'));
+        $connectedSocialPlatforms = \App\Models\SocialAccount::where('status', 'connected')
+            ->whereIn('platform', ['facebook', 'instagram', 'threads', 'tiktok', 'twitter'])
+            ->pluck('platform')
+            ->all();
+
+        return view('admin.nikah.show', compact('profile', 'guardianSharedCount', 'connectedSocialPlatforms'));
     }
 
     // All OTHER profiles sharing one guardian contact number — the
@@ -414,6 +419,53 @@ class NikahVerificationController extends Controller
         ]);
 
         return back()->with('status', 'Logged — profile #' . $profile->id . ' marked as shared on ' . \App\Models\NikahProfileShare::CHANNELS[$validated['channel']] . '.');
+    }
+
+    // One click → posts the profile's generic branded Male/Female card
+    // (never the member's real photo) + a short caption to every selected,
+    // already-connected platform, reusing the exact same CommunityPost /
+    // CommunityPostPublisher pipeline the Community Posts feature already
+    // uses — no separate publishing code to maintain. Also drops a row in
+    // the Marketing Share Log per platform, same as a manual "Log Share"
+    // would, so admins see one combined history regardless of how a share
+    // happened.
+    public function shareToSocial(Request $request, NikahProfile $profile, \App\Services\CommunityPostPublisher $publisher)
+    {
+        $connected = \App\Models\SocialAccount::where('status', 'connected')->pluck('platform')->all();
+
+        $validated = $request->validate([
+            'social_targets' => ['required', 'array', 'min:1'],
+            'social_targets.*' => [Rule::in($connected)],
+        ]);
+
+        $gender = $profile->user?->gender === 'female' ? 'female' : 'male';
+        $sourcePath = public_path('images/nikah-og-' . $gender . '.png');
+        $storedPath = 'community-posts/nikah-profile-' . $profile->id . '-' . time() . '.png';
+        \Illuminate\Support\Facades\Storage::disk('public')->put($storedPath, file_get_contents($sourcePath));
+
+        $post = \App\Models\CommunityPost::create([
+            'author_id' => auth()->id(),
+            'title' => 'Nikah Proposal — ' . ucfirst($gender) . ' (Profile #' . $profile->id . ')',
+            'body' => $profile->socialCaption(),
+            'photo' => $storedPath,
+            'social_targets' => $validated['social_targets'],
+            'status' => 'published',
+            'published_at' => now(),
+        ]);
+
+        $publisher->dispatchSocialPosts($post);
+
+        foreach ($validated['social_targets'] as $platform) {
+            $profile->shares()->create([
+                'shared_by' => auth()->id(),
+                'channel' => $platform,
+                'note' => 'Auto-posted via Sallaamti admin',
+            ]);
+        }
+
+        $labels = collect($validated['social_targets'])->map(fn ($p) => \App\Models\NikahProfileShare::CHANNELS[$p] ?? $p)->implode(', ');
+
+        return back()->with('status', 'Queued for posting to ' . $labels . ' — check Community Posts for delivery status.');
     }
 
     // Lets staff toggle a client's "visible in search" status on their

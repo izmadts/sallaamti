@@ -606,6 +606,39 @@ class NikahProfile extends Model
         return implode("\n", $lines);
     }
 
+    // The short caption used alongside the generic Male/Female branded
+    // template graphic (never the member's real photo — see the graphics
+    // team's "Nikah Proposal" card, matched in public/images/nikah-og-
+    // male.png / nikah-og-female.png) when a profile is posted to Facebook/
+    // Instagram/Threads/etc. Deliberately brief — platform-neutral plain
+    // text (no WhatsApp *bold* markup, which Facebook/Instagram render as
+    // literal asterisks) — unlike shareSummary() above, which is the full
+    // WhatsApp-formatted card.
+    public function socialCaption(): string
+    {
+        $field = fn ($value) => filled($value) ? $value : null;
+
+        $details = array_filter([
+            $field($this->age) ? $this->age . ' yrs' : null,
+            $field($this->education),
+            $field($this->profession),
+            $field($this->city),
+            $field($this->sect) ? $this->sect . ' (Maslak)' : null,
+            $field($this->family_type) ? $this->family_type . ' Family' : null,
+        ]);
+
+        $lines = [
+            'Nikah Proposal — ' . ucfirst($this->user?->gender ?? ''),
+            '',
+            implode(' · ', $details),
+            '',
+            'Serious families only. Contact via the Sallaamti Nikah App — www.sallaamti.com',
+            '"Where Nikah is made easier, the path to sin becomes narrower."',
+        ];
+
+        return implode("\n", $lines);
+    }
+
     // Same tracked fields as completenessPercentage() below, paired with a
     // human label and the matching input `id` on nikah/edit.blade.php so the
     // "Complete Your Profile" banner can link straight to what's missing

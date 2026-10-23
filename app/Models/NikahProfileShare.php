@@ -15,6 +15,10 @@ class NikahProfileShare extends Model
     public const CHANNELS = [
         'whatsapp_channel' => 'WhatsApp Channel',
         'facebook' => 'Facebook',
+        'instagram' => 'Instagram',
+        'threads' => 'Threads',
+        'tiktok' => 'TikTok',
+        'twitter' => 'Twitter / X',
         'other' => 'Other',
     ];
 

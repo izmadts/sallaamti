@@ -529,6 +529,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
         Route::post('/nikah-verifications/bulk-remind', [NikahVerificationController::class, 'bulkRemind'])->name('nikah.verifications.bulk-remind');
         Route::post('/nikah-verifications/{profile}/notes', [NikahVerificationController::class, 'addNote'])->name('nikah.notes.store');
         Route::post('/nikah-verifications/{profile}/share', [NikahVerificationController::class, 'recordShare'])->name('nikah.share');
+        Route::post('/nikah-verifications/{profile}/share-to-social', [NikahVerificationController::class, 'shareToSocial'])->name('nikah.share-to-social');
         Route::put('/nikah-verifications/{profile}/toggle-active', [NikahVerificationController::class, 'toggleActive'])->name('nikah.toggle-active');
         Route::get('/nikah-verifications/{profile}/edit', [NikahVerificationController::class, 'edit'])->name('nikah.edit');
         Route::put('/nikah-verifications/{profile}', [NikahVerificationController::class, 'update'])->name('nikah.update');
