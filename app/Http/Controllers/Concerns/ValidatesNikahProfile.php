@@ -50,7 +50,13 @@ trait ValidatesNikahProfile
             // city name always has at least one letter and more than one
             // character; this can't catch a non-numeric typo like a
             // mistyped username, only the unambiguous garbage.
-            'city' => ['required', 'string', 'min:2', 'max:100', 'regex:/[a-zA-Z]/'],
+            // \p{L} (any Unicode letter, with the /u modifier), not
+            // [a-zA-Z] — the old ASCII-only check silently rejected a real
+            // city typed in Urdu/Arabic script (no Latin letters), which is
+            // very plausible for users here, leaving them stuck on this
+            // step with a confusing "enter a real city name" error even
+            // though they did.
+            'city' => ['required', 'string', 'min:2', 'max:100', 'regex:/\p{L}/u'],
             // The one deliberately optional field in Basic Information —
             // everything else there (height, profession, country, state,
             // city) is required.
