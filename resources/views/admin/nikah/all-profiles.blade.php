@@ -75,6 +75,15 @@
                             <option value="inactive" {{ request('active') === 'inactive' ? 'selected' : '' }}>Inactive</option>
                         </select>
                     </div>
+                    <div class="w-36">
+                        <label class="text-xs text-gray-500">Social Sharing</label>
+                        <select name="shared" class="border-gray-300 rounded text-sm block w-full"
+                            title="Shared = at least one WhatsApp/Facebook card share or one-click social post logged for this profile.">
+                            <option value="">All</option>
+                            <option value="not_shared" {{ request('shared') === 'not_shared' ? 'selected' : '' }}>Not Shared Yet</option>
+                            <option value="shared" {{ request('shared') === 'shared' ? 'selected' : '' }}>Already Shared</option>
+                        </select>
+                    </div>
                 </div>
 
                 <p class="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-3 mt-5 pt-4 border-t border-gray-100">Match-Finding</p>

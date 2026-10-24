@@ -220,6 +220,14 @@ class NikahVerificationController extends Controller
             $query->where('is_active', $request->active === 'active');
         }
 
+        if ($request->filled('shared')) {
+            if ($request->shared === 'not_shared') {
+                $query->whereDoesntHave('shares');
+            } elseif ($request->shared === 'shared') {
+                $query->whereHas('shares');
+            }
+        }
+
         // Match-finding filters — on top of the moderation-focused ones
         // above, so an admin or Nikah Counselor can narrow down to
         // actual candidates for a specific client, not just manage queue
