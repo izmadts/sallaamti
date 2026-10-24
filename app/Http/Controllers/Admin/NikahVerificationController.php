@@ -534,9 +534,34 @@ class NikahVerificationController extends Controller
         // Gender isn't a NikahProfile column — it lives on the client's
         // account — so this writes it there instead, same as the member's
         // own edit form does for themselves.
-        $gender = $request->validate(['gender' => ['required', 'in:male,female']])['gender'];
-        if ($profile->user && $gender !== $profile->user->gender) {
-            $profile->user->update(['gender' => $gender]);
+        $accountFields = $request->validate(['gender' => ['required', 'in:male,female']]);
+
+        // Email is also an account field, same reasoning — but changing it
+        // re-points login/notifications for an account that isn't the
+        // acting staff member's own, so it's restricted to super_admin
+        // (not even plain admin/matchmaker, who can otherwise reach this
+        // same edit form via nikah.manage) rather than exposed to everyone
+        // who can edit a profile's other details. A non-super_admin simply
+        // never has this field validated or applied, regardless of what a
+        // tampered request sends.
+        if (auth()->user()->hasRole('super_admin')) {
+            $accountFields['email'] = $request->validate([
+                'email' => [
+                    'nullable', 'string', 'lowercase', 'email', 'max:255',
+                    Rule::unique(\App\Models\User::class)->ignore($profile->user_id),
+                ],
+            ])['email'];
+        }
+
+        if ($profile->user) {
+            $accountUpdates = array_filter([
+                'gender' => $accountFields['gender'] !== $profile->user->gender ? $accountFields['gender'] : null,
+                'email' => array_key_exists('email', $accountFields) && $accountFields['email'] !== $profile->user->email ? $accountFields['email'] : null,
+            ], fn ($v) => $v !== null);
+
+            if ($accountUpdates) {
+                $profile->user->update($accountUpdates);
+            }
         }
 
         try {

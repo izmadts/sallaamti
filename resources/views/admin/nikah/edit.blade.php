@@ -51,6 +51,14 @@
                                 </select>
                                 <p class="text-xs text-gray-400 mt-1">{{ __('db.This also updates their account — used for opposite-gender matching.') }}</p>
                             </div>
+                            @if (auth()->user()->hasRole('super_admin'))
+                            <div>
+                                <x-input-label for="email" :value="__('db.Email')" />
+                                <x-text-input id="email" name="email" type="email" class="w-full mt-1"
+                                    :value="old('email', $profile->user?->email)" placeholder="{{ __('db.e.g. name@example.com') }}" />
+                                <p class="text-xs text-gray-400 mt-1">{{ __('db.Links/corrects the email on their account — super admin only.') }}</p>
+                            </div>
+                            @endif
                             @php
                                 $heightOptions = [];
                                 for ($ft = 4; $ft <= 7; $ft++) {
