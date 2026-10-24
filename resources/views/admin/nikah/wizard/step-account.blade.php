@@ -43,11 +43,11 @@
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                                 <x-input-label for="name" value="Full Name" />
-                                <x-text-input id="name" name="name" type="text" class="w-full mt-1" :value="old('name', $data['name'] ?? '')" required @if ($existingUser) readonly @endif />
+                                <x-text-input id="name" name="name" type="text" class="w-full mt-1" :value="old('name', $data['name'] ?? '')" required :readonly="(bool) $existingUser" />
                             </div>
                             <div>
                                 <x-input-label for="identifier" value="Email or Phone Number" />
-                                <x-text-input id="identifier" name="identifier" type="text" class="w-full mt-1" :value="old('identifier', $data['identifier'] ?? '')" required @if ($existingUser) readonly @endif
+                                <x-text-input id="identifier" name="identifier" type="text" class="w-full mt-1" :value="old('identifier', $data['identifier'] ?? '')" required :readonly="(bool) $existingUser"
                                     placeholder="e.g. name@example.com or 03001234567" title="An email lets us send them a password-setup link immediately. Phone-only accounts need a login link added manually later." />
                             </div>
                             <div>
