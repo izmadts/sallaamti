@@ -101,6 +101,8 @@ Route::get('/team', function () {
 });
 Route::get('/testimonial', fn() => view('testimonial'));
 Route::get('/contact', fn() => view('contact'));
+// Next step after a Facebook/Instagram lead form: choose WhatsApp or the Google Play app (noindex)
+Route::get('/rishta/agla-qadam', fn() => view('rishta-next'))->name('rishta.next');
 Route::get('/privacy-policy', fn() => view('privacy-policy'))->name('privacy-policy');
 // Public on purpose — this is the URL Play Console's Data Safety form
 // requires for account deletion, and Google's own crawler checks it while
