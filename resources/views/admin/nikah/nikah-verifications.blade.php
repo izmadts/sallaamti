@@ -99,6 +99,15 @@
                         <option value="unpaid" {{ request('payment_status') === 'unpaid' ? 'selected' : '' }}>Unpaid</option>
                     </select>
                 </div>
+                <div>
+                    <label class="text-xs text-gray-500">Social Sharing</label>
+                    <select name="shared" class="border-gray-300 rounded text-sm block"
+                        title="Shared = at least one WhatsApp/Facebook card share or one-click social post logged for this profile.">
+                        <option value="all" {{ request('shared', 'all') === 'all' ? 'selected' : '' }}>All</option>
+                        <option value="not_shared" {{ request('shared') === 'not_shared' ? 'selected' : '' }}>Not Shared Yet</option>
+                        <option value="shared" {{ request('shared') === 'shared' ? 'selected' : '' }}>Already Shared</option>
+                    </select>
+                </div>
                 <button class="bg-gray-800 text-white text-sm px-4 py-2 rounded">Filter</button>
                 <a href="{{ route('admin.nikah.verifications') }}" class="text-sm text-gray-500 px-2">Reset</a>
             </form>

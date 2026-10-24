@@ -123,6 +123,20 @@ class NikahVerificationController extends Controller
             $query->where('payment_status', $request->payment_status);
         }
 
+        // Lets an admin find profiles no one has promoted anywhere yet
+        // (manual WhatsApp/Facebook card share, or the one-click auto-post
+        // to Facebook/Instagram/etc — both log a NikahProfileShare row, see
+        // NikahVerificationController::recordShare()/shareToSocial()), so
+        // the backlog of never-shared profiles doesn't just get lost once
+        // the list grows past the first page.
+        if ($request->filled('shared') && $request->shared !== 'all') {
+            if ($request->shared === 'not_shared') {
+                $query->whereDoesntHave('shares');
+            } elseif ($request->shared === 'shared') {
+                $query->whereHas('shares');
+            }
+        }
+
         // Search by name, email, city, or CNIC number
         if ($request->filled('search')) {
             $search = $request->search;
