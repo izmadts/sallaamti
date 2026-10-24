@@ -14,7 +14,11 @@
      deliberately ruled out: it risks that same SEO penalty, breaks inside
      some in-app browsers that restrict app-store redirects, and would
      bounce ad traffic that just wants to browse first). --}}
-@if (setting('mobile_app_promo_enabled') === '1')
+{{-- Skipped on rishta.next (/rishta/agla-qadam) by request — that page's
+     whole job is to calmly offer "WhatsApp or get the app" after a
+     Facebook/Instagram lead form; a full-screen takeover forcing the same
+     choice on top of it is redundant and undercuts the page's own CTAs. --}}
+@if (setting('mobile_app_promo_enabled') === '1' && !request()->routeIs('rishta.next'))
 <div
     x-data="{
         show: false,
