@@ -33,6 +33,25 @@
                 </a>
             </div>
 
+            {{-- What Sallaamti is (owner 24 Oct: "just icons with text") --}}
+            <p class="text-white/70 text-base mt-12 mb-4">سلامتی میں اور کیا ہے؟</p>
+            <div class="grid grid-cols-3 gap-3">
+                @foreach ([
+                    ['📖', 'قرآن کورسز', '/courses'],
+                    ['🎥', 'لائیو کلاسز', '/quran-live'],
+                    ['💍', 'حلال رشتہ', '/nikah/packages'],
+                    ['💻', 'ڈیجیٹل اسکلز', '/skills'],
+                    ['🤝', 'فیملی کونسلنگ', '/support/book'],
+                    ['💧', 'خدمتِ خلق', '/wall?tag=Activity'],
+                ] as [$icon, $label, $path])
+                    <a href="{{ url($path) }}" class="block rounded-xl px-2 py-4 text-white hover:bg-white/10 transition"
+                        style="background: rgba(255,255,255,0.06); border: 1px solid rgba(212,175,55,0.35)">
+                        <span class="block text-3xl mb-1">{{ $icon }}</span>
+                        <span class="block text-sm" style="line-height:1.9">{{ $label }}</span>
+                    </a>
+                @endforeach
+            </div>
+
             <a href="{{ url('/') }}" class="inline-block mt-10 text-white/60 text-sm hover:text-white">www.sallaamti.com</a>
         </div>
     </section>
