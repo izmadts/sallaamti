@@ -375,6 +375,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
         Route::put('users/{user}/role', [UserManagementController::class, 'updateRole'])->name('users.role');
         Route::put('users/{user}/toggle-active', [UserManagementController::class, 'toggleActive'])->name('users.toggle-active');
         Route::delete('users/{user}', [UserManagementController::class, 'destroy'])->name('users.destroy');
+        Route::get('users/{user}/nikah-profile/create', [AdminNikahProfileWizardController::class, 'startForUser'])->name('users.nikah-profile.create');
         Route::get('users/roles/manage', [UserManagementController::class, 'roles'])->name('users.roles');
         Route::post('users/roles', [UserManagementController::class, 'storeRole'])->name('users.roles.store');
         Route::post('users/roles/{role}/permissions', [UserManagementController::class, 'updatePermissions'])->name('users.roles.permissions');

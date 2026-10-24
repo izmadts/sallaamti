@@ -106,6 +106,49 @@ class NikahProfileWizardController extends Controller
             : redirect()->route("{$prefix}.nikah.profiles.create.review");
     }
 
+    // Entry point from the "Nikah" link on an existing user's row in Admin
+    // > Users — for exactly the case that used to dead-end at "The
+    // identifier has already been taken" on the account step: someone who
+    // already has a Sallaamti login (self-registered, Google, whatever) but
+    // never finished their own Nikah profile, and a counselor now wants to
+    // do it for them. Pre-fills the account step from the real account
+    // instead of asking for name/email/phone again, and finalize() below
+    // attaches the profile to this same User rather than creating a new
+    // one.
+    public function startForUser(User $user)
+    {
+        $this->authorizeProfileCreation();
+
+        if ($user->nikahProfile) {
+            return redirect()->route('admin.nikah.show', $user->nikahProfile)
+                ->with('status', "{$user->name} already has a Nikah profile.");
+        }
+
+        $this->clearWizardSession();
+
+        session(["{$this->wizardSessionKey()}.existing_user_id" => $user->id]);
+
+        $this->saveWizardStep('account', [
+            'name' => $user->name,
+            'identifier' => $user->email ?: $user->phone,
+            'gender' => $user->gender,
+        ]);
+
+        // Gender isn't always on file for an older/social-login account —
+        // GENUINELY_REQUIRED needs it, so leave the account step open for
+        // the counselor to pick it rather than letting a blank value ride
+        // through as "completed".
+        if (blank($user->gender)) {
+            session([
+                "{$this->wizardSessionKey()}.completed" => array_values(
+                    array_diff($this->wizardCompletedSteps(), ['account'])
+                ),
+            ]);
+        }
+
+        return redirect()->route("{$this->routeNamePrefix()}.nikah.profiles.create");
+    }
+
     public function showStep(string $step)
     {
         $this->authorizeProfileCreation();
@@ -121,6 +164,9 @@ class NikahProfileWizardController extends Controller
             'countryStates' => $step === 'basic' ? CountryStates::map() : [],
             'routePrefix' => $this->routeNamePrefix(),
             'expectedFee' => $step === 'payment' ? NikahProfile::feeForMaritalStatus($this->wizardStepData('basic')['marital_status'] ?? null, $this->wizardStepData('account')['gender'] ?? null, $this->wizardStepData('basic')['city'] ?? null) : null,
+            'existingUser' => $step === 'account'
+                ? User::find(session("{$this->wizardSessionKey()}.existing_user_id"))
+                : null,
         ]);
     }
 
@@ -161,11 +207,19 @@ class NikahProfileWizardController extends Controller
                 $identifier = preg_replace('/[\s\-]/', '', $identifier);
             }
 
+            // Linking to an existing user (see startForUser()) re-submits
+            // that same user's own email/phone through this step — ignore
+            // their own row in the uniqueness check, or it would reject it
+            // as already taken by... themselves.
+            $existingUserId = session("{$this->wizardSessionKey()}.existing_user_id");
+
             Validator::make(['identifier' => $identifier], [
                 'identifier' => [
                     $isEmail ? 'email' : new ValidPhoneNumber(),
-                    Rule::unique(User::class, $isEmail ? 'email' : 'phone'),
+                    Rule::unique(User::class, $isEmail ? 'email' : 'phone')->ignore($existingUserId),
                 ],
+            ], [
+                'identifier.unique' => __('db.This email or phone number is already registered to another account.'),
             ])->validate();
 
             $validated['identifier'] = $identifier;
@@ -313,12 +367,21 @@ class NikahProfileWizardController extends Controller
         $identifier = $accountData['identifier'];
         $isEmail = (bool) filter_var($identifier, FILTER_VALIDATE_EMAIL);
 
-        $user = $this->createMinimalUser(
-            $accountData['name'],
-            $isEmail ? strtolower($identifier) : null,
-            $isEmail ? null : $identifier,
-        );
-        $user->update(['gender' => $accountData['gender'], 'city' => $profileData['city'] ?? null]);
+        $existingUser = ($existingUserId = session("{$this->wizardSessionKey()}.existing_user_id"))
+            ? User::find($existingUserId)
+            : null;
+
+        if ($existingUser) {
+            $user = $existingUser;
+            $user->update(['name' => $accountData['name'], 'gender' => $accountData['gender'], 'city' => $profileData['city'] ?? $user->city]);
+        } else {
+            $user = $this->createMinimalUser(
+                $accountData['name'],
+                $isEmail ? strtolower($identifier) : null,
+                $isEmail ? null : $identifier,
+            );
+            $user->update(['gender' => $accountData['gender'], 'city' => $profileData['city'] ?? null]);
+        }
 
         $profileData['user_id'] = $user->id;
         $profileData['created_by'] = auth()->id();
@@ -371,7 +434,12 @@ class NikahProfileWizardController extends Controller
 
         $status = "Profile created for {$user->name}.";
 
-        if ($isEmail) {
+        if ($existingUser) {
+            // They already have a working login (self-registered, Google,
+            // whatever) — no new password/reset-link needed, unlike the
+            // brand-new-account branches below.
+            $status .= ' Linked to their existing Sallaamti account — they can log in as usual, no new password was created.';
+        } elseif ($isEmail) {
             Password::sendResetLink(['email' => $user->email]);
             $status .= ' A password-setup link was emailed to them so they can log in — or set a temporary password yourself below and hand it to them directly.';
         } else {

@@ -144,6 +144,12 @@
                                 <div class="flex gap-2">
                                     <a href="{{ route('admin.users.show', $user) }}" class="text-xs text-blue-600 hover:underline">Manage</a>
 
+                                    @if ($user->nikahProfile)
+                                    <a href="{{ route('admin.nikah.show', $user->nikahProfile) }}" class="text-xs text-pink-600 hover:underline">Nikah Profile</a>
+                                    @else
+                                    <a href="{{ route('admin.users.nikah-profile.create', $user) }}" class="text-xs text-pink-600 hover:underline">+ Nikah</a>
+                                    @endif
+
                                     @if ($user->id !== auth()->id() && !($user->hasRole('super_admin') && !auth()->user()->hasRole('super_admin')))
                                     <form method="POST" action="{{ route('admin.users.toggle-active', $user) }}">
                                         @csrf @method('PUT')

@@ -18,6 +18,12 @@
                     Held to the same requirements as a self-created profile.
                 </p>
 
+                @if ($existingUser)
+                <div class="mb-4 p-4 bg-blue-50 border border-blue-200 text-blue-800 rounded-lg text-sm">
+                    🔗 Linking this profile to <strong>{{ $existingUser->name }}</strong>'s existing Sallaamti account ({{ $existingUser->email ?: $existingUser->phone }}) — no new login will be created.
+                </div>
+                @endif
+
 
                 @if ($errors->any())
                 <div class="mb-4 p-4 bg-red-50 border border-red-200 text-red-700 rounded-lg">
@@ -37,11 +43,11 @@
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                             <div>
                                 <x-input-label for="name" value="Full Name" />
-                                <x-text-input id="name" name="name" type="text" class="w-full mt-1" :value="old('name', $data['name'] ?? '')" required />
+                                <x-text-input id="name" name="name" type="text" class="w-full mt-1" :value="old('name', $data['name'] ?? '')" required @if ($existingUser) readonly @endif />
                             </div>
                             <div>
                                 <x-input-label for="identifier" value="Email or Phone Number" />
-                                <x-text-input id="identifier" name="identifier" type="text" class="w-full mt-1" :value="old('identifier', $data['identifier'] ?? '')" required
+                                <x-text-input id="identifier" name="identifier" type="text" class="w-full mt-1" :value="old('identifier', $data['identifier'] ?? '')" required @if ($existingUser) readonly @endif
                                     placeholder="e.g. name@example.com or 03001234567" title="An email lets us send them a password-setup link immediately. Phone-only accounts need a login link added manually later." />
                             </div>
                             <div>

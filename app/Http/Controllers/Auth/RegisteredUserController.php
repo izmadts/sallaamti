@@ -60,6 +60,8 @@ class RegisteredUserController extends Controller
                 $isEmail ? 'email' : new ValidPhoneNumber(),
                 Rule::unique(User::class, $isEmail ? 'email' : 'phone'),
             ],
+        ], [
+            'identifier.unique' => __('db.This email or phone number is already registered to another account.'),
         ])->validate();
 
         $user = $this->createMinimalUser(
