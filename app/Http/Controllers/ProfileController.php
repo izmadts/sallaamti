@@ -27,7 +27,20 @@ class ProfileController extends Controller
      */
     public function update(ProfileUpdateRequest $request): RedirectResponse
     {
-        $request->user()->fill($request->validated());
+        $validated = $request->validated();
+
+        // Locked once set — gender drives opposite-gender Nikah matching, so
+        // letting a member silently flip it themselves is a real trust/
+        // safety issue, not just a data-quality one. A genuine correction
+        // goes through an admin instead (the Nikah admin edit screen's own
+        // gender field already updates this same column). Dropped from the
+        // payload rather than a hard validation error, so the rest of the
+        // profile still saves if a stale form posts the old value.
+        if ($request->user()->gender !== null) {
+            unset($validated['gender']);
+        }
+
+        $request->user()->fill($validated);
         $request->user()->whatsapp_notify_opt_in = $request->boolean('whatsapp_notify_opt_in');
 
         if ($request->hasFile('avatar')) {

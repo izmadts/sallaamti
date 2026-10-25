@@ -36,6 +36,13 @@ class ProfileController extends Controller
             'avatar' => ['nullable', 'image', 'max:4096'],
         ]);
 
+        // Locked once set — see the web ProfileController::update()'s
+        // identical guard for why (opposite-gender Nikah matching; a real
+        // correction goes through an admin instead).
+        if ($user->gender !== null) {
+            unset($validated['gender']);
+        }
+
         $user->fill($validated);
 
         if ($request->hasFile('avatar')) {
