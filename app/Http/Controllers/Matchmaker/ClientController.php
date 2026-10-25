@@ -16,7 +16,6 @@ use App\Models\ProposalBatch;
 use App\Models\User;
 use App\Services\Matchmaking\CompatibilityScorer;
 use Illuminate\Http\Request;
-use Illuminate\Support\Str;
 
 // The matchmaker's own themed workspace — separate routes/views from
 // Admin\LeadController (which stays exactly as-is for admin's global
@@ -118,16 +117,6 @@ class ClientController extends Controller
 
         MatchmakingTimelineEvent::log($lead, null, 'lead_received', "Lead received from {$lead->source}.");
 
-        // Every client gets their one standing link from the moment
-        // they're added — no separate "generate" step to remember. Needs a
-        // phone number since that's the secret they prove ownership of on
-        // every visit; if none was given yet, update() generates it the
-        // moment a phone number is finally entered.
-        if ($lead->phone) {
-            $lead->update(['progress_link_token' => Str::random(24)]);
-            MatchmakingTimelineEvent::log($lead, null, 'progress_link_generated', 'Progress page link was generated.');
-        }
-
         return redirect()->route('matchmaker.clients.show', $lead)->with('status', 'Client added.');
     }
 
@@ -225,7 +214,6 @@ class ClientController extends Controller
 
         $reassigned = !$lockedToCreator && isset($validated['assigned_to']) && $validated['assigned_to'] != $lead->assigned_to;
         $statusChanged = $lead->status !== $validated['status'];
-        $hadNoLinkYet = !$lead->progress_link_token;
         $lead->update($validated);
 
         if ($reassigned) {
@@ -242,14 +230,6 @@ class ClientController extends Controller
 
         if ($statusChanged) {
             MatchmakingTimelineEvent::log($lead, $lead->nikahProfile, 'status_changed', "Status changed to " . ucfirst(str_replace('_', ' ', $validated['status'])) . '.');
-        }
-
-        // Phone just arrived for a client added without one — mint their
-        // one standing link now instead of waiting for a manual "Generate
-        // Link" click or the first consent request.
-        if ($hadNoLinkYet && $lead->phone) {
-            $lead->update(['progress_link_token' => Str::random(24)]);
-            MatchmakingTimelineEvent::log($lead, $lead->nikahProfile, 'progress_link_generated', 'Progress page link was generated.');
         }
 
         if ($attemptedReassign) {
@@ -410,12 +390,6 @@ class ClientController extends Controller
             'consent_type' => ['required', 'in:' . implode(',', array_keys(MatchmakingConsent::TYPES))],
         ]);
 
-        abort_unless($lead->phone, 422, 'Add a phone number for this client first — that\'s what secures the link they\'ll confirm through.');
-
-        if (!$lead->progress_link_token) {
-            $lead->update(['progress_link_token' => Str::random(24)]);
-        }
-
         $alreadyPending = MatchmakingConsentRequest::where('lead_id', $lead->id)
             ->where('consent_type', $validated['consent_type'])
             ->where('status', 'pending')
@@ -555,47 +529,6 @@ class ClientController extends Controller
         return back()->with('status', "Batch #{$batch->batch_number} marked as sent — {$lead->name} will be notified in the Sallaamti app.");
     }
 
-    // STALE (2026-08-25): kept only because Api\V1\Matchmaker\ClientController
-    // (paused Flutter app) still calls this — see that controller's own
-    // regenerateLink() comment. The named route this builds a URL for
-    // (public.matchmaking.proposal.show) no longer exists: proposal
-    // responses now happen on the client's one progress link
-    // (Public\MatchmakingProgressController::respondToProposal()) instead
-    // of a separate per-proposal link. Calling this from anywhere reachable
-    // today would throw — it isn't, since the web UI stopped calling it in
-    // the same change that removed the route.
-    public static function proposalLink(MatchProposal $proposal): ?string
-    {
-        // The route this used to build a URL for (public.matchmaking.
-        // proposal.show) no longer exists — proposal responses now happen
-        // on the client's one progress link instead. Returns null rather
-        // than throwing a RouteNotFoundException so the paused Flutter
-        // app's API layer (its only remaining caller — see Api\V1\
-        // Matchmaker\ClientController's own STALE comment) degrades to
-        // "no link" instead of a 500 if it's ever hit before that layer
-        // gets reworked.
-        return null;
-    }
-
-    // A standing link the client can revisit any time to see their own
-    // status, timeline, and full proposal/response history — gated by the
-    // last 7 digits of the WhatsApp number on file rather than a login,
-    // re-checked on every visit (see Public\MatchmakingProgressController).
-    // One button does both first-generation and regeneration: regenerating
-    // kills the old copy the same way it does for a single proposal link.
-    public function regenerateProgressLink(Lead $lead)
-    {
-        $this->authorizeClient($lead);
-        abort_unless($lead->phone, 422, 'Add a phone number for this client first — it\'s what they\'ll enter to unlock the page.');
-
-        $hadTokenAlready = (bool) $lead->progress_link_token;
-        $lead->update(['progress_link_token' => Str::random(24)]);
-
-        MatchmakingTimelineEvent::log($lead, $lead->nikahProfile, 'progress_link_regenerated', 'Progress page link was ' . ($hadTokenAlready ? 'regenerated — the old copy no longer works' : 'generated') . '.');
-
-        return back()->with('status', 'Progress link ready — use Copy Link below and paste it wherever you\'re messaging ' . $lead->name . '. They\'ll need the last 7 digits of the WhatsApp number on file to view it, every time.');
-    }
-
     // Same as Api\V1\Matchmaker\ClientController::setLoginPassword() — see
     // that method's comment for why this exists. Kept as a plain redirect
     // (not an inline flash of the password itself) so the counselor still
@@ -621,15 +554,6 @@ class ClientController extends Controller
         MatchmakingTimelineEvent::log($lead, $lead->nikahProfile, 'login_password_set', 'A temporary login password was set for this client by their Nikah Counselor.');
 
         return back()->with('status', 'Login password set — share it with the client now.');
-    }
-
-    public static function progressLink(Lead $lead): ?string
-    {
-        if (!$lead->progress_link_token) {
-            return null;
-        }
-
-        return route('public.matchmaking.progress.show', ['lead' => $lead->id, 't' => $lead->progress_link_token]);
     }
 
     private function authorizeClient(Lead $lead): void

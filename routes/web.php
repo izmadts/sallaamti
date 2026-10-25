@@ -508,7 +508,6 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::post('/leads/{lead}/shortlist', [\App\Http\Controllers\Admin\LeadController::class, 'addToShortlist'])->name('leads.shortlist.add');
     Route::post('/leads/{lead}/shortlist/{item}/sent', [\App\Http\Controllers\Admin\LeadController::class, 'markShortlistSent'])->name('leads.shortlist.sent');
     Route::delete('/leads/{lead}/shortlist/{item}', [\App\Http\Controllers\Admin\LeadController::class, 'removeFromShortlist'])->name('leads.shortlist.remove');
-    Route::post('/leads/{lead}/progress-link', [\App\Http\Controllers\Admin\LeadController::class, 'regenerateProgressLink'])->name('leads.progress-link.regenerate');
     Route::post('/leads/{lead}/set-password', [\App\Http\Controllers\Admin\LeadController::class, 'setLoginPassword'])->name('leads.set-password');
     Route::post('/leads/{lead}/package-payment/confirm', [\App\Http\Controllers\Admin\LeadController::class, 'confirmPackagePayment'])->name('leads.package-payment.confirm');
     Route::post('/leads/{lead}/package-payment/reject', [\App\Http\Controllers\Admin\LeadController::class, 'rejectPackagePayment'])->name('leads.package-payment.reject');
@@ -781,7 +780,6 @@ Route::middleware(['auth', 'matchmaker'])->prefix('matchmaker')->name('matchmake
     Route::post('/clients/{lead}/proposal-batches/{batch}/proposals', [\App\Http\Controllers\Matchmaker\ClientController::class, 'addProposal'])->name('clients.batches.proposals.add');
     Route::delete('/clients/{lead}/proposal-batches/{batch}/proposals/{proposal}', [\App\Http\Controllers\Matchmaker\ClientController::class, 'removeProposal'])->name('clients.batches.proposals.remove');
     Route::post('/clients/{lead}/proposal-batches/{batch}/send', [\App\Http\Controllers\Matchmaker\ClientController::class, 'sendBatch'])->name('clients.batches.send');
-    Route::post('/clients/{lead}/progress-link', [\App\Http\Controllers\Matchmaker\ClientController::class, 'regenerateProgressLink'])->name('clients.progress-link.regenerate');
     Route::post('/clients/{lead}/set-password', [\App\Http\Controllers\Matchmaker\ClientController::class, 'setLoginPassword'])->name('clients.set-password');
     Route::post('/clients/{lead}/consents', [\App\Http\Controllers\Matchmaker\ClientController::class, 'recordConsent'])->name('clients.consents.record');
     Route::post('/clients/{lead}/consents/request', [\App\Http\Controllers\Matchmaker\ClientController::class, 'requestConsent'])->name('clients.consents.request');
@@ -789,25 +787,6 @@ Route::middleware(['auth', 'matchmaker'])->prefix('matchmaker')->name('matchmake
 
     Route::get('/commissions', [\App\Http\Controllers\Matchmaker\CommissionController::class, 'index'])->name('commissions.index');
     Route::get('/performance', [\App\Http\Controllers\Matchmaker\PerformanceController::class, 'index'])->name('performance.index');
-});
-
-// The client's one standing link (Public\MatchmakingProgressController) —
-// deliberately outside 'signed': the stored progress_link_token, checked
-// exactly against ?t= on every request, is already the real authentication,
-// same reasoning as the Nikah Counselor Agreement link. Kept short and
-// signature-free on purpose so it reads clean, not spammy, when shared over
-// WhatsApp. Throttled since dropping 'signed' also drops its incidental
-// request throttling, and the last-7-digits check has none of its own.
-Route::prefix('p')->name('public.matchmaking.progress.')->group(function () {
-    Route::get('/{lead}', [\App\Http\Controllers\Public\MatchmakingProgressController::class, 'show'])->name('show');
-    Route::post('/{lead}/verify', [\App\Http\Controllers\Public\MatchmakingProgressController::class, 'verify'])->name('verify')->middleware('throttle:10,1');
-    Route::post('/{lead}/register', [\App\Http\Controllers\Public\MatchmakingProgressController::class, 'registerProfile'])->name('register')->middleware('throttle:10,1');
-    Route::post('/{lead}/documents', [\App\Http\Controllers\Public\MatchmakingProgressController::class, 'uploadDocuments'])->name('documents')->middleware('throttle:10,1');
-    Route::post('/{lead}/consents/{consentRequest}', [\App\Http\Controllers\Public\MatchmakingProgressController::class, 'respondToConsent'])->name('consents.respond')->middleware('throttle:10,1');
-    Route::post('/{lead}/proposals/{proposal}/respond', [\App\Http\Controllers\Public\MatchmakingProgressController::class, 'respondToProposal'])->name('proposals.respond')->middleware('throttle:10,1');
-    Route::post('/{lead}/package', [\App\Http\Controllers\Public\MatchmakingProgressController::class, 'selectPackage'])->name('package')->middleware('throttle:10,1');
-    Route::post('/{lead}/account', [\App\Http\Controllers\Public\MatchmakingProgressController::class, 'registerAccount'])->name('account.register')->middleware('throttle:10,1');
-    Route::post('/{lead}/account/skip', [\App\Http\Controllers\Public\MatchmakingProgressController::class, 'skipAccountSetup'])->name('account.skip')->middleware('throttle:10,1');
 });
 
 // Nikah Counselor Agreement + NDA acceptance. Auth is the app-issued

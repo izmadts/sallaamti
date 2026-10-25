@@ -263,14 +263,12 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
             Route::post('clients/{lead}/consents', [MatchmakerApi\ClientController::class, 'recordConsent'])->name('clients.consents.record');
             Route::post('clients/{lead}/consents/request', [MatchmakerApi\ClientController::class, 'requestConsent'])->name('clients.consents.request');
             Route::post('clients/{lead}/consents/{consent}/revoke', [MatchmakerApi\ClientController::class, 'revokeConsent'])->name('clients.consents.revoke');
-            Route::post('clients/{lead}/progress-link', [MatchmakerApi\ClientController::class, 'regenerateProgressLink'])->name('clients.progress-link.regenerate');
             Route::post('clients/{lead}/set-password', [MatchmakerApi\ClientController::class, 'setLoginPassword'])->name('clients.set-password');
 
             Route::post('clients/{lead}/proposal-batches', [MatchmakerApi\ClientController::class, 'createBatch'])->name('clients.batches.create');
             Route::post('clients/{lead}/proposal-batches/{batch}/proposals', [MatchmakerApi\ClientController::class, 'addProposal'])->name('clients.batches.proposals.add');
             Route::delete('clients/{lead}/proposal-batches/{batch}/proposals/{proposal}', [MatchmakerApi\ClientController::class, 'removeProposal'])->name('clients.batches.proposals.remove');
             Route::post('clients/{lead}/proposal-batches/{batch}/send', [MatchmakerApi\ClientController::class, 'sendBatch'])->name('clients.batches.send');
-            Route::post('clients/{lead}/proposal-batches/{batch}/proposals/{proposal}/regenerate-link', [MatchmakerApi\ClientController::class, 'regenerateLink'])->name('clients.batches.proposals.regenerate-link');
 
             // Stateless walk-in registration — see ClientProfileController's class docblock
             Route::get('clients/{lead}/profile', [MatchmakerApi\ClientProfileController::class, 'show'])->name('clients.profile.show');

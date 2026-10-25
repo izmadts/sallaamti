@@ -190,14 +190,14 @@ class Lead extends Model
         ];
     }
 
-    // Single source of truth for "what does this client see next on their
-    // progress link" — used both to render that link
-    // (Public\MatchmakingProgressController) and to show the counselor/
-    // admin exactly where a client is stuck, without either side having to
-    // reverse-engineer it from the raw timeline log. Same priority order
-    // requested for the client link itself: registration -> documents ->
-    // package/payment -> consent -> optional PIN setup -> proposals ->
-    // waiting on a sent interest's response.
+    // Single source of truth for "what's this client's next step" — shows
+    // the counselor/admin exactly where a client is stuck, without having
+    // to reverse-engineer it from the raw timeline log. Previously also
+    // rendered the now-retired public /p/{lead} progress link; kept as-is
+    // for the counselor/admin dashboards, which still use it independently.
+    // Priority order: registration -> documents -> package/payment ->
+    // consent -> optional PIN setup -> proposals -> waiting on a sent
+    // interest's response.
     public function progressQueue(): \Illuminate\Support\Collection
     {
         $queue = collect();

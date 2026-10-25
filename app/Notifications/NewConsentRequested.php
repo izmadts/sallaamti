@@ -54,6 +54,9 @@ class NewConsentRequested extends Notification implements ShouldQueue
             'message' => '✅ Your Nikah Counselor requested your consent: ' . $this->label(),
             'lead_id' => $this->consentRequest->lead_id,
             'consent_request_id' => $this->consentRequest->id,
+            // See NewProposalBatchReceived::toArray()'s comment — read by
+            // the Flutter in-app notifications list to resolve its route.
+            'type' => 'consent_requested',
         ];
     }
 }

@@ -13,7 +13,6 @@ use App\Models\MatchProposal;
 use App\Models\NikahProfile;
 use App\Models\ProposalBatch;
 use App\Models\User;
-use App\Http\Controllers\Matchmaker\ClientController as WebClientController;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -286,12 +285,6 @@ class ClientController extends Controller
             'consent_type' => ['required', 'in:' . implode(',', array_keys(MatchmakingConsent::TYPES))],
         ]);
 
-        abort_unless($lead->phone, 422, 'Add a phone number for this client first — that\'s what secures the link they\'ll confirm through.');
-
-        if (!$lead->progress_link_token) {
-            $lead->update(['progress_link_token' => Str::random(24)]);
-        }
-
         $alreadyPending = MatchmakingConsentRequest::where('lead_id', $lead->id)
             ->where('consent_type', $validated['consent_type'])
             ->where('status', 'pending')
@@ -301,16 +294,24 @@ class ClientController extends Controller
             return response()->json(['message' => "Already waiting on {$lead->name} to confirm this."]);
         }
 
-        MatchmakingConsentRequest::create([
+        $consentRequest = MatchmakingConsentRequest::create([
             'lead_id' => $lead->id,
             'consent_type' => $validated['consent_type'],
             'requested_by' => auth()->id(),
             'requested_at' => now(),
         ]);
 
-        MatchmakingTimelineEvent::log($lead, $lead->nikahProfile, 'consent_requested', MatchmakingConsent::TYPES[$validated['consent_type']] . ' consent requested — waiting on the client to confirm via their secure link.');
+        MatchmakingTimelineEvent::log($lead, $lead->nikahProfile, 'consent_requested', MatchmakingConsent::TYPES[$validated['consent_type']] . ' consent requested — waiting on the client to confirm.');
 
-        return response()->json(['message' => "Consent request sent — {$lead->name} will see it next time they open their progress link."], 201);
+        if ($lead->nikahProfile?->user) {
+            try {
+                $lead->nikahProfile->user->notify(new \App\Notifications\NewConsentRequested($consentRequest));
+            } catch (\Throwable $e) {
+                \Log::error('NewConsentRequested notification failed: ' . $e->getMessage());
+            }
+        }
+
+        return response()->json(['message' => "Consent request sent — {$lead->name} will be notified in the Sallaamti app."], 201);
     }
 
     public function revokeConsent(Lead $lead, MatchmakingConsent $consent): JsonResponse
@@ -354,19 +355,6 @@ class ClientController extends Controller
         MatchmakingTimelineEvent::log($lead, $lead->nikahProfile, 'login_password_set', 'A temporary login password was set for this client by their Nikah Counselor.');
 
         return response()->json(['message' => __('db.Login password set — share it with the client now.')]);
-    }
-
-    public function regenerateProgressLink(Lead $lead): JsonResponse
-    {
-        $this->authorizeClient($lead);
-        abort_unless($lead->phone, 422, 'Add a phone number for this client first — it\'s what they\'ll enter to unlock the page.');
-
-        $hadTokenAlready = (bool) $lead->progress_link_token;
-        $lead->update(['progress_link_token' => Str::random(24)]);
-
-        MatchmakingTimelineEvent::log($lead, $lead->nikahProfile, 'progress_link_regenerated', 'Progress page link was ' . ($hadTokenAlready ? 'regenerated — the old copy no longer works' : 'generated') . '.');
-
-        return response()->json(['message' => __('db.Progress link ready.'), 'url' => WebClientController::progressLink($lead->fresh())]);
     }
 
     public function createBatch(Lead $lead): JsonResponse
@@ -444,37 +432,20 @@ class ClientController extends Controller
         }
 
         $now = now();
-        foreach ($batch->proposals as $proposal) {
-            $proposal->update(['status' => 'sent', 'sent_at' => $now, 'link_token' => $proposal->link_token ?? Str::random(40)]);
-        }
+        $batch->proposals()->update(['status' => 'sent', 'sent_at' => $now]);
         $batch->update(['status' => 'sent', 'sent_at' => $now]);
 
         MatchmakingTimelineEvent::log($lead, $lead->nikahProfile, 'proposal_batch_sent', "Proposal Batch #{$batch->batch_number} sent ({$batch->proposals()->count()} candidates).");
 
+        if ($lead->nikahProfile?->user) {
+            try {
+                $lead->nikahProfile->user->notify(new \App\Notifications\NewProposalBatchReceived($batch));
+            } catch (\Throwable $e) {
+                \Log::error('NewProposalBatchReceived notification failed: ' . $e->getMessage());
+            }
+        }
+
         return response()->json(['batch' => $this->batchPayload($batch->fresh('proposals.candidate.user'))]);
-    }
-
-    // STALE (2026-08-25): the web side retired the standalone per-proposal
-    // public link this generates a URL for — Public\MatchmakingActionController
-    // and its routes are gone. Responses live on the client's one progress
-    // link instead (Public\MatchmakingProgressController::respondToProposal()).
-    // WebClientController::proposalLink() below now returns null (rather
-    // than throwing) so this endpoint degrades to a JSON {"url": null}
-    // instead of a 500, but it's still functionally dead — this endpoint
-    // (and sendBatch()'s link_token seeding above) needs the same
-    // consolidation rework before the Flutter app resumes.
-    public function regenerateLink(Lead $lead, ProposalBatch $batch, MatchProposal $proposal): JsonResponse
-    {
-        $this->authorizeClient($lead);
-        abort_unless((int) $batch->lead_id === (int) $lead->id && (int) $proposal->proposal_batch_id === (int) $batch->id, 404);
-        abort_unless($proposal->sent_at, 422, 'This candidate has not been sent a link yet.');
-        abort_if($proposal->status === 'responded', 422, 'The client already responded to this proposal — nothing to regenerate.');
-
-        $proposal->update(['link_token' => Str::random(40)]);
-
-        MatchmakingTimelineEvent::log($lead, $lead->nikahProfile, 'proposal_link_regenerated', 'A proposal link was regenerated — the old copy no longer works.');
-
-        return response()->json(['url' => WebClientController::proposalLink($proposal->fresh())]);
     }
 
     private function listPayload(Lead $lead): array
@@ -509,8 +480,6 @@ class ClientController extends Controller
             'assigned_to' => $lead->assignedTo ? ['id' => $lead->assignedTo->id, 'name' => $lead->assignedTo->name] : null,
             'is_converted' => $lead->isConverted(),
             'nikah_profile_id' => $lead->nikah_profile_id,
-            'has_progress_link' => (bool) $lead->progress_link_token,
-            'progress_url' => WebClientController::progressLink($lead),
             'nikah_package_id' => $lead->nikah_package_id,
             'package_expires_at' => $lead->package_expires_at?->toDateString(),
             'remaining_proposal_allowance' => $lead->remainingProposalAllowance(),
@@ -581,7 +550,6 @@ class ClientController extends Controller
                     'city' => $p->candidate->city,
                     'sect' => $p->candidate->sect,
                 ] : null,
-                'share_url' => WebClientController::proposalLink($p),
             ]) : null,
         ];
     }

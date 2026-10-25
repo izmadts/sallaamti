@@ -48,6 +48,11 @@ class NewProposalBatchReceived extends Notification implements ShouldQueue
             'message' => '💍 Your Nikah Counselor sent you a new proposal.',
             'lead_id' => $this->batch->lead_id,
             'batch_id' => $this->batch->id,
+            // Read by Api\V1\NotificationController::index() into the
+            // response's own 'type' key — the Flutter in-app notifications
+            // list resolves its route from this, same as the FCM push data
+            // above does for a system-tray tap.
+            'type' => 'proposal_batch_received',
         ];
     }
 }

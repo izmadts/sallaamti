@@ -55,10 +55,10 @@
             </div>
             @endif
 
-            @if ($linkedLead && $linkedLead->progress_link_token)
+            @if ($linkedLead)
             <div class="rounded-xl p-4 bg-blue-50 border border-blue-200 text-sm text-blue-800">
-                🔗 {{ __('db.This profile has a linked client record with a secure progress & documents link.') }}
-                <a href="{{ route('matchmaker.clients.show', $linkedLead) }}" class="font-semibold hover:underline">{{ __('db.View & copy it') }} →</a>
+                🔗 {{ __('db.This profile has a linked client record.') }}
+                <a href="{{ route('matchmaker.clients.show', $linkedLead) }}" class="font-semibold hover:underline">{{ __('db.View it') }} →</a>
             </div>
             @endif
 
