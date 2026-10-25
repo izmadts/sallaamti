@@ -425,16 +425,24 @@ class ClientController extends Controller
             return back()->with('status', "Already waiting on {$lead->name} to confirm this.");
         }
 
-        MatchmakingConsentRequest::create([
+        $consentRequest = MatchmakingConsentRequest::create([
             'lead_id' => $lead->id,
             'consent_type' => $validated['consent_type'],
             'requested_by' => auth()->id(),
             'requested_at' => now(),
         ]);
 
-        MatchmakingTimelineEvent::log($lead, $lead->nikahProfile, 'consent_requested', MatchmakingConsent::TYPES[$validated['consent_type']] . ' consent requested — waiting on the client to confirm via their secure link.');
+        MatchmakingTimelineEvent::log($lead, $lead->nikahProfile, 'consent_requested', MatchmakingConsent::TYPES[$validated['consent_type']] . ' consent requested — waiting on the client to confirm.');
 
-        return back()->with('status', "Consent request sent — {$lead->name} will see it next time they open their progress link.");
+        if ($lead->nikahProfile?->user) {
+            try {
+                $lead->nikahProfile->user->notify(new \App\Notifications\NewConsentRequested($consentRequest));
+            } catch (\Throwable $e) {
+                \Log::error('NewConsentRequested notification failed: ' . $e->getMessage());
+            }
+        }
+
+        return back()->with('status', "Consent request sent — {$lead->name} will be notified in the Sallaamti app.");
     }
 
     public function revokeConsent(Lead $lead, MatchmakingConsent $consent)
@@ -536,7 +544,15 @@ class ClientController extends Controller
 
         MatchmakingTimelineEvent::log($lead, $lead->nikahProfile, 'proposal_batch_sent', "Proposal Batch #{$batch->batch_number} sent ({$batch->proposals()->count()} candidates).");
 
-        return back()->with('status', "Batch #{$batch->batch_number} marked as sent — {$lead->name} will see these candidates on their own progress link.");
+        if ($lead->nikahProfile?->user) {
+            try {
+                $lead->nikahProfile->user->notify(new \App\Notifications\NewProposalBatchReceived($batch));
+            } catch (\Throwable $e) {
+                \Log::error('NewProposalBatchReceived notification failed: ' . $e->getMessage());
+            }
+        }
+
+        return back()->with('status', "Batch #{$batch->batch_number} marked as sent — {$lead->name} will be notified in the Sallaamti app.");
     }
 
     // STALE (2026-08-25): kept only because Api\V1\Matchmaker\ClientController

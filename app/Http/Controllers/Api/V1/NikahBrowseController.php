@@ -204,7 +204,12 @@ class NikahBrowseController extends Controller
         return response()->json(['saved' => true]);
     }
 
-    private function cardPayload(NikahProfile $profile, array $sentInterestIds, array $savedProfileIds, bool $detailed = false): array
+    // Public so Api\V1\NikahMatchmakingController can reuse the exact same
+    // card shape for a proposal's candidate (same pattern already used
+    // elsewhere — e.g. Matchmaker\ClientProfileController calling
+    // NikahProfileController::profilePayload() via app(...)) instead of a
+    // second, drifting copy of this shaping logic.
+    public function cardPayload(NikahProfile $profile, array $sentInterestIds, array $savedProfileIds, bool $detailed = false): array
     {
         $data = [
             'id' => $profile->id,

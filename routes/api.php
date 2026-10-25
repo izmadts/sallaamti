@@ -18,6 +18,7 @@ use App\Http\Controllers\Api\V1\NikahFileController;
 use App\Http\Controllers\Api\V1\NikahGuardianMessageController;
 use App\Http\Controllers\Api\V1\NikahHireCounselorController;
 use App\Http\Controllers\Api\V1\NikahInterestController;
+use App\Http\Controllers\Api\V1\NikahMatchmakingController;
 use App\Http\Controllers\Api\V1\NikahPaymentController;
 use App\Http\Controllers\Api\V1\NikahProfileController;
 use App\Http\Controllers\Api\V1\NikahSafetyController;
@@ -114,6 +115,13 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
             Route::get('blocked', [NikahSafetyController::class, 'blockedList'])->name('blocked');
             Route::post('report/{profile}', [NikahSafetyController::class, 'report'])->name('report');
             Route::post('toggle-active', [NikahSafetyController::class, 'toggleActive'])->name('toggle-active');
+
+            // Replacement for /p/{lead}'s matching/consent self-service —
+            // see NikahMatchmakingController's class docblock.
+            Route::get('matchmaking', [NikahMatchmakingController::class, 'overview'])->name('matchmaking.overview');
+            Route::post('matchmaking/proposals/{proposal}/respond', [NikahMatchmakingController::class, 'respondToProposal'])->name('matchmaking.proposals.respond');
+            Route::get('matchmaking/consents', [NikahMatchmakingController::class, 'consentRequests'])->name('matchmaking.consents.index');
+            Route::post('matchmaking/consents/{consentRequest}/respond', [NikahMatchmakingController::class, 'respondToConsent'])->name('matchmaking.consents.respond');
 
             // Optional bridge into the counselor-assisted flow — a
             // self-service member choosing to bring in a Nikah Counselor.
