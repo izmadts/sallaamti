@@ -19,6 +19,7 @@ class NikahProfileShare extends Model
         'threads' => 'Threads',
         'tiktok' => 'TikTok',
         'twitter' => 'Twitter / X',
+        'wall' => 'Sallaamti Wall',
         'other' => 'Other',
     ];
 

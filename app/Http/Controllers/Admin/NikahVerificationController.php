@@ -455,10 +455,20 @@ class NikahVerificationController extends Controller
     {
         $connected = \App\Models\SocialAccount::where('status', 'connected')->pluck('platform')->all();
 
+        // 'wall' is always a valid target regardless of SocialAccount
+        // connections — it's not an external platform, just "also publish
+        // to the in-app Sallaamti Wall" (sometimes that's the only thing
+        // wanted, with no external post at all).
         $validated = $request->validate([
             'social_targets' => ['required', 'array', 'min:1'],
-            'social_targets.*' => [Rule::in($connected)],
+            'social_targets.*' => [Rule::in([...$connected, 'wall'])],
         ]);
+
+        // Only real external platforms go on the CommunityPost's own
+        // social_targets (what CommunityPostPublisher reads to decide what
+        // to actually dispatch) — 'wall' isn't a dispatchable platform, the
+        // post already always gets created+published below regardless.
+        $externalTargets = array_values(array_diff($validated['social_targets'], ['wall']));
 
         $gender = $profile->user?->gender === 'female' ? 'female' : 'male';
         $sourcePath = public_path('images/nikah-og-' . $gender . '.png');
@@ -470,12 +480,15 @@ class NikahVerificationController extends Controller
             'title' => 'Nikah Proposal — ' . ucfirst($gender) . ' (Profile #' . $profile->id . ')',
             'body' => $profile->socialCaption(),
             'photo' => $storedPath,
-            'social_targets' => $validated['social_targets'],
+            'tags' => ['Proposal'],
+            'social_targets' => $externalTargets,
             'status' => 'published',
             'published_at' => now(),
         ]);
 
-        $publisher->dispatchSocialPosts($post);
+        if ($externalTargets) {
+            $publisher->dispatchSocialPosts($post);
+        }
 
         foreach ($validated['social_targets'] as $platform) {
             $profile->shares()->create([

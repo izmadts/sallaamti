@@ -109,7 +109,11 @@ class WallController extends Controller
                 ->limit(300)
                 ->get();
 
+            // Proposal-tagged posts (admin's one-click Nikah share — see
+            // NikahVerificationController::shareToSocial()) only show under
+            // their own tab, not mixed into "All".
             $posts = CommunityPost::published()
+                ->whereJsonDoesntContain('tags', 'Proposal')
                 ->with(['author', 'reactions', 'savedPosts'])
                 ->withCount('allComments as comments_count')
                 ->latest()
