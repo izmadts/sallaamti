@@ -8,6 +8,7 @@ use App\Models\Setting;
 use App\Models\SocialAccount;
 use App\Services\CommunityPostPublisher;
 use App\Services\ImageOptimizer;
+use App\Services\VideoDuration;
 use App\Support\HtmlSanitizer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -239,6 +240,14 @@ class CommunityPostController extends Controller
         return SocialAccount::where('status', 'connected')->pluck('platform')->all();
     }
 
+    // No server-side compression — the host this runs on doesn't have
+    // ffmpeg, and installing one isn't guaranteed across every shared host
+    // this app might run on. Capping length instead keeps uploads small by
+    // construction: a Reel/Shorts-length clip at any reasonable bitrate is
+    // nowhere near the 50MB ceiling, so admin only needs to trim before
+    // uploading, not re-encode.
+    private const MAX_VIDEO_SECONDS = 90;
+
     private function validated(Request $request): array
     {
         return $request->validate([
@@ -247,7 +256,25 @@ class CommunityPostController extends Controller
             'event_at' => ['nullable', 'date'],
             'hashtags' => ['nullable', 'string', 'max:500'],
             'media' => ['nullable', 'array', 'max:10'],
-            'media.*' => ['file', 'mimes:jpg,jpeg,png,webp,mp4,mov,webm', 'max:51200'],
+            'media.*' => [
+                'file',
+                'mimes:jpg,jpeg,png,webp,mp4,mov,webm',
+                'max:51200',
+                function (string $attribute, mixed $value, \Closure $fail) {
+                    if (!str_starts_with($value->getMimeType(), 'video/')) {
+                        return;
+                    }
+
+                    $seconds = VideoDuration::seconds($value);
+
+                    // A duration getID3 couldn't read is let through rather
+                    // than blocked — an unreadable-but-genuinely-short clip
+                    // shouldn't fail uploads just because this check failed.
+                    if ($seconds !== null && $seconds > self::MAX_VIDEO_SECONDS) {
+                        $fail('This video is too long — please keep it under ' . self::MAX_VIDEO_SECONDS . ' seconds (Reel/Shorts length). Trim it and try again.');
+                    }
+                },
+            ],
         ]);
     }
 
@@ -259,10 +286,8 @@ class CommunityPostController extends Controller
     {
         return collect($files)->map(function ($file) {
             if (str_starts_with($file->getMimeType(), 'video/')) {
-                // Stored as-is for now — real compression needs ffmpeg,
-                // which isn't confirmed available on every host this app
-                // runs on yet. The upload size cap above is the only guard
-                // in the meantime.
+                // Stored as-is — no ffmpeg on this host to compress with.
+                // The reel-length + size caps in validated() are the guard.
                 return ['type' => 'video', 'path' => $file->store('community-posts/videos', 'public')];
             }
 

@@ -40,7 +40,7 @@
             <div>
                 <x-input-label value="Photos / Video (optional — up to 10, mix photos and one video, max 50MB each)" />
                 <input type="file" name="media[]" multiple accept="image/*,video/mp4,video/quicktime,video/webm" class="w-full mt-1">
-                <p class="text-xs text-gray-400 mt-1">Select multiple photos for a swipeable carousel on the Wall, same as an Instagram/Facebook post.</p>
+                <p class="text-xs text-gray-400 mt-1">Select multiple photos for a swipeable carousel on the Wall, same as an Instagram/Facebook post. A video must be 90 seconds or under (Reel/Shorts length) — trim it before uploading, since this doesn't compress videos automatically.</p>
             </div>
 
             <div>

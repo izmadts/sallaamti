@@ -53,6 +53,7 @@
             <div>
                 <x-input-label value="Photos / Video (optional — selecting any files here replaces the whole set above, up to 10, max 50MB each)" />
                 <input type="file" name="media[]" multiple accept="image/*,video/mp4,video/quicktime,video/webm" class="w-full mt-1">
+                <p class="text-xs text-gray-400 mt-1">A video must be 90 seconds or under (Reel/Shorts length) — trim it before uploading, since this doesn't compress videos automatically.</p>
             </div>
 
             <div>
