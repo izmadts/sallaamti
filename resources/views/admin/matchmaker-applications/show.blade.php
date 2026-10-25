@@ -288,10 +288,8 @@
                     <div><dt class="text-gray-400">Linked Account</dt><dd>{{ $application->user?->name ?? '— not created yet —' }}</dd></div>
                 </dl>
 
-                <div class="grid sm:grid-cols-3 gap-3 mt-5 pt-4 border-t">
-                    <a href="{{ route('admin.matchmaker-applications.file', [$application, 'selfie_photo']) }}" target="_blank" class="text-center bg-gray-50 rounded-lg p-3 text-xs text-gray-600 hover:bg-gray-100">📷 Selfie Photo</a>
-                    <a href="{{ route('admin.matchmaker-applications.file', [$application, 'cnic_front_image']) }}" target="_blank" class="text-center bg-gray-50 rounded-lg p-3 text-xs text-gray-600 hover:bg-gray-100">🪪 CNIC Front</a>
-                    <a href="{{ route('admin.matchmaker-applications.file', [$application, 'cnic_back_image']) }}" target="_blank" class="text-center bg-gray-50 rounded-lg p-3 text-xs text-gray-600 hover:bg-gray-100">🪪 CNIC Back</a>
+                <div class="mt-5 pt-4 border-t">
+                    <a href="{{ route('admin.matchmaker-applications.file', [$application, 'selfie_photo']) }}" target="_blank" class="inline-block text-center bg-gray-50 rounded-lg p-3 text-xs text-gray-600 hover:bg-gray-100">📷 Selfie Photo</a>
                 </div>
             </div>
 

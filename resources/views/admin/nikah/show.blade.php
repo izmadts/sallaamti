@@ -307,25 +307,10 @@
                         @endif
                     </div>
 
-                    {{-- CNIC --}}
+                    {{-- CNIC — number only, photo upload retired project-wide --}}
                     <div class="bg-white rounded-xl shadow-sm p-6">
                         <h4 class="font-semibold text-gray-700 mb-3 border-b pb-2">CNIC</h4>
-                        <p class="text-sm text-gray-600 mb-3">{{ $profile->cnic_number ?: '— not provided —' }}</p>
-                        <div class="flex gap-2 flex-wrap">
-                            @if ($profile->cnic_front_image)
-                            <a href="{{ route('nikah.file', [$profile, 'cnic_front_image']) }}" target="_blank">
-                                <img src="{{ route('nikah.file', [$profile, 'cnic_front_image']) }}" class="w-32 rounded border hover:opacity-80">
-                            </a>
-                            @endif
-                            @if ($profile->cnic_back_image)
-                            <a href="{{ route('nikah.file', [$profile, 'cnic_back_image']) }}" target="_blank">
-                                <img src="{{ route('nikah.file', [$profile, 'cnic_back_image']) }}" class="w-32 rounded border hover:opacity-80">
-                            </a>
-                            @endif
-                            @if (!$profile->cnic_front_image && !$profile->cnic_back_image)
-                            <p class="text-xs text-gray-400">No CNIC images uploaded.</p>
-                            @endif
-                        </div>
+                        <p class="text-sm text-gray-600">{{ $profile->cnic_number ?: '— not provided —' }}</p>
                     </div>
 
                     {{-- Payment --}}

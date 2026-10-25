@@ -158,29 +158,6 @@
                             </p>
                             @endif
                         </div>
-                        <!-- CNIC Images -->
-                        <div class="mt-4 flex gap-4 flex-wrap">
-                            @if ($profile->cnic_front_image)
-                            <div>
-                                <p class="text-xs text-gray-500 mb-1">CNIC Front:</p>
-                                <a href="{{ route('nikah.file', [$profile, 'cnic_front_image']) }}" target="_blank">
-                                    <img class="w-40 rounded border hover:opacity-80" src="{{ route('nikah.file', [$profile, 'cnic_front_image']) }}">
-                                </a>
-                            </div>
-                            @endif
-                            @if ($profile->cnic_back_image)
-                            <div>
-                                <p class="text-xs text-gray-500 mb-1">CNIC Back:</p>
-                                <a href="{{ route('nikah.file', [$profile, 'cnic_back_image']) }}" target="_blank">
-                                    <img class="w-40 rounded border hover:opacity-80" src="{{ route('nikah.file', [$profile, 'cnic_back_image']) }}">
-                                </a>
-                            </div>
-                            @endif
-                            @if (!$profile->cnic_front_image && !$profile->cnic_back_image)
-                            <p class="text-sm text-gray-400">No CNIC images uploaded.</p>
-                            @endif
-                        </div>
-
                     </div>
 
                     <div class="flex flex-col items-end gap-2">

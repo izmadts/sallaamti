@@ -252,8 +252,6 @@ class NikahProfileController extends Controller
             'has_photo' => (bool) $profile->photo,
             'allow_photo_sharing' => $profile->allow_photo_sharing,
             'has_cnic_number' => (bool) $profile->cnic_number,
-            'has_cnic_front_image' => (bool) $profile->cnic_front_image,
-            'has_cnic_back_image' => (bool) $profile->cnic_back_image,
             'verification_status' => $profile->verification_status,
             'rejection_reason' => $profile->rejection_reason,
             'visibility' => $profile->visibility,
