@@ -461,6 +461,7 @@ class ClientController extends Controller
             'is_converted' => $lead->isConverted(),
             'next_follow_up_at' => $lead->next_follow_up_at?->toDateString(),
             'created_at' => $lead->created_at->toIso8601String(),
+            'unread_message_count' => $lead->clientMessages()->where('sender_id', '!=', auth()->id())->where('is_read', false)->count(),
         ];
     }
 
@@ -484,6 +485,7 @@ class ClientController extends Controller
             'package_expires_at' => $lead->package_expires_at?->toDateString(),
             'remaining_proposal_allowance' => $lead->remainingProposalAllowance(),
             'created_at' => $lead->created_at->toIso8601String(),
+            'unread_message_count' => $lead->clientMessages()->where('sender_id', '!=', auth()->id())->where('is_read', false)->count(),
             'shortlist' => $lead->relationLoaded('shortlistItems') ? $lead->shortlistItems->map(fn ($item) => [
                 'id' => $item->id,
                 'note' => $item->note,

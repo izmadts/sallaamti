@@ -153,6 +153,11 @@ class NikahHireCounselorController extends Controller
             'nikah_package_id' => $lead->nikah_package_id,
             'package_payment_status' => $lead->package_payment_status,
             'package_payment_rejection_reason' => $lead->package_payment_rejection_reason,
+            // The is_read column was already written on every send
+            // (messages()/sendMessage()) but never surfaced anywhere —
+            // this is the first consumer, for an unread badge on the
+            // counselor card.
+            'unread_message_count' => $lead->clientMessages()->where('sender_id', '!=', auth()->id())->where('is_read', false)->count(),
         ];
     }
 
@@ -291,5 +296,52 @@ class NikahHireCounselorController extends Controller
                 'created_at' => $message->created_at->toIso8601String(),
             ],
         ], 201);
+    }
+
+    // Report a message/conversation on the NC<->client channel — admin-
+    // visible only, no automated consequence (see LeadMessageReport's own
+    // class comment for why this is a sibling table, not a NikahReport
+    // column).
+    public function report(Request $request, Lead $lead): JsonResponse
+    {
+        $this->authorizeLeadParty($request, $lead);
+
+        $validated = $request->validate([
+            'reason' => ['required', 'string', 'max:255'],
+            'details' => ['nullable', 'string', 'max:1000'],
+            'lead_client_message_id' => ['nullable', 'integer', 'exists:lead_client_messages,id'],
+        ]);
+
+        $reportedId = (int) $lead->assigned_to === (int) $request->user()->id
+            ? $lead->nikahProfile?->user_id
+            : $lead->assigned_to;
+        abort_unless($reportedId, 422, 'No other party on this conversation to report yet.');
+
+        $messageId = null;
+        if ($request->filled('lead_client_message_id')) {
+            $message = \App\Models\LeadClientMessage::find($validated['lead_client_message_id']);
+            if ($message && (int) $message->lead_id === (int) $lead->id) {
+                $messageId = $message->id;
+            }
+        }
+
+        $report = \App\Models\LeadMessageReport::create([
+            'lead_id' => $lead->id,
+            'reporter_user_id' => $request->user()->id,
+            'reported_user_id' => $reportedId,
+            'lead_client_message_id' => $messageId,
+            'reason' => $validated['reason'],
+            'details' => $validated['details'] ?? null,
+        ]);
+
+        User::role('admin')->each(function ($admin) use ($report) {
+            try {
+                $admin->notify(new \App\Notifications\NewLeadMessageReportFiled($report));
+            } catch (\Throwable $e) {
+                \Log::error('NewLeadMessageReportFiled notification failed: ' . $e->getMessage());
+            }
+        });
+
+        return response()->json(['message' => __('db.Report submitted. Our team will review it shortly.')], 201);
     }
 }

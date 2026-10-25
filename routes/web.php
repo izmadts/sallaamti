@@ -483,6 +483,8 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
         Route::get('/nikah-payments', [NikahPaymentAdminController::class, 'index'])->name('nikah.payments');
         Route::get('nikah-reports', [NikahSafetyController::class, 'adminReports'])->name('nikah.reports');
         Route::get('nikah-reports/{report}/conversation', [NikahSafetyController::class, 'reportConversation'])->name('nikah.reports.conversation');
+        Route::get('leads/message-reports', [\App\Http\Controllers\Admin\LeadMessageReportController::class, 'index'])->name('leads.message-reports.index');
+        Route::get('leads/message-reports/{report}/conversation', [\App\Http\Controllers\Admin\LeadMessageReportController::class, 'conversation'])->name('leads.message-reports.conversation');
     });
     Route::delete('/nikah-verifications/{profile}', [NikahVerificationController::class, 'destroy'])->name('nikah.destroy')->middleware('can:nikah.delete');
     // Narrower than nikah.manage below — gated inside the controller via
@@ -542,6 +544,7 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
         Route::post('/nikah-payments/{profile}/reject', [NikahPaymentAdminController::class, 'reject'])->name('nikah.payments.reject');
         Route::post('nikah-reports/{report}/dismiss', [NikahSafetyController::class, 'dismissReport'])->name('nikah.reports.dismiss');
         Route::post('nikah-reports/{report}/suspend', [NikahSafetyController::class, 'suspendReportedProfile'])->name('nikah.reports.suspend');
+        Route::post('leads/message-reports/{report}/dismiss', [\App\Http\Controllers\Admin\LeadMessageReportController::class, 'dismiss'])->name('leads.message-reports.dismiss');
     });
 
     // Quran Courses Management + Quran Live Classes Management — not in

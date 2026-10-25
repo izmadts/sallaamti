@@ -140,6 +140,7 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
         // matchmaker.* prefix groups rather than duplicated under each.
         Route::get('leads/{lead}/messages', [NikahHireCounselorController::class, 'messages'])->name('leads.messages.index');
         Route::post('leads/{lead}/messages', [NikahHireCounselorController::class, 'sendMessage'])->name('leads.messages.store');
+        Route::post('leads/{lead}/report', [NikahHireCounselorController::class, 'report'])->name('leads.report');
 
         Route::prefix('volunteer')->name('volunteer.')->group(function () {
             Route::get('status', [VolunteerController::class, 'status'])->name('status');
