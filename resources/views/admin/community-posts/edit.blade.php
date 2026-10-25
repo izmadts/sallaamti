@@ -71,6 +71,17 @@
                 </div>
             </div>
 
+            <div class="p-4 rounded-lg bg-amber-50 border border-amber-200 flex items-start gap-3">
+                <input type="checkbox" name="is_announcement" value="1" id="is_announcement" {{ old('is_announcement', $post->is_announcement) ? 'checked' : '' }} class="mt-1 rounded border-gray-300 text-amber-600">
+                <label for="is_announcement" class="text-sm text-gray-700">
+                    <span class="font-semibold">📢 This is an announcement</span>
+                    <p class="text-xs text-gray-500 mt-0.5">Every member gets notified in the app the moment this is published — not just posted to the Wall. Also tags it "Announcement" so it gets its own filter tab there.</p>
+                    @if ($post->is_announcement && $post->status === 'published')
+                    <p class="text-xs text-amber-700 mt-1">Already published and notified — unchecking this now only affects the Wall tag, not a notification already sent.</p>
+                    @endif
+                </label>
+            </div>
+
             <div class="p-4 rounded-lg bg-gray-50 border border-gray-200">
                 <p class="text-sm font-semibold text-gray-700 mb-1">📣 Share to social media</p>
                 <p class="text-xs text-gray-400 mb-3">

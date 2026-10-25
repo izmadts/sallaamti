@@ -59,6 +59,14 @@
                 </div>
             </div>
 
+            <div class="p-4 rounded-lg bg-amber-50 border border-amber-200 flex items-start gap-3">
+                <input type="checkbox" name="is_announcement" value="1" id="is_announcement" {{ old('is_announcement') ? 'checked' : '' }} class="mt-1 rounded border-gray-300 text-amber-600">
+                <label for="is_announcement" class="text-sm text-gray-700">
+                    <span class="font-semibold">📢 This is an announcement</span>
+                    <p class="text-xs text-gray-500 mt-0.5">Every member gets notified in the app the moment this is published — not just posted to the Wall. Also tags it "Announcement" so it gets its own filter tab there.</p>
+                </label>
+            </div>
+
             {{-- Share to social media — posts the moment this is published,
                  to whichever connected platforms are checked. --}}
             <div class="p-4 rounded-lg bg-gray-50 border border-gray-200">

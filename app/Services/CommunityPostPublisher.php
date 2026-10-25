@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use App\Jobs\NotifyMembersOfAnnouncementJob;
 use App\Jobs\PublishCommunityPostToSocialJob;
 use App\Jobs\SendWhatsappBroadcastJob;
 use App\Models\CommunityPost;
@@ -53,6 +54,12 @@ class CommunityPostPublisher
         }
 
         $this->dispatchWhatsappBroadcast($post);
+
+        // Mandatory, unlike the WhatsApp broadcast above — every member
+        // gets notified in-app, no admin opt-in switch to flip.
+        if ($post->is_announcement) {
+            NotifyMembersOfAnnouncementJob::dispatch($post);
+        }
     }
 
     // No-op unless an admin has both connected a WhatsApp Business account

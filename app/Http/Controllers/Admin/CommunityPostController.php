@@ -47,7 +47,8 @@ class CommunityPostController extends Controller
     {
         $validated = $this->validated($request);
 
-        $validated['tags'] = $this->parseTags($request->input('tags'));
+        $validated['is_announcement'] = $request->boolean('is_announcement');
+        $validated['tags'] = $this->buildTags($request->input('tags'), $validated['is_announcement']);
         $validated['social_targets'] = $this->parseSocialTargets($request);
         $validated['body'] = HtmlSanitizer::clean($validated['body']);
         $validated['author_id'] = Auth::id();
@@ -79,7 +80,8 @@ class CommunityPostController extends Controller
 
         $validated = $this->validated($request);
 
-        $validated['tags'] = $this->parseTags($request->input('tags'));
+        $validated['is_announcement'] = $request->boolean('is_announcement');
+        $validated['tags'] = $this->buildTags($request->input('tags'), $validated['is_announcement']);
         $validated['social_targets'] = $this->parseSocialTargets($request);
         $validated['body'] = HtmlSanitizer::clean($validated['body']);
 
@@ -315,6 +317,22 @@ class CommunityPostController extends Controller
             ->unique()
             ->values()
             ->all();
+    }
+
+    // 'Announcement' is auto-added/removed from the freeform tags rather
+    // than living only in is_announcement, so the Wall's existing tag-filter
+    // mechanism (WallController::index(), same as 'Proposal') picks it up
+    // with no extra filtering code — is_announcement itself is still the
+    // thing that actually gates the mandatory member notification below.
+    private function buildTags(?string $raw, bool $isAnnouncement): array
+    {
+        $tags = collect($this->parseTags($raw))->reject(fn ($t) => $t === 'Announcement');
+
+        if ($isAnnouncement) {
+            $tags->push('Announcement');
+        }
+
+        return $tags->unique()->values()->all();
     }
 
     private function parseSocialTargets(Request $request): array
