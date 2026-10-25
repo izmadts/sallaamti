@@ -34,6 +34,13 @@
                             placeholder="{{ __('db.Shown on the posts list and when shared — auto-generated from your post if left blank.') }}" />
                     </div>
                     <div>
+                        <x-input-label for="language" :value="__('db.Language')" />
+                        <select id="language" name="language" class="w-full mt-1 border-gray-300 rounded-md shadow-sm" required>
+                            <option value="en" {{ old('language', 'en') === 'en' ? 'selected' : '' }}>{{ __('db.English') }}</option>
+                            <option value="ur" {{ old('language') === 'ur' ? 'selected' : '' }}>{{ __('db.Urdu') }}</option>
+                        </select>
+                    </div>
+                    <div>
                         <x-input-label for="body" :value="__('db.Your Post')" />
                         <input id="trix-body" type="hidden" name="body" value="{{ old('body') }}">
                         <trix-editor input="trix-body"></trix-editor>

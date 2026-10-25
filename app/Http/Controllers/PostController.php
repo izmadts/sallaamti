@@ -164,6 +164,7 @@ class PostController extends Controller
             'title' => ['required', 'string', 'max:150'],
             'excerpt' => ['nullable', 'string', 'max:300'],
             'body' => ['required', 'string', 'max:20000'],
+            'language' => ['required', 'in:en,ur'],
             'cover_image' => ['nullable', 'image', 'max:4096'],
         ]);
 

@@ -27,7 +27,8 @@
                     <div class="w-full h-40 bg-gradient-to-br from-teal-600 to-teal-900 flex items-center justify-center text-4xl">📝</div>
                     @endif
                     <div class="p-5 flex-1 flex flex-col">
-                        <h2 class="font-bold text-gray-800 mb-2 line-clamp-2">{{ $post->title }}</h2>
+                        <span class="text-[10px] font-bold text-teal-700 bg-teal-50 px-2 py-0.5 rounded-full uppercase self-start mb-2">{{ $post->language === 'ur' ? 'اردو' : 'English' }}</span>
+                        <h2 lang="{{ $post->language }}" dir="{{ $post->language === 'ur' ? 'rtl' : 'ltr' }}" class="font-bold text-gray-800 mb-2 line-clamp-2">{{ $post->title }}</h2>
                         <p class="text-sm text-gray-500 line-clamp-3 flex-1">{{ $post->excerpt }}</p>
                         <div class="flex items-center gap-2 mt-4 pt-3 border-t border-gray-100">
                             <img src="{{ $post->author->avatarUrl() }}" class="w-6 h-6 rounded-full" alt="{{ $post->author->name }}">

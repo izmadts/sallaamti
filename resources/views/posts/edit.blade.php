@@ -37,6 +37,13 @@
                         <x-text-input id="excerpt" name="excerpt" class="w-full mt-1" :value="old('excerpt', $post->excerpt)" maxlength="300" />
                     </div>
                     <div>
+                        <x-input-label for="language" :value="__('db.Language')" />
+                        <select id="language" name="language" class="w-full mt-1 border-gray-300 rounded-md shadow-sm" required>
+                            <option value="en" {{ old('language', $post->language) === 'en' ? 'selected' : '' }}>{{ __('db.English') }}</option>
+                            <option value="ur" {{ old('language', $post->language) === 'ur' ? 'selected' : '' }}>{{ __('db.Urdu') }}</option>
+                        </select>
+                    </div>
+                    <div>
                         <x-input-label for="body" :value="__('db.Your Post')" />
                         <input id="trix-body" type="hidden" name="body" value="{{ old('body', $post->body) }}">
                         <trix-editor input="trix-body"></trix-editor>

@@ -41,6 +41,10 @@ class PostAdminController extends Controller
             'rejection_reason' => null,
         ]);
 
+        if (!$post->author->hasRole('blogger')) {
+            $post->author->assignRole('blogger');
+        }
+
         $post->author->notify(new PostReviewed($post, approved: true));
 
         return back()->with('status', 'Post approved and is now public.');

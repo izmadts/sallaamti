@@ -31,6 +31,7 @@ class PostController extends Controller
             'title' => $post->title,
             'slug' => $post->slug,
             'excerpt' => $post->excerpt,
+            'language' => $post->language,
             'cover_image_url' => $post->cover_image ? Storage::url($post->cover_image) : null,
             'status' => $post->status,
             'rejection_reason' => $post->rejection_reason,
@@ -51,7 +52,16 @@ class PostController extends Controller
 
     public function index(Request $request): JsonResponse
     {
-        $posts = Post::published()->with('author')->latest('published_at')->paginate(10);
+        $search = trim((string) $request->get('search', ''));
+
+        $posts = Post::published()->with('author')
+            ->when($search !== '', fn ($q) => $q->where(
+                fn ($q) => $q->where('title', 'like', "%{$search}%")
+                    ->orWhere('body', 'like', "%{$search}%")
+                    ->orWhere('excerpt', 'like', "%{$search}%")
+            ))
+            ->latest('published_at')
+            ->paginate(10);
 
         return response()->json($this->paginated($posts, 'posts', fn (Post $p) => $this->payload($p)));
     }
@@ -174,6 +184,7 @@ class PostController extends Controller
             'title' => ['required', 'string', 'max:150'],
             'excerpt' => ['nullable', 'string', 'max:300'],
             'body' => ['required', 'string', 'max:20000'],
+            'language' => ['required', 'in:en,ur'],
             'cover_image' => ['nullable', 'image', 'max:4096'],
         ]);
 

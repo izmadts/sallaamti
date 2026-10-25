@@ -7,10 +7,11 @@
                 {{ __('db.Preview — :status, not yet public', ['status' => ucfirst($post->status)]) }}
             </span>
             @endif
-            <h1 class="text-3xl md:text-4xl font-extrabold text-white mt-2 mb-3">{{ $post->title }}</h1>
+            <h1 lang="{{ $post->language }}" dir="{{ $post->language === 'ur' ? 'rtl' : 'ltr' }}" class="text-3xl md:text-4xl font-extrabold text-white mt-2 mb-3">{{ $post->title }}</h1>
             <p class="text-white/70 text-sm">
                 {{ __('db.By') }} <a href="{{ route('posts.by-author', $post->author) }}" class="underline hover:text-white">{{ $post->author->name }}</a>
                 — {{ $post->published_at?->format('d M Y') ?? $post->created_at->format('d M Y') }}
+                <span class="inline-block bg-white/15 text-white text-xs px-2 py-0.5 rounded-full ml-2 uppercase">{{ $post->language === 'ur' ? 'اردو' : 'English' }}</span>
             </p>
         </div>
     </section>
@@ -21,7 +22,7 @@
             <img src="{{ Storage::url($post->cover_image) }}" class="w-full h-80 object-cover rounded-2xl mb-10 shadow-sm" alt="{{ $post->title }}">
             @endif
 
-            <div class="prose max-w-none text-gray-700 leading-relaxed">
+            <div lang="{{ $post->language }}" dir="{{ $post->language === 'ur' ? 'rtl' : 'ltr' }}" class="prose max-w-none text-gray-700 leading-relaxed">
                 {!! nl2br(e($post->body)) !!}
             </div>
 

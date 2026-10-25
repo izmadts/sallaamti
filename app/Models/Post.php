@@ -12,6 +12,7 @@ class Post extends Model
         'slug',
         'excerpt',
         'body',
+        'language',
         'cover_image',
         'status',
         'rejection_reason',
@@ -60,6 +61,6 @@ class Post extends Model
     // gate is to keep an open submission form from becoming a spam vector).
     public static function isAutoPublishedFor(User $user): bool
     {
-        return $user->can('posts.manage') || $user->hasRole('admin');
+        return $user->can('posts.manage') || $user->hasRole('admin') || $user->hasRole('blogger');
     }
 }
