@@ -599,7 +599,7 @@ class NikahVerificationController extends Controller
             ->get();
 
         foreach ($profiles as $profile) {
-            $profile->update(['verification_status' => 'verified', 'rejection_reason' => null]);
+            $profile->update(['verification_status' => 'verified', 'rejection_reason' => null, 'matchmaking_opt_in_at' => now()]);
             try {
                 $profile->user->notify(new \App\Notifications\NikahProfileVerified());
             } catch (\Throwable $e) {
@@ -620,7 +620,7 @@ class NikahVerificationController extends Controller
     {
         abort_unless($profile->payment_status === 'confirmed', 403, 'Payment must be confirmed first.');
 
-        $profile->update(['verification_status' => 'verified', 'rejection_reason' => null]);
+        $profile->update(['verification_status' => 'verified', 'rejection_reason' => null, 'matchmaking_opt_in_at' => now()]);
 
         try {
             $profile->user->notify(new \App\Notifications\NikahProfileVerified());
@@ -634,7 +634,7 @@ class NikahVerificationController extends Controller
     public function reject(Request $request, NikahProfile $profile)
     {
         $request->validate(['rejection_reason' => 'required|string|max:500']);
-        $profile->update(['verification_status' => 'rejected', 'rejection_reason' => $request->rejection_reason]);
+        $profile->update(['verification_status' => 'rejected', 'rejection_reason' => $request->rejection_reason, 'matchmaking_opt_in_at' => null]);
 
         try {
             $profile->user->notify(new \App\Notifications\NikahProfileRejected($request->rejection_reason));

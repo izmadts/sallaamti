@@ -47,6 +47,7 @@ class NikahProfile extends Model
         'cnic_front_image',
         'cnic_back_image',
         'verification_status',
+        'matchmaking_opt_in_at',
         'is_demo',
         'rejection_reason',
         'visibility',
@@ -100,6 +101,7 @@ class NikahProfile extends Model
             'is_active' => 'boolean',
             'is_demo' => 'boolean',
             'suspended_at' => 'datetime',
+            'matchmaking_opt_in_at' => 'datetime',
             'guardian_verified_at' => 'datetime',
             'last_active_at' => 'datetime',
             'payment_confirmed_at' => 'datetime',
@@ -344,9 +346,15 @@ class NikahProfile extends Model
         return $query->where('is_active', true)->whereNull('suspended_at')->whereIn('visibility', ['public', 'members_only']);
     }
 
+    // Tightened (2026-10-25) to also require matchmaking_opt_in_at — before
+    // this, any active/not-suspended/non-confidential profile was visible
+    // to a matchmaker regardless of verification status, so a counselor
+    // could browse/propose a profile that was still pending (or rejected)
+    // review. Set by Admin\NikahVerificationController::approve() (cleared
+    // on reject()), same place verification_status flips to 'verified'.
     public function scopeMatchmakerVisible($query)
     {
-        return $query->where('is_active', true)->whereNull('suspended_at')->where('visibility', '!=', 'confidential');
+        return $query->where('is_active', true)->whereNull('suspended_at')->where('visibility', '!=', 'confidential')->whereNotNull('matchmaking_opt_in_at');
     }
 
     public function isSuspended(): bool
