@@ -38,13 +38,9 @@
             </div>
 
             <div>
-                <x-input-label value="Photo (optional)" />
-                <input type="file" name="photo" accept="image/*" class="w-full mt-1">
-            </div>
-
-            <div>
-                <x-input-label value="Video (optional — for Reels/YouTube/TikTok, max 50MB)" />
-                <input type="file" name="video" accept="video/mp4,video/quicktime,video/webm" class="w-full mt-1">
+                <x-input-label value="Photos / Video (optional — up to 10, mix photos and one video, max 50MB each)" />
+                <input type="file" name="media[]" multiple accept="image/*,video/mp4,video/quicktime,video/webm" class="w-full mt-1">
+                <p class="text-xs text-gray-400 mt-1">Select multiple photos for a swipeable carousel on the Wall, same as an Instagram/Facebook post.</p>
             </div>
 
             <div>

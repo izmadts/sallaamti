@@ -18,8 +18,16 @@
         </div>
         @endif
 
-        @if ($post->photo)
-        <img src="{{ Storage::url($post->photo) }}" class="w-full h-40 object-cover rounded-lg mb-4">
+        @if ($post->mediaItems())
+        <div class="flex gap-2 overflow-x-auto mb-4">
+            @foreach ($post->mediaItems() as $item)
+            @if ($item['type'] === 'image')
+            <img src="{{ Storage::url($item['path']) }}" class="h-28 w-28 object-cover rounded-lg flex-shrink-0">
+            @else
+            <div class="h-28 w-28 rounded-lg bg-gray-800 flex items-center justify-center text-white text-xs flex-shrink-0">🎬 Video</div>
+            @endif
+            @endforeach
+        </div>
         @endif
 
         <form method="POST" action="{{ route('admin.community-posts.update', $post) }}" enctype="multipart/form-data" class="space-y-4" x-data="{ tags: '{{ old('tags', implode(', ', $post->tags ?? [])) }}' }">
@@ -43,16 +51,8 @@
             </div>
 
             <div>
-                <x-input-label value="Photo (optional — replaces the current one)" />
-                <input type="file" name="photo" accept="image/*" class="w-full mt-1">
-            </div>
-
-            <div>
-                <x-input-label value="Video (optional — replaces the current one, max 50MB)" />
-                @if ($post->video)
-                <p class="text-xs text-gray-400 mb-1">Current: {{ basename($post->video) }}</p>
-                @endif
-                <input type="file" name="video" accept="video/mp4,video/quicktime,video/webm" class="w-full mt-1">
+                <x-input-label value="Photos / Video (optional — selecting any files here replaces the whole set above, up to 10, max 50MB each)" />
+                <input type="file" name="media[]" multiple accept="image/*,video/mp4,video/quicktime,video/webm" class="w-full mt-1">
             </div>
 
             <div>

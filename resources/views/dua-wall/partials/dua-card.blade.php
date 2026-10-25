@@ -1,8 +1,15 @@
 @php
     $displayName = $dua->is_anonymous ? __('db.A Sallaamti member') : $dua->user->name;
+    $media = $dua->mediaItems();
 @endphp
 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-    @if ($dua->image)
+    @if (count($media) > 1)
+    <div class="relative w-full h-44 overflow-x-auto flex snap-x snap-mandatory" style="scroll-snap-type: x mandatory;">
+        @foreach ($media as $item)
+        <img src="{{ \Illuminate\Support\Facades\Storage::url($item['path']) }}" alt="" class="flex-shrink-0 w-full h-full object-cover snap-center">
+        @endforeach
+    </div>
+    @elseif ($dua->image)
     <img src="{{ \Illuminate\Support\Facades\Storage::url($dua->image) }}" alt="" class="w-full h-44 object-cover">
     @endif
     <div class="p-4 sm:p-5 flex items-start gap-3">

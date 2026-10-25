@@ -53,11 +53,8 @@ class CommunityPostController extends Controller
         $validated['status'] = $request->boolean('publish') ? 'published' : 'draft';
         $validated['published_at'] = $validated['status'] === 'published' ? now() : null;
 
-        if ($request->hasFile('photo')) {
-            $validated['photo'] = ImageOptimizer::store($request->file('photo'), 'community-posts', 'public', maxDimension: 1600, quality: 82);
-        }
-        if ($request->hasFile('video')) {
-            $validated['video'] = $request->file('video')->store('community-posts/videos', 'public');
+        if ($request->hasFile('media')) {
+            $validated['media'] = $this->storeMediaFiles($request->file('media'));
         }
 
         $post = CommunityPost::create($validated);
@@ -95,13 +92,9 @@ class CommunityPostController extends Controller
                 : null;
         }
 
-        if ($request->hasFile('photo')) {
-            if ($community_post->photo) Storage::disk('public')->delete($community_post->photo);
-            $validated['photo'] = ImageOptimizer::store($request->file('photo'), 'community-posts', 'public', maxDimension: 1600, quality: 82);
-        }
-        if ($request->hasFile('video')) {
-            if ($community_post->video) Storage::disk('public')->delete($community_post->video);
-            $validated['video'] = $request->file('video')->store('community-posts/videos', 'public');
+        if ($request->hasFile('media')) {
+            $this->deleteMediaFiles($community_post->mediaItems());
+            $validated['media'] = $this->storeMediaFiles($request->file('media'));
         }
 
         $community_post->update($validated);
@@ -115,8 +108,7 @@ class CommunityPostController extends Controller
 
     public function destroy(CommunityPost $community_post)
     {
-        if ($community_post->photo) Storage::disk('public')->delete($community_post->photo);
-        if ($community_post->video) Storage::disk('public')->delete($community_post->video);
+        $this->deleteMediaFiles($community_post->mediaItems());
         $community_post->delete();
         return back()->with('status', 'Post deleted.');
     }
@@ -176,8 +168,6 @@ class CommunityPostController extends Controller
         $posts = [];
 
         foreach ($request->file('files') as $file) {
-            $isVideo = str_starts_with($file->getMimeType(), 'video/');
-
             $post = CommunityPost::create([
                 'author_id' => Auth::id(),
                 'title' => Str::of($file->getClientOriginalName())->beforeLast('.')->replace(['-', '_'], ' ')->title()->limit(150),
@@ -190,11 +180,7 @@ class CommunityPostController extends Controller
                 'queue_position' => $instant ? null : $nextPosition++,
             ]);
 
-            if ($isVideo) {
-                $post->update(['video' => $file->store('community-posts/videos', 'public')]);
-            } else {
-                $post->update(['photo' => ImageOptimizer::store($file, 'community-posts', 'public', maxDimension: 1600, quality: 82)]);
-            }
+            $post->update(['media' => $this->storeMediaFiles([$file])]);
 
             $posts[] = $post;
         }
@@ -260,9 +246,36 @@ class CommunityPostController extends Controller
             'body' => ['required', 'string'],
             'event_at' => ['nullable', 'date'],
             'hashtags' => ['nullable', 'string', 'max:500'],
-            'photo' => ['nullable', 'image', 'max:2048'],
-            'video' => ['nullable', 'mimes:mp4,mov,webm', 'max:51200'],
+            'media' => ['nullable', 'array', 'max:10'],
+            'media.*' => ['file', 'mimes:jpg,jpeg,png,webp,mp4,mov,webm', 'max:51200'],
         ]);
+    }
+
+    /**
+     * @param  \Illuminate\Http\UploadedFile[]  $files
+     * @return array<int, array{type: string, path: string}>
+     */
+    private function storeMediaFiles(array $files): array
+    {
+        return collect($files)->map(function ($file) {
+            if (str_starts_with($file->getMimeType(), 'video/')) {
+                // Stored as-is for now — real compression needs ffmpeg,
+                // which isn't confirmed available on every host this app
+                // runs on yet. The upload size cap above is the only guard
+                // in the meantime.
+                return ['type' => 'video', 'path' => $file->store('community-posts/videos', 'public')];
+            }
+
+            return ['type' => 'image', 'path' => ImageOptimizer::store($file, 'community-posts', 'public', maxDimension: 1600, quality: 82)];
+        })->values()->all();
+    }
+
+    /** @param array<int, array{type: string, path: string}> $items */
+    private function deleteMediaFiles(array $items): void
+    {
+        foreach ($items as $item) {
+            Storage::disk('public')->delete($item['path']);
+        }
     }
 
     private function parseTags(?string $raw): array

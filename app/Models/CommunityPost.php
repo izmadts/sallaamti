@@ -13,6 +13,7 @@ class CommunityPost extends Model
         'body',
         'photo',
         'video',
+        'media',
         'event_at',
         'tags',
         'hashtags',
@@ -29,11 +30,48 @@ class CommunityPost extends Model
         return [
             'tags' => 'array',
             'social_targets' => 'array',
+            'media' => 'array',
             'event_at' => 'datetime',
             'published_at' => 'datetime',
             'is_pinned' => 'boolean',
             'pinned_at' => 'datetime',
         ];
+    }
+
+    // The full ordered carousel — each entry a stored path, same shape the
+    // 'media' column holds: ['type' => 'image'|'video', 'path' => '...'].
+    // Falls back to the single legacy photo/video for a post saved before
+    // this column existed, so every reader can use mediaItems() uniformly
+    // regardless of when the post was created.
+    public function mediaItems(): array
+    {
+        if (!empty($this->media)) {
+            return $this->media;
+        }
+
+        if ($this->photo) {
+            return [['type' => 'image', 'path' => $this->photo]];
+        }
+
+        if ($this->video) {
+            return [['type' => 'video', 'path' => $this->video]];
+        }
+
+        return [];
+    }
+
+    // Keeps ->photo/->video mirroring the carousel's first item, so every
+    // pre-existing reader of those two columns (social publishers, admin
+    // list/edit views, the public web pages) keeps showing the cover item
+    // without needing to know about the carousel at all.
+    public function setMediaAttribute(?array $items): void
+    {
+        $items = $items ?? [];
+        $this->attributes['media'] = $items === [] ? null : json_encode($items);
+
+        $first = $items[0] ?? null;
+        $this->attributes['photo'] = $first && $first['type'] === 'image' ? $first['path'] : null;
+        $this->attributes['video'] = $first && $first['type'] === 'video' ? $first['path'] : null;
     }
 
     public function scopePublished($query)

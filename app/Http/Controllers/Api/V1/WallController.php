@@ -57,6 +57,14 @@ class WallController extends Controller
                 ? ($item->image ? Storage::disk('public')->url($item->image) : null)
                 : ($item->photo ? Storage::disk('public')->url($item->photo) : null),
             'video_url' => (!$isDua && $item->video) ? Storage::disk('public')->url($item->video) : null,
+            // Full ordered carousel — the two fields above stay as the
+            // "cover" for any older client/screen that only knows about a
+            // single photo/video; this is the one new UI needs to render a
+            // multi-photo/video swipe gallery.
+            'media' => collect($item->mediaItems())->map(fn ($m) => [
+                'type' => $m['type'],
+                'url' => Storage::disk('public')->url($m['path']),
+            ])->values(),
             'tags' => $isDua ? [] : ($item->tags ?? []),
             'event_at' => $isDua ? null : $item->event_at,
             'is_pinned' => $isDua ? false : (bool) $item->is_pinned,
@@ -173,7 +181,12 @@ class WallController extends Controller
         $validated = $request->validate([
             'body' => ['required', 'string', 'max:1000'],
             'is_anonymous' => ['nullable', 'boolean'],
+            // 'image' (singular) kept working for an older app build still
+            // sending one file under that key; 'images[]' is the new
+            // multi-photo field.
             'image' => ['nullable', 'image', 'max:8192'],
+            'images' => ['nullable', 'array', 'max:10'],
+            'images.*' => ['image', 'max:8192'],
         ]);
 
         $fields = [
@@ -183,12 +196,17 @@ class WallController extends Controller
             'status' => 'pending',
         ];
 
-        // Kept small on purpose - this is a feed thumbnail, not a document
-        // needing full fidelity, and it's a member upload with no size
-        // control on the source photo (unlike admin's Community Posts,
-        // which stay at the 1600px default).
-        if ($request->hasFile('image')) {
-            $fields['image'] = ImageOptimizer::store($request->file('image'), 'wall/duas', 'public', maxDimension: 1080, quality: 75);
+        $files = $request->file('images') ?: ($request->hasFile('image') ? [$request->file('image')] : []);
+
+        if ($files !== []) {
+            // Kept small on purpose - this is a feed thumbnail, not a
+            // document needing full fidelity, and it's a member upload with
+            // no size control on the source photo (unlike admin's Community
+            // Posts, which stay at the 1600px default).
+            $fields['media'] = collect($files)->map(fn ($file) => [
+                'type' => 'image',
+                'path' => ImageOptimizer::store($file, 'wall/duas', 'public', maxDimension: 1080, quality: 75),
+            ])->values()->all();
         }
 
         DuaRequest::create($fields);

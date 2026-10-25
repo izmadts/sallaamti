@@ -99,6 +99,8 @@ class WallController extends Controller
             'body' => ['required', 'string', 'max:1000'],
             'is_anonymous' => ['nullable', 'boolean'],
             'image' => ['nullable', 'image', 'max:8192'],
+            'images' => ['nullable', 'array', 'max:10'],
+            'images.*' => ['image', 'max:8192'],
         ]);
 
         $fields = [
@@ -108,12 +110,17 @@ class WallController extends Controller
             'status' => 'pending',
         ];
 
-        // Kept small on purpose - this is a feed thumbnail, not a document
-        // needing full fidelity, and it's a member upload with no size
-        // control on the source photo (unlike admin's Community Posts,
-        // which stay at the 1600px default).
-        if ($request->hasFile('image')) {
-            $fields['image'] = ImageOptimizer::store($request->file('image'), 'wall/duas', 'public', maxDimension: 1080, quality: 75);
+        $files = $request->file('images') ?: ($request->hasFile('image') ? [$request->file('image')] : []);
+
+        if ($files !== []) {
+            // Kept small on purpose - this is a feed thumbnail, not a
+            // document needing full fidelity, and it's a member upload with
+            // no size control on the source photo (unlike admin's Community
+            // Posts, which stay at the 1600px default).
+            $fields['media'] = collect($files)->map(fn ($file) => [
+                'type' => 'image',
+                'path' => ImageOptimizer::store($file, 'wall/duas', 'public', maxDimension: 1080, quality: 75),
+            ])->values()->all();
         }
 
         DuaRequest::create($fields);

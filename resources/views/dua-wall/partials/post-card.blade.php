@@ -1,8 +1,22 @@
 @php
     $displayName = $post->author->name ?? __('db.Sallaamti Team');
+    $media = $post->mediaItems();
 @endphp
 <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-    @if ($post->video)
+    @if (count($media) > 1)
+    {{-- Instagram/Facebook-style swipeable carousel for a multi-photo/video post. --}}
+    <div class="relative w-full h-44 sm:h-96 overflow-x-auto flex snap-x snap-mandatory" style="scroll-snap-type: x mandatory;">
+        @foreach ($media as $item)
+        <div class="flex-shrink-0 w-full h-full snap-center">
+            @if ($item['type'] === 'video')
+            <video src="{{ \Illuminate\Support\Facades\Storage::url($item['path']) }}" controls playsinline class="w-full h-full object-cover bg-black"></video>
+            @else
+            <img src="{{ \Illuminate\Support\Facades\Storage::url($item['path']) }}" alt="{{ $post->title }}" class="w-full h-full object-cover">
+            @endif
+        </div>
+        @endforeach
+    </div>
+    @elseif ($post->video)
     <video src="{{ \Illuminate\Support\Facades\Storage::url($post->video) }}" poster="{{ $post->photo ? \Illuminate\Support\Facades\Storage::url($post->photo) : '' }}" controls playsinline class="w-full max-h-96 bg-black"></video>
     @elseif ($post->photo)
     <img src="{{ \Illuminate\Support\Facades\Storage::url($post->photo) }}" alt="{{ $post->title }}" class="w-full h-44 object-cover">
