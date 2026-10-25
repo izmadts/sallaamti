@@ -49,6 +49,16 @@ class DashboardController extends Controller
             'support' => [
                 'whatsapp_number' => $whatsapp !== '' ? $whatsapp : null,
             ],
+            // Same admin-configurable settings the website's footer/contact
+            // page already link to (SettingsController) — null/omitted when
+            // not set, so the app only shows an icon for a platform that's
+            // actually configured.
+            'social' => [
+                'facebook' => setting('social_facebook') ?: null,
+                'instagram' => setting('social_instagram') ?: null,
+                'youtube' => setting('social_youtube') ?: null,
+                'tiktok' => setting('social_tiktok') ?: null,
+            ],
         ]);
     }
 }
