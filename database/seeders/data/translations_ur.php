@@ -649,6 +649,12 @@ return [
     'Payment proof submitted! Our team will confirm it shortly.' => 'ادائیگی کا ثبوت جمع کروا دیا گیا! ہماری ٹیم جلد اس کی تصدیق کرے گی۔',
     'This CNIC number is already registered to another profile.' => 'یہ شناختی کارڈ نمبر پہلے ہی کسی اور پروفائل میں رجسٹرڈ ہے۔',
     'This email or phone number is already registered to another account.' => 'یہ ای میل یا فون نمبر پہلے ہی کسی اور اکاؤنٹ میں رجسٹرڈ ہے۔',
+    'New Client Credentials — Send This Now' => 'نیا کلائنٹ لاگ ان — ابھی بھیجیں',
+    'Shown once — copy and send it to :name now. If you miss it, set a new password from "Client Login Password" below.' => 'صرف ایک بار دکھایا جائے گا — ابھی کاپی کر کے :name کو بھیج دیں۔ اگر چھوٹ جائے تو نیچے "کلائنٹ لاگ ان پاس ورڈ" سے نیا پاس ورڈ سیٹ کریں۔',
+    'Email' => 'ای میل',
+    'Phone' => 'فون',
+    'Copy Credentials' => 'لاگ ان کاپی کریں',
+    'Open Play Store Link' => 'پلے اسٹور لنک کھولیں',
 
     // ---- Nikah verification step (AJAX upload error handling) ----
     "We couldn't upload your file. This can happen if a selected photo was moved, renamed, or changed since you picked it — for example, by OneDrive or another sync tool. Please choose your CNIC/photo files again and submit." => 'ہم آپ کی فائل اپ لوڈ نہیں کر سکے۔ ایسا اس وقت ہو سکتا ہے جب منتخب کردہ تصویر آپ کے چننے کے بعد منتقل، نام تبدیل یا تبدیل ہو گئی ہو — مثال کے طور پر ون ڈرائیو یا کسی اور سنک ٹول کی وجہ سے۔ براہ کرم اپنی شناختی کارڈ/تصویر کی فائلیں دوبارہ منتخب کر کے جمع کروائیں۔',

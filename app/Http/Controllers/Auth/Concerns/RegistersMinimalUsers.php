@@ -31,4 +31,25 @@ trait RegistersMinimalUsers
 
         return $user;
     }
+
+    // Same charset the "Client Login Password" Blade sections already
+    // generate client-side (see admin/leads/show.blade.php and matchmaker/
+    // clients/show.blade.php's 🎲 Generate button) — no ambiguous-looking
+    // characters (no 0/O, 1/l/I), since this gets read off a phone screen
+    // and typed/copy-pasted by a counselor handing it to a client over
+    // WhatsApp. Shared here so both the web walk-in wizard (finalize()) and
+    // the mobile walk-in API (ClientProfileController::store()) generate a
+    // real, visible temp password the same way instead of each inventing
+    // their own.
+    protected function generateTempPassword(int $length = 10): string
+    {
+        $chars = 'ABCDEFGHJKMNPQRSTUVWXYZabcdefghjkmnpqrstuvwxyz23456789';
+        $password = '';
+
+        for ($i = 0; $i < $length; $i++) {
+            $password .= $chars[random_int(0, strlen($chars) - 1)];
+        }
+
+        return $password;
+    }
 }

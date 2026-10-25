@@ -7,13 +7,13 @@ use App\Http\Controllers\Concerns\HasWizardSteps;
 use App\Http\Controllers\Concerns\SubmitsNikahPayment;
 use App\Http\Controllers\Concerns\ValidatesNikahProfile;
 use App\Http\Controllers\Controller;
+use App\Models\MatchmakingTimelineEvent;
 use App\Models\NikahProfile;
 use App\Models\User;
 use App\Rules\ValidPhoneNumber;
 use App\Services\ImageOptimizer;
 use App\Support\CountryStates;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Password;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
@@ -371,14 +371,26 @@ class NikahProfileWizardController extends Controller
             ? User::find($existingUserId)
             : null;
 
+        // A brand-new account gets a real, visible temp password right away
+        // (not a random unknown one + a separate manual "set password"
+        // step, and not an emailed reset link either) — the whole point is
+        // the counselor has something to copy-paste to the client the
+        // moment this page loads. An existing (startForUser()-linked)
+        // account already has a working password — never touch it.
+        $plainPassword = null;
+
         if ($existingUser) {
             $user = $existingUser;
             $user->update(['name' => $accountData['name'], 'gender' => $accountData['gender'], 'city' => $profileData['city'] ?? $user->city]);
         } else {
+            $plainPassword = $this->generateTempPassword();
             $user = $this->createMinimalUser(
                 $accountData['name'],
                 $isEmail ? strtolower($identifier) : null,
                 $isEmail ? null : $identifier,
+                $plainPassword,
+                'password',
+                true,
             );
             $user->update(['gender' => $accountData['gender'], 'city' => $profileData['city'] ?? null]);
         }
@@ -436,14 +448,13 @@ class NikahProfileWizardController extends Controller
 
         if ($existingUser) {
             // They already have a working login (self-registered, Google,
-            // whatever) — no new password/reset-link needed, unlike the
-            // brand-new-account branches below.
+            // whatever) — no new password needed, unlike the brand-new-
+            // account branch below.
             $status .= ' Linked to their existing Sallaamti account — they can log in as usual, no new password was created.';
-        } elseif ($isEmail) {
-            Password::sendResetLink(['email' => $user->email]);
-            $status .= ' A password-setup link was emailed to them so they can log in — or set a temporary password yourself below and hand it to them directly.';
         } else {
-            $status .= ' Set a temporary login password for them below (under "Client Login Password") and hand it to them directly — they\'ll be asked to choose their own once they log in.';
+            $status .= ' A temporary login password was generated — see below to copy and send it.';
+
+            MatchmakingTimelineEvent::log($lead, $profile, 'credentials_issued', 'Login credentials generated and shown to the Nikah Counselor for hand-off.');
         }
 
         // CNIC/photo are never collected in this flow (see $wizardStepFields'
@@ -479,6 +490,21 @@ class NikahProfileWizardController extends Controller
         // Nikah-profile-specific permissions.
         $redirectRoute = $this->routeNamePrefix() === 'admin' ? 'admin.leads.show' : 'matchmaker.clients.show';
 
-        return redirect()->route($redirectRoute, $lead)->with('status', $status);
+        $redirect = redirect()->route($redirectRoute, $lead)->with('status', $status);
+
+        // One-time-read flash (gone on the next request) — the plain
+        // password is never persisted anywhere past this single page load;
+        // the counselor copies it from here or, if they miss it, falls
+        // back to the existing "Client Login Password" manual reset.
+        if ($plainPassword) {
+            $redirect->with('new_client_credentials', [
+                'identifier' => $identifier,
+                'password' => $plainPassword,
+                'is_email' => $isEmail,
+                'app_url' => setting('mobile_app_android_url', 'https://play.google.com/store/apps/details?id=com.sallaamti.app&pcampaignid=web_share'),
+            ]);
+        }
+
+        return $redirect;
     }
 }

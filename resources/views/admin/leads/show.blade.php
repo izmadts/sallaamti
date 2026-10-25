@@ -380,6 +380,27 @@
                 </details>
             </div>
 
+            {{-- New client credentials — one-time display (session flash, gone on
+                 the next page load) right after NikahProfileWizardController::
+                 finalize() creates a brand-new account, so there's something
+                 real to copy-paste the moment this page loads instead of a
+                 random unknown password. --}}
+            @if (session('new_client_credentials'))
+            @php $newCreds = session('new_client_credentials'); @endphp
+            <div class="bg-white rounded-xl shadow-sm p-6 border-2" style="border-color: var(--gold, #d4af37)">
+                <h3 class="font-semibold text-gray-700 mb-1 border-b pb-2">🔑 New Client Credentials — Send This Now</h3>
+                <p class="text-xs text-gray-500 mt-2 mb-3">Shown once — copy and send it to {{ $lead->name }} now. If you miss it, set a new password from "Client Login Password" below.</p>
+                <div class="flex flex-wrap items-center gap-2 text-sm mb-3">
+                    <span class="px-2 py-1 bg-gray-50 rounded-lg border">{{ $newCreds['is_email'] ? 'Email' : 'Phone' }}: <strong>{{ $newCreds['identifier'] }}</strong></span>
+                    <span class="px-2 py-1 bg-gray-50 rounded-lg border">Password: <strong>{{ $newCreds['password'] }}</strong></span>
+                </div>
+                <button type="button" id="copy-new-creds"
+                    onclick="navigator.clipboard.writeText({{ Js::from("Assalamu Alaikum {$lead->name}! Here's your Sallaamti login:\nUsername: {$newCreds['identifier']}\nPassword: {$newCreds['password']}\nDownload the app: {$newCreds['app_url']}\nLog in and you'll be asked to set your own password.") }}); this.textContent = '✅ Copied!'; setTimeout(() => this.textContent = '📋 Copy Credentials', 1500);"
+                    class="text-xs font-semibold px-3 py-1.5 rounded-lg text-white hover:opacity-90" style="background: var(--gold, #d4af37)">📋 Copy Credentials</button>
+                <a href="{{ $newCreds['app_url'] }}" target="_blank" rel="noopener" class="text-xs font-semibold px-3 py-1.5 rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-50 ml-2">📲 Open Play Store Link</a>
+            </div>
+            @endif
+
             {{-- Progress page link — admin sees the raw link and phone; the matchmaker's own view only gets action buttons (Copy/WhatsApp/SMS), never the link text or number itself. --}}
             <div class="bg-white rounded-xl shadow-sm p-6">
                 <h3 class="font-semibold text-gray-700 mb-1 border-b pb-2">🔗 Client Progress Page Link</h3>

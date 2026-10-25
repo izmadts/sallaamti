@@ -149,14 +149,25 @@ class ClientProfileController extends Controller
             $validated['open_to_polygamy'] = $request->boolean('open_to_polygamy');
         }
 
+        $credentials = null;
+
         if (!$profile) {
             $identifier = (string) $request->input('identifier');
             $isEmail = str_contains($identifier, '@');
+
+            // Same real-password-up-front hand-off as the web walk-in
+            // wizard (Admin\NikahProfileWizardController::finalize()) —
+            // the counselor needs something to copy-paste to the client
+            // immediately, not a random unknown password.
+            $plainPassword = $this->generateTempPassword();
 
             $user = $this->createMinimalUser(
                 $lead->name,
                 $isEmail ? $identifier : null,
                 $isEmail ? null : $identifier,
+                $plainPassword,
+                'password',
+                true,
             );
             if ($gender) {
                 $user->update(['gender' => $gender]);
@@ -170,6 +181,14 @@ class ClientProfileController extends Controller
 
             $lead->update(['nikah_profile_id' => $profile->id, 'status' => 'registered']);
             MatchmakingTimelineEvent::log($lead, $profile, 'registration_started', 'Matchmaker started assisted registration.');
+            MatchmakingTimelineEvent::log($lead, $profile, 'credentials_issued', 'Login credentials generated and shown to the Nikah Counselor for hand-off.');
+
+            $credentials = [
+                'identifier' => $identifier,
+                'password' => $plainPassword,
+                'is_email' => $isEmail,
+                'app_url' => setting('mobile_app_android_url', 'https://play.google.com/store/apps/details?id=com.sallaamti.app&pcampaignid=web_share'),
+            ];
         } else {
             if ($gender && $profile->user) {
                 $profile->user->update(['gender' => $gender]);
@@ -177,7 +196,10 @@ class ClientProfileController extends Controller
             $profile->update($validated);
         }
 
-        return response()->json(['profile' => $this->profilePayload($profile->fresh())], $profile->wasRecentlyCreated ? 201 : 200);
+        return response()->json([
+            'profile' => $this->profilePayload($profile->fresh()),
+            'credentials' => $credentials,
+        ], $profile->wasRecentlyCreated ? 201 : 200);
     }
 
     public function payment(Request $request, Lead $lead): JsonResponse

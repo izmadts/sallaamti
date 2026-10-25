@@ -195,6 +195,37 @@
                 @endif
                 @endif
 
+                {{-- New client credentials — one-time display (session flash,
+                     gone on the next page load) right after
+                     NikahProfileWizardController::finalize() creates a
+                     brand-new account, so there's something real to
+                     copy-paste the moment this page loads instead of a
+                     random unknown password. --}}
+                @if (session('new_client_credentials'))
+                @php
+                    $newCreds = session('new_client_credentials');
+                    $credsMessage = "Assalamu Alaikum {$lead->name}! Here's your Sallaamti login:\n"
+                        . "Username: {$newCreds['identifier']}\n"
+                        . "Password: {$newCreds['password']}\n"
+                        . "Download the app: {$newCreds['app_url']}\n"
+                        . "Log in and you'll be asked to set your own password.";
+                @endphp
+                <div class="mt-6 pt-6 border-t">
+                    <div class="rounded-xl p-4 border-2" style="border-color: var(--gold, #d4af37)">
+                        <h4 class="font-semibold text-gray-700 mb-1">🔑 {{ __('db.New Client Credentials — Send This Now') }}</h4>
+                        <p class="text-xs text-gray-500 mb-3">{{ __("db.Shown once — copy and send it to :name now. If you miss it, set a new password from \"Client Login Password\" below.", ['name' => $lead->name]) }}</p>
+                        <div class="flex flex-wrap items-center gap-2 text-sm mb-3">
+                            <span class="px-2 py-1 bg-gray-50 rounded-lg border">{{ $newCreds['is_email'] ? __('db.Email') : __('db.Phone') }}: <strong>{{ $newCreds['identifier'] }}</strong></span>
+                            <span class="px-2 py-1 bg-gray-50 rounded-lg border">{{ __('db.Password') }}: <strong>{{ $newCreds['password'] }}</strong></span>
+                        </div>
+                        <button type="button"
+                            onclick="navigator.clipboard.writeText({{ Js::from($credsMessage) }}); this.textContent = {{ Js::from('✅ ' . __('db.Copied!')) }}; setTimeout(() => this.textContent = {{ Js::from('📋 ' . __('db.Copy Credentials')) }}, 1500);"
+                            class="text-xs font-semibold px-3 py-1.5 rounded-lg text-white hover:opacity-90" style="background: var(--gold, #d4af37)">📋 {{ __('db.Copy Credentials') }}</button>
+                        <a href="{{ $newCreds['app_url'] }}" target="_blank" rel="noopener" class="text-xs font-semibold px-3 py-1.5 rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-50 ml-2">📲 {{ __('db.Open Play Store Link') }}</a>
+                    </div>
+                </div>
+                @endif
+
                 {{-- Progress page link — a standing link the client can revisit to see their own status/timeline/proposals, gated by their WhatsApp number's last 7 digits each visit --}}
                 <div class="mt-6 pt-6 border-t">
                     <h4 class="font-semibold text-gray-700 mb-1">🔗 {{ __('db.Client Progress Page') }}</h4>
