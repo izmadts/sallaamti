@@ -36,6 +36,7 @@ class PermissionCatalog
         'leads' => 'Leads / Match Maker Desk (cross-matchmaker oversight)',
         'matchmaker-applications' => 'Nikah Counselor Applications',
         'commissions' => 'Matchmaker Commission Rules & Ledger',
+        'questions' => 'Member Q&A (review & answer)',
     ];
 
     public const ACTIONS = [

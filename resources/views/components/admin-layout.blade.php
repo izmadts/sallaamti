@@ -247,6 +247,15 @@
                     <span class="bg-yellow-400 text-yellow-900 text-xs font-bold px-1.5 py-0.5 rounded-full">{{ $pendingPosts }}</span>
                     @endif
                 </a>
+                <a href="{{ route('admin.questions.index') }}"
+                    class="flex items-center justify-between gap-3 px-3 py-2 rounded-lg transition
+                          {{ request()->routeIs('admin.questions*') ? 'bg-teal-700 text-white' : 'text-teal-100 hover:bg-teal-800' }}">
+                    <span class="flex items-center gap-3"><span class="text-base">❓</span> Member Q&amp;A</span>
+                    @php $pendingQuestions = \App\Models\Question::where('status','pending')->count(); @endphp
+                    @if ($pendingQuestions > 0)
+                    <span class="bg-yellow-400 text-yellow-900 text-xs font-bold px-1.5 py-0.5 rounded-full">{{ $pendingQuestions }}</span>
+                    @endif
+                </a>
                 <a href="{{ route('admin.donations.index') }}"
                     class="flex items-center justify-between gap-3 px-3 py-2 rounded-lg transition
                           {{ request()->routeIs('admin.donations*') ? 'bg-teal-700 text-white' : 'text-teal-100 hover:bg-teal-800' }}">

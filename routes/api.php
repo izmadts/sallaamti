@@ -23,6 +23,7 @@ use App\Http\Controllers\Api\V1\NikahPaymentController;
 use App\Http\Controllers\Api\V1\NikahProfileController;
 use App\Http\Controllers\Api\V1\NikahSafetyController;
 use App\Http\Controllers\Api\V1\PostController;
+use App\Http\Controllers\Api\V1\QuestionController;
 use App\Http\Controllers\Api\V1\ProfileController;
 use App\Http\Controllers\Api\V1\QuranLiveController;
 use App\Http\Controllers\Api\V1\TestimonialController;
@@ -225,6 +226,12 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
             // image, and PHP doesn't populate $_FILES on a PUT body.
             Route::post('{post:id}', [PostController::class, 'update'])->name('update');
             Route::delete('{post:id}', [PostController::class, 'destroy'])->name('destroy');
+        });
+
+        Route::prefix('questions')->name('questions.')->group(function () {
+            Route::get('mine', [QuestionController::class, 'mine'])->name('mine');
+            Route::get('/', [QuestionController::class, 'index'])->name('index');
+            Route::post('/', [QuestionController::class, 'store'])->name('store');
         });
 
         Route::prefix('testimonials')->name('testimonials.')->group(function () {

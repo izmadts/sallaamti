@@ -637,6 +637,12 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::post('posts/{post}/reject', [\App\Http\Controllers\Admin\PostAdminController::class, 'reject'])->name('posts.reject')->middleware('can:posts.manage');
     Route::delete('posts/{post}', [\App\Http\Controllers\Admin\PostAdminController::class, 'destroy'])->name('posts.destroy')->middleware('can:posts.delete');
 
+    // Member Q&A moderation (permission-gated, see App\Support\PermissionCatalog)
+    Route::get('questions', [\App\Http\Controllers\Admin\QuestionAdminController::class, 'index'])->name('questions.index')->middleware('can:questions.view');
+    Route::post('questions/{question}/answer', [\App\Http\Controllers\Admin\QuestionAdminController::class, 'answer'])->name('questions.answer')->middleware('can:questions.manage');
+    Route::post('questions/{question}/link', [\App\Http\Controllers\Admin\QuestionAdminController::class, 'linkToExisting'])->name('questions.link')->middleware('can:questions.manage');
+    Route::delete('questions/{question}', [\App\Http\Controllers\Admin\QuestionAdminController::class, 'destroy'])->name('questions.destroy')->middleware('can:questions.delete');
+
     // Donation Management (permission-gated)
     Route::get('donations', [DonationAdminController::class, 'index'])->name('donations.index')->middleware('can:donations.view');
     Route::post('donations/{donation}/confirm', [DonationAdminController::class, 'confirm'])->name('donations.confirm')->middleware('can:donations.manage');
