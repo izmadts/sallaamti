@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Course;
 use App\Models\Lesson;
+use App\Services\ImageOptimizer;
 use App\Support\HtmlSanitizer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -39,7 +40,7 @@ class CourseAdminController extends Controller
         $validated['is_published'] = $request->has('is_published');
 
         if ($request->hasFile('thumbnail')) {
-            $validated['thumbnail'] = $request->file('thumbnail')->store('courses/thumbnails', 'public');
+            $validated['thumbnail'] = ImageOptimizer::store($request->file('thumbnail'), 'courses/thumbnails', 'public', maxDimension: 1200, quality: 82);
         }
 
         Course::create($validated);
@@ -58,7 +59,10 @@ class CourseAdminController extends Controller
         $validated['is_published'] = $request->has('is_published');
 
         if ($request->hasFile('thumbnail')) {
-            $validated['thumbnail'] = $request->file('thumbnail')->store('courses/thumbnails', 'public');
+            if ($course->thumbnail) {
+                Storage::disk('public')->delete($course->thumbnail);
+            }
+            $validated['thumbnail'] = ImageOptimizer::store($request->file('thumbnail'), 'courses/thumbnails', 'public', maxDimension: 1200, quality: 82);
         }
 
         $course->update($validated);
