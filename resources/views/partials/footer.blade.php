@@ -116,6 +116,7 @@
                     <a class="text-gray-300 hover:text-white mb-2" href="{{ url('/donate') }}"><i class="fa fa-check text-[--teal] mr-2"></i>{{ __('db.Donations') }}</a>
                     <a class="text-gray-300 hover:text-white mb-2" href="{{ url('/volunteer') }}"><i class="fa fa-check text-[--teal] mr-2"></i>{{ __('db.Become Volunteer') }}</a>
                     <a class="text-gray-300 hover:text-white mb-2" href="{{ url('/nikah-counselor/apply') }}"><i class="fa fa-check text-[--teal] mr-2"></i>{{ __('db.Become a Nikah Counselor') }}</a>
+                    <a class="text-gray-300 hover:text-white mb-2" href="{{ route('nikah-counselor.guide') }}"><i class="fa fa-check text-[--teal] mr-2"></i>{{ __('db.Nikah Counselor Guide') }}</a>
                 </div>
             </div>
             <div>

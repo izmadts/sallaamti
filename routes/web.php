@@ -826,6 +826,33 @@ Route::prefix('nda-agreement')->name('public.matchmaker-agreement.')->group(func
 // linked from the footer and certificate verify page.
 Route::view('/nikah-counselor/code-of-conduct', 'nikah-counselor.code-of-conduct')->name('nikah-counselor.code-of-conduct');
 
+// Public Nikah Counselor Guide — the full step-by-step walkthrough (apply ->
+// get certified -> find people online -> register a client -> commission ->
+// matchmaking). Commission/package figures are pulled live from
+// CommissionRule/NikahPackage so the page never drifts from what admin has
+// actually configured in Settings -> Commission Rules.
+Route::get('/nikah-counselor/guide', function () {
+    $tiers = collect(\App\Models\MatchmakerApplication::LEVELS)->map(function ($label, $key) {
+        $verified = \App\Models\CommissionRule::findFor('verified_profile', null, $key);
+        $first = \App\Models\CommissionRule::findFor('package', null, $key, false);
+        $renewal = \App\Models\CommissionRule::findFor('package', null, $key, true);
+
+        return [
+            'key' => $key,
+            'label' => $label,
+            'verified_amount' => $verified?->rate_value,
+            'package_first_pct' => $first?->rate_value,
+            'package_renewal_pct' => $renewal?->rate_value,
+            'threshold' => \App\Models\MatchmakerApplication::PROMOTION_THRESHOLDS[$key] ?? null,
+        ];
+    })->values();
+
+    $packages = \App\Models\NikahPackage::public()->ordered()->get();
+    $verificationFee = setting('nikah_verification_fee', config('services.nikah.verification_fee'));
+
+    return view('nikah-counselor.guide', compact('tiers', 'packages', 'verificationFee'));
+})->name('nikah-counselor.guide');
+
 // GitHub push webhook — see DeployWebhookController and docs/deployment.md.
 // Auth is the HMAC signature GitHub signs the payload with (DEPLOY_WEBHOOK_SECRET),
 // not a session, so this deliberately sits outside any auth middleware.
