@@ -3,6 +3,7 @@
 namespace App\Notifications;
 
 use App\Models\Post;
+use App\Notifications\Channels\FcmChannel;
 use App\Notifications\Messages\WebPushMessage;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -16,7 +17,7 @@ class PostReviewed extends Notification implements ShouldQueue
 
     public function via($notifiable): array
     {
-        return ['database', 'webpush'];
+        return ['database', 'webpush', FcmChannel::class];
     }
 
     public function toWebPush($notifiable): WebPushMessage
@@ -27,6 +28,18 @@ class PostReviewed extends Notification implements ShouldQueue
                 ? "\"{$this->post->title}\" was approved and is now public."
                 : "\"{$this->post->title}\" wasn't approved: {$this->post->rejection_reason}")
             ->url($this->approved ? route('posts.show', $this->post) : route('posts.mine'));
+    }
+
+    public function toFcm($notifiable): array
+    {
+        return [
+            'title' => $this->approved ? 'Your post is live!' : 'Your post needs changes',
+            'body' => $this->approved
+                ? "\"{$this->post->title}\" was approved and is now public."
+                : "\"{$this->post->title}\" wasn't approved: {$this->post->rejection_reason}",
+            'data' => ['type' => 'post_reviewed', 'post_id' => (string) $this->post->id],
+            'app' => 'sallaamti_app',
+        ];
     }
 
     public function toArray($notifiable): array

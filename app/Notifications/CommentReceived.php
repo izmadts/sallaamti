@@ -4,6 +4,7 @@ namespace App\Notifications;
 
 use App\Models\Comment;
 use App\Models\User;
+use App\Notifications\Channels\FcmChannel;
 use App\Notifications\Messages\WebPushMessage;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -17,7 +18,7 @@ class CommentReceived extends Notification implements ShouldQueue
 
     public function via($notifiable): array
     {
-        return ['database', 'webpush'];
+        return ['database', 'webpush', FcmChannel::class];
     }
 
     protected function subject(): string
@@ -36,6 +37,16 @@ class CommentReceived extends Notification implements ShouldQueue
             ->title($this->commenter->name . " {$this->verb()} {$this->subject()}")
             ->body(\Illuminate\Support\Str::limit($this->comment->body, 100))
             ->url(route('wall.index'));
+    }
+
+    public function toFcm($notifiable): array
+    {
+        return [
+            'title' => $this->commenter->name . " {$this->verb()} {$this->subject()}",
+            'body' => \Illuminate\Support\Str::limit($this->comment->body, 100),
+            'data' => ['type' => 'wall_comment', 'comment_id' => (string) $this->comment->id],
+            'app' => 'sallaamti_app',
+        ];
     }
 
     public function toArray($notifiable): array

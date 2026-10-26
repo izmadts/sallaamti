@@ -4,6 +4,7 @@ namespace App\Notifications;
 
 use App\Models\Reaction;
 use App\Models\User;
+use App\Notifications\Channels\FcmChannel;
 use App\Notifications\Messages\WebPushMessage;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -18,7 +19,7 @@ class ReactionReceived extends Notification implements ShouldQueue
 
     public function via($notifiable): array
     {
-        return ['database', 'webpush'];
+        return ['database', 'webpush', FcmChannel::class];
     }
 
     protected function label(): string
@@ -39,6 +40,16 @@ class ReactionReceived extends Notification implements ShouldQueue
             ->title("Someone reacted {$this->label()} to your {$this->subject()}")
             ->body($this->reactor->name . " reacted on Sallaamti.")
             ->url(route('wall.index'));
+    }
+
+    public function toFcm($notifiable): array
+    {
+        return [
+            'title' => "Someone reacted {$this->label()} to your {$this->subject()}",
+            'body' => $this->reactor->name . ' reacted on Sallaamti.',
+            'data' => ['type' => 'wall_reaction', 'reactable_type' => get_class($this->reactable), 'reactable_id' => (string) $this->reactable->id],
+            'app' => 'sallaamti_app',
+        ];
     }
 
     public function toArray($notifiable): array
