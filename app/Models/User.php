@@ -143,6 +143,12 @@ class User extends Authenticatable
         return $this->hasMany(Donation::class);
     }
 
+    // This member's own support conversation with the Sallaamti team.
+    public function adminMessages()
+    {
+        return $this->hasMany(AdminMessage::class);
+    }
+
     public function posts()
     {
         return $this->hasMany(Post::class);

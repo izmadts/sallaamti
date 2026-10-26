@@ -24,6 +24,7 @@ use App\Http\Controllers\Api\V1\NikahProfileController;
 use App\Http\Controllers\Api\V1\NikahSafetyController;
 use App\Http\Controllers\Api\V1\PostController;
 use App\Http\Controllers\Api\V1\QuestionController;
+use App\Http\Controllers\Api\V1\SupportMessageController;
 use App\Http\Controllers\Api\V1\ProfileController;
 use App\Http\Controllers\Api\V1\QuranLiveController;
 use App\Http\Controllers\Api\V1\TestimonialController;
@@ -232,6 +233,14 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
             Route::get('mine', [QuestionController::class, 'mine'])->name('mine');
             Route::get('/', [QuestionController::class, 'index'])->name('index');
             Route::post('/', [QuestionController::class, 'store'])->name('store');
+        });
+
+        // Polled, not pushed — no persistent websocket process available
+        // on this host (see the carousel video-length-cap decision for
+        // the same hosting constraint).
+        Route::prefix('support-messages')->name('support-messages.')->group(function () {
+            Route::get('/', [SupportMessageController::class, 'index'])->name('index');
+            Route::post('/', [SupportMessageController::class, 'store'])->name('store');
         });
 
         Route::prefix('testimonials')->name('testimonials.')->group(function () {

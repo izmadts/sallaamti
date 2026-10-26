@@ -643,6 +643,15 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::post('questions/{question}/link', [\App\Http\Controllers\Admin\QuestionAdminController::class, 'linkToExisting'])->name('questions.link')->middleware('can:questions.manage');
     Route::delete('questions/{question}', [\App\Http\Controllers\Admin\QuestionAdminController::class, 'destroy'])->name('questions.destroy')->middleware('can:questions.delete');
 
+    // Member support messages — a team inbox any admin can see/reply to,
+    // deliberately 'admin.only' (not a granular permission) rather than
+    // exposed to matchmaker/counselor staff via any permission grant.
+    Route::middleware('admin.only')->group(function () {
+        Route::get('support-messages', [\App\Http\Controllers\Admin\SupportMessageController::class, 'index'])->name('support-messages.index');
+        Route::get('support-messages/{user}', [\App\Http\Controllers\Admin\SupportMessageController::class, 'show'])->name('support-messages.show');
+        Route::post('support-messages/{user}/reply', [\App\Http\Controllers\Admin\SupportMessageController::class, 'reply'])->name('support-messages.reply');
+    });
+
     // Donation Management (permission-gated)
     Route::get('donations', [DonationAdminController::class, 'index'])->name('donations.index')->middleware('can:donations.view');
     Route::post('donations/{donation}/confirm', [DonationAdminController::class, 'confirm'])->name('donations.confirm')->middleware('can:donations.manage');
