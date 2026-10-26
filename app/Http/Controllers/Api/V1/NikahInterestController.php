@@ -81,8 +81,8 @@ class NikahInterestController extends Controller
         $sent = $myProfile->sentInterests()->with('receiver.user')->latest()->get();
 
         return response()->json([
-            'received' => $received->map(fn ($i) => $this->interestPayload($i, $i->sender)),
-            'sent' => $sent->map(fn ($i) => $this->interestPayload($i, $i->receiver)),
+            'received' => $received->map(fn ($i) => $this->interestPayload($i, $i->sender, $myProfile)),
+            'sent' => $sent->map(fn ($i) => $this->interestPayload($i, $i->receiver, $myProfile)),
         ]);
     }
 
@@ -138,12 +138,34 @@ class NikahInterestController extends Controller
         return response()->json(['message' => __('db.Interest request cancelled.')]);
     }
 
-    private function interestPayload(NikahInterest $interest, NikahProfile $otherProfile): array
+    // $otherProfile can legitimately be null — the sender/receiver's
+    // NikahProfile row went away from under an interest row that's still
+    // here (e.g. data cleaned up outside the normal FK cascade). Used to
+    // crash the ENTIRE index() response with a 500 the moment one bad row
+    // showed up in the ->map(), taking out the whole Received/Sent list
+    // for the user, not just that one row — hence the explicit null check
+    // instead of relying on the type hint. The mobile client renders this
+    // (and a blocked pair) as a disabled "no longer available" card rather
+    // than a normal, tappable one.
+    private function interestPayload(NikahInterest $interest, ?NikahProfile $otherProfile, NikahProfile $myProfile): array
     {
+        if (!$otherProfile) {
+            return [
+                'interest_id' => $interest->id,
+                'status' => $interest->status,
+                'created_at' => $interest->created_at->toIso8601String(),
+                'blocked' => false,
+                'unavailable' => true,
+                'profile' => null,
+            ];
+        }
+
         return [
             'interest_id' => $interest->id,
             'status' => $interest->status,
             'created_at' => $interest->created_at->toIso8601String(),
+            'blocked' => NikahBlock::existsBetween($myProfile->id, $otherProfile->id),
+            'unavailable' => false,
             'profile' => [
                 'id' => $otherProfile->id,
                 'name' => $interest->status === 'accepted' ? $otherProfile->user?->name : null,
