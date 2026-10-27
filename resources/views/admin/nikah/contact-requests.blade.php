@@ -72,15 +72,28 @@
             </p>
 
             @forelse ($requests as $req)
+            @php
+                $app = $applications->get($req->requested_by);
+                $history = $historyCounts->get($req->requested_by, collect());
+            @endphp
             <div class="bg-white rounded-xl shadow-sm p-5">
                 <div class="flex justify-between items-start gap-4 flex-wrap">
                     <div>
                         <p class="font-semibold text-gray-800">
                             {{ $req->requester?->name ?? 'Deleted account' }}
+                            @if ($app)
+                            <span class="text-xs font-normal px-1.5 py-0.5 rounded-full bg-teal-50 text-teal-700 align-middle">{{ \App\Models\MatchmakerApplication::LEVELS[$app->level] ?? $app->level }}</span>
+                            @if ($app->counselor_code)<span class="text-gray-400 font-normal text-xs">· {{ $app->counselor_code }}</span>@endif
+                            @endif
                             <span class="text-gray-400 font-normal">requested contact for</span>
                             {{ $req->profile?->age }} yrs, {{ ucfirst($req->profile?->user?->gender ?? '—') }} — {{ $req->profile?->city }}
                         </p>
                         <p class="text-xs text-gray-400 mt-1">Requested {{ $req->created_at->diffForHumans() }}</p>
+                        @if ($history->isNotEmpty())
+                        <p class="text-xs text-gray-400">
+                            This counselor's history: {{ $history->get('approved', 0) }} approved · {{ $history->get('denied', 0) }} denied · {{ $history->get('pending', 0) }} pending
+                        </p>
+                        @endif
                         @if ($req->decided_at)
                         <p class="text-xs text-gray-400">Decided {{ $req->decided_at->diffForHumans() }} by {{ $req->decider?->name ?? '—' }}</p>
                         @endif
@@ -94,6 +107,9 @@
                                ($req->status === 'denied' ? 'bg-red-100 text-red-700' : 'bg-yellow-100 text-yellow-700') }}">
                             {{ ucfirst($req->status) }}
                         </span>
+                        @if ($app)
+                        <a href="{{ route('admin.matchmaker-applications.show', $app) }}" class="text-xs text-teal-700 hover:underline">View Counselor →</a>
+                        @endif
                         @if ($req->profile)
                         <a href="{{ route('admin.nikah.show', $req->profile) }}" class="text-xs text-teal-700 hover:underline">View Profile →</a>
                         @endif

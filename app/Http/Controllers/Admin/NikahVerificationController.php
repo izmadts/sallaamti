@@ -54,9 +54,31 @@ class NikahVerificationController extends Controller
             ->latest()
             ->paginate(20);
 
+        $requesterIds = $requests->pluck('requested_by')->unique()->filter()->values();
+
+        // Tier/code per requester, batched to avoid an N+1 per row — gives
+        // admin the counselor's seniority at a glance and a "View Counselor"
+        // link, same as the Card Dispatch tab already has.
+        $applications = MatchmakerApplication::whereIn('user_id', $requesterIds)
+            ->where('status', 'certified')
+            ->get()
+            ->keyBy('user_id');
+
+        // Each counselor's approve/deny/pending counts across their ENTIRE
+        // history (not just this page) — a quick pattern check, e.g. a
+        // counselor with an unusually high denied count or request volume.
+        $historyCounts = NikahContactRequest::whereIn('requested_by', $requesterIds)
+            ->selectRaw('requested_by, status, count(*) as total')
+            ->groupBy('requested_by', 'status')
+            ->get()
+            ->groupBy('requested_by')
+            ->map(fn ($rows) => $rows->pluck('total', 'status'));
+
         return view('admin.nikah.contact-requests', [
             'type' => 'contact',
             'requests' => $requests,
+            'applications' => $applications,
+            'historyCounts' => $historyCounts,
             'pendingContactCount' => $pendingContactCount,
             'pendingCardCount' => $pendingCardCount,
         ]);
