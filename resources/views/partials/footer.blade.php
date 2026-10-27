@@ -43,6 +43,7 @@
             <div>
                 <img src="{{ asset('img/logo-w.png')}}" class="max-w-full h-auto">
                 <p class="my-4 text-gray-400">{{ __('db.Sallaamti (سلامتی) is an organization dedicated to spreading peace, knowledge, and compassion through the teachings of the Quran and Hadith.') }}</p>
+                <p class="-mt-2 mb-4 text-xs text-gray-500">Sallaamti · سلامتی · Salamti · Salaamti</p>
                 <div class="flex flex-wrap gap-3">
                     <a href="{{ url('/donate') }}" class="inline-flex items-center rounded-md bg-[--teal] text-white font-medium py-2 px-4 hover:bg-[--teal-dark] transition">{{ __('db.Donate Now') }}</a>
                     <a href="{{ url('/volunteer') }}" class="inline-flex items-center rounded-md border border-gray-600 text-white font-medium py-2 px-4 hover:border-[--teal] hover:bg-white/5 transition">{{ __('db.Become Volunteer') }}</a>
