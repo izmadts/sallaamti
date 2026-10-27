@@ -61,6 +61,8 @@
  '@context' => 'https://schema.org',
  '@type' => 'Organization',
  'name' => setting('site_name', 'Sallaamti'),
+ // The domain forced the double-letter spelling; people search "Salamti", "Salaamti" etc.
+ 'alternateName' => ['سلامتی', 'Salamti', 'Salaamti', 'Salamati', 'Sallamti', 'Slamti'],
  'url' => config('app.url'),
  'logo' => asset('img/logo.png'),
  'description' => strip_tags(setting('about_text', 'Islamic education platform offering Quran courses, live classes and matrimonial services.')),
@@ -75,6 +77,7 @@
  setting('social_instagram', ''),
  setting('social_youtube', ''),
  setting('social_tiktok', ''),
+ 'https://play.google.com/store/apps/details?id=com.sallaamti.app',
  ]),
  ];
  @endphp

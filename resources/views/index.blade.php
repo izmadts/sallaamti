@@ -18,6 +18,7 @@
     '@context' => 'https://schema.org',
     '@type' => 'WebSite',
     'name' => 'Sallaamti',
+    'alternateName' => ['سلامتی', 'Salamti', 'Salaamti', 'Salamati'],
     'url' => config('app.url'),
     'potentialAction' => [
     '@type' => 'SearchAction',
@@ -26,6 +27,21 @@
     ],
     ];
     @endphp
+    @php
+    $appSchema = [
+    '@context' => 'https://schema.org',
+    '@type' => 'MobileApplication',
+    'name' => 'Sallaamti (سلامتی)',
+    'alternateName' => ['Salamti', 'Salaamti'],
+    'operatingSystem' => 'ANDROID',
+    'applicationCategory' => 'LifestyleApplication',
+    'url' => 'https://play.google.com/store/apps/details?id=com.sallaamti.app',
+    'offers' => ['@type' => 'Offer', 'price' => '0', 'priceCurrency' => 'PKR'],
+    ];
+    @endphp
+    <script type="application/ld+json">
+        {!! json_encode($appSchema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT | JSON_HEX_TAG) !!}
+    </script>
     <script type="application/ld+json">
         {!! json_encode($websiteSchema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT | JSON_HEX_TAG) !!}
     </script>
