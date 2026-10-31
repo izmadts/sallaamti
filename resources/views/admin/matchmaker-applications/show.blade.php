@@ -39,8 +39,11 @@
                 </span>
             </div>
 
-            {{-- Pipeline progress --}}
-            @unless ($application->isTerminal())
+            {{-- Pipeline progress — not shown once certified: "Move to Stage"/
+                 Reject/Withdraw are onboarding-pipeline actions and don't
+                 apply to someone already certified and working. Use
+                 "Deactivate Counselor" below instead. --}}
+            @unless ($application->isTerminal() || $application->isCertified())
             <div class="bg-white rounded-xl shadow-sm p-6">
                 <h4 class="font-semibold text-gray-700 mb-4 border-b pb-2">Onboarding Pipeline</h4>
                 <div class="flex flex-wrap gap-2 mb-5">
@@ -86,6 +89,33 @@
                 </form>
             </div>
             @endunless
+
+            {{-- Certified counselor's live-access switch — separate from the
+                 onboarding pipeline above. 'status' stays 'certified' either
+                 way (that's a historical fact); this controls whether they
+                 can actually log in and act, on web and the NC mobile app. --}}
+            @if ($application->isCertified() && $application->user)
+            <div class="bg-white rounded-xl shadow-sm p-6">
+                <h4 class="font-semibold text-gray-700 mb-2 border-b pb-2">Counselor Access</h4>
+                @if ($application->user->is_active)
+                <p class="text-xs text-gray-500 mb-3">This counselor's account is active — they can log in and act on the website and the NC mobile app.</p>
+                <form method="POST" action="{{ route('admin.matchmaker-applications.deactivate-counselor', $application) }}" onsubmit="return confirm('Deactivate this counselor? Their account and NC app access will be blocked immediately.')">
+                    @csrf
+                    <div class="mb-2">
+                        <label class="text-xs text-gray-500 block mb-1">Reason (optional, kept on file)</label>
+                        <input type="text" name="notes" class="border-gray-300 rounded-md text-sm w-full" placeholder="e.g. no longer active, policy violation">
+                    </div>
+                    <button class="text-sm font-semibold px-4 py-2 rounded-lg border border-red-300 text-red-600 hover:bg-red-50">Deactivate Counselor</button>
+                </form>
+                @else
+                <p class="text-xs text-red-600 mb-3 font-semibold">This counselor's account is deactivated — they cannot log in on the website or the NC mobile app.</p>
+                <form method="POST" action="{{ route('admin.matchmaker-applications.reactivate-counselor', $application) }}" onsubmit="return confirm('Reactivate this counselor? Their account and NC app access will be restored.')">
+                    @csrf
+                    <button class="text-sm font-semibold px-4 py-2 rounded-lg text-white hover:opacity-90" style="background: #0d6b6b">Reactivate Counselor</button>
+                </form>
+                @endif
+            </div>
+            @endif
 
             {{-- Reactivate a rejected application — admin-only (reject()/withdraw()
                  have no side effects to undo, so this just clears the rejection

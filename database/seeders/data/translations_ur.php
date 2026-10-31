@@ -871,4 +871,5 @@ return [
     '1 Assisted Nikah Counseling package (Rs 5,000) × :pct% first purchase = Rs :amount' => '1 اسسٹڈ نکاح کاؤنسلنگ پیکج (Rs 5,000) × :pct% پہلی خریداری = Rs :amount',
     'Nikah Counselor Guide' => 'نکاح کاؤنسلر گائیڈ',
     'If you already have a Sallaamti account, use the same email — we\'ll link your counselor certification to it instead of creating a new one.' => 'اگر آپ کا پہلے سے سلامتی اکاؤنٹ موجود ہے تو وہی ای میل استعمال کریں — ہم آپ کی کاؤنسلر سرٹیفیکیشن اسی اکاؤنٹ سے جوڑ دیں گے، نیا اکاؤنٹ بنانے کے بجائے۔',
+    'Your account has been deactivated. Please contact support.' => 'آپ کا اکاؤنٹ غیر فعال کر دیا گیا ہے۔ براہ کرم سپورٹ سے رابطہ کریں۔',
 ];

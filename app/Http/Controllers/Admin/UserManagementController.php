@@ -194,6 +194,20 @@ class UserManagementController extends Controller
 
         $user->update(['is_active' => !$user->is_active]);
 
+        // Deactivating from this general page used to leave a matchmaker
+        // role fully intact — the account couldn't log into the website
+        // (EnsureUserIsActive) but kept working on the NC mobile app
+        // forever (no API check existed at all; see EnsureUserIsActiveApi
+        // and AuthController::tokenResponse() for that fix) and, even on
+        // web, a stray certified counselor could still be picked up by
+        // anything that only checks hasRole('matchmaker'). Not reinstated
+        // automatically on reactivate here — this page doesn't know
+        // whether that's appropriate; use the counselor's own
+        // "Reactivate Counselor" action for that.
+        if (!$user->is_active && $user->hasRole('matchmaker')) {
+            $user->removeRole('matchmaker');
+        }
+
         return back()->with('status', $user->name . ' has been ' . ($user->is_active ? 'activated' : 'deactivated') . '.');
     }
 

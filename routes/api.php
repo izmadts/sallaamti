@@ -69,7 +69,7 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
     // the auth endpoints above since it's an unauthenticated write.
     Route::post('nikah-counselor-application', [NikahCounselorApplicationController::class, 'store'])->middleware('throttle:5,1')->name('nikah-counselor-application.store');
 
-    Route::middleware('auth:sanctum')->group(function () {
+    Route::middleware(['auth:sanctum', 'active.api'])->group(function () {
         Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
         Route::get('avatar/{user}', [AvatarController::class, 'show'])->name('avatar');
 

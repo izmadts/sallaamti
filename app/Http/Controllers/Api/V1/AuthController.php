@@ -277,6 +277,15 @@ class AuthController extends Controller
 
     private function tokenResponse(User $user, int $status = 200): JsonResponse
     {
+        // Mirrors EnsureUserIsActiveApi's check, but at the token-issue
+        // step — an admin-deactivated account (User::is_active, not the
+        // separate self-service deactivated_at above) should never be able
+        // to mint a fresh bearer token in the first place, same as it can't
+        // log into the website once EnsureUserIsActive catches it.
+        if (!$user->is_active) {
+            throw ValidationException::withMessages(['account' => __('db.Your account has been deactivated. Please contact support.')]);
+        }
+
         $token = $user->createToken('sallaamti-app')->plainTextToken;
 
         // A freshly created model's in-memory attributes don't reflect

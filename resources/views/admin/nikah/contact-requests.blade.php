@@ -81,13 +81,34 @@
                     <div>
                         <p class="font-semibold text-gray-800">
                             {{ $req->requester?->name ?? 'Deleted account' }}
+                            @if ($req->requester)
+                            <span class="text-gray-400 font-normal text-xs">· User #{{ $req->requester->id }}</span>
+                            @endif
                             @if ($app)
-                            <span class="text-xs font-normal px-1.5 py-0.5 rounded-full bg-teal-50 text-teal-700 align-middle">{{ \App\Models\MatchmakerApplication::LEVELS[$app->level] ?? $app->level }}</span>
-                            @if ($app->counselor_code)<span class="text-gray-400 font-normal text-xs">· {{ $app->counselor_code }}</span>@endif
+                                @if ($app->isCertified())
+                                <span class="text-xs font-normal px-1.5 py-0.5 rounded-full bg-teal-50 text-teal-700 align-middle">{{ \App\Models\MatchmakerApplication::LEVELS[$app->level] ?? $app->level }}</span>
+                                @if ($app->counselor_code)<span class="text-gray-400 font-normal text-xs">· {{ $app->counselor_code }}</span>@endif
+                                @else
+                                {{-- Still holds the matchmaker role (or did when this
+                                     request was made) but their application is no
+                                     longer certified — flag it clearly so admin can
+                                     see at a glance this needs a closer look. --}}
+                                <span class="text-xs font-normal px-1.5 py-0.5 rounded-full bg-red-50 text-red-700 align-middle">
+                                    Application {{ \App\Models\MatchmakerApplication::STEPS[$app->status] ?? ucfirst($app->status) }} — not currently certified
+                                </span>
+                                @endif
+                            @elseif ($req->requester)
+                            <span class="text-xs font-normal px-1.5 py-0.5 rounded-full bg-gray-100 text-gray-500 align-middle">No Nikah Counselor application on file</span>
+                            @endif
+                            @if ($req->requester && !$req->requester->is_active)
+                            <span class="text-xs font-semibold px-1.5 py-0.5 rounded-full bg-red-100 text-red-700 align-middle">Account deactivated</span>
                             @endif
                             <span class="text-gray-400 font-normal">requested contact for</span>
-                            {{ $req->profile?->age }} yrs, {{ ucfirst($req->profile?->user?->gender ?? '—') }} — {{ $req->profile?->city }}
+                            Profile #{{ $req->profile?->id }} — {{ $req->profile?->age }} yrs, {{ ucfirst($req->profile?->user?->gender ?? '—') }} — {{ $req->profile?->city }}
                         </p>
+                        @if ($req->requester)
+                        <p class="text-xs text-gray-400 mt-0.5">{{ collect([$req->requester->email, $req->requester->phone])->filter()->implode(' · ') }}</p>
+                        @endif
                         <p class="text-xs text-gray-400 mt-1">Requested {{ $req->created_at->diffForHumans() }}</p>
                         @if ($history->isNotEmpty())
                         <p class="text-xs text-gray-400">
@@ -109,6 +130,9 @@
                         </span>
                         @if ($app)
                         <a href="{{ route('admin.matchmaker-applications.show', $app) }}" class="text-xs text-teal-700 hover:underline">View Counselor →</a>
+                        @endif
+                        @if ($req->requester)
+                        <a href="{{ route('admin.users.show', $req->requester) }}" class="text-xs text-teal-700 hover:underline">View Account →</a>
                         @endif
                         @if ($req->profile)
                         <a href="{{ route('admin.nikah.show', $req->profile) }}" class="text-xs text-teal-700 hover:underline">View Profile →</a>

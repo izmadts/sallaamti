@@ -19,6 +19,7 @@ return Application::configure(basePath: dirname(__DIR__))
         'admin.only' => \App\Http\Middleware\EnsureUserIsFullAdmin::class,
         'teacher' => \App\Http\Middleware\EnsureUserIsTeacher::class,
         'active' => \App\Http\Middleware\EnsureUserIsActive::class,
+        'active.api' => \App\Http\Middleware\EnsureUserIsActiveApi::class,
         'maintenance' => \App\Http\Middleware\MaintenanceMode::class,
         'blog.manage' => \App\Http\Middleware\EnsureCanManageBlog::class,
         'nikah.activity' => \App\Http\Middleware\TrackNikahActivity::class,

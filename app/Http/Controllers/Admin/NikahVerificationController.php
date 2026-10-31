@@ -58,9 +58,15 @@ class NikahVerificationController extends Controller
 
         // Tier/code per requester, batched to avoid an N+1 per row — gives
         // admin the counselor's seniority at a glance and a "View Counselor"
-        // link, same as the Card Dispatch tab already has.
+        // link, same as the Card Dispatch tab already has. Deliberately NOT
+        // filtered to status=certified any more: a requester whose
+        // application was since rejected/withdrawn, or who still holds the
+        // matchmaker role from before being deactivated, is exactly the
+        // case an admin needs to trace here — hiding their application the
+        // moment it stops being 'certified' made it impossible to tell
+        // "who is this and why can they still request contact" from this
+        // page at all.
         $applications = MatchmakerApplication::whereIn('user_id', $requesterIds)
-            ->where('status', 'certified')
             ->get()
             ->keyBy('user_id');
 

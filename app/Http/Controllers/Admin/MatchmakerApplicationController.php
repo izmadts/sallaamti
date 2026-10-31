@@ -182,6 +182,8 @@ class MatchmakerApplicationController extends Controller
             'notes' => ['nullable', 'string', 'max:1000'],
         ]);
 
+        $wasCertified = $matchmakerApplication->isCertified();
+
         $matchmakerApplication->update([
             'status' => 'rejected',
             'rejected_at' => now(),
@@ -189,7 +191,18 @@ class MatchmakerApplicationController extends Controller
             'notes' => $validated['notes'] ?? $matchmakerApplication->notes,
         ]);
 
-        return back()->with('status', 'Application rejected.');
+        // Rejecting an application that had already reached 'certified'
+        // used to leave the person's matchmaker role (and so their live
+        // access to the NC app/web panel) completely untouched — the
+        // pipeline status changed but nothing actually stopped them. See
+        // deactivateCounselor() below for the normal way to do this now;
+        // this is just a safety net for the rare case reject() is used on
+        // an already-certified application instead.
+        if ($wasCertified && $matchmakerApplication->user?->hasRole('matchmaker')) {
+            $matchmakerApplication->user->removeRole('matchmaker');
+        }
+
+        return back()->with('status', 'Application rejected.' . ($wasCertified ? ' Their counselor access has also been revoked.' : ''));
     }
 
     // Undoes an accidental/mistaken reject() — deliberately admin-only
@@ -232,6 +245,8 @@ class MatchmakerApplicationController extends Controller
             'notes' => ['nullable', 'string', 'max:1000'],
         ]);
 
+        $wasCertified = $matchmakerApplication->isCertified();
+
         $matchmakerApplication->update([
             'status' => 'withdrawn',
             'withdrawn_at' => now(),
@@ -239,7 +254,66 @@ class MatchmakerApplicationController extends Controller
             'notes' => $validated['notes'] ?? $matchmakerApplication->notes,
         ]);
 
-        return back()->with('status', 'Application marked as withdrawn.');
+        // Same gap as reject() above — see that comment.
+        if ($wasCertified && $matchmakerApplication->user?->hasRole('matchmaker')) {
+            $matchmakerApplication->user->removeRole('matchmaker');
+        }
+
+        return back()->with('status', 'Application marked as withdrawn.' . ($wasCertified ? ' Their counselor access has also been revoked.' : ''));
+    }
+
+    // The normal way to stop a *certified* counselor from acting live —
+    // reject()/withdraw() above are really about the onboarding pipeline
+    // (an applicant who never finished, or who pulled out), so this is
+    // kept separate: it revokes the matchmaker role AND sets the user
+    // inactive (is_active = false), which — since EnsureUserIsActiveApi /
+    // the tokenResponse() check in AuthController — also now actually
+    // blocks the NC mobile app, not just the admin/web matchmaker panel.
+    // 'status' stays 'certified' (that's a true historical fact: they were
+    // certified), the deactivation itself is tracked on the User, same as
+    // any other account.
+    public function deactivateCounselor(Request $request, MatchmakerApplication $matchmakerApplication)
+    {
+        abort_unless($matchmakerApplication->isCertified(), 422, 'Only a certified counselor can be deactivated this way.');
+        $user = $matchmakerApplication->user;
+        abort_unless($user, 422, 'This application has no linked account to deactivate.');
+        abort_if($user->id === auth()->id(), 403, 'You cannot deactivate your own account.');
+
+        $validated = $request->validate([
+            'notes' => ['nullable', 'string', 'max:1000'],
+        ]);
+
+        $user->update(['is_active' => false]);
+        if ($user->hasRole('matchmaker')) {
+            $user->removeRole('matchmaker');
+        }
+
+        if ($validated['notes'] ?? null) {
+            $matchmakerApplication->update([
+                'notes' => trim(($matchmakerApplication->notes ? $matchmakerApplication->notes . "\n\n" : '')
+                    . 'Deactivated by ' . auth()->user()->name . ' on ' . now()->format('d M Y') . ': ' . $validated['notes']),
+            ]);
+        }
+
+        return back()->with('status', $matchmakerApplication->full_name . ' has been deactivated — their account and NC app access are now blocked.');
+    }
+
+    // Undoes deactivateCounselor() — re-activates the account and restores
+    // the matchmaker role, since we know (from counselor_code/certified_at
+    // already being on record) this was a genuine certified counselor, not
+    // a fresh grant.
+    public function reactivateCounselor(MatchmakerApplication $matchmakerApplication)
+    {
+        abort_unless($matchmakerApplication->isCertified(), 422, 'Only a certified counselor can be reactivated this way.');
+        $user = $matchmakerApplication->user;
+        abort_unless($user, 422, 'This application has no linked account to reactivate.');
+
+        $user->update(['is_active' => true]);
+        if (!$user->hasRole('matchmaker')) {
+            $user->assignRole('matchmaker');
+        }
+
+        return back()->with('status', $matchmakerApplication->full_name . ' has been reactivated — their account and NC app access are restored.');
     }
 
     // Marks a counselor's physical ID card as printed and mailed — set
