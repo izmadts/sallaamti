@@ -48,6 +48,20 @@ class NikahBrowseController extends Controller
         if ($request->filled('max_age')) {
             $query->where('age', '<=', $request->max_age);
         }
+        // Mirrors the web Matchmaker\NikahBrowseController's own education/
+        // country/state filters — this API version only ever had
+        // gender/city/sect/marital_status/age, so a counselor using the
+        // mobile app had less to narrow by than the same role on the web
+        // panel for no real reason.
+        if ($request->filled('education')) {
+            $query->where('education', 'like', '%' . $request->education . '%');
+        }
+        if ($request->filled('country')) {
+            $query->where('country', $request->country);
+        }
+        if ($request->filled('state')) {
+            $query->where('state', 'like', '%' . $request->state . '%');
+        }
 
         $profiles = $query->orderByDesc('created_at')->paginate(15)->withQueryString();
 
