@@ -33,7 +33,9 @@ class WallController extends Controller
                 ->with(['author', 'reactions', 'savedPosts'])
                 ->withCount('allComments as comments_count')
                 ->orderByDesc('is_pinned')
-                ->orderByDesc('created_at')
+                // Publish time, not draft-creation time: a post drafted days
+                // ahead and published today must show as today's post.
+                ->orderByRaw('COALESCE(published_at, created_at) DESC')
                 ->paginate($perPage, ['*'], 'page', $page);
         } elseif ($tag === 'dua') {
             $items = DuaRequest::where('status', 'approved')
@@ -55,7 +57,7 @@ class WallController extends Controller
             $posts = CommunityPost::published()
                 ->with(['author', 'reactions', 'savedPosts'])
                 ->withCount('allComments as comments_count')
-                ->latest()
+                ->orderByRaw('COALESCE(published_at, created_at) DESC')
                 ->limit(300)
                 ->get();
 
@@ -65,7 +67,7 @@ class WallController extends Controller
             // which the null-coalesce treats as "not pinned".
             $merged = $duas->concat($posts)->sortBy([
                 fn ($a, $b) => (($b->is_pinned ?? false) <=> ($a->is_pinned ?? false)),
-                fn ($a, $b) => ($b->created_at <=> $a->created_at),
+                fn ($a, $b) => (($b->published_at ?? $b->created_at) <=> ($a->published_at ?? $a->created_at)),
             ])->values();
 
             $items = new \Illuminate\Pagination\LengthAwarePaginator(
