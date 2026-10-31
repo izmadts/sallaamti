@@ -30,7 +30,7 @@
                     <span class="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-amber-50 text-amber-700">📌 {{ __('db.Pinned') }}</span>
                     @endif
                     <p class="font-semibold text-sm text-gray-800">{{ $displayName }}</p>
-                    <span class="text-xs text-gray-400">{{ $post->created_at->diffForHumans() }}</span>
+                    <span class="text-xs text-gray-400">{{ ($post->published_at ?? $post->created_at)->diffForHumans() }}</span>
                 </div>
 
                 <h3 class="font-bold text-gray-800 mt-1.5">{{ $post->title }}</h3>
