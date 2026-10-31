@@ -288,8 +288,26 @@ class MatchmakerApplicationController extends Controller
     {
         $user = $application->user;
 
+        // An applicant with no user_id yet (the normal case — the public
+        // application form never requires signing in first) used to always
+        // get a BRAND NEW account here, even when they already had a real
+        // Sallaamti account under the same email (e.g. from the member
+        // app). That left the new 'matchmaker' role and this Certificate
+        // row attached to a phantom duplicate account the person never
+        // actually logs into — their real account shows no certificate and
+        // the app's "download certificate" 404s. Matching by email first
+        // (now required on the application form) attaches to the real
+        // account instead of creating a second one.
+        if (!$user && $application->email) {
+            $user = User::where('email', $application->email)->first();
+
+            if ($user) {
+                $application->update(['user_id' => $user->id]);
+            }
+        }
+
         if (!$user) {
-            $user = $this->createMinimalUser($application->full_name, null, $application->mobile_number);
+            $user = $this->createMinimalUser($application->full_name, $application->email, $application->mobile_number);
             $application->update(['user_id' => $user->id]);
         }
 

@@ -162,6 +162,10 @@ class Lead extends Model
         $total = 0;
         $score = 0;
         $considered = 0;
+        // Per-requirement detail the mobile app shows under a "why this %?"
+        // tap — without this, the percentage was a number with no way to
+        // see which of the client's actual requirements it came from.
+        $breakdown = [];
 
         foreach ($this->requirement?->items ?? [] as $item) {
             $matched = $item->matchesCandidate($candidate);
@@ -175,10 +179,18 @@ class Lead extends Model
             if ($matched) {
                 $score += $weight;
             }
+
+            $breakdown[] = [
+                'type' => $item->requirement_type,
+                'label' => MatchmakingRequirementItem::TYPES[$item->requirement_type] ?? $item->requirement_type,
+                'value' => $item->requirement_value,
+                'priority' => $item->priority,
+                'matched' => $matched,
+            ];
         }
 
         if ($total === 0) {
-            return ['level' => null, 'percentage' => 0, 'considered' => 0];
+            return ['level' => null, 'percentage' => 0, 'considered' => 0, 'breakdown' => []];
         }
 
         $percentage = (int) round(($score / $total) * 100);
@@ -187,6 +199,7 @@ class Lead extends Model
             'level' => $percentage >= 75 ? 'high' : ($percentage >= 40 ? 'medium' : 'low'),
             'percentage' => $percentage,
             'considered' => $considered,
+            'breakdown' => $breakdown,
         ];
     }
 

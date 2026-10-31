@@ -276,6 +276,7 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
             Route::post('clients/{lead}/shortlist', [MatchmakerApi\ClientController::class, 'addToShortlist'])->name('clients.shortlist.add');
             Route::delete('clients/{lead}/shortlist/{item}', [MatchmakerApi\ClientController::class, 'removeFromShortlist'])->name('clients.shortlist.remove');
             Route::post('clients/{lead}/requirements', [MatchmakerApi\ClientController::class, 'saveRequirement'])->name('clients.requirements.save');
+            Route::post('clients/{lead}/package-payment', [MatchmakerApi\ClientController::class, 'submitPackagePayment'])->name('clients.package-payment.submit');
 
             Route::post('clients/{lead}/consents', [MatchmakerApi\ClientController::class, 'recordConsent'])->name('clients.consents.record');
             Route::post('clients/{lead}/consents/request', [MatchmakerApi\ClientController::class, 'requestConsent'])->name('clients.consents.request');

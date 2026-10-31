@@ -94,7 +94,7 @@ class MatchmakerApplication extends Model
     ];
 
     protected $fillable = [
-        'user_id', 'full_name', 'guardian_name', 'mobile_number', 'whatsapp_number',
+        'user_id', 'full_name', 'guardian_name', 'mobile_number', 'email', 'whatsapp_number',
         'gender', 'age', 'marital_status', 'qualification', 'qualification_other',
         'selfie_photo', 'cnic_number', 'cnic_front_image', 'cnic_back_image',
         'area', 'address', 'country',

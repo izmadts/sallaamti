@@ -100,6 +100,18 @@ class MetaController extends Controller
                 'color' => $package->color,
                 'icon' => $package->icon,
             ]),
+            // Same block Api\V1\NikahHireCounselorController::packages()
+            // already sends the member app — needed here too now that a
+            // counselor can submit a package payment on a client's behalf.
+            'payment_instructions' => [
+                'jazzcash_number' => setting('jazzcash_number'),
+                'jazzcash_account_title' => setting('jazzcash_account_title'),
+                'easypaisa_number' => setting('easypaisa_number'),
+                'bank_name' => setting('bank_name'),
+                'bank_account_title' => setting('bank_account_title'),
+                'bank_account_number' => setting('bank_account_number'),
+                'bank_account_iban' => setting('bank_account_iban'),
+            ],
         ]);
     }
 }

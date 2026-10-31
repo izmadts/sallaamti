@@ -45,6 +45,12 @@ class NikahCounselorApplicationController extends Controller
             'full_name' => ['required', 'string', 'max:255'],
             'guardian_name' => ['required', 'string', 'max:255'],
             'mobile_number' => ['required', 'string', 'max:30', 'unique:matchmaker_applications,mobile_number'],
+            // Required so a certified counselor's account can be matched
+            // against (or created with) a real, reachable address — and so
+            // certify() can find an existing Sallaamti account by email
+            // instead of blindly creating a duplicate one. See certify()'s
+            // own comment for the bug this closes.
+            'email' => ['required', 'email', 'max:255'],
             'whatsapp_number' => ['nullable', 'string', 'max:30'],
             'gender' => ['required', 'in:male,female'],
             'age' => ['required', 'integer', 'min:21', 'max:70'],

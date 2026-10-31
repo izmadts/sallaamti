@@ -74,6 +74,16 @@
                                 </div>
                             </div>
 
+                            <div>
+                                <label for="email" class="auth-label">{{ __('db.Email') }} <span class="text-red-400">*</span></label>
+                                <div class="auth-input-wrap">
+                                    <i class="fa fa-envelope auth-icon"></i>
+                                    <input id="email" type="email" name="email" value="{{ old('email') }}" required class="auth-input @error('email') auth-input-error @enderror" placeholder="you@example.com">
+                                </div>
+                                <x-input-error :messages="$errors->get('email')" class="mt-1" />
+                                <p class="text-xs text-gray-400 mt-1">{{ __('db.If you already have a Sallaamti account, use the same email — we\'ll link your counselor certification to it instead of creating a new one.') }}</p>
+                            </div>
+
                             <div class="grid sm:grid-cols-3 gap-4">
                                 <div>
                                     <label for="gender" class="auth-label">{{ __('db.Gender') }} <span class="text-red-400">*</span></label>

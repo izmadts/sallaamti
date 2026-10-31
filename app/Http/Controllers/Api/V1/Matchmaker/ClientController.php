@@ -10,9 +10,12 @@ use App\Models\MatchmakingConsentRequest;
 use App\Models\MatchmakingRequirement;
 use App\Models\MatchmakingTimelineEvent;
 use App\Models\MatchProposal;
+use App\Models\NikahPackage;
 use App\Models\NikahProfile;
 use App\Models\ProposalBatch;
 use App\Models\User;
+use App\Notifications\NewPackagePaymentSubmitted;
+use App\Services\ImageOptimizer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -277,6 +280,56 @@ class ClientController extends Controller
         return response()->json(['message' => __('db.Consent recorded.')], 201);
     }
 
+    // The counselor-assisted counterpart to Api\V1\NikahHireCounselorController
+    // ::submitPackage() — a client who registered themselves can pick a
+    // package and submit payment proof from the member app, but until now
+    // there was no equivalent for a counselor doing it on their behalf
+    // (walk-in clients, or anyone the counselor is actively helping), even
+    // though the admin side (Admin\LeadController::confirmPackagePayment())
+    // has always been able to review and confirm one. Deliberately
+    // "submitted, admin reviews" rather than assigning the package
+    // immediately — keeps real money under the same admin oversight every
+    // other payment path already goes through, and needs no new admin UI
+    // since confirmPackagePayment()/rejectPackagePayment() already exist.
+    public function submitPackagePayment(Request $request, Lead $lead): JsonResponse
+    {
+        $this->authorizeClient($lead);
+        abort_if($lead->package_payment_status === 'submitted', 422, 'A package payment is already awaiting review for this client.');
+
+        $validated = $request->validate([
+            'nikah_package_id' => ['required', 'exists:nikah_packages,id'],
+            'payment_method' => ['required', 'in:jazzcash,bank_transfer,easypaisa'],
+            'payment_reference' => ['nullable', 'string', 'max:100'],
+            'payment_screenshot' => ['required', 'image', 'max:4096'],
+        ]);
+
+        $package = NikahPackage::active()->findOrFail($validated['nikah_package_id']);
+        abort_if($package->isOneTime(), 422, 'That package is not a Nikah counseling package.');
+
+        $screenshotPath = ImageOptimizer::store($request->file('payment_screenshot'), 'nikah/payments', 'private');
+
+        $lead->update([
+            'pending_package_id' => $package->id,
+            'package_payment_method' => $validated['payment_method'],
+            'package_payment_reference' => $validated['payment_reference'] ?? null,
+            'package_payment_screenshot' => $screenshotPath,
+            'package_payment_status' => 'submitted',
+            'package_payment_rejection_reason' => null,
+        ]);
+
+        MatchmakingTimelineEvent::log($lead, $lead->nikahProfile, 'package_payment_submitted', auth()->user()->name . " selected the {$package->name} package for this client and submitted payment proof.");
+
+        User::role('admin')->each(function ($admin) use ($lead) {
+            try {
+                $admin->notify(new NewPackagePaymentSubmitted($lead));
+            } catch (\Throwable $e) {
+                \Log::error('NewPackagePaymentSubmitted notification failed: ' . $e->getMessage());
+            }
+        });
+
+        return response()->json(['client' => $this->detailPayload($lead->fresh(['assignedTo', 'nikahProfile.user']))]);
+    }
+
     public function requestConsent(Request $request, Lead $lead): JsonResponse
     {
         $this->authorizeClient($lead);
@@ -482,7 +535,14 @@ class ClientController extends Controller
             'is_converted' => $lead->isConverted(),
             'nikah_profile_id' => $lead->nikah_profile_id,
             'nikah_package_id' => $lead->nikah_package_id,
+            'package_name' => $lead->nikahPackage?->name,
             'package_expires_at' => $lead->package_expires_at?->toDateString(),
+            // The screen that selects/submits a package for this client — see
+            // Matchmaker\ClientController::submitPackagePayment() — needs
+            // these to show "awaiting review" / a rejection reason instead
+            // of silently repeating the same form with no explanation.
+            'package_payment_status' => $lead->package_payment_status,
+            'package_payment_rejection_reason' => $lead->package_payment_rejection_reason,
             'remaining_proposal_allowance' => $lead->remainingProposalAllowance(),
             'created_at' => $lead->created_at->toIso8601String(),
             'unread_message_count' => $lead->clientMessages()->where('sender_id', '!=', auth()->id())->where('is_read', false)->count(),

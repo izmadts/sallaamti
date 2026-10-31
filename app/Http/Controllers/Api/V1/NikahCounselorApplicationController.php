@@ -23,6 +23,10 @@ class NikahCounselorApplicationController extends Controller
             'full_name' => ['required', 'string', 'max:255'],
             'guardian_name' => ['required', 'string', 'max:255'],
             'mobile_number' => ['required', 'string', 'max:30', 'unique:matchmaker_applications,mobile_number'],
+            // See the web controller's matching comment — required so
+            // certify() can match an existing Sallaamti account by email
+            // instead of blindly creating a duplicate one.
+            'email' => ['required', 'email', 'max:255'],
             'whatsapp_number' => ['nullable', 'string', 'max:30'],
             'gender' => ['required', 'in:male,female'],
             'age' => ['required', 'integer', 'min:21', 'max:70'],
