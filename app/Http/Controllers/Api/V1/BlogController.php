@@ -27,14 +27,25 @@ class BlogController extends Controller
             'cover_image_url' => $post->cover_image ? Storage::url($post->cover_image) : null,
             'published_at' => $post->published_at?->toIso8601String(),
             'author' => $post->author ? ['id' => $post->author->id, 'name' => $post->author->name] : null,
+            // Only ever populated for an already-published post (index()
+            // only lists those, show() 404s on anything else), so this is
+            // always a real, shareable public URL.
+            'share_url' => url('/blog/' . $post->slug),
             ...$withContent ? ['content' => $post->content] : [],
         ];
     }
 
     public function index(Request $request): JsonResponse
     {
+        $search = trim((string) $request->get('search', ''));
+
         $posts = BlogPost::published()
             ->with('author')
+            ->when($search !== '', fn ($q) => $q->where(
+                fn ($q) => $q->where('title', 'like', "%{$search}%")
+                    ->orWhere('content', 'like', "%{$search}%")
+                    ->orWhere('excerpt', 'like', "%{$search}%")
+            ))
             ->latest('published_at')
             ->paginate(10);
 
