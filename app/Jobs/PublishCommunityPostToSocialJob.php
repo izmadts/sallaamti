@@ -2,7 +2,10 @@
 
 namespace App\Jobs;
 
+use App\Models\SocialAccount;
 use App\Models\SocialPostDispatch;
+use App\Models\User;
+use App\Notifications\SocialAccountNeedsReconnect;
 use App\Services\SocialPublishing\FacebookPublisher;
 use App\Services\SocialPublishing\InstagramPublisher;
 use App\Services\SocialPublishing\ThreadsPublisher;
@@ -70,6 +73,7 @@ class PublishCommunityPostToSocialJob implements ShouldQueue
             // immediately rather than burning through $tries.
             \Log::error("PublishCommunityPostToSocialJob: {$this->dispatch->platform} publish failed — {$result['error']}");
             $this->dispatch->update(['status' => 'failed', 'error_message' => $result['error']]);
+            $this->handleAccountFailure($account, $result['error']);
         }
     }
 
@@ -81,5 +85,54 @@ class PublishCommunityPostToSocialJob implements ShouldQueue
     {
         \Log::error("PublishCommunityPostToSocialJob: {$this->dispatch->platform} publish failed permanently — " . $e->getMessage());
         $this->dispatch->update(['status' => 'failed', 'error_message' => $e->getMessage()]);
+        $this->handleAccountFailure($this->dispatch->socialAccount, $e->getMessage());
+    }
+
+    // Before this, a dead token (expired, revoked, reconnected elsewhere)
+    // just failed every single post to that platform silently, forever —
+    // social_accounts.status stayed 'connected' the whole time (nothing
+    // ever wrote it to anything else), so CommunityPostPublisher kept
+    // queuing new doomed dispatches post after post, and the admin
+    // integrations page kept claiming the connection was fine. This is
+    // the actual write-path for the 'expired' status value the schema
+    // already had room for from the start.
+    //
+    // Deliberately only flips status (and so stops future dispatches —
+    // see SocialAccount::active()/CommunityPostPublisher) on an
+    // auth-shaped failure. A single post's content/media getting rejected
+    // is that post's problem, not the account's — disconnecting the whole
+    // platform over one bad image would stop every future post for no
+    // reason. Always records last_error either way, for the admin to see.
+    private function handleAccountFailure(?SocialAccount $account, string $error): void
+    {
+        if (!$account || !$this->looksLikeAuthFailure($error)) {
+            $account?->update(['last_error' => $error]);
+            return;
+        }
+
+        $wasConnected = $account->status === 'connected';
+        $account->update(['last_error' => $error, 'status' => 'expired']);
+
+        // Only the transition, not every single failed post after it —
+        // otherwise one dead token would email every admin on every post
+        // attempt until someone reconnects it.
+        if ($wasConnected) {
+            User::role('admin')->get()->each(
+                fn (User $admin) => $admin->notify(new SocialAccountNeedsReconnect($account, $error))
+            );
+        }
+    }
+
+    private function looksLikeAuthFailure(string $error): bool
+    {
+        $error = strtolower($error);
+
+        foreach (['access token', 'oauth', 'expired', 'invalid token', 'unauthorized', 'session has expired'] as $needle) {
+            if (str_contains($error, $needle)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 }
