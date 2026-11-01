@@ -6,11 +6,35 @@ use App\Http\Controllers\Concerns\RecordsCommission;
 use App\Http\Controllers\Controller;
 use App\Models\NikahProfile;
 use App\Services\ImageOptimizer;
+use App\Services\MetaConversionsApi;
 use Illuminate\Http\Request;
 
 class NikahPaymentAdminController extends Controller
 {
     use RecordsCommission;
+
+    // All three confirm paths below (confirm(), bulkConfirm(), recordOffline())
+    // end with this — the member isn't present in their own browser at the
+    // moment admin clicks Confirm, so this has to be the server-side
+    // Conversions API call, not a client-side Pixel event; see
+    // MetaConversionsApi's own class docblock. Guarded by
+    // payment_conversion_sent_at the same way registration_conversion_sent_at
+    // guards the CompleteRegistration side — recordOffline() in particular
+    // has no "already confirmed" status guard of its own.
+    private function trackPurchaseConversion(NikahProfile $profile): void
+    {
+        if ($profile->payment_conversion_sent_at) {
+            return;
+        }
+
+        $profile->update(['payment_conversion_sent_at' => now()]);
+
+        app(MetaConversionsApi::class)->send('Purchase', $profile->user, [
+            'value' => (float) $profile->payment_amount,
+            'currency' => 'PKR',
+            'content_name' => 'nikah_verification_fee',
+        ]);
+    }
 
 
     public function index(Request $request)
@@ -34,6 +58,7 @@ class NikahPaymentAdminController extends Controller
         foreach ($profiles as $profile) {
             $profile->update(['payment_status' => 'confirmed', 'payment_confirmed_at' => now()]);
             $this->recordVerifiedProfileCommission($profile);
+            $this->trackPurchaseConversion($profile);
 
             try {
                 $profile->user->notify(new \App\Notifications\NikahPaymentConfirmed());
@@ -69,6 +94,7 @@ class NikahPaymentAdminController extends Controller
 
         $profile->update(['payment_status' => 'confirmed', 'payment_confirmed_at' => now()]);
         $this->recordVerifiedProfileCommission($profile);
+        $this->trackPurchaseConversion($profile);
 
         try {
             $profile->user->notify(new \App\Notifications\NikahPaymentConfirmed());
@@ -126,6 +152,7 @@ class NikahPaymentAdminController extends Controller
         });
 
         $this->recordVerifiedProfileCommission($profile->fresh());
+        $this->trackPurchaseConversion($profile->fresh());
 
         try {
             $profile->user->notify(new \App\Notifications\NikahPaymentConfirmed());

@@ -6,6 +6,7 @@ use App\Http\Controllers\Concerns\ValidatesNikahProfile;
 use App\Http\Controllers\Controller;
 use App\Models\NikahProfile;
 use App\Services\ImageOptimizer;
+use App\Services\MetaConversionsApi;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
@@ -183,6 +184,16 @@ class NikahProfileController extends Controller
 
         if (!$profile) {
             throw ValidationException::withMessages(['profile' => __('db.Create your profile first.')]);
+        }
+
+        // Unlike the web wizard's finalize() (one-shot, guarded by
+        // Auth::user()->nikahProfile before it ever runs), this screen can
+        // be re-reached and re-submitted any number of times — the
+        // timestamp guard keeps a repeat tap from sending a duplicate
+        // CompleteRegistration for the same profile.
+        if (!$profile->registration_conversion_sent_at) {
+            $profile->update(['registration_conversion_sent_at' => now()]);
+            app(MetaConversionsApi::class)->send('CompleteRegistration', $request->user(), ['content_name' => 'nikah_profile'], $request);
         }
 
         return response()->json([

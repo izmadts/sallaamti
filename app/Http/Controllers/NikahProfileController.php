@@ -6,6 +6,7 @@ use App\Http\Controllers\Concerns\ValidatesNikahProfile;
 use App\Models\NikahProfile;
 use App\Models\NikahSavedProfile;
 use App\Services\ImageOptimizer;
+use App\Services\MetaConversionsApi;
 use App\Support\CountryStates;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -39,6 +40,7 @@ class NikahProfileController extends Controller
         $validated['open_to_polygamy'] = $request->has('open_to_polygamy');
         $validated['payment_amount'] = NikahProfile::feeForMaritalStatus($validated['marital_status'] ?? null, Auth::user()->gender, $validated['city'] ?? null);
         $validated['public_token'] = Str::random(32);
+        $validated['registration_conversion_sent_at'] = now();
 
         $profile = NikahProfile::create($validated);
 
@@ -47,6 +49,8 @@ class NikahProfileController extends Controller
         }
 
         session()->flash('conversion_event', 'nikah_profile_created');
+
+        app(MetaConversionsApi::class)->send('CompleteRegistration', Auth::user(), ['content_name' => 'nikah_profile'], $request);
 
         return redirect()->route('nikah.payment')->with('status', 'Profile submitted! Please complete the verification fee payment to proceed.');
     }

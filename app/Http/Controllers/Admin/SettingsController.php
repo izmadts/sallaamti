@@ -85,6 +85,16 @@ class SettingsController extends Controller
             'recaptcha_secret_key'     => ['nullable', 'string', 'max:255'],
             'gtm_id'                   => ['nullable', 'string', 'max:20'],
             'meta_domain_verification' => ['nullable', 'string', 'max:100'],
+            // Server-side Meta Conversions API — separate from the GTM-based
+            // client-side dataLayer push already in partials/gtm-body.blade.php
+            // (that one needs a Meta Pixel tag configured inside the GTM
+            // container itself to actually reach Meta). This pair lets
+            // MetaConversionsApi send events directly from the backend,
+            // which ad blockers can't stop and which can fire from actions
+            // that never render a page in the member's own browser at all —
+            // e.g. admin confirming a payment.
+            'meta_pixel_id'              => ['nullable', 'string', 'max:30'],
+            'meta_conversions_api_token' => ['nullable', 'string', 'max:500'],
             'seo_home_title'       => ['nullable', 'string', 'max:60'],
             'seo_home_description' => ['nullable', 'string', 'max:160'],
             'seo_keywords'         => ['nullable', 'string', 'max:500'],
@@ -148,6 +158,8 @@ class SettingsController extends Controller
             'social_tiktok'          => 'social',
             'gtm_id'                 => 'integrations',
             'meta_domain_verification' => 'integrations',
+            'meta_pixel_id'              => 'integrations',
+            'meta_conversions_api_token' => 'integrations',
             'seo_home_title'       => 'seo',
             'seo_home_description' => 'seo',
             'seo_keywords'         => 'seo',

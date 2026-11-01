@@ -6,6 +6,7 @@ use App\Http\Controllers\Concerns\HasWizardSteps;
 use App\Http\Controllers\Concerns\ValidatesNikahProfile;
 use App\Models\NikahProfile;
 use App\Services\ImageOptimizer;
+use App\Services\MetaConversionsApi;
 use App\Support\CountryStates;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -184,6 +185,7 @@ class NikahProfileWizardController extends Controller
         $validated['user_id'] = Auth::id();
         $validated['payment_amount'] = NikahProfile::feeForMaritalStatus($validated['marital_status'] ?? null, Auth::user()->gender, $validated['city'] ?? null);
         $validated['public_token'] = Str::random(32);
+        $validated['registration_conversion_sent_at'] = now();
 
         NikahProfile::create($validated);
 
@@ -196,6 +198,8 @@ class NikahProfileWizardController extends Controller
 
         $this->clearWizardSession();
         session()->flash('conversion_event', 'nikah_profile_created');
+
+        app(MetaConversionsApi::class)->send('CompleteRegistration', Auth::user(), ['content_name' => 'nikah_profile'], request());
 
         return redirect()->route('nikah.payment')->with('status', 'Profile submitted! Please complete the verification fee payment to proceed.');
     }

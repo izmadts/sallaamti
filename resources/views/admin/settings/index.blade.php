@@ -369,6 +369,16 @@
                         <x-text-input name="meta_domain_verification" class="w-full mt-1" :value="$settings['meta_domain_verification'] ?? ''" placeholder="e.g. abc123def456..." />
                         <p class="text-xs text-gray-400 mt-1">From Meta Business Manager → Brand Safety → Domain Verification. Leave blank if not needed.</p>
                     </div>
+                    <div>
+                        <x-input-label value="Meta Pixel ID" />
+                        <x-text-input name="meta_pixel_id" class="w-full mt-1" :value="$settings['meta_pixel_id'] ?? ''" placeholder="e.g. 123456789012345" />
+                        <p class="text-xs text-gray-400 mt-1">From Meta Events Manager. Used for server-side Conversions API calls (profile submitted, verification payment confirmed) — separate from, and in addition to, whatever Pixel tag is configured inside GTM above.</p>
+                    </div>
+                    <div>
+                        <x-input-label value="Meta Conversions API Access Token" />
+                        <x-text-input name="meta_conversions_api_token" class="w-full mt-1" :value="$settings['meta_conversions_api_token'] ?? ''" />
+                        <p class="text-xs text-gray-400 mt-1">Events Manager → your Pixel → Settings → Conversions API → generate an access token. Both fields must be filled in for server-side events to send at all — leave either blank to disable.</p>
+                    </div>
                 </div>
             </div>
             {{-- Social Login (Google / Facebook / TikTok) --}}
