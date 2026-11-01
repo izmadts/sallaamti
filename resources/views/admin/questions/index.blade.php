@@ -22,7 +22,20 @@
                 <div class="p-5 flex justify-between items-start flex-wrap gap-3">
                     <div class="flex-1 min-w-0">
                         <p class="font-medium text-gray-800">{{ $question->question }}</p>
-                        <p class="text-xs text-gray-400 mt-0.5">by {{ $question->asker->name }} — {{ $question->created_at->format('d M Y, h:i A') }}</p>
+                        <p class="text-xs text-gray-400 mt-0.5">
+                            by
+                            @if ($question->asker)
+                            {{ $question->asker->name }}
+                            <span class="text-gray-300">· User #{{ $question->asker->id }}</span>
+                            @if (collect([$question->asker->email, $question->asker->phone])->filter()->isNotEmpty())
+                            <span class="text-gray-300">· {{ collect([$question->asker->email, $question->asker->phone])->filter()->implode(' · ') }}</span>
+                            @endif
+                            <a href="{{ route('admin.users.show', $question->asker) }}" class="text-teal-700 hover:underline">View Account →</a>
+                            @else
+                            <span class="text-red-400">Deleted account</span>
+                            @endif
+                            — {{ $question->created_at->format('d M Y, h:i A') }}
+                        </p>
                         @if ($question->status === 'answered')
                         <p class="text-sm text-gray-600 mt-1.5">
                             @if ($question->canonical)
