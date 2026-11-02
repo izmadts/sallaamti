@@ -1,0 +1,33 @@
+<?php
+
+use Illuminate\Database\Migrations\Migration;
+use Illuminate\Database\Schema\Blueprint;
+use Illuminate\Support\Facades\Schema;
+
+return new class extends Migration
+{
+    /**
+     * Run the migrations.
+     */
+    public function up(): void
+    {
+        Schema::table('users', function (Blueprint $table) {
+            // "Silent" mode, not "off" — a muted member still gets every
+            // notification (database row, in-app badge, the push itself),
+            // just without sound/vibration on the device. Default true
+            // (sound on) so this is purely opt-out, matching how every
+            // notification already behaved before this column existed.
+            $table->boolean('notification_sound_enabled')->default(true)->after('email_verified_at');
+        });
+    }
+
+    /**
+     * Reverse the migrations.
+     */
+    public function down(): void
+    {
+        Schema::table('users', function (Blueprint $table) {
+            $table->dropColumn('notification_sound_enabled');
+        });
+    }
+};

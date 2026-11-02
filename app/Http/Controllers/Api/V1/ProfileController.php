@@ -106,4 +106,19 @@ class ProfileController extends Controller
 
         return response()->json(['user' => new UserResource($user->fresh())]);
     }
+
+    // "Silent" mode — see the notification_sound_enabled migration's own
+    // comment. Every notification still sends (database row, badge, push
+    // itself); PushNotificationService just tells the device to show it on
+    // the no-sound/no-vibration Android channel instead.
+    public function updateNotificationPreferences(Request $request): JsonResponse
+    {
+        $user = $request->user();
+
+        $user->update([
+            'notification_sound_enabled' => $request->boolean('notification_sound_enabled'),
+        ]);
+
+        return response()->json(['user' => new UserResource($user->fresh())]);
+    }
 }

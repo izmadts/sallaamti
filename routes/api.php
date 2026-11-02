@@ -78,6 +78,7 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
             Route::get('/', [ProfileController::class, 'show'])->name('show');
             Route::post('/', [ProfileController::class, 'update'])->name('update');
             Route::post('modules', [ProfileController::class, 'updateModules'])->name('modules.update');
+            Route::post('notification-preferences', [ProfileController::class, 'updateNotificationPreferences'])->name('notification-preferences.update');
             Route::post('password', [ProfileController::class, 'updatePassword'])->name('password.update');
         });
 

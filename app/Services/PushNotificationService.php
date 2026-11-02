@@ -6,6 +6,7 @@ use App\Models\DeviceToken;
 use App\Models\User;
 use Illuminate\Support\Facades\Log;
 use Kreait\Firebase\Factory;
+use Kreait\Firebase\Messaging\AndroidConfig;
 use Kreait\Firebase\Messaging\CloudMessage;
 use Kreait\Firebase\Messaging\MulticastSendReport;
 use Kreait\Firebase\Messaging\Notification;
@@ -41,8 +42,23 @@ class PushNotificationService
             return;
         }
 
+        // Two Android notification channels are registered client-side at
+        // app startup (see push_notification_service.dart) — 'default_channel'
+        // (sound+vibration) and 'silent_channel' (visible, no sound/
+        // vibration). The channel named here is what actually controls
+        // sound on Android 8+ (the device ignores any payload-level sound
+        // setting once a channel exists), both when the OS auto-displays a
+        // background push and when the app reads this same field to choose
+        // which channel to display a foreground one on.
+        $androidConfig = AndroidConfig::fromArray([
+            'notification' => [
+                'channel_id' => $user->notification_sound_enabled ? 'default_channel' : 'silent_channel',
+            ],
+        ]);
+
         $message = CloudMessage::new()
             ->withNotification(Notification::create($title, $body))
+            ->withAndroidConfig($androidConfig)
             ->withData($data);
 
         try {

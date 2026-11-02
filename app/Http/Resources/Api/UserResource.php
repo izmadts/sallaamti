@@ -27,6 +27,11 @@ class UserResource extends JsonResource
                 'skills' => (bool) $this->skills_module_enabled,
             ],
             'has_nikah_profile' => $this->nikahProfile()->exists(),
+            // "Silent" mode — see the notification_sound_enabled migration's
+            // own comment. Read on app startup to pick which Android
+            // notification channel (sound vs. silent) a locally-shown
+            // foreground push uses.
+            'notification_sound_enabled' => (bool) $this->notification_sound_enabled,
             'must_change_password' => (bool) $this->must_change_password,
             // When false, "Change Password" shouldn't ask for a current one
             // — there's no real password yet to check it against (e.g. a

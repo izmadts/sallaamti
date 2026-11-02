@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Jobs\NotifyMembersOfAnnouncementJob;
+use App\Jobs\NotifyMembersOfNewPostJob;
 use App\Jobs\PublishCommunityPostToSocialJob;
 use App\Jobs\SendWhatsappBroadcastJob;
 use App\Models\CommunityPost;
@@ -56,9 +57,14 @@ class CommunityPostPublisher
         $this->dispatchWhatsappBroadcast($post);
 
         // Mandatory, unlike the WhatsApp broadcast above — every member
-        // gets notified in-app, no admin opt-in switch to flip.
+        // gets notified in-app for every published post, no admin opt-in
+        // switch to flip. An announcement gets the distinct, more urgent
+        // CommunityAnnouncementPosted wording; everything else gets the
+        // quieter CommunityPostPublished — never both for the same post.
         if ($post->is_announcement) {
             NotifyMembersOfAnnouncementJob::dispatch($post);
+        } else {
+            NotifyMembersOfNewPostJob::dispatch($post);
         }
     }
 
