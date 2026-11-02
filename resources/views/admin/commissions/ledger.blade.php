@@ -88,7 +88,7 @@
                 @forelse ($entries as $entry)
                 <div class="p-5 flex flex-wrap justify-between items-start gap-3 {{ $entry->isFlagged() ? 'bg-red-50/50' : '' }}">
                     <div>
-                        <p class="font-medium text-gray-800">{{ $entry->matchmaker->name }}
+                        <p class="font-medium text-gray-800">{{ $entry->matchmaker->name ?? 'Deleted account' }}
                             <span class="text-xs font-normal text-gray-400">· {{ match($entry->rule_type) {
                                 'verified_profile' => 'Verified Profile',
                                 'recognition_bonus' => '🏆 Recognition Bonus',
@@ -144,7 +144,7 @@
                             </form>
                             @endif
                             @if ($entry->status === 'approved')
-                            <form method="POST" action="{{ route('admin.commissions.pay', $entry) }}" onsubmit="return confirm('Confirm you have already sent Rs. {{ number_format($entry->commission_amount, 2) }} to {{ $entry->matchmaker->name }}?')">
+                            <form method="POST" action="{{ route('admin.commissions.pay', $entry) }}" onsubmit="return confirm('Confirm you have already sent Rs. {{ number_format($entry->commission_amount, 2) }} to {{ $entry->matchmaker->name ?? 'this account' }}?')">
                                 @csrf
                                 <button class="text-xs font-semibold px-2.5 py-1 rounded-lg text-white hover:opacity-90" style="background: #b8962e">Mark Paid</button>
                             </form>

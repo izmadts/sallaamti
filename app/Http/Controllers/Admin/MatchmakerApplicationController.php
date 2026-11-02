@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Auth\Concerns\RegistersMinimalUsers;
 use App\Http\Controllers\Controller;
 use App\Models\Certificate;
+use App\Models\CommissionLedgerEntry;
 use App\Models\Lead;
 use App\Models\MatchmakerApplication;
 use App\Models\User;
@@ -437,6 +438,22 @@ class MatchmakerApplicationController extends Controller
         abort_unless(auth()->user()->hasRole('admin'), 403, 'Only an admin can permanently delete a Nikah Counselor.');
 
         $user = $matchmakerApplication->user;
+
+        // The ledger table's own FK is cascadeOnDelete, so deleting $user
+        // was assumed to take any commission rows with it — but a live
+        // crash (commissions.ledger reading a since-deleted matchmaker's
+        // name) showed rows surviving a past delete here anyway, orphaned
+        // rather than removed. Rather than trust the DB-level cascade to
+        // behave correctly this time either, block the permanent delete
+        // outright once real commission history exists — that's exactly
+        // the "transparent trail" this table exists for (see its own
+        // migration comment), and it shouldn't be erasable by deleting an
+        // unrelated row. deactivateCounselor() above is the correct way to
+        // cut off a counselor who has history; this stays for a genuine
+        // mistaken/test entry with nothing to lose.
+        if ($user && CommissionLedgerEntry::where('matchmaker_id', $user->id)->exists()) {
+            return back()->with('error', 'This counselor has commission history — permanently deleting them would break that record. Use "Deactivate Counselor" instead to cut off their access.');
+        }
 
         DB::transaction(function () use ($matchmakerApplication, $user) {
             if ($user) {

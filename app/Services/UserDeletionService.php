@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Exceptions\UserDeletionBlockedException;
 use App\Models\BlogPost;
 use App\Models\Comment;
+use App\Models\CommissionLedgerEntry;
 use App\Models\DuaRequest;
 use App\Models\Lead;
 use App\Models\QuranClassGroup;
@@ -64,6 +65,22 @@ class UserDeletionService
         if ($hasActiveClients) {
             throw new UserDeletionBlockedException(
                 "{$user->name} has active Nikah Counselor clients assigned to them — reassign those leads to another counselor before deleting this account."
+            );
+        }
+
+        // commission_ledger_entries.matchmaker_id is cascadeOnDelete at the
+        // DB level, so this table was assumed safe to leave off this list —
+        // but a production crash (commissions.ledger reading a since-
+        // deleted matchmaker's name on a row that survived anyway) showed
+        // that cascade can't be trusted to actually fire here. Blocking
+        // outright, rather than relying on it, is also just correct on its
+        // own terms: this table exists specifically to be "a transparent
+        // trail" (see its own migration comment) — silently erasing it by
+        // deleting an unrelated row defeats the point even when the
+        // cascade DOES work.
+        if (CommissionLedgerEntry::where('matchmaker_id', $user->id)->exists()) {
+            throw new UserDeletionBlockedException(
+                "{$user->name} has commission history — deleting this account would destroy that record. Deactivate their counselor access instead (Admin > Nikah Counselor Applications) if they shouldn't be active anymore."
             );
         }
     }
