@@ -54,6 +54,7 @@ class CommunityPostController extends Controller
         $validated['author_id'] = Auth::id();
         $validated['status'] = $request->boolean('publish') ? 'published' : 'draft';
         $validated['published_at'] = $validated['status'] === 'published' ? now() : null;
+        $validated['poll_options'] = $this->normalizePollOptions($validated['poll_options'] ?? []);
 
         if ($request->hasFile('media')) {
             $validated['media'] = $this->storeMediaFiles($request->file('media'));
@@ -84,6 +85,13 @@ class CommunityPostController extends Controller
         $validated['tags'] = $this->buildTags($request->input('tags'), $validated['is_announcement']);
         $validated['social_targets'] = $this->parseSocialTargets($request);
         $validated['body'] = HtmlSanitizer::clean($validated['body']);
+        // Overwrites the option list outright — an admin changing the
+        // wording (or count) of options after votes exist is a known,
+        // accepted simplification, not versioned/protected against: an
+        // existing vote's option_index can end up pointing at a
+        // since-edited label. No different from editing a live post's body
+        // after comments already reference the original wording.
+        $validated['poll_options'] = $this->normalizePollOptions($validated['poll_options'] ?? []);
 
         // A scheduled post's status/queue position is only ever changed by
         // the dedicated Queue actions (Post Now / reorder / delete) — a
@@ -250,6 +258,17 @@ class CommunityPostController extends Controller
     // uploading, not re-encode.
     private const MAX_VIDEO_SECONDS = 90;
 
+    // Blank inputs (an admin left a trailing "Add option" row empty) are
+    // dropped and the array reindexed from 0 — option_index on a vote has
+    // to line up with this exact array's keys. Fewer than 2 real options
+    // left means "not a poll" (null), same as never having typed any.
+    private function normalizePollOptions(array $raw): ?array
+    {
+        $options = collect($raw)->map(fn ($v) => trim((string) $v))->filter()->values()->all();
+
+        return count($options) >= 2 ? $options : null;
+    }
+
     private function validated(Request $request): array
     {
         return $request->validate([
@@ -257,6 +276,8 @@ class CommunityPostController extends Controller
             'body' => ['required', 'string'],
             'event_at' => ['nullable', 'date'],
             'hashtags' => ['nullable', 'string', 'max:500'],
+            'poll_options' => ['nullable', 'array', 'max:6'],
+            'poll_options.*' => ['nullable', 'string', 'max:120'],
             'media' => ['nullable', 'array', 'max:10'],
             'media.*' => [
                 'file',

@@ -158,6 +158,30 @@ class WallController extends Controller
         return response()->json($this->toggleSave($communityPost));
     }
 
+    // Voting again just changes the vote (updateOrCreate, unique per
+    // post+user) — same UX every social platform's own poll uses, not a
+    // one-shot "locked in forever" choice.
+    public function postVote(Request $request, CommunityPost $communityPost)
+    {
+        abort_unless($communityPost->status === 'published' && $communityPost->isPoll(), 404);
+
+        $validated = $request->validate([
+            'option_index' => ['required', 'integer', 'min:0', 'max:' . (count($communityPost->poll_options) - 1)],
+        ]);
+
+        \App\Models\CommunityPostPollVote::updateOrCreate(
+            ['community_post_id' => $communityPost->id, 'user_id' => Auth::id()],
+            ['option_index' => $validated['option_index']]
+        );
+
+        $communityPost->load('pollVotes');
+
+        return response()->json([
+            'results' => $communityPost->pollResults(),
+            'my_vote' => $validated['option_index'],
+        ]);
+    }
+
     // A member's own bookmarked posts — same merged-feed shape as index(),
     // just sourced from SavedPost and ordered by when it was saved rather
     // than when it was posted.

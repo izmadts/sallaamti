@@ -136,6 +136,56 @@
             }
         });
 
+        // Poll voting — delegated like reactions/save above. Any option tap
+        // (including on an already-voted poll, to change the vote) sends
+        // the full results back and repaints every option's fill/percentage
+        // in the same poll, not just the tapped one.
+        document.addEventListener('click', async function (event) {
+            const btn = event.target.closest('[data-vote-option]');
+            if (!btn || btn.disabled) return;
+            event.preventDefault();
+
+            const poll = btn.closest('[data-poll]');
+
+            try {
+                const res = await fetch(poll.dataset.voteUrl, {
+                    method: 'POST',
+                    headers: {
+                        'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content,
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'Accept': 'application/json',
+                    },
+                    body: JSON.stringify({ option_index: btn.dataset.index }),
+                });
+                const data = await res.json();
+
+                let total = 0;
+                data.results.forEach((option) => {
+                    total += option.votes;
+                    const optionBtn = poll.querySelector('[data-vote-option][data-index="' + option.index + '"]');
+                    if (!optionBtn) return;
+
+                    const active = option.index === data.my_vote;
+                    optionBtn.classList.toggle('border-teal-400', active);
+                    optionBtn.classList.toggle('bg-teal-50/40', active);
+                    optionBtn.classList.toggle('border-gray-200', !active);
+
+                    optionBtn.querySelector('.poll-fill').style.width = option.percentage + '%';
+                    const pct = optionBtn.querySelector('.poll-pct');
+                    pct.textContent = option.percentage + '%';
+                    pct.classList.remove('hidden');
+                });
+
+                const totalEl = poll.querySelector('.poll-total');
+                if (totalEl) {
+                    totalEl.textContent = total + (total === 1 ? ' vote' : ' votes');
+                }
+            } catch (e) {
+                // silently ignore — worst case the tap just didn't register
+            }
+        });
+
         // Comments — thread-id links a toggle button to its container
         // (and any post/reply form it's holding) regardless of how deep
         // that container is nested inside the card's markup.

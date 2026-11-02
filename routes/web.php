@@ -254,6 +254,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/wall', [WallController::class, 'store'])->name('wall.store');
     Route::post('/wall/{duaRequest}/react', [WallController::class, 'react'])->name('wall.react');
     Route::post('/wall/post/{communityPost}/react', [WallController::class, 'postReact'])->name('wall.post.react');
+    Route::post('/wall/post/{communityPost}/vote', [WallController::class, 'postVote'])->name('wall.post.vote');
     Route::get('/wall/saved', [WallController::class, 'saved'])->name('wall.saved');
     Route::post('/wall/{duaRequest}/save', [WallController::class, 'save'])->name('wall.save');
     Route::post('/wall/post/{communityPost}/save', [WallController::class, 'postSave'])->name('wall.post.save');

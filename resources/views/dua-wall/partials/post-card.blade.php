@@ -50,6 +50,33 @@
                 </div>
                 @endif
 
+                @if ($post->isPoll())
+                @php
+                    $myVote = auth()->check() ? $post->myPollVote(auth()->user()) : null;
+                    $pollResults = $post->pollResults();
+                    $hasVoted = $myVote !== null;
+                @endphp
+                <div class="mt-3" data-poll data-vote-url="{{ route('wall.post.vote', $post) }}" data-voted="{{ $hasVoted ? '1' : '0' }}">
+                    @foreach ($pollResults as $option)
+                    <button type="button" data-vote-option data-index="{{ $option['index'] }}"
+                        {{ auth()->check() ? '' : 'disabled' }}
+                        class="poll-option w-full relative overflow-hidden rounded-lg border mb-2 text-left text-sm font-medium px-3 py-2 transition {{ $myVote === $option['index'] ? 'border-teal-400 bg-teal-50/40' : 'border-gray-200 hover:border-gray-300' }} {{ auth()->check() ? '' : 'cursor-not-allowed opacity-60' }}">
+                        <div class="poll-fill absolute inset-y-0 left-0 bg-teal-100 transition-all" style="width: {{ $hasVoted ? $option['percentage'] : 0 }}%"></div>
+                        <div class="relative flex justify-between items-center gap-2">
+                            <span>{{ $option['label'] }}</span>
+                            <span class="poll-pct text-xs text-gray-500 font-semibold {{ $hasVoted ? '' : 'hidden' }}">{{ $option['percentage'] }}%</span>
+                        </div>
+                    </button>
+                    @endforeach
+                    <p class="text-xs text-gray-400 poll-total">
+                        {{ collect($pollResults)->sum('votes') }} {{ \Illuminate\Support\Str::plural('vote', collect($pollResults)->sum('votes')) }}
+                        @unless (auth()->check())
+                        · <a href="{{ route('login') }}" class="underline">Log in to vote</a>
+                        @endunless
+                    </p>
+                </div>
+                @endif
+
                 <div class="mt-3 flex items-center justify-between gap-2">
                     <div class="flex items-center gap-1.5">
                         <x-reaction-picker :model="$post" :react-url="route('wall.post.react', $post)" />

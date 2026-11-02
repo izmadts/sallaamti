@@ -16,6 +16,7 @@ class CommunityPost extends Model
         'media',
         'event_at',
         'tags',
+        'poll_options',
         'is_announcement',
         'hashtags',
         'social_targets',
@@ -30,6 +31,7 @@ class CommunityPost extends Model
     {
         return [
             'tags' => 'array',
+            'poll_options' => 'array',
             'social_targets' => 'array',
             'media' => 'array',
             'is_announcement' => 'boolean',
@@ -137,5 +139,48 @@ class CommunityPost extends Model
         }
 
         return $this->savedPosts->contains('user_id', $user->id);
+    }
+
+    public function pollVotes(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(CommunityPostPollVote::class);
+    }
+
+    public function isPoll(): bool
+    {
+        return !empty($this->poll_options);
+    }
+
+    public function myPollVote(?User $user): ?int
+    {
+        if (!$user || !$this->isPoll()) {
+            return null;
+        }
+
+        return $this->pollVotes->firstWhere('user_id', $user->id)?->option_index;
+    }
+
+    // Each option's label plus its live vote count/percentage — computed
+    // from pollVotes() rather than a separate counters column, since a
+    // member can change their vote (unique per post+user) and a denormalized
+    // count would need the same upkeep anyway.
+    public function pollResults(): array
+    {
+        if (!$this->isPoll()) {
+            return [];
+        }
+
+        $counts = $this->pollVotes->countBy('option_index');
+        $total = $this->pollVotes->count();
+
+        return collect($this->poll_options)->values()->map(function (string $label, int $index) use ($counts, $total) {
+            $votes = $counts->get($index, 0);
+            return [
+                'index' => $index,
+                'label' => $label,
+                'votes' => $votes,
+                'percentage' => $total > 0 ? (int) round($votes / $total * 100) : 0,
+            ];
+        })->all();
     }
 }

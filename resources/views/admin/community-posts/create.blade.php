@@ -18,7 +18,7 @@
         </div>
         @endif
 
-        <form method="POST" action="{{ route('admin.community-posts.store') }}" enctype="multipart/form-data" class="space-y-4" x-data="{ tags: '' }">
+        <form method="POST" action="{{ route('admin.community-posts.store') }}" enctype="multipart/form-data" class="space-y-4" x-data="{ tags: '', pollOptions: {{ json_encode(old('poll_options') ?: ['', '']) }} }">
             @csrf
 
             <div>
@@ -57,6 +57,26 @@
                     </button>
                     @endforeach
                 </div>
+            </div>
+
+            {{-- Poll — optional. Leaving fewer than 2 options filled in means
+                 this just isn't a poll (CommunityPost::isPoll()), same as
+                 never touching this section at all. --}}
+            <div class="p-4 rounded-lg bg-teal-50 border border-teal-200">
+                <p class="text-sm font-semibold text-gray-700 mb-1">📊 Poll (optional)</p>
+                <p class="text-xs text-gray-500 mb-3">Add at least 2 options to turn this post into a poll members can vote on, same as a Facebook/Instagram poll. Leave blank for a normal post.</p>
+                <template x-for="(option, index) in pollOptions" :key="index">
+                    <div class="flex items-center gap-2 mb-2">
+                        <input type="text" :name="'poll_options[' + index + ']'" x-model="pollOptions[index]"
+                            class="w-full border-gray-300 rounded-lg text-sm" placeholder="Option text" maxlength="120">
+                        <button type="button" x-show="pollOptions.length > 2" @click="pollOptions.splice(index, 1)"
+                            class="text-red-400 hover:text-red-600 text-sm px-1">✕</button>
+                    </div>
+                </template>
+                <button type="button" x-show="pollOptions.length < 6" @click="pollOptions.push('')"
+                    class="text-xs font-semibold px-2.5 py-1 rounded-full border border-teal-300 text-teal-700 hover:bg-teal-100 transition">
+                    + Add option
+                </button>
             </div>
 
             <div class="p-4 rounded-lg bg-amber-50 border border-amber-200 flex items-start gap-3">
