@@ -534,6 +534,18 @@ class ClientController extends Controller
             'assigned_to' => $lead->assignedTo ? ['id' => $lead->assignedTo->id, 'name' => $lead->assignedTo->name] : null,
             'is_converted' => $lead->isConverted(),
             'nikah_profile_id' => $lead->nikah_profile_id,
+            // The one-time verification fee on the profile itself —
+            // distinct from the package fields right below. A counselor-
+            // registered profile is deliberately exempt from the 7-day
+            // self-service payment deadline (see NikahProfile::
+            // startsPaymentDeadline()), so this can sit at 'unpaid'
+            // indefinitely — a client who agrees to pay only once contact
+            // sharing is actually about to happen needs the walk-in
+            // wizard's payment step to be skippable, and a way back to it
+            // later, not a forced payment at registration time.
+            'profile_payment_status' => $lead->nikahProfile?->payment_status,
+            'profile_payment_amount' => $lead->nikahProfile?->payment_amount,
+            'profile_payment_rejection_reason' => $lead->nikahProfile?->payment_rejection_reason,
             'nikah_package_id' => $lead->nikah_package_id,
             'package_name' => $lead->nikahPackage?->name,
             'package_expires_at' => $lead->package_expires_at?->toDateString(),
