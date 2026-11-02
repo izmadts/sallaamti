@@ -100,6 +100,7 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
 
             Route::get('browse', [NikahBrowseController::class, 'index'])->name('browse.index');
             Route::get('saved', [NikahBrowseController::class, 'savedProfiles'])->name('saved.index');
+            Route::get('who-viewed-me', [NikahBrowseController::class, 'whoViewedMe'])->name('who-viewed-me');
             Route::get('profile/{profile}', [NikahBrowseController::class, 'show'])->name('browse.show');
             Route::post('profile/{profile}/save', [NikahBrowseController::class, 'toggleSave'])->name('browse.save');
             Route::get('file/{profile}/{type}', [NikahFileController::class, 'show'])->name('file');

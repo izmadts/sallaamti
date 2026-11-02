@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Models\NikahBlock;
 use App\Models\NikahProfile;
+use App\Models\NikahProfileView;
 use App\Models\NikahSavedProfile;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -136,6 +137,8 @@ class NikahBrowseController extends Controller
         // mutual accepted interest with — see isViewableGivenAcceptedInterest().
         abort_unless($profile->isViewableGivenAcceptedInterest($hasAcceptedInterest), 404);
 
+        NikahProfileView::record($myProfile->id, $profile->id);
+
         $breakdown = $profile->matchBreakdownWith($myProfile);
 
         $isSaved = NikahSavedProfile::where('nikah_profile_id', $myProfile->id)->where('saved_profile_id', $profile->id)->exists();
@@ -184,6 +187,36 @@ class NikahBrowseController extends Controller
 
         return response()->json([
             'profiles' => $profiles->map(fn ($p) => $this->cardPayload($p, $sentInterestIds, $savedIds)),
+        ]);
+    }
+
+    // Deliberately NOT behind browsingBlockedResponse() — a pending/unpaid
+    // member reading who's viewed their own profile is reading their own
+    // incoming data, unrelated to their own eligibility to go browse
+    // others. Someone verified could still have viewed a pending profile
+    // before it was taken down from search, so this can be non-empty even
+    // for a member who could never see this list's entries the other way
+    // around.
+    public function whoViewedMe(Request $request): JsonResponse
+    {
+        $myProfile = $request->user()->nikahProfile;
+        abort_unless($myProfile, 404, __('db.Create your Nikah profile first.'));
+
+        $views = NikahProfileView::where('viewed_profile_id', $myProfile->id)
+            ->orderByDesc('last_viewed_at')
+            ->with('viewer.user')
+            ->get();
+
+        $sentInterestIds = $myProfile->sentInterests()->pluck('receiver_profile_id')->toArray();
+        $savedIds = $myProfile->savedProfiles()->pluck('saved_profile_id')->toArray();
+
+        return response()->json([
+            'views' => $views->map(function (NikahProfileView $view) use ($sentInterestIds, $savedIds) {
+                $card = $this->cardPayload($view->viewer, $sentInterestIds, $savedIds);
+                $card['view_count'] = $view->view_count;
+                $card['last_viewed_at'] = $view->last_viewed_at?->toIso8601String();
+                return $card;
+            }),
         ]);
     }
 
