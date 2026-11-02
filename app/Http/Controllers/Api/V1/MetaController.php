@@ -46,6 +46,24 @@ class MetaController extends Controller
         ]);
     }
 
+    // Checked by the app's splash screen before it routes anywhere else —
+    // lets admin force a hard update (a non-dismissible "please update"
+    // screen) just by raising a Settings number, without a new app release
+    // of its own. No auth required: this has to run before login, for a
+    // logged-out visitor too. Deliberately only a minimum build number, not
+    // a "latest version" nudge — a soft "update available" banner is a
+    // separate, lower-stakes feature this doesn't try to also be.
+    public function appVersion(Request $request): JsonResponse
+    {
+        $app = $request->get('app', 'member');
+        $minimumBuildNumber = setting($app . '_app_min_build');
+
+        return response()->json([
+            'minimum_build_number' => $minimumBuildNumber ? (int) $minimumBuildNumber : null,
+            'update_url' => $app === 'matchmaker' ? setting('matchmaker_app_android_url') : setting('mobile_app_android_url'),
+        ]);
+    }
+
     // Drives the guest "Apply to become a Nikah Counselor" form's pickers
     // from the same source-of-truth consts the admin panel and web
     // application form already use.

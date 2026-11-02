@@ -244,6 +244,31 @@
                 </div>
             </div>
 
+            {{-- Force Update --}}
+            <div class="bg-white rounded-lg shadow-sm p-6 space-y-4 border-l-4" style="border-left-color: #B91C1C">
+                <h3 class="font-semibold pb-2 border-b flex items-center gap-2" style="color: #B91C1C">
+                    <span class="w-8 h-8 rounded-lg flex items-center justify-center text-base" style="background: #B91C1C22">⛔</span> Force Update
+                </h3>
+                <p class="text-xs text-gray-400">
+                    Every launch, each app checks its own build number against the minimum set here — if it's below, that app shows a non-dismissible "please update" screen instead of letting the member/counselor in, logged in or not. Leave blank to never force an update. Find the build number of a release in its <code>pubspec.yaml</code> (the digits after the <code>+</code> in <code>version: 1.0.0+37</code>) — set it no higher than the build you've actually published, or everyone gets locked out.
+                </p>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <x-input-label value="Member App — Minimum Build Number" />
+                        <x-text-input type="number" name="member_app_min_build" class="w-full mt-1" :value="$settings['member_app_min_build'] ?? ''" placeholder="e.g. 35" />
+                    </div>
+                    <div>
+                        <x-input-label value="Nikah Counselor App — Minimum Build Number" />
+                        <x-text-input type="number" name="matchmaker_app_min_build" class="w-full mt-1" :value="$settings['matchmaker_app_min_build'] ?? ''" placeholder="e.g. 4" />
+                    </div>
+                    <div>
+                        <x-input-label value="Nikah Counselor App — Play Store URL" />
+                        <x-text-input name="matchmaker_app_android_url" class="w-full mt-1" :value="$settings['matchmaker_app_android_url'] ?? ''" placeholder="https://play.google.com/store/apps/details?id=..." />
+                        <p class="text-xs text-gray-400 mt-1">Shown as the "Update Now" link on the counselor app's force-update screen. The member app reuses the Play Store URL set above under Mobile App Promotion.</p>
+                    </div>
+                </div>
+            </div>
+
             {{-- Bot Protection --}}
             <div class="bg-white rounded-lg shadow-sm p-6 space-y-4 border-l-4" style="border-left-color: #B91C1C">
                 <h3 class="font-semibold pb-2 border-b flex items-center gap-2" style="color: #B91C1C">

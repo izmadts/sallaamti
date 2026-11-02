@@ -63,6 +63,7 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
     Route::get('meta/country-states', [MetaController::class, 'countryStates'])->name('meta.country-states');
     Route::get('meta/cities', [MetaController::class, 'cities'])->name('meta.cities');
     Route::get('meta/nikah-counselor-application', [MetaController::class, 'nikahCounselorApplicationEnums'])->name('meta.nikah-counselor-application');
+    Route::get('meta/app-version', [MetaController::class, 'appVersion'])->name('meta.app-version');
 
     // Guest "Apply to become a Nikah Counselor" — no account required, see
     // NikahCounselorApplicationController's class docblock. Throttled like

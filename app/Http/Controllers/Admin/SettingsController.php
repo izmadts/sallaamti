@@ -81,6 +81,13 @@ class SettingsController extends Controller
             'mobile_app_promo_enabled' => ['nullable', 'boolean'],
             'mobile_app_android_url'   => ['nullable', 'url', 'max:500'],
             'mobile_app_ios_url'       => ['nullable', 'url', 'max:500'],
+            // Force-update gate — Api\V1\MetaController::appVersion() reads
+            // these. Raising the number past a build's own version makes
+            // every copy of the app below it show a non-dismissible "please
+            // update" screen on next launch, logged in or not.
+            'member_app_min_build'      => ['nullable', 'integer', 'min:1'],
+            'matchmaker_app_min_build'  => ['nullable', 'integer', 'min:1'],
+            'matchmaker_app_android_url' => ['nullable', 'url', 'max:500'],
             'recaptcha_site_key'       => ['nullable', 'string', 'max:255'],
             'recaptcha_secret_key'     => ['nullable', 'string', 'max:255'],
             'gtm_id'                   => ['nullable', 'string', 'max:20'],
@@ -134,6 +141,9 @@ class SettingsController extends Controller
             'mobile_app_promo_enabled' => 'general',
             'mobile_app_android_url'   => 'general',
             'mobile_app_ios_url'       => 'general',
+            'member_app_min_build'      => 'general',
+            'matchmaker_app_min_build'  => 'general',
+            'matchmaker_app_android_url' => 'general',
             'recaptcha_site_key'       => 'security',
             'recaptcha_secret_key'     => 'security',
             'about_heading'          => 'about',
