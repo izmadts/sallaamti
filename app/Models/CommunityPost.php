@@ -151,13 +151,13 @@ class CommunityPost extends Model
         return !empty($this->poll_options);
     }
 
-    public function myPollVote(?User $user): ?int
+    public function myPollVote(?int $userId): ?int
     {
-        if (!$user || !$this->isPoll()) {
+        if (!$userId || !$this->isPoll()) {
             return null;
         }
 
-        return $this->pollVotes->firstWhere('user_id', $user->id)?->option_index;
+        return $this->pollVotes->firstWhere('user_id', $userId)?->option_index;
     }
 
     // Each option's label plus its live vote count/percentage — computed

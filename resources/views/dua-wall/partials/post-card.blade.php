@@ -52,7 +52,7 @@
 
                 @if ($post->isPoll())
                 @php
-                    $myVote = auth()->check() ? $post->myPollVote(auth()->user()) : null;
+                    $myVote = auth()->check() ? $post->myPollVote(auth()->id()) : null;
                     $pollResults = $post->pollResults();
                     $hasVoted = $myVote !== null;
                 @endphp

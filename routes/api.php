@@ -259,6 +259,7 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
             Route::post('dua', [WallController::class, 'storeDua'])->name('dua.store');
             Route::post('{type}/{id}/react', [WallController::class, 'react'])->whereIn('type', ['dua', 'post'])->whereNumber('id')->name('react');
             Route::post('{type}/{id}/save', [WallController::class, 'save'])->whereIn('type', ['dua', 'post'])->whereNumber('id')->name('save');
+            Route::post('{type}/{id}/vote', [WallController::class, 'vote'])->whereIn('type', ['dua', 'post'])->whereNumber('id')->name('vote');
             Route::get('{type}/{id}/comments', [WallController::class, 'comments'])->whereIn('type', ['dua', 'post'])->whereNumber('id')->name('comments.index');
             Route::post('{type}/{id}/comments', [WallController::class, 'storeComment'])->whereIn('type', ['dua', 'post'])->whereNumber('id')->name('comments.store');
             Route::delete('comments/{comment}', [WallController::class, 'destroyComment'])->name('comments.destroy');

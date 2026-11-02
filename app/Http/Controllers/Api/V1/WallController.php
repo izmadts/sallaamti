@@ -73,6 +73,10 @@ class WallController extends Controller
             'my_reaction' => $myReaction,
             'comments_count' => (int) ($item->comments_count ?? $item->allComments()->count()),
             'is_saved' => $isSaved,
+            // Only ever non-null for a CommunityPost with poll_options set
+            // (CommunityPost::isPoll()) — a DuaRequest can never be a poll.
+            'poll_results' => (!$isDua && $item->isPoll()) ? $item->pollResults() : null,
+            'my_poll_vote' => (!$isDua && $item->isPoll()) ? $item->myPollVote($userId) : null,
             'created_at' => $item->created_at,
         ];
     }
@@ -98,7 +102,7 @@ class WallController extends Controller
 
         if ($tag && $tag !== 'all' && $tag !== 'dua') {
             $paginated = CommunityPost::published()->withTag($tag)
-                ->with(['author', 'reactions', 'savedPosts'])
+                ->with(['author', 'reactions', 'savedPosts', 'pollVotes'])
                 ->withCount('allComments as comments_count')
                 ->orderByDesc('is_pinned')
                 ->orderByDesc('created_at')
@@ -122,7 +126,7 @@ class WallController extends Controller
             // their own tab, not mixed into "All".
             $posts = CommunityPost::published()
                 ->whereJsonDoesntContain('tags', 'Proposal')
-                ->with(['author', 'reactions', 'savedPosts'])
+                ->with(['author', 'reactions', 'savedPosts', 'pollVotes'])
                 ->withCount('allComments as comments_count')
                 ->latest()
                 ->limit(300)
@@ -159,7 +163,7 @@ class WallController extends Controller
             ->with(['saveable' => function ($morphTo) {
                 $morphTo->morphWith([
                     DuaRequest::class => ['user', 'reactions', 'savedPosts'],
-                    CommunityPost::class => ['author', 'reactions', 'savedPosts'],
+                    CommunityPost::class => ['author', 'reactions', 'savedPosts', 'pollVotes'],
                 ]);
             }])
             ->latest()
@@ -255,6 +259,32 @@ class WallController extends Controller
         $item->load('reactions', 'savedPosts');
 
         return response()->json($this->itemPayload($item, $user->id));
+    }
+
+    // Only 'post' can ever be a poll — findItem() still accepts 'dua' here
+    // too and just 404s via isPoll() below rather than needing its own
+    // type restriction, consistent with how react()/save() don't special-
+    // case 'dua' either.
+    public function vote(string $type, int $id, Request $request): JsonResponse
+    {
+        $item = $this->findItem($type, $id);
+        abort_unless($item instanceof CommunityPost && $item->isPoll(), 404);
+
+        $validated = $request->validate([
+            'option_index' => ['required', 'integer', 'min:0', 'max:' . (count($item->poll_options) - 1)],
+        ]);
+
+        \App\Models\CommunityPostPollVote::updateOrCreate(
+            ['community_post_id' => $item->id, 'user_id' => $request->user()->id],
+            ['option_index' => $validated['option_index']]
+        );
+
+        $item->load('pollVotes');
+
+        return response()->json([
+            'poll_results' => $item->pollResults(),
+            'my_poll_vote' => $validated['option_index'],
+        ]);
     }
 
     public function save(string $type, int $id, Request $request): JsonResponse
