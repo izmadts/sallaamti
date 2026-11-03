@@ -40,6 +40,7 @@ class DonationConfirmed extends Notification implements ShouldQueue
     public function toArray($notifiable): array
     {
         return [
+            'type'    => 'donation_confirmed',
             'message' => '✅ Your donation of PKR ' . number_format($this->donation->amount) . ' has been confirmed! JazakAllah Khair.',
             'url'     => route('donate.my'),
         ];

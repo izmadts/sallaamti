@@ -41,6 +41,7 @@ class DonationReceived extends Notification implements ShouldQueue
     public function toArray($notifiable): array
     {
         return [
+            'type'    => 'donation_received',
             'message' => '💝 JazakAllah! Your donation of PKR ' . number_format($this->donation->amount) . ' has been received and is pending verification.',
             'url'     => route('donate.my'),
         ];
