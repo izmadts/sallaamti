@@ -386,6 +386,19 @@
                                     ✅ Confirm Payment Received
                                 </button>
                             </form>
+
+                            {{-- A real $0 waiver, not a payment — marks the fee free on the
+                                 app without recording any commission/ad-conversion revenue
+                                 event, unlike Confirm Payment Received above. --}}
+                            <details class="mt-3">
+                                <summary class="text-xs text-blue-700 hover:underline cursor-pointer text-center">🎁 Waive this fee instead</summary>
+                                <form method="POST" action="{{ route('admin.nikah.payments.waive', $profile) }}" class="mt-2 space-y-2"
+                                    onsubmit="return confirm('Waive the verification fee for {{ $profile->user?->name ?? 'this profile' }}? Their app will show it as free — no payment or commission is recorded.')">
+                                    @csrf
+                                    <input type="text" name="fee_waived_reason" required placeholder="Reason (e.g. hardship case, goodwill gesture)" class="w-full border-gray-300 rounded text-xs px-2 py-1.5">
+                                    <button class="w-full bg-blue-50 border border-blue-300 text-blue-700 text-xs px-3 py-1.5 rounded hover:bg-blue-100">Waive Fee</button>
+                                </form>
+                            </details>
                         </div>
                         @endif
                     </div>

@@ -77,7 +77,12 @@ class WallController extends Controller
             // (CommunityPost::isPoll()) — a DuaRequest can never be a poll.
             'poll_results' => (!$isDua && $item->isPoll()) ? $item->pollResults() : null,
             'my_poll_vote' => (!$isDua && $item->isPoll()) ? $item->myPollVote($userId) : null,
-            'created_at' => $item->created_at,
+            // Publish time, not draft-creation time — same fix as the web's
+            // own post-card.blade.php: a post drafted/queued days ahead and
+            // only actually published today must show (and sort, see
+            // index() below) as today's post, not buried under its
+            // original draft timestamp.
+            'created_at' => $isDua ? $item->created_at : ($item->published_at ?? $item->created_at),
         ];
     }
 
@@ -105,7 +110,9 @@ class WallController extends Controller
                 ->with(['author', 'reactions', 'savedPosts', 'pollVotes'])
                 ->withCount('allComments as comments_count')
                 ->orderByDesc('is_pinned')
-                ->orderByDesc('created_at')
+                // Publish time, not draft-creation time — see itemPayload()'s
+                // own comment.
+                ->orderByRaw('COALESCE(published_at, created_at) DESC')
                 ->paginate($perPage, ['*'], 'page', $page);
         } elseif ($tag === 'dua') {
             $paginated = DuaRequest::where('status', 'approved')
@@ -128,13 +135,13 @@ class WallController extends Controller
                 ->whereJsonDoesntContain('tags', 'Proposal')
                 ->with(['author', 'reactions', 'savedPosts', 'pollVotes'])
                 ->withCount('allComments as comments_count')
-                ->latest()
+                ->orderByRaw('COALESCE(published_at, created_at) DESC')
                 ->limit(300)
                 ->get();
 
             $merged = $duas->concat($posts)->sortBy([
                 fn ($a, $b) => (($b->is_pinned ?? false) <=> ($a->is_pinned ?? false)),
-                fn ($a, $b) => ($b->created_at <=> $a->created_at),
+                fn ($a, $b) => (($b->published_at ?? $b->created_at) <=> ($a->published_at ?? $a->created_at)),
             ])->values();
 
             $paginated = new \Illuminate\Pagination\LengthAwarePaginator(

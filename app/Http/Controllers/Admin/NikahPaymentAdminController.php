@@ -219,4 +219,55 @@ class NikahPaymentAdminController extends Controller
 
         return back()->with('status', $status);
     }
+
+    // The explicit, per-profile counterpart to the automatic "lazy" waiver
+    // NikahProfileController::show() already applies when the fee is
+    // globally $0 (site-wide disabled, or a 100% discount rule) — this is
+    // for the one-off case: a specific member's fee waived for its own
+    // reason (hardship, a goodwill gesture, a data-migration edge case),
+    // with nothing on Settings changed for anyone else. fee_waived/
+    // fee_waived_by/fee_waived_reason already existed on the schema and
+    // were already displayed on this profile's own admin page — there was
+    // just never an actual way to set them until now.
+    //
+    // Deliberately does NOT call recordVerifiedProfileCommission() or
+    // trackPurchaseConversion() — both exist to record real revenue
+    // events, and a flat-rate commission rule would otherwise still pay a
+    // matchmaker a real amount for a profile that generated $0, which is
+    // exactly the kind of mistake this is here to prevent.
+    public function waive(Request $request, NikahProfile $profile)
+    {
+        abort_if($profile->payment_status === 'confirmed', 422, 'Payment is already confirmed for this profile — nothing to waive.');
+
+        $validated = $request->validate(['fee_waived_reason' => ['required', 'string', 'max:500']]);
+
+        $profile->update([
+            'payment_status' => 'confirmed',
+            'payment_amount' => 0,
+            'payment_method' => 'waived',
+            'payment_confirmed_at' => now(),
+            'payment_rejection_reason' => null,
+            'fee_waived' => true,
+            'fee_waived_by' => auth()->id(),
+            'fee_waived_reason' => $validated['fee_waived_reason'],
+        ]);
+
+        try {
+            $profile->user->notify(new \App\Notifications\NikahPaymentConfirmed());
+        } catch (\Throwable $e) {
+            \Log::error('NikahPaymentConfirmed notification failed: ' . $e->getMessage());
+        }
+
+        if ($profile->verification_status === 'pending') {
+            \App\Models\User::role('admin')->each(function ($admin) use ($profile) {
+                try {
+                    $admin->notify(new \App\Notifications\NewNikahProfilePendingVerification($profile));
+                } catch (\Throwable $e) {
+                    \Log::error('NewNikahProfilePendingVerification notification failed: ' . $e->getMessage());
+                }
+            });
+        }
+
+        return back()->with('status', 'Verification fee waived for ' . ($profile->user?->name ?? 'this member') . ' — their profile now shows as free on the app.');
+    }
 }
