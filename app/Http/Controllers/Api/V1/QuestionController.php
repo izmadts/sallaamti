@@ -10,7 +10,7 @@ use App\Notifications\NewQuestionSubmitted;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
-// "Ap k Sawalat" — members ask, admin answers. A question is only public
+// "Ask from Alim/Mufti" — members ask, admin answers. A question is only public
 // once answered, and only as its canonical (root) copy — a duplicate that
 // admin links to an existing answer never appears as a second entry.
 class QuestionController extends Controller

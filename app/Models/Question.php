@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-// A member's submitted question for "Ap k Sawalat" (Q&A). A duplicate of an
+// A member's submitted question for "Ask from Alim/Mufti" (Q&A). A duplicate of an
 // already-answered question is linked via canonical_question_id rather than
 // answered again — see effectiveAnswer()/effectiveAnsweredAt(), which always
 // resolve through the canonical so a duplicate never shows stale/duplicate

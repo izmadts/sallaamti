@@ -1,6 +1,6 @@
 <x-admin-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">❓ Member Q&amp;A ("Ap k Sawalat")</h2>
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight">❓ Ask from Alim/Mufti</h2>
     </x-slot>
 
     <div class="py-12">

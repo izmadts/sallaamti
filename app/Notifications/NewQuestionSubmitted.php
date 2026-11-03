@@ -25,7 +25,7 @@ class NewQuestionSubmitted extends Notification implements ShouldQueue
         return (new MailMessage)
             ->subject('New Member Question Submitted — Sallaamti')
             ->greeting('Assalamu Alaikum!')
-            ->line('A member asked a new question in "Ap k Sawalat" and it needs an answer.')
+            ->line('A member asked a new question in "Ask from Alim/Mufti" and it needs an answer.')
             ->line('**Question:** ' . $this->question->question)
             ->action('Answer It', route('admin.questions.index'));
     }
