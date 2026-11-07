@@ -75,6 +75,7 @@ class NikahProfileCompletionReminder extends Notification implements ShouldQueue
     public function toArray($notifiable): array
     {
         return [
+            'type' => 'nikah_payment_reminder',
             'message' => '💍 Complete your Nikah profile\'s remaining step to get verified and start finding your match!',
             'url' => route('nikah.payment'),
         ];

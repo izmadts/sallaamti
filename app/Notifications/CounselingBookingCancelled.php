@@ -42,6 +42,8 @@ class CounselingBookingCancelled extends Notification implements ShouldQueue
     public function toArray($notifiable): array
     {
         return [
+            // See CommentReceived::toArray()'s own comment — same gap/fix.
+            'type' => 'counseling_booking_cancelled',
             'message' => '❌ Your counseling session on ' . $this->booking->scheduled_at->format('d M, h:i A') . ' was cancelled.',
             'url' => route('counseling.bookings.index'),
         ];

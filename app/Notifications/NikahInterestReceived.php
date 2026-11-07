@@ -41,6 +41,7 @@ class NikahInterestReceived extends Notification implements ShouldQueue
     public function toArray($notifiable): array
     {
         return [
+            'type' => 'interest_received',
             'message' => 'You received a new interest request.',
             'interest_id' => $this->interest->id,
             'url' => route('nikah.interests'),

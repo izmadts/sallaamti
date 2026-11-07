@@ -40,6 +40,7 @@ class NikahProfileVerified extends Notification implements ShouldQueue
     public function toArray($notifiable): array
     {
         return [
+            'type' => 'profile_verified',
             'message' => '✅ Your Nikah profile has been verified! You can now appear in searches.',
             'url' => route('nikah.show'),
         ];

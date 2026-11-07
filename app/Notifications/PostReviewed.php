@@ -45,6 +45,9 @@ class PostReviewed extends Notification implements ShouldQueue
     public function toArray($notifiable): array
     {
         return [
+            // See CommentReceived::toArray()'s own comment — same gap/fix.
+            // The resolver reads this type + post_id together.
+            'type' => 'post_reviewed',
             'message' => $this->approved
                 ? "Your post \"{$this->post->title}\" was approved and is now public."
                 : "Your post \"{$this->post->title}\" wasn't approved: {$this->post->rejection_reason}",

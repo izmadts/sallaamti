@@ -32,6 +32,7 @@ class QuranProgressReportReady extends Notification implements ShouldQueue
     public function toArray($notifiable): array
     {
         return [
+            'type' => 'quran_progress_ready',
             'message' => '📊 Your progress report for ' . $this->month . ' is ready.',
             'url' => route('quran-live.my-progress'),
         ];

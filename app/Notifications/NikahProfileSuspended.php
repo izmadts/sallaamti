@@ -32,6 +32,7 @@ class NikahProfileSuspended extends Notification implements ShouldQueue
     public function toArray($notifiable): array
     {
         return [
+            'type' => 'profile_suspended',
             'message' => '⛔ Your Nikah profile has been suspended. Reason: ' . $this->reason,
             'url' => route('nikah.show'),
         ];

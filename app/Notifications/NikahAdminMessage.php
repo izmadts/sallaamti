@@ -32,6 +32,7 @@ class NikahAdminMessage extends Notification implements ShouldQueue
     public function toArray($notifiable): array
     {
         return [
+            'type' => 'nikah_admin_message',
             'message' => '📩 The Sallaamti team sent you a note about your Nikah profile: ' . str($this->message)->limit(80),
             'url' => route('nikah.edit'),
         ];

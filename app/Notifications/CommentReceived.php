@@ -52,6 +52,13 @@ class CommentReceived extends Notification implements ShouldQueue
     public function toArray($notifiable): array
     {
         return [
+            // Without this, the mobile app's in-app notification LIST (which
+            // reads this database row, not the FCM push payload below) had
+            // no `type` to resolve against — only `url` (route('wall.index'),
+            // which matches none of notification_route_resolver.dart's url
+            // substring checks) — so tapping it from the list fell through
+            // to the resolver's final catch-all and opened the Nikah hub.
+            'type' => 'wall_comment',
             'message' => $this->commenter->name . " {$this->verb()} {$this->subject()}: " . \Illuminate\Support\Str::limit($this->comment->body, 80),
             'comment_id' => $this->comment->id,
             'url' => route('wall.index'),

@@ -49,6 +49,7 @@ class NikahPaymentRejected extends Notification implements ShouldQueue
     public function toArray($notifiable): array
     {
         return [
+            'type' => 'payment_rejected',
             'message' => '⚠️ Your Nikah payment was not accepted. Verify your profile to unlock Nikah features.',
             'url' => route('nikah.payment'),
         ];

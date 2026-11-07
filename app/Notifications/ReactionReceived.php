@@ -55,6 +55,10 @@ class ReactionReceived extends Notification implements ShouldQueue
     public function toArray($notifiable): array
     {
         return [
+            // See CommentReceived::toArray()'s own comment — same gap, same
+            // fix: the in-app list reads this row, not the FCM payload, and
+            // needs its own `type` to resolve correctly on tap.
+            'type' => 'wall_reaction',
             'message' => $this->reactor->name . " reacted {$this->label()} to your {$this->subject()}.",
             'reactable_type' => get_class($this->reactable),
             'reactable_id' => $this->reactable->id,

@@ -41,6 +41,10 @@ class AdminMessageReplied extends Notification implements ShouldQueue
     public function toArray($notifiable): array
     {
         return [
+            // Had neither type nor url at all — tapping this from the
+            // in-app list did nothing. See CommentReceived::toArray()'s own
+            // comment for the general gap.
+            'type' => 'admin_message_reply',
             'message' => '💬 Sallaamti Support: ' . Str::limit($this->message->body, 80),
         ];
     }

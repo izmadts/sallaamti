@@ -42,7 +42,9 @@ class NikahGuardianMessageReceived extends Notification implements ShouldQueue
     public function toArray($notifiable): array
     {
         return [
+            'type' => 'guardian_message',
             'message' => '💬 New guardian message received.',
+            'interest_id' => $this->message->nikah_interest_id,
             'url' => route('nikah.messages.show', $this->message->nikah_interest_id),
         ];
     }

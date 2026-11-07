@@ -42,6 +42,7 @@ class NikahProfileRejected extends Notification implements ShouldQueue
     public function toArray($notifiable): array
     {
         return [
+            'type' => 'profile_rejected',
             'message' => '❌ Nikah profile rejected: ' . $this->reason,
             'url' => route('nikah.edit'),
         ];

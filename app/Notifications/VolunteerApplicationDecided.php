@@ -38,11 +38,17 @@ class VolunteerApplicationDecided extends Notification implements ShouldQueue
     public function toArray($notifiable): array
     {
         return [
+            // Previously had no type AND no url at all — tapping this from
+            // the in-app list fell through every resolver check straight to
+            // the Nikah-hub catch-all. See CommentReceived::toArray()'s own
+            // comment for the general gap this and the url below close.
+            'type' => 'volunteer_decision',
             'message' => $this->approved
                 ? '🎉 Your volunteer application was approved — your ID card is ready.'
                 : 'Your volunteer application was not approved this time.',
             'application_id' => $this->application->id,
             'approved' => $this->approved,
+            'url' => route('volunteer.create'),
         ];
     }
 }

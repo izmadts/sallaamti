@@ -57,6 +57,7 @@ class NikahProfilePausedForNonPayment extends Notification implements ShouldQueu
     public function toArray($notifiable): array
     {
         return [
+            'type' => 'nikah_payment_reminder',
             'message' => $this->profile->canExtendPaymentDeadline()
                 ? '⏸️ Your Nikah profile was paused — the 7-day payment window ran out. Extend it or pay now to reactivate.'
                 : '⏸️ Your Nikah profile was paused and you\'re out of self-service extensions. Contact us on WhatsApp or pay now to reactivate.',

@@ -48,6 +48,8 @@ class CommunityPostPublished extends Notification implements ShouldQueue
     public function toArray($notifiable): array
     {
         return [
+            // See CommentReceived::toArray()'s own comment — same gap/fix.
+            'type' => 'community_post',
             'message' => '📰 ' . Str::limit($this->post->title, 100),
             'community_post_id' => $this->post->id,
             'url' => route('wall.index'),

@@ -23,6 +23,7 @@ class NikahInterestDeclined extends Notification implements ShouldQueue
     public function toArray($notifiable): array
     {
         return [
+            'type' => 'interest_declined',
             'message' => 'Your interest request was declined.',
             'interest_id' => $this->interest->id,
             'url' => route('nikah.interests'),

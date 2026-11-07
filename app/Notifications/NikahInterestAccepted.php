@@ -42,6 +42,11 @@ class NikahInterestAccepted extends Notification implements ShouldQueue
     public function toArray($notifiable): array
     {
         return [
+            // Without this, the in-app list's url fallback landed on the
+            // Interests screen's default (Received) tab — this is about an
+            // interest the member SENT, so it needs the Sent tab
+            // specifically, same as the push-tap path already gets via type.
+            'type' => 'interest_accepted',
             'message' => 'Your interest request was accepted! Contact details are now visible.',
             'interest_id' => $this->interest->id,
             'url' => route('nikah.interests'),

@@ -41,6 +41,8 @@ class QuestionAnswered extends Notification implements ShouldQueue
     public function toArray($notifiable): array
     {
         return [
+            // See CommentReceived::toArray()'s own comment — same gap/fix.
+            'type' => 'question_answered',
             'message' => 'Your question was answered: "' . Str::limit($this->question->question, 80) . '"',
             'question_id' => $this->question->id,
         ];

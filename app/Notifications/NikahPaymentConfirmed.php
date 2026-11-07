@@ -39,6 +39,7 @@ class NikahPaymentConfirmed extends Notification implements ShouldQueue
     public function toArray($notifiable): array
     {
         return [
+            'type' => 'payment_confirmed',
             'message' => '💳 Nikah payment confirmed. Profile is now under verification.',
             'url' => route('nikah.show'),
         ];

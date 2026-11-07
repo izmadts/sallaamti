@@ -44,6 +44,7 @@ class NikahCounselorCertified extends Notification implements ShouldQueue
     public function toArray($notifiable): array
     {
         return [
+            'type' => 'counselor_certified',
             'message' => '🎉 You are now a Certified Sallaamti Nikah Counselor (' . $this->application->counselor_code . ')!',
             'url' => route('dashboard'),
         ];

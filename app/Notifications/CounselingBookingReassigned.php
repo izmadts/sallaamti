@@ -59,6 +59,10 @@ class CounselingBookingReassigned extends Notification implements ShouldQueue
     public function toArray($notifiable): array
     {
         return [
+            // See CommentReceived::toArray()'s own comment — same gap/fix.
+            // Only the member side has a mobile-app route for this today;
+            // the counselor side's own portal reads this row's url instead.
+            'type' => 'counseling_booking_reassigned',
             'message' => $this->forCounselor
                 ? '📋 A counseling session on ' . $this->booking->scheduled_at->format('d M, h:i A') . ' has been assigned to you.'
                 : '🔄 Your counseling session on ' . $this->booking->scheduled_at->format('d M, h:i A') . ' has a new counselor.',

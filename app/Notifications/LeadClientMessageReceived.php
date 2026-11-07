@@ -45,6 +45,10 @@ class LeadClientMessageReceived extends Notification implements ShouldQueue
     public function toArray($notifiable): array
     {
         return [
+            // Without this, the in-app notification list had no `type` to
+            // resolve against (only `lead_id`, with no `url` at all) — see
+            // CommentReceived::toArray()'s own comment for the general gap.
+            'type' => 'lead_client_message',
             'message' => '💬 New message received.',
             'lead_id' => $this->message->lead_id,
         ];

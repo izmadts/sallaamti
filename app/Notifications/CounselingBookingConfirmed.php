@@ -45,6 +45,8 @@ class CounselingBookingConfirmed extends Notification implements ShouldQueue
     public function toArray($notifiable): array
     {
         return [
+            // See CommentReceived::toArray()'s own comment — same gap/fix.
+            'type' => 'counseling_booking_confirmed',
             'message' => '✅ Your counseling session on ' . $this->booking->scheduled_at->format('d M, h:i A') . ' has been confirmed.',
             'url' => route('counseling.bookings.show', $this->booking),
         ];
