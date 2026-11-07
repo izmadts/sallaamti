@@ -13,6 +13,8 @@ use App\Services\ImageOptimizer;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 
 class WallController extends Controller
 {
@@ -93,6 +95,61 @@ class WallController extends Controller
         }
 
         return view('dua-wall.index', ['paginated' => $items, 'tags' => $tags, 'activeTag' => $tag ?: 'all']);
+    }
+
+    // The target of a member's "Share" button on the mobile app — a real,
+    // standalone, publicly-readable page for exactly this one post, so a
+    // recipient (logged in or not, and so WhatsApp/Facebook's own link-
+    // preview crawler) sees this post's own title/image/excerpt, not the
+    // generic Wall feed. Mirrors PostController::show()'s own reasoning for
+    // blog posts; reuses post-card.blade.php as-is rather than duplicating it.
+    public function showPost(CommunityPost $communityPost)
+    {
+        abort_unless($communityPost->status === 'published', 404);
+
+        $communityPost->load(['author', 'reactions', 'savedPosts', 'pollVotes']);
+        $communityPost->loadCount('allComments as comments_count');
+
+        return view('dua-wall.show', [
+            'partial' => 'dua-wall.partials.post-card',
+            'partialData' => ['post' => $communityPost],
+            'paginated' => $this->singleItemPaginator($communityPost),
+            'title' => $communityPost->title ?: Str::limit(strip_tags($communityPost->body), 60),
+            'description' => Str::limit(strip_tags($communityPost->body), 160),
+            'image' => $this->firstImageUrl($communityPost),
+        ]);
+    }
+
+    public function showDua(DuaRequest $duaRequest)
+    {
+        abort_unless($duaRequest->status === 'approved', 404);
+
+        $duaRequest->load(['user', 'reactions', 'savedPosts']);
+        $duaRequest->loadCount('allComments as comments_count');
+
+        return view('dua-wall.show', [
+            'partial' => 'dua-wall.partials.dua-card',
+            'partialData' => ['dua' => $duaRequest],
+            'paginated' => $this->singleItemPaginator($duaRequest),
+            'title' => 'A dua from the Sallaamti community',
+            'description' => Str::limit(strip_tags($duaRequest->body), 160),
+            'image' => $this->firstImageUrl($duaRequest),
+        ]);
+    }
+
+    // wall-scripts.blade.php (reactions/save/comments/poll-vote — all still
+    // meant to work from a shared link) expects a real paginator to read
+    // hasMorePages() off of; a single item is always exactly one exhausted
+    // page, so "load more" never fires.
+    private function singleItemPaginator(Model $item): \Illuminate\Pagination\LengthAwarePaginator
+    {
+        return new \Illuminate\Pagination\LengthAwarePaginator(collect([$item]), 1, 1, 1);
+    }
+
+    private function firstImageUrl(Model $item): ?string
+    {
+        $first = $item->mediaItems()[0] ?? null;
+        return ($first && $first['type'] === 'image') ? Storage::disk('public')->url($first['path']) : null;
     }
 
     public function store(Request $request)

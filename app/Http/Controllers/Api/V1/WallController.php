@@ -83,6 +83,11 @@ class WallController extends Controller
             // index() below) as today's post, not buried under its
             // original draft timestamp.
             'created_at' => $isDua ? $item->created_at : ($item->published_at ?? $item->created_at),
+            // What the mobile app's Share button links to — a real public
+            // page for exactly this item (own title/image/excerpt for a
+            // WhatsApp/Facebook link preview), not the whole Wall feed. See
+            // WallController::showPost()/showDua() (the web controller).
+            'share_url' => $isDua ? route('wall.dua.show', $item) : route('wall.post.show', $item),
         ];
     }
 

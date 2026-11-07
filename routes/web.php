@@ -166,6 +166,9 @@ Route::get('/subscriber/unsubscribe/{token}', [SubscriberController::class, 'uns
 Route::get('/wall', [WallController::class, 'index'])->name('wall.index');
 Route::get('/wall/{duaRequest}/comments', [WallController::class, 'comments'])->name('wall.comments');
 Route::get('/wall/post/{communityPost}/comments', [WallController::class, 'postComments'])->name('wall.post.comments');
+// Standalone single-item pages — what a member's "Share" button links to.
+Route::get('/wall/dua/{duaRequest}', [WallController::class, 'showDua'])->name('wall.dua.show');
+Route::get('/wall/post/{communityPost}', [WallController::class, 'showPost'])->name('wall.post.show');
 
 // Public Posts — any logged-in member/staff can submit one (admin approval
 // required unless the author already holds posts.manage), and every
