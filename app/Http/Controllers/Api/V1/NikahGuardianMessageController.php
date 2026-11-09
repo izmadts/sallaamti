@@ -39,6 +39,11 @@ class NikahGuardianMessageController extends Controller
     {
         $this->authorize($interest);
 
+        $myProfile = auth()->user()->nikahProfile;
+        $otherProfile = (int) $interest->sender_profile_id === (int) $myProfile->id
+            ? $interest->receiver
+            : $interest->sender;
+
         $messages = $interest->guardianMessages()->with('sender')->orderBy('created_at')->get();
 
         $interest->guardianMessages()
@@ -46,12 +51,26 @@ class NikahGuardianMessageController extends Controller
             ->update(['is_read' => true]);
 
         return response()->json([
+            // Lets the app show who this conversation is with in its own
+            // header, instead of a generic "Messages" title — and works
+            // even before either side has sent a first message, unlike
+            // inferring it from a message's own sender_name.
+            'other_profile' => $otherProfile ? [
+                'id' => $otherProfile->id,
+                'name' => $otherProfile->user?->name,
+            ] : null,
             'messages' => $messages->map(fn (NikahGuardianMessage $m) => [
                 'id' => $m->id,
                 'message' => $m->message,
                 'is_mine' => (int) $m->sender_id === (int) auth()->id(),
                 'sender_name' => $m->sender?->name,
                 'created_at' => $m->created_at->toIso8601String(),
+                // Only meaningful for my own messages (a single/double tick,
+                // same convention as every other chat app) — the mark-as-read
+                // above already fires before this is built, so a message I
+                // sent that the other party had already opened shows read
+                // immediately on this same request.
+                'is_read' => (bool) $m->is_read,
             ]),
         ]);
     }
@@ -90,6 +109,7 @@ class NikahGuardianMessageController extends Controller
                 'is_mine' => true,
                 'sender_name' => auth()->user()->name,
                 'created_at' => $message->created_at->toIso8601String(),
+                'is_read' => false,
             ],
         ], 201);
     }

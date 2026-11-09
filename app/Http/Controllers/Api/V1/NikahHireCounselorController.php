@@ -258,6 +258,7 @@ class NikahHireCounselorController extends Controller
                 'is_mine' => (int) $m->sender_id === (int) $request->user()->id,
                 'sender_name' => $m->sender?->name,
                 'created_at' => $m->created_at->toIso8601String(),
+                'is_read' => (bool) $m->is_read,
             ]),
         ]);
     }
@@ -294,6 +295,7 @@ class NikahHireCounselorController extends Controller
                 'is_mine' => true,
                 'sender_name' => $request->user()->name,
                 'created_at' => $message->created_at->toIso8601String(),
+                'is_read' => false,
             ],
         ], 201);
     }

@@ -23,6 +23,7 @@ class SupportMessageController extends Controller
             'body' => $message->body,
             'is_mine' => $message->isFromMember(),
             'created_at' => $message->created_at->toIso8601String(),
+            'is_read' => (bool) $message->is_read,
         ];
     }
 
