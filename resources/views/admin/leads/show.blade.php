@@ -17,7 +17,7 @@
                     <div class="flex justify-between items-start mb-4">
                         <div>
                             <h2 class="text-xl font-bold text-gray-800">{{ $lead->name }}</h2>
-                            <p class="text-sm text-gray-500">{{ $lead->phone ?: '— no phone —' }} · {{ $lead->email ?: '— no email —' }}</p>
+                            <p class="text-sm text-gray-500">@if ($lead->phone)<x-phone-actions :phone="$lead->phone" />@else — no phone — @endif · {{ $lead->email ?: '— no email —' }}</p>
                         </div>
                         @if ($lead->isConverted())
                         <a href="{{ route('admin.nikah.show', $lead->nikah_profile_id) }}" class="text-sm font-semibold px-3 py-1.5 rounded-lg text-white hover:opacity-90" style="background: #0d6b6b">View Nikah Profile →</a>

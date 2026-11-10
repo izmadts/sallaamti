@@ -94,7 +94,15 @@
                                 <span class="text-xs text-green-600">✓ Has profile</span>
                                 @endif
                             </td>
-                            <td class="px-4 py-3 text-gray-600">{{ $lead->phone ?: $lead->email ?: '—' }}</td>
+                            {{-- Same 💬 WhatsApp link + copy icon as the Nikah profile pages; stopPropagation keeps a tap on
+                                 them from also opening the lead (the whole row is a link). --}}
+                            <td class="px-4 py-3 text-gray-600 whitespace-nowrap" onclick="event.stopPropagation()">
+                                @if ($lead->phone)
+                                <x-phone-actions :phone="$lead->phone" />
+                                @else
+                                {{ $lead->email ?: '—' }}
+                                @endif
+                            </td>
                             <td class="px-4 py-3 text-gray-500 capitalize">{{ $lead->source }}</td>
                             <td class="px-4 py-3">
                                 <span class="text-xs px-2 py-1 rounded-full
@@ -112,6 +120,9 @@
                             <td class="px-4 py-3 text-gray-500">{{ $lead->assignedTo?->name ?? '—' }}</td>
                             <td class="px-4 py-3 text-xs {{ $lead->next_follow_up_at && $lead->next_follow_up_at->isPast() ? 'text-red-600 font-semibold' : 'text-gray-400' }}">
                                 {{ $lead->next_follow_up_at?->format('d M Y') ?? '—' }}
+                                @if ($followUpDue)
+                                <span class="block text-[10px] uppercase tracking-wide">due</span>
+                                @endif
                             </td>
                             <td class="px-4 py-3 text-xs text-gray-500">
                                 {{ $lead->nikahPackage?->name ?? '—' }}
