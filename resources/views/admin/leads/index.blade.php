@@ -22,10 +22,10 @@
                     <p class="text-xl font-bold text-green-600">{{ $stats['registered'] }}</p>
                     <p class="text-xs text-gray-500">Registered</p>
                 </div>
-                <div class="bg-white rounded-lg shadow-sm p-3 text-center">
+                <a href="{{ route('admin.leads.index', ['follow_ups_due' => 1]) }}" class="bg-white rounded-lg shadow-sm p-3 text-center hover:bg-gray-50 {{ request()->boolean('follow_ups_due') ? 'ring-2 ring-red-300' : '' }}">
                     <p class="text-xl font-bold text-red-600">{{ $stats['follow_ups_due'] }}</p>
                     <p class="text-xs text-gray-500">Follow-ups Due</p>
-                </div>
+                </a>
                 <a href="{{ route('admin.leads.index', ['payment_status' => 'submitted']) }}" class="bg-white rounded-lg shadow-sm p-3 text-center hover:bg-gray-50">
                     <p class="text-xl font-bold text-purple-600">{{ $stats['payment_due'] }}</p>
                     <p class="text-xs text-gray-500">Payment Due</p>
@@ -86,7 +86,8 @@
                     </thead>
                     <tbody class="divide-y divide-gray-100">
                         @forelse ($leads as $lead)
-                        <tr class="hover:bg-gray-50 cursor-pointer" onclick="window.location='{{ route('admin.leads.show', $lead) }}'">
+                        @php($followUpDue = $lead->next_follow_up_at && $lead->next_follow_up_at->lte(today()) && ! in_array($lead->status, ['registered', 'not_interested', 'closed']))
+                        <tr class="{{ $followUpDue ? 'bg-red-50 hover:bg-red-100' : 'hover:bg-gray-50' }} cursor-pointer" onclick="window.location='{{ route('admin.leads.show', $lead) }}'">
                             <td class="px-4 py-3">
                                 <p class="font-medium text-gray-800">{{ $lead->name }}</p>
                                 @if ($lead->isConverted())

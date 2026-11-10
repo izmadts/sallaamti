@@ -80,13 +80,28 @@ class LeadController extends Controller
             $query->where('package_payment_status', $request->payment_status);
         }
 
-        $leads = $query->orderByDesc('created_at')->paginate(20)->withQueryString();
+        // Follow-ups that are due (the red "Follow-ups Due" card) always come
+        // first, oldest due date first, so nobody waiting on a call-back gets
+        // buried under fresh leads; everything else stays newest first.
+        $dueStatuses = ['registered', 'not_interested', 'closed'];
+        $today = now()->toDateString();
+        if ($request->boolean('follow_ups_due')) {
+            $query->whereDate('next_follow_up_at', '<=', $today)->whereNotIn('status', $dueStatuses);
+        }
+        $placeholders = implode(',', array_fill(0, count($dueStatuses), '?'));
+        $dueSql = "next_follow_up_at IS NOT NULL AND DATE(next_follow_up_at) <= ? AND status NOT IN ({$placeholders})";
+        $dueBindings = array_merge([$today], $dueStatuses);
+        $leads = $query
+            ->orderByRaw("CASE WHEN {$dueSql} THEN 0 ELSE 1 END", $dueBindings)
+            ->orderByRaw("CASE WHEN {$dueSql} THEN next_follow_up_at END ASC", $dueBindings)
+            ->orderByDesc('created_at')
+            ->paginate(20)->withQueryString();
 
         $stats = [
             'new' => Lead::where('status', 'new')->count(),
             'contacted' => Lead::where('status', 'contacted')->count(),
             'registered' => Lead::where('status', 'registered')->count(),
-            'follow_ups_due' => Lead::whereDate('next_follow_up_at', '<=', now())->whereNotIn('status', ['registered', 'not_interested', 'closed'])->count(),
+            'follow_ups_due' => Lead::whereDate('next_follow_up_at', '<=', $today)->whereNotIn('status', $dueStatuses)->count(),
             'payment_due' => Lead::where('package_payment_status', 'submitted')->count(),
         ];
 
