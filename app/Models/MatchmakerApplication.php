@@ -99,7 +99,7 @@ class MatchmakerApplication extends Model
         'selfie_photo', 'cnic_number', 'cnic_front_image', 'cnic_back_image',
         'area', 'address', 'country',
         'payout_method', 'payout_account_title', 'payout_account_number', 'payout_bank_name',
-        'consent_accepted', 'terms_accepted',
+        'consent_accepted', 'terms_accepted', 'pending_password',
         'ip_address', 'user_agent', 'device_city',
         'status', 'level', 'notes', 'reviewed_by',
         'counselor_code', 'certified_at', 'rejected_at', 'withdrawn_at',
@@ -107,6 +107,11 @@ class MatchmakerApplication extends Model
         'agreement_link_token', 'agreement_accepted_at', 'agreement_ip',
         'nda_accepted_at', 'nda_ip',
     ];
+
+    // A hash, not plaintext either way — but never worth risking in a JSON
+    // response regardless (e.g. a future admin API endpoint serializing
+    // this model directly).
+    protected $hidden = ['pending_password'];
 
     public function hasAcceptedAgreementAndNda(): bool
     {

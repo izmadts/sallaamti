@@ -7,6 +7,7 @@ use App\Models\MatchmakerApplication;
 use App\Services\ImageOptimizer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
 
 // Guest-accessible mobile counterpart to the web NikahCounselorApplicationController
@@ -49,6 +50,8 @@ class NikahCounselorApplicationController extends Controller
             'payout_bank_name' => ['required_if:payout_method,bank_transfer', 'nullable', 'string', 'max:100'],
             'consent_accepted' => ['accepted'],
             'terms_accepted' => ['accepted'],
+            // See the web controller's matching comment.
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
         ]);
 
         $validated['selfie_photo'] = ImageOptimizer::store($request->file('selfie_photo'), 'matchmaker-applications/selfies', 'private');
@@ -56,6 +59,8 @@ class NikahCounselorApplicationController extends Controller
         $validated['user_id'] = null;
         $validated['consent_accepted'] = true;
         $validated['terms_accepted'] = true;
+        $validated['pending_password'] = Hash::make($validated['password']);
+        unset($validated['password']);
         $validated['ip_address'] = $request->ip();
         $validated['user_agent'] = $request->userAgent();
         $validated['device_city'] = $this->lookupCity($request->ip());

@@ -383,7 +383,20 @@ class MatchmakerApplicationController extends Controller
 
         if (!$user) {
             $user = $this->createMinimalUser($application->full_name, $application->email, $application->mobile_number);
-            $application->update(['user_id' => $user->id]);
+
+            // The applicant chose this password at apply time, before this
+            // account existed — createMinimalUser() just gave it a random
+            // one since it has no idea this application's stored hash is
+            // meant for it. Set directly (already hashed, so not passed
+            // through Hash::make() again) rather than through the trait,
+            // which has no "already hashed" option and whose other callers
+            // (client walk-in, member registration) have no equivalent of
+            // their own to pass either.
+            if ($application->pending_password) {
+                $user->forceFill(['password' => $application->pending_password, 'has_real_password' => true])->save();
+            }
+
+            $application->update(['user_id' => $user->id, 'pending_password' => null]);
         }
 
         // Same both-directions-if-empty sync ProfileController uses for city —

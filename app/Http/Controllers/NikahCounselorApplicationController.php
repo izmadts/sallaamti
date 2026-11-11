@@ -6,6 +6,7 @@ use App\Models\MatchmakerApplication;
 use App\Services\ImageOptimizer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
 
 // The public "Become a Nikah Counselor" application (project_matchmaker_
@@ -74,6 +75,12 @@ class NikahCounselorApplicationController extends Controller
             'payout_bank_name' => ['required_if:payout_method,bank_transfer', 'nullable', 'string', 'max:100'],
             'consent_accepted' => ['accepted'],
             'terms_accepted' => ['accepted'],
+            // Chosen now, before any account exists yet to hold it — see
+            // the pending_password migration's own comment for why this is
+            // only ever applied to a brand-new account at certify() time,
+            // never to one matched by email to something that already
+            // exists.
+            'password' => ['required', 'string', 'min:8', 'confirmed'],
         ]);
 
         $validated['selfie_photo'] = ImageOptimizer::store($request->file('selfie_photo'), 'matchmaker-applications/selfies', 'private');
@@ -81,6 +88,8 @@ class NikahCounselorApplicationController extends Controller
         $validated['user_id'] = Auth::id();
         $validated['consent_accepted'] = true;
         $validated['terms_accepted'] = true;
+        $validated['pending_password'] = Hash::make($validated['password']);
+        unset($validated['password']);
         $validated['ip_address'] = $request->ip();
         $validated['user_agent'] = $request->userAgent();
         $validated['device_city'] = $this->lookupCity($request->ip());
