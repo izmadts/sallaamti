@@ -30,13 +30,23 @@
        scrolls by accident. Flip to dir="rtl" for Urdu and the same
        overflow anchors the viewport to the right instead, so that hidden
        sliver becomes a visible horizontal scrollbar with a blank white
-       gap on the left. Containing it on <html> too (not just <body>)
-       seemed like the safer belt-and-suspenders version of this fix, but
-       iOS Safari treats <html>'s overflow-x as part of the root scroll
-       container — hiding it there broke vertical momentum scrolling
-       (page felt "stuck"). <body> alone still fully contains the
-       horizontal overflow without touching the root scroller.       */
+       gap on the left. <body>'s own overflow-x:hidden below handles that.
+
+       Chrome's own "Translate this page" is a second, separate source of
+       the exact same slide+scrollbar symptom (reported only in mobile
+       Chrome, not Edge — the two don't share a translate engine, which is
+       why this is Chrome-specific and not just a missing-CSS-fix report).
+       Google Translate injects its banner/wrapper as a sibling of <body>,
+       not a descendant of it, so body's own overflow-x:hidden can't
+       contain it. overflow-x: clip on <html> catches that without
+       <html>'s overflow-x: hidden's old problem — `clip` doesn't turn an
+       element into a new scroll container the way `hidden` does, so it
+       doesn't repeat the iOS momentum-scroll regression that made the
+       page feel "stuck" when this was tried on <html> before (see
+       41c6614). Unsupported on iOS < 16 — those devices just don't get
+       this extra layer, same as before this change. */
     html {
+        overflow-x: clip;
         overscroll-behavior-y: none;
     }
 
