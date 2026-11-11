@@ -116,6 +116,24 @@
                                     } }}">
                                     {{ ucfirst(str_replace('_', ' ', $lead->status)) }}
                                 </span>
+                                {{-- Matchmaking-process journey, independent of the lifecycle
+                                     status above — a quick-glance read of how far this lead
+                                     has actually moved through requirements → shortlist →
+                                     consent → proposal → match, computed as EXISTS/COUNT
+                                     columns on the query above (no per-row queries here). --}}
+                                <div class="flex flex-wrap gap-1 mt-1">
+                                    @if ($lead->has_matched_proposal)
+                                    <span class="text-[10px] px-1.5 py-0.5 rounded-full bg-pink-100 text-pink-700 font-semibold">💍 Matched</span>
+                                    @elseif ($lead->has_sent_batch)
+                                    <span class="text-[10px] px-1.5 py-0.5 rounded-full bg-indigo-100 text-indigo-700 font-semibold">📤 Proposal Sent</span>
+                                    @elseif ($lead->has_participation_consent)
+                                    <span class="text-[10px] px-1.5 py-0.5 rounded-full bg-teal-100 text-teal-700 font-semibold">✅ Consent Given</span>
+                                    @elseif ($lead->shortlist_items_count > 0)
+                                    <span class="text-[10px] px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-700 font-semibold">📝 Shortlisted ({{ $lead->shortlist_items_count }})</span>
+                                    @elseif ($lead->requirement_exists)
+                                    <span class="text-[10px] px-1.5 py-0.5 rounded-full bg-gray-100 text-gray-600 font-semibold">📋 Requirements Set</span>
+                                    @endif
+                                </div>
                             </td>
                             <td class="px-4 py-3 text-gray-500">{{ $lead->assignedTo?->name ?? '—' }}</td>
                             <td class="px-4 py-3 text-xs {{ $lead->next_follow_up_at && $lead->next_follow_up_at->isPast() ? 'text-red-600 font-semibold' : 'text-gray-400' }}">

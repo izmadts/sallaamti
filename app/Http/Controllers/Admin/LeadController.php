@@ -59,7 +59,17 @@ class LeadController extends Controller
     {
         $this->authorize_();
 
-        $query = Lead::with(['assignedTo', 'nikahProfile.user', 'nikahPackage']);
+        // Matchmaking-process "journey" tags the leads table shows per row
+        // (point 4 of the NC-app restructuring ask) — a quick-glance
+        // pipeline readout independent of the lead's own lifecycle `status`
+        // column, computed as EXISTS/COUNT subqueries rather than N+1
+        // per-row queries across a paginated list.
+        $query = Lead::with(['assignedTo', 'nikahProfile.user', 'nikahPackage'])
+            ->withExists('requirement')
+            ->withCount('shortlistItems')
+            ->withExists(['consents as has_participation_consent' => fn ($q) => $q->active()->where('consent_type', 'matchmaking_participation')])
+            ->withExists(['proposalBatches as has_sent_batch' => fn ($q) => $q->where('status', 'sent')])
+            ->withExists(['proposalBatches as has_matched_proposal' => fn ($q) => $q->whereHas('proposals', fn ($pq) => $pq->where('response', 'interested'))]);
 
         if ($request->filled('status')) {
             $query->where('status', $request->status);

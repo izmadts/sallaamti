@@ -288,6 +288,11 @@ class ClientController extends Controller
 
             MatchmakingTimelineEvent::log($lead, $lead->nikahProfile, 'candidate_finalized', 'Candidate ' . ($candidate?->public_token ?? '#' . $item->nikah_profile_id) . " finalized and moved to Proposal Batch #{$batch->batch_number}.");
 
+            // A fresh checkpoint for the counselor to follow up — same
+            // column the admin leads table already highlights once it's
+            // due (see 39cbb0e), so this stage shows up there too.
+            $lead->update(['next_follow_up_at' => now()->addDays(7)]);
+
             $item->delete();
         });
 
