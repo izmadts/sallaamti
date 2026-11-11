@@ -209,6 +209,32 @@
                                 </div>
                             </div>
 
+                            {{-- Login password — chosen now, before any account exists; only
+                                 ever applied to a brand-new account once certified (see
+                                 MatchmakerApplicationController::certify()'s own comment) —
+                                 an email that matches an existing account keeps that
+                                 account's real password untouched. --}}
+                            <div class="p-4 rounded-xl" style="background: var(--cream); border: 1px solid #e5e5e5">
+                                <p class="text-sm font-semibold text-gray-700 mb-3">🔑 {{ __('db.Choose a Login Password') }} <span class="text-gray-400 font-normal text-xs">{{ __("db.(for logging into the website and the NC mobile app once certified)") }}</span></p>
+                                <div class="grid sm:grid-cols-2 gap-4">
+                                    <div>
+                                        <label for="password" class="auth-label">{{ __('db.Password') }} <span class="text-red-400">*</span></label>
+                                        <div class="auth-input-wrap">
+                                            <i class="fa fa-lock auth-icon"></i>
+                                            <input id="password" type="password" name="password" required minlength="8" autocomplete="new-password" class="auth-input @error('password') auth-input-error @enderror">
+                                        </div>
+                                        <x-input-error :messages="$errors->get('password')" class="mt-1" />
+                                    </div>
+                                    <div>
+                                        <label for="password_confirmation" class="auth-label">{{ __('db.Confirm Password') }} <span class="text-red-400">*</span></label>
+                                        <div class="auth-input-wrap">
+                                            <i class="fa fa-lock auth-icon"></i>
+                                            <input id="password_confirmation" type="password" name="password_confirmation" required minlength="8" autocomplete="new-password" class="auth-input">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
                             {{-- Consent + Terms (EN + UR) --}}
                             <div class="p-4 rounded-xl space-y-3" style="background: #fdfaf3; border: 1px solid #eee2c4">
                                 <div class="flex items-start gap-3">
