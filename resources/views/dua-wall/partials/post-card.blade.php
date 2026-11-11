@@ -43,7 +43,7 @@
                 @if (!empty($post->tags))
                 <div class="flex flex-wrap gap-1.5 mt-2">
                     @foreach ($post->tags as $tag)
-                    <a href="{{ route('wall.index', ['tag' => $tag]) }}" class="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-gray-100 text-gray-500 hover:bg-gray-200 transition">
+                    <a href="{{ route('wall.index', ['tag' => $tag]) }}" class="inline-flex items-center text-[11px] font-semibold px-2.5 py-1 rounded-full bg-gray-100 text-gray-500 hover:bg-gray-200 transition">
                         #{{ $tag }}
                     </a>
                     @endforeach

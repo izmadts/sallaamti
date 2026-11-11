@@ -220,7 +220,7 @@
                                         <p class="text-gray-400 text-xs mt-1">{{ __('db.JPG or PNG — Max 4MB') }}</p>
                                     </div>
                                     <div id="uploadPreview" class="hidden">
-                                        <img id="previewImg" src="" alt="" class="max-h-40 mx-auto rounded-xl mb-2">
+                                        <img id="previewImg" alt="Selected file preview" class="max-h-40 mx-auto rounded-xl mb-2">
                                         <p id="uploadedName" class="text-sm font-semibold" style="color: var(--teal)"></p>
                                         <p class="text-xs text-gray-400 mt-1">{{ __('db.Tap to change') }}</p>
                                     </div>

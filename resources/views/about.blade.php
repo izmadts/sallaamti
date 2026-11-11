@@ -35,8 +35,8 @@
                 <div class="grid grid-cols-2 gap-4">
                     <img src="{{ asset('img/about-1.jpg') }}" width="600" height="400" loading="lazy" class="w-full h-full object-cover rounded-2xl wow zoomIn" data-wow-delay="0.1s" alt="{{ __('db.Sallaamti community') }}">
                     <div class="flex flex-col gap-4">
-                        <img src="{{ asset('img/about-2.jpg') }}" loading="lazy" class="w-full rounded-2xl wow zoomIn" data-wow-delay="0.2s" alt="">
-                        <img src="{{ asset('img/about-3.jpg') }}" loading="lazy" class="w-full rounded-2xl wow zoomIn" data-wow-delay="0.3s" alt="">
+                        <img src="{{ asset('img/about-2.jpg') }}" loading="lazy" class="w-full rounded-2xl wow zoomIn" data-wow-delay="0.2s" alt="A family reading the Quran together">
+                        <img src="{{ asset('img/about-3.jpg') }}" loading="lazy" class="w-full rounded-2xl wow zoomIn" data-wow-delay="0.3s" alt="A woman reading the Quran by a mosque window">
                     </div>
                 </div>
 
@@ -75,7 +75,7 @@
 
                     {{-- Donation highlight --}}
                     <div class="rounded-xl p-4 flex items-center gap-4 mb-8" style="background: var(--cream); border: 1px solid #e5e5e5">
-                        <img src="{{ asset('img/about-child.jpg') }}" loading="lazy" class="w-16 h-16 rounded-full object-cover flex-shrink-0" alt="">
+                        <img src="{{ asset('img/about-child.jpg') }}" loading="lazy" class="w-16 h-16 rounded-full object-cover flex-shrink-0" alt="A child learning the Quran">
                         <div class="flex-1 text-sm text-gray-600">
                             {{ __('db.To continue our vital work educating youth and supporting families, we need your generous support. Your donation creates lasting change.') }}
                         </div>
@@ -686,13 +686,13 @@
                 </div>
                 <div class="grid grid-cols-2 gap-4">
                     <div class="col-span-2 rounded-2xl overflow-hidden">
-                        <img src="{{ asset('img/about-4.jpg') }}" loading="lazy" class="w-full h-56 object-cover wow zoomIn" data-wow-delay="0.1s" alt="">
+                        <img src="{{ asset('img/about-4.jpg') }}" loading="lazy" class="w-full h-56 object-cover wow zoomIn" data-wow-delay="0.1s" alt="Children in need supported by Sallaamti Khidmat">
                     </div>
                     <div class="rounded-2xl overflow-hidden">
-                        <img src="{{ asset('img/about-5.jpg') }}" loading="lazy" class="w-full h-40 object-cover wow zoomIn" data-wow-delay="0.2s" alt="">
+                        <img src="{{ asset('img/about-5.jpg') }}" loading="lazy" class="w-full h-40 object-cover wow zoomIn" data-wow-delay="0.2s" alt="Nikah rings">
                     </div>
                     <div class="rounded-2xl overflow-hidden">
-                        <img src="{{ asset('img/about-6.jpg') }}" loading="lazy" class="w-full h-40 object-cover wow zoomIn" data-wow-delay="0.3s" alt="">
+                        <img src="{{ asset('img/about-6.jpg') }}" loading="lazy" class="w-full h-40 object-cover wow zoomIn" data-wow-delay="0.3s" alt="The Holy Quran on a stand">
                     </div>
                 </div>
             </div>

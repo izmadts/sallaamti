@@ -1,4 +1,5 @@
 <x-auth-layout>
+    <h1 class="sr-only">Log in to Sallaamti</h1>
     <div class="auth-wrapper">
         <div class="auth-card" style="max-width: 560px" x-data="{ tab: 'login' }">
 

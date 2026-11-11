@@ -41,7 +41,7 @@
         <div class="border-t border-gray-700"></div>
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8 pt-8">
             <div>
-                <img src="{{ asset('img/logo-w.png')}}" class="max-w-full h-auto">
+                <img src="{{ asset('img/logo-w.png')}}" class="max-w-full h-auto" alt="Sallaamti logo">
                 <p class="my-4 text-gray-400">{{ __('db.Sallaamti (سلامتی) is an organization dedicated to spreading peace, knowledge, and compassion through the teachings of the Quran and Hadith.') }}</p>
                 <p class="-mt-2 mb-4 text-xs text-gray-500">Sallaamti · سلامتی · Salamti · Salaamti</p>
                 <div class="flex flex-wrap gap-3">
@@ -51,10 +51,10 @@
                 </div>
                 <div class="flex flex-wrap items-center gap-3 mt-5 pt-4 border-t border-gray-700">
                     <span class="text-gray-400 text-sm">{{ __('db.Follow Us:') }}</span>
-                    <a class="text-gray-300 hover:text-white" href="{{ setting('social_facebook') }}" target="_blank"><i class="fab fa-facebook-f"></i></a>
-                    <a class="text-gray-300 hover:text-white" href="{{ setting('social_tiktok') }}" target="_blank"><i class="fab fa-tiktok"></i></a>
-                    <a class="text-gray-300 hover:text-white" href="{{ setting('social_youtube') }}" target="_blank"><i class="fab fa-youtube"></i></a>
-                    <a class="text-gray-300 hover:text-white" href="{{ setting('social_instagram') }}" target="_blank"><i class="fab fa-instagram"></i></a>
+                    <a class="text-gray-300 hover:text-white inline-flex items-center justify-center w-11 h-11" href="{{ setting('social_facebook') }}" target="_blank" rel="noopener" aria-label="Sallaamti on Facebook"><i class="fab fa-facebook-f"></i></a>
+                    <a class="text-gray-300 hover:text-white inline-flex items-center justify-center w-11 h-11" href="{{ setting('social_tiktok') }}" target="_blank" rel="noopener" aria-label="Sallaamti on TikTok"><i class="fab fa-tiktok"></i></a>
+                    <a class="text-gray-300 hover:text-white inline-flex items-center justify-center w-11 h-11" href="{{ setting('social_youtube') }}" target="_blank" rel="noopener" aria-label="Sallaamti on YouTube"><i class="fab fa-youtube"></i></a>
+                    <a class="text-gray-300 hover:text-white inline-flex items-center justify-center w-11 h-11" href="{{ setting('social_instagram') }}" target="_blank" rel="noopener" aria-label="Sallaamti on Instagram"><i class="fab fa-instagram"></i></a>
                 </div>
                 <a href="https://play.google.com/store/apps/details?id=com.sallaamti.app&pcampaignid=web_share"
                    target="_blank" rel="noopener"
@@ -211,11 +211,11 @@
                 <div class="text-center md:text-left">
                     &copy; <a class="border-b border-gray-500" href="{{ url('/') }}">www.sallaamti.com</a>, {{ __('db.All Right Reserved.') }}
                     <span class="mx-2 text-gray-600">·</span>
-                    <a class="hover:text-white" href="{{ route('privacy-policy') }}">{{ __('db.Privacy Policy') }}</a>
+                    <a class="hover:text-white inline-block py-2" href="{{ route('privacy-policy') }}">{{ __('db.Privacy Policy') }}</a>
                     <span class="mx-2 text-gray-600">·</span>
-                    <a class="hover:text-white" href="{{ route('delete-account') }}">{{ __('db.Delete Your Account') }}</a>
+                    <a class="hover:text-white inline-block py-2" href="{{ route('delete-account') }}">{{ __('db.Delete Your Account') }}</a>
                     <span class="mx-2 text-gray-600">·</span>
-                    <a class="hover:text-white" href="{{ route('terms-of-service') }}">{{ __('db.Terms of Service') }}</a>
+                    <a class="hover:text-white inline-block py-2" href="{{ route('terms-of-service') }}">{{ __('db.Terms of Service') }}</a>
                     <span class="mx-2 text-gray-600">·</span>
                     <a class="hover:text-white" href="{{ route('nikah-counselor.code-of-conduct') }}">{{ __('db.Nikah Counselor Code of Conduct') }}</a>
                 </div>
