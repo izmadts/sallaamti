@@ -2,22 +2,24 @@
 
 namespace App\Http\Controllers\Api\V1;
 
+use App\Http\Controllers\Auth\Concerns\RegistersMinimalUsers;
 use App\Http\Controllers\Controller;
 use App\Models\MatchmakerApplication;
+use App\Models\User;
 use App\Services\ImageOptimizer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
 
 // Guest-accessible mobile counterpart to the web NikahCounselorApplicationController
 // — same validation, same MatchmakerApplication::create() call, same
-// "no account required to apply" rule (a real account + 'matchmaker' role
-// only get attached once Admin\MatchmakerApplicationController advances an
-// application all the way to 'certified'). No honeypot field here since a
-// mobile app has no bot-fillable HTML form to protect; throttled instead.
+// account-creation-at-apply-time behavior (see the web controller's class
+// docblock). No honeypot field here since a mobile app has no bot-fillable
+// HTML form to protect; throttled instead.
 class NikahCounselorApplicationController extends Controller
 {
+    use RegistersMinimalUsers;
+
     public function store(Request $request): JsonResponse
     {
         $validated = $request->validate([
@@ -56,10 +58,14 @@ class NikahCounselorApplicationController extends Controller
 
         $validated['selfie_photo'] = ImageOptimizer::store($request->file('selfie_photo'), 'matchmaker-applications/selfies', 'private');
 
-        $validated['user_id'] = null;
+        // This endpoint is guest-only (no auth:sanctum), unlike the web
+        // controller — so there's no "already signed in" case to check here.
+        $existingUser = User::where('email', $validated['email'])->first();
+        $validated['user_id'] = $existingUser
+            ? $existingUser->id
+            : $this->createMinimalUser($validated['full_name'], $validated['email'], $validated['mobile_number'], $validated['password'])->id;
         $validated['consent_accepted'] = true;
         $validated['terms_accepted'] = true;
-        $validated['pending_password'] = Hash::make($validated['password']);
         unset($validated['password']);
         $validated['ip_address'] = $request->ip();
         $validated['user_agent'] = $request->userAgent();

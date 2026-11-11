@@ -2,20 +2,26 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Auth\Concerns\RegistersMinimalUsers;
 use App\Models\MatchmakerApplication;
+use App\Models\User;
 use App\Services\ImageOptimizer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
 
 // The public "Become a Nikah Counselor" application (project_matchmaker_
 // hiring_document) — guest-friendly like VolunteerController, no account
-// required to apply. A real account + the 'matchmaker' role only get
-// attached once Admin\MatchmakerApplicationController advances an
-// application all the way to 'certified'.
+// required to apply. The 'matchmaker' role itself only gets attached once
+// Admin\MatchmakerApplicationController advances an application all the way
+// to 'certified' (hiring document's "don't allow instant → dashboard"
+// rule) — but the account (and the ability to log in and see a pending-
+// approval screen) is created right here, at apply time, so an applicant
+// isn't locked out of the app for the whole pipeline's duration.
 class NikahCounselorApplicationController extends Controller
 {
+    use RegistersMinimalUsers;
+
     public function create()
     {
         return view('nikah-counselor.create');
@@ -75,20 +81,27 @@ class NikahCounselorApplicationController extends Controller
             'payout_bank_name' => ['required_if:payout_method,bank_transfer', 'nullable', 'string', 'max:100'],
             'consent_accepted' => ['accepted'],
             'terms_accepted' => ['accepted'],
-            // Chosen now, before any account exists yet to hold it — see
-            // the pending_password migration's own comment for why this is
-            // only ever applied to a brand-new account at certify() time,
-            // never to one matched by email to something that already
-            // exists.
+            // Never applied to an account that already exists under this
+            // email — see the user-linking block below. Only ever used to
+            // set up a brand-new account's real login password.
             'password' => ['required', 'string', 'min:8', 'confirmed'],
         ]);
 
         $validated['selfie_photo'] = ImageOptimizer::store($request->file('selfie_photo'), 'matchmaker-applications/selfies', 'private');
 
-        $validated['user_id'] = Auth::id();
+        if (Auth::id()) {
+            // Already signed in (e.g. an existing member applying from
+            // their own account) — that account is the obvious match, and
+            // its real password is never touched by this form.
+            $validated['user_id'] = Auth::id();
+        } else {
+            $existingUser = User::where('email', $validated['email'])->first();
+            $validated['user_id'] = $existingUser
+                ? $existingUser->id
+                : $this->createMinimalUser($validated['full_name'], $validated['email'], $validated['mobile_number'], $validated['password'])->id;
+        }
         $validated['consent_accepted'] = true;
         $validated['terms_accepted'] = true;
-        $validated['pending_password'] = Hash::make($validated['password']);
         unset($validated['password']);
         $validated['ip_address'] = $request->ip();
         $validated['user_agent'] = $request->userAgent();

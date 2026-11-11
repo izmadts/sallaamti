@@ -309,7 +309,6 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
             Route::get('commissions', [MatchmakerApi\CommissionController::class, 'index'])->name('commissions.index');
             Route::get('performance', [MatchmakerApi\PerformanceController::class, 'index'])->name('performance.index');
             Route::get('referral', [MatchmakerApi\ReferralController::class, 'show'])->name('referral.show');
-            Route::get('application', [MatchmakerApi\ApplicationController::class, 'show'])->name('application.show');
             Route::get('meta/enums', [MatchmakerApi\MetaController::class, 'enums'])->name('meta.enums');
             Route::get('meta/payment-accounts', [MatchmakerApi\MetaController::class, 'paymentAccounts'])->name('meta.payment-accounts');
             Route::get('meta/packages', [MatchmakerApi\MetaController::class, 'packages'])->name('meta.packages');
@@ -326,5 +325,13 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
             Route::get('certificate/download', [MatchmakerApi\CertificateController::class, 'download'])->name('certificate.download');
             Route::post('certificate/request-dispatch', [MatchmakerApi\CertificateController::class, 'requestDispatch'])->name('certificate.request-dispatch');
         });
+
+        // Deliberately outside the 'api.matchmaker' gate above —
+        // ApplicationController::show() self-scopes to auth()->id()'s own
+        // application, so no role check is needed, and a not-yet-certified
+        // applicant (no 'matchmaker' role yet) must still be able to read
+        // their own status: this is what the app's post-login "application
+        // pending" waiting screen polls.
+        Route::get('matchmaker/application', [MatchmakerApi\ApplicationController::class, 'show'])->name('matchmaker.application.show');
     });
 });
