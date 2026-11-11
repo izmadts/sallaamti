@@ -8,6 +8,7 @@ class NikahContactRequest extends Model
 {
     protected $fillable = [
         'nikah_profile_id',
+        'lead_id',
         'requested_by',
         'status',
         'admin_notes',
@@ -19,6 +20,7 @@ class NikahContactRequest extends Model
     {
         return [
             'nikah_profile_id' => 'integer',
+            'lead_id' => 'integer',
             'requested_by' => 'integer',
             'decided_by' => 'integer',
             'decided_at' => 'datetime',
@@ -28,6 +30,11 @@ class NikahContactRequest extends Model
     public function profile()
     {
         return $this->belongsTo(NikahProfile::class, 'nikah_profile_id');
+    }
+
+    public function lead()
+    {
+        return $this->belongsTo(Lead::class);
     }
 
     public function requester()

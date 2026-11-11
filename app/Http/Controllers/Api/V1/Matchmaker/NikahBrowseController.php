@@ -131,7 +131,7 @@ class NikahBrowseController extends Controller
         ]);
     }
 
-    public function requestContact(NikahProfile $profile): JsonResponse
+    public function requestContact(Request $request, NikahProfile $profile): JsonResponse
     {
         $pending = NikahContactRequest::where('nikah_profile_id', $profile->id)
             ->where('requested_by', auth()->id())
@@ -142,8 +142,18 @@ class NikahBrowseController extends Controller
             return response()->json(['message' => 'You already have a request on file for this profile.'], 409);
         }
 
+        // Optional — a matchmaker can request contact while just browsing,
+        // not only from a specific client's pick flow. Only trusted when it
+        // actually belongs to this matchmaker, same ownership check
+        // ClientController::authorizeClient() applies elsewhere, so one
+        // counselor can't misattribute a request to another's client.
+        $leadId = $request->filled('lead_id') && Lead::where('id', $request->integer('lead_id'))->where('assigned_to', auth()->id())->exists()
+            ? $request->integer('lead_id')
+            : null;
+
         NikahContactRequest::create([
             'nikah_profile_id' => $profile->id,
+            'lead_id' => $leadId,
             'requested_by' => auth()->id(),
             'status' => 'pending',
         ]);

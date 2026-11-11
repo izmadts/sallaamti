@@ -49,7 +49,7 @@ class NikahVerificationController extends Controller
             ]);
         }
 
-        $requests = NikahContactRequest::with(['profile.user', 'requester'])
+        $requests = NikahContactRequest::with(['profile.user', 'requester', 'lead.nikahPackage'])
             ->orderByRaw("status = 'pending' desc")
             ->latest()
             ->paginate(20);

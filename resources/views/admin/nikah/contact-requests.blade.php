@@ -109,6 +109,24 @@
                         @if ($req->requester)
                         <p class="text-xs text-gray-400 mt-0.5">{{ collect([$req->requester->email, $req->requester->phone])->filter()->implode(' · ') }}</p>
                         @endif
+                        @if ($req->lead)
+                        {{-- Which of the counselor's clients this was actually
+                             for — NikahContactRequest had no lead_id until
+                             now, so this was previously untraceable here. --}}
+                        <p class="text-xs text-gray-600 mt-1">
+                            On behalf of client: <span class="font-semibold">{{ $req->lead->name }}</span>
+                            @if ($req->lead->nikahPackage)
+                            <span class="text-gray-400">· {{ $req->lead->nikahPackage->name }}</span>
+                            @if ($req->lead->package_payment_status === 'submitted')
+                            <span class="ml-1 text-purple-700 bg-purple-100 px-1.5 py-0.5 rounded-full text-[11px] font-semibold">💵 Payment Due</span>
+                            @elseif ($req->lead->package_payment_status === 'rejected')
+                            <span class="ml-1 text-red-700 bg-red-100 px-1.5 py-0.5 rounded-full text-[11px] font-semibold">Payment Rejected</span>
+                            @elseif ($req->lead->package_payment_status === 'confirmed')
+                            <span class="ml-1 text-green-700 bg-green-100 px-1.5 py-0.5 rounded-full text-[11px] font-semibold">Payment Confirmed</span>
+                            @endif
+                            @endif
+                        </p>
+                        @endif
                         <p class="text-xs text-gray-400 mt-1">Requested {{ $req->created_at->diffForHumans() }}</p>
                         @if ($history->isNotEmpty())
                         <p class="text-xs text-gray-400">
@@ -136,6 +154,9 @@
                         @endif
                         @if ($req->profile)
                         <a href="{{ route('admin.nikah.show', $req->profile) }}" class="text-xs text-teal-700 hover:underline">View Profile →</a>
+                        @endif
+                        @if ($req->lead)
+                        <a href="{{ route('admin.leads.show', $req->lead) }}" class="text-xs text-teal-700 hover:underline">View Client →</a>
                         @endif
                     </div>
                 </div>
