@@ -279,6 +279,7 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
             Route::post('clients/{lead}/link-profile', [MatchmakerApi\ClientController::class, 'linkProfile'])->name('clients.link-profile');
             Route::post('clients/{lead}/shortlist', [MatchmakerApi\ClientController::class, 'addToShortlist'])->name('clients.shortlist.add');
             Route::delete('clients/{lead}/shortlist/{item}', [MatchmakerApi\ClientController::class, 'removeFromShortlist'])->name('clients.shortlist.remove');
+            Route::post('clients/{lead}/shortlist/{item}/finalize', [MatchmakerApi\ClientController::class, 'finalizeShortlistItem'])->name('clients.shortlist.finalize');
             Route::post('clients/{lead}/requirements', [MatchmakerApi\ClientController::class, 'saveRequirement'])->name('clients.requirements.save');
             Route::post('clients/{lead}/package-payment', [MatchmakerApi\ClientController::class, 'submitPackagePayment'])->name('clients.package-payment.submit');
 

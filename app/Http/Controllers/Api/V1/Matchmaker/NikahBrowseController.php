@@ -22,6 +22,14 @@ class NikahBrowseController extends Controller
         // no client to score candidates against or narrow by gender for.
         $lead = $request->filled('lead_id') ? Lead::with('requirement.items')->find($request->integer('lead_id')) : null;
 
+        // requirement_type => requirement_value, keyed the same as
+        // MatchmakingRequirementItem::TYPES — used below only as a fallback
+        // for whichever of these the counselor hasn't explicitly filtered
+        // by, so picking a candidate for a client starts already narrowed
+        // to what's on file instead of a counselor having to re-type it.
+        $requirementValues = $lead?->requirement?->items->pluck('requirement_value', 'requirement_type') ?? collect();
+        $appliedFilters = [];
+
         $query = NikahProfile::with('user')->matchmakerVisible();
 
         if ($request->filled('gender')) {
@@ -33,34 +41,66 @@ class NikahBrowseController extends Controller
             // via the Gender filter above if they explicitly set one.
             $query->whereHas('user', fn ($q) => $q->where('gender', $lead->gender === 'male' ? 'female' : 'male'));
         }
-        if ($request->filled('city')) {
-            $query->where('city', 'like', '%' . $request->city . '%');
+
+        $city = $request->filled('city') ? $request->city : $requirementValues->get('city');
+        if ($city) {
+            $query->where('city', 'like', '%' . $city . '%');
+            $appliedFilters['city'] = $city;
         }
-        if ($request->filled('sect')) {
-            $query->where('sect', 'like', '%' . $request->sect . '%');
+
+        $sect = $request->filled('sect') ? $request->sect : $requirementValues->get('sect');
+        if ($sect) {
+            $query->where('sect', 'like', '%' . $sect . '%');
+            $appliedFilters['sect'] = $sect;
         }
-        if ($request->filled('marital_status')) {
-            $query->where('marital_status', $request->marital_status);
+
+        $maritalStatus = $request->filled('marital_status') ? $request->marital_status : $requirementValues->get('marital_status');
+        if ($maritalStatus) {
+            $query->where('marital_status', $maritalStatus);
+            $appliedFilters['marital_status'] = $maritalStatus;
         }
-        if ($request->filled('min_age')) {
-            $query->where('age', '>=', $request->min_age);
+
+        // "25-30" / "25 to 30" / a single "25+"-style minimum — same parsing
+        // MatchmakingRequirementItem::ageMatches() uses, so a stored
+        // age_range requirement narrows the list the same way it scores it.
+        $minAge = $request->filled('min_age') ? $request->min_age : null;
+        $maxAge = $request->filled('max_age') ? $request->max_age : null;
+        if ($minAge === null && $maxAge === null && $requirementValues->get('age_range')) {
+            preg_match_all('/\d+/', $requirementValues->get('age_range'), $matches);
+            $numbers = array_map('intval', $matches[0] ?? []);
+            if (count($numbers) === 1) {
+                $minAge = $numbers[0];
+            } elseif (count($numbers) >= 2) {
+                [$minAge, $maxAge] = [min($numbers[0], $numbers[1]), max($numbers[0], $numbers[1])];
+            }
         }
-        if ($request->filled('max_age')) {
-            $query->where('age', '<=', $request->max_age);
+        if ($minAge !== null) {
+            $query->where('age', '>=', $minAge);
+            $appliedFilters['min_age'] = $minAge;
         }
+        if ($maxAge !== null) {
+            $query->where('age', '<=', $maxAge);
+            $appliedFilters['max_age'] = $maxAge;
+        }
+
         // Mirrors the web Matchmaker\NikahBrowseController's own education/
         // country/state filters — this API version only ever had
         // gender/city/sect/marital_status/age, so a counselor using the
         // mobile app had less to narrow by than the same role on the web
         // panel for no real reason.
-        if ($request->filled('education')) {
-            $query->where('education', 'like', '%' . $request->education . '%');
+        $education = $request->filled('education') ? $request->education : $requirementValues->get('education');
+        if ($education) {
+            $query->where('education', 'like', '%' . $education . '%');
+            $appliedFilters['education'] = $education;
         }
+
         if ($request->filled('country')) {
             $query->where('country', $request->country);
+            $appliedFilters['country'] = $request->country;
         }
         if ($request->filled('state')) {
             $query->where('state', 'like', '%' . $request->state . '%');
+            $appliedFilters['state'] = $request->state;
         }
 
         $profiles = $query->orderByDesc('created_at')->paginate(15)->withQueryString();
@@ -70,6 +110,11 @@ class NikahBrowseController extends Controller
             'current_page' => $profiles->currentPage(),
             'last_page' => $profiles->lastPage(),
             'total' => $profiles->total(),
+            // What the server actually filtered by, including anything
+            // defaulted from the lead's own requirements rather than typed
+            // by the counselor — so the picker's filter fields can show it
+            // instead of looking empty while the list is already narrowed.
+            'applied_filters' => $appliedFilters,
         ]);
     }
 

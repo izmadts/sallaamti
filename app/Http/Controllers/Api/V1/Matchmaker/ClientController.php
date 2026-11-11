@@ -18,6 +18,7 @@ use App\Notifications\NewPackagePaymentSubmitted;
 use App\Services\ImageOptimizer;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 // JSON mirror of Matchmaker\ClientController (web) — same Lead/model calls,
@@ -226,6 +227,71 @@ class ClientController extends Controller
         $item->delete();
 
         return response()->json(['message' => __('db.Removed from shortlist.')]);
+    }
+
+    // "Mark Final" — the client liked this specific shortlisted candidate,
+    // confirmed verbally/over WhatsApp/etc., so the counselor records that
+    // here and the candidate moves straight into Proposals instead of a
+    // separate manual add-to-batch step. MatchmakingConsent has no
+    // candidate-level column (it's a lead-wide record), so the candidate
+    // this finalize was about is only traceable via the proposal it
+    // creates and the timeline event below — not by querying consents.
+    public function finalizeShortlistItem(Request $request, Lead $lead, LeadShortlistItem $item): JsonResponse
+    {
+        $this->authorizeClient($lead);
+        abort_unless((int) $item->lead_id === (int) $lead->id, 404);
+        abort_unless($lead->nikah_profile_id, 422, 'This client needs a linked Nikah profile before a candidate can be finalized into a proposal.');
+
+        $validated = $request->validate([
+            'method' => ['required', 'in:' . implode(',', array_keys(MatchmakingConsent::METHODS))],
+            'notes' => ['nullable', 'string', 'max:1000'],
+        ]);
+
+        $candidate = $item->nikahProfile;
+
+        DB::transaction(function () use ($lead, $item, $validated, $candidate) {
+            // createBatch()'s own precondition — only record it if this is
+            // genuinely the first time, so finalizing several candidates
+            // for the same client doesn't pile up redundant consent rows.
+            if (!$lead->hasActiveConsent('matchmaking_participation')) {
+                MatchmakingConsent::create([
+                    'lead_id' => $lead->id,
+                    'consent_type' => 'matchmaking_participation',
+                    'method' => $validated['method'],
+                    'notes' => $validated['notes'] ?? null,
+                    'recorded_by' => auth()->id(),
+                    'granted_at' => now(),
+                ]);
+                MatchmakingTimelineEvent::log($lead, $lead->nikahProfile, 'consent_recorded', MatchmakingConsent::TYPES['matchmaking_participation'] . ' consent recorded (' . MatchmakingConsent::METHODS[$validated['method']] . ').');
+            }
+
+            $batch = ProposalBatch::where('lead_id', $lead->id)
+                ->where('status', 'draft')
+                ->withCount('proposals')
+                ->get()
+                ->first(fn ($b) => $b->proposals_count < 5);
+
+            if (!$batch) {
+                $batch = ProposalBatch::create([
+                    'lead_id' => $lead->id,
+                    'nikah_profile_id' => $lead->nikah_profile_id,
+                    'matchmaker_id' => auth()->id(),
+                    'batch_number' => ProposalBatch::where('lead_id', $lead->id)->max('batch_number') + 1,
+                    'status' => 'draft',
+                ]);
+            }
+
+            MatchProposal::firstOrCreate(
+                ['proposal_batch_id' => $batch->id, 'candidate_profile_id' => $item->nikah_profile_id],
+                ['internal_notes' => $validated['notes'] ?? null]
+            );
+
+            MatchmakingTimelineEvent::log($lead, $lead->nikahProfile, 'candidate_finalized', 'Candidate ' . ($candidate?->public_token ?? '#' . $item->nikah_profile_id) . " finalized and moved to Proposal Batch #{$batch->batch_number}.");
+
+            $item->delete();
+        });
+
+        return response()->json(['message' => __('db.Candidate finalized — moved to Proposals.')]);
     }
 
     public function saveRequirement(Request $request, Lead $lead): JsonResponse
@@ -567,6 +633,15 @@ class ClientController extends Controller
                     'age' => $item->nikahProfile->age,
                     'city' => $item->nikahProfile->city,
                     'sect' => $item->nikahProfile->sect,
+                    // Added for the Shortlist tab's "Share on WhatsApp"
+                    // button — same matchmaker-visible, non-identity fields
+                    // NikahBrowseController's own cardPayload() already
+                    // exposes, just also here so the share text has more
+                    // than age/city/sect to go on.
+                    'marital_status' => $item->nikahProfile->marital_status,
+                    'height' => $item->nikahProfile->height,
+                    'education' => $item->nikahProfile->education,
+                    'profession' => $item->nikahProfile->profession,
                 ] : null,
                 'match_score' => $item->nikahProfile ? $lead->matchScoreWith($item->nikahProfile) : null,
             ]) : null,
