@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api\V1\Matchmaker;
 
 use App\Http\Controllers\Controller;
+use App\Models\DeviceToken;
 use App\Models\Lead;
 use App\Models\LeadShortlistItem;
 use App\Models\MatchmakingConsent;
@@ -605,6 +606,17 @@ class ClientController extends Controller
             'assigned_to' => $lead->assignedTo ? ['id' => $lead->assignedTo->id, 'name' => $lead->assignedTo->name] : null,
             'is_converted' => $lead->isConverted(),
             'nikah_profile_id' => $lead->nikah_profile_id,
+            // Answers "is this client even reachable in-app, or is
+            // everything happening over WhatsApp?" — null means no member
+            // account exists yet (no Nikah profile registered), so there's
+            // nothing to check; otherwise the most recent device-token
+            // last_seen_at (refreshed on every member-app login/session-
+            // restore — see SallaamtiFlutterApp's registerThisDevice())
+            // doubles as "last time they had the app open."
+            'member_app_last_seen_at' => $lead->nikahProfile?->user
+                ? DeviceToken::where('user_id', $lead->nikahProfile->user->id)->where('app', 'sallaamti_app')->max('last_seen_at')
+                : null,
+            'member_has_account' => (bool) $lead->nikahProfile?->user,
             // The one-time verification fee on the profile itself —
             // distinct from the package fields right below. A counselor-
             // registered profile is deliberately exempt from the 7-day
