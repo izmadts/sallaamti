@@ -70,8 +70,8 @@
 
                 <div class="bg-white rounded-2xl shadow-sm p-6 flex flex-col sm:flex-row items-center justify-between gap-4">
                     <div>
-                        <p class="font-semibold text-[--text-dark]">{{ __('db.Mobile app is on its way') }}</p>
-                        <p class="text-sm text-gray-500">{{ __('db.The Nikah Counselor mobile app isn\'t publicly live yet. Until then, share Sallaamti with prospects using the website link and your own WhatsApp number — both work fully today.') }}</p>
+                        <p class="font-semibold text-[--text-dark]">{{ __('db.There\'s a Nikah Counselor mobile app') }}</p>
+                        <p class="text-sm text-gray-500">{{ __('db.Once certified, you can manage your clients, shortlist candidates, and track proposals right from your phone — your admin will share the download with you. The website works fully too, and your own WhatsApp number remains just as valid for reaching prospects.') }}</p>
                     </div>
                     <a href="{{ whatsapp_link() }}" target="_blank" class="btn-base px-5 py-2.5 flex-shrink-0 border border-gray-300 text-gray-700 hover:border-[--teal]"><i class="fab fa-whatsapp mr-2 text-green-600"></i>{{ __('db.Sallaamti WhatsApp') }}</a>
                 </div>
@@ -408,13 +408,12 @@
                 <div class="bg-white rounded-2xl shadow-sm p-6">
                     <div class="space-y-0">
                         @foreach ([
-                            [__('db.Understand what they\'re looking for'), __('db.Record their partner preferences and requirements against their client file.')],
-                            [__('db.Search verified profiles'), __('db.Browse Sallaamti\'s verified Nikah profiles for genuinely compatible matches.')],
-                            [__('db.Build a shortlist'), __('db.Put together a batch of suggested profiles for your client.')],
-                            [__('db.Send the batch'), __('db.Send your shortlist to your client for their review.')],
-                            [__('db.Record their consent'), __('db.Your client accepts or declines interest in each suggestion — nothing moves forward without their clear consent.')],
-                            [__('db.Guarded messaging begins'), __('db.Once both sides consent, a private, moderated conversation opens between them.')],
-                            [__('db.Stay in touch'), __('db.Keep notes, follow up, and support your client until — in sha Allah — they\'re matched.')],
+                            [__('db.Understand what they\'re looking for'), __('db.Record their requirements against their client file — age range, city, sect, education, marital status, and more.')],
+                            [__('db.Search verified profiles'), __('db.Browse Sallaamti\'s verified Nikah profiles — automatically narrowed to what you recorded, so you spend less time filtering.')],
+                            [__('db.Build a shortlist'), __('db.Add promising candidates, with the option to share any one\'s details straight to your WhatsApp chat with the client.')],
+                            [__('db.Mark a candidate final'), __('db.Once your client confirms they like someone, one action records their consent, moves that candidate into Proposals, and sets a 7-day follow-up automatically.')],
+                            [__('db.See the final match'), __('db.Once your client responds "interested," it\'s highlighted clearly in Proposals — no digging through batches to find it.')],
+                            [__('db.Stay in touch'), __('db.Message them in-app if they\'re active on the Sallaamti member app, or keep using WhatsApp — either way, keep notes and follow up until — in sha Allah — they\'re matched.')],
                         ] as $i => $step)
                         <div class="flex items-start gap-4 {{ !$loop->last ? 'pb-5 mb-5 border-b border-gray-100' : '' }}">
                             <span class="flex-shrink-0 w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold bg-gray-100 text-gray-500">{{ $i + 1 }}</span>
