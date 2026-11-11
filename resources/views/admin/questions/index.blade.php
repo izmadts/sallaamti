@@ -19,9 +19,9 @@
 
             <div class="bg-white rounded-lg shadow-sm divide-y">
                 @forelse ($questions as $question)
-                <div class="p-5 flex justify-between items-start flex-wrap gap-3">
-                    <div class="flex-1 min-w-0">
-                        <p class="font-medium text-gray-800">{{ $question->question }}</p>
+                <div class="p-5 flex flex-col sm:flex-row justify-between items-start gap-3">
+                    <div class="flex-1 min-w-0 w-full">
+                        <p class="font-medium text-gray-800 break-words" dir="auto">{{ $question->question }}</p>
                         <p class="text-xs text-gray-400 mt-0.5">
                             by
                             @if ($question->asker)
@@ -47,7 +47,7 @@
                         @endif
                     </div>
 
-                    <div class="flex flex-col items-end gap-2 w-64">
+                    <div class="flex flex-col items-end gap-2 w-full sm:w-80 flex-shrink-0">
                         <span class="text-xs px-2 py-1 rounded-full {{ $question->status === 'answered' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800' }}">
                             {{ ucfirst($question->status) }}
                         </span>

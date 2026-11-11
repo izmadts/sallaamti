@@ -32,7 +32,7 @@
                         <form method="POST" action="{{ route('nikah-counselor.store') }}" enctype="multipart/form-data" class="space-y-5" x-data="{ payoutMethod: '{{ old('payout_method', '') }}' }">
                             @csrf
                             {{-- Honeypot --}}
-                            <div class="absolute -left-[9999px]" aria-hidden="true">
+                            <div style="position:absolute;top:0;left:0;width:1px;height:1px;overflow:hidden;opacity:0;pointer-events:none" aria-hidden="true">
                                 <label for="website">Leave this field empty</label>
                                 <input type="text" name="website" id="website" tabindex="-1" autocomplete="off">
                             </div>

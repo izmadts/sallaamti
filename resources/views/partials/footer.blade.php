@@ -12,7 +12,7 @@
                     <form id="subscribeForm" action="{{ route('subscribe') }}" method="POST">
                         @csrf
                         {{-- Honeypot: hidden from real visitors, bots that auto-fill every field will trip it --}}
-                        <div class="absolute -left-[9999px]" aria-hidden="true">
+                        <div style="position:absolute;top:0;left:0;width:1px;height:1px;overflow:hidden;opacity:0;pointer-events:none" aria-hidden="true">
                             <label for="subscribe_website">Leave this field empty</label>
                             <input type="text" name="website" id="subscribe_website" tabindex="-1" autocomplete="off">
                         </div>

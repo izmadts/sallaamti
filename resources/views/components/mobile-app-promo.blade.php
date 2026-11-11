@@ -51,7 +51,7 @@
     x-show="show"
     x-cloak
     x-transition
-    class="fixed inset-0 z-[9999] flex flex-col"
+    class="fixed inset-0 z-[9999] flex flex-col overflow-y-auto"
     style="background: linear-gradient(160deg, var(--teal, #0d6b6b) 0%, #06302f 100%)"
 >
     <button @click="dismiss()" class="absolute top-4 right-4 text-white/70 hover:text-white text-2xl leading-none w-10 h-10 flex items-center justify-center" aria-label="{{ __('db.Dismiss') }}">✕</button>
