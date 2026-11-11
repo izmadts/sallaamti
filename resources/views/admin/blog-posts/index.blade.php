@@ -13,7 +13,7 @@
 
         <div class="bg-white rounded-lg shadow-sm divide-y">
             @forelse ($posts as $post)
-            <div class="p-4 flex gap-4 items-start">
+            <div class="p-4 flex flex-col sm:flex-row gap-4 items-start">
                 <div class="w-16 h-16 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
                     @if ($post->cover_image)
                     <img src="{{ Storage::url($post->cover_image) }}" class="w-full h-full object-cover">
@@ -21,7 +21,7 @@
                     <div class="w-full h-full flex items-center justify-center text-gray-400 text-xl">📝</div>
                     @endif
                 </div>
-                <div class="flex-1">
+                <div class="flex-1 min-w-0 w-full">
                     <p class="font-medium text-gray-800">{{ $post->title }}</p>
                     <p class="text-xs text-gray-400 mb-1">By {{ $post->author?->name ?? 'Unknown' }} — {{ $post->created_at->format('d M Y') }}</p>
                     @if ($post->excerpt)

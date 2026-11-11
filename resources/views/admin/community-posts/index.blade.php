@@ -33,7 +33,7 @@
 
         <div class="bg-white rounded-lg shadow-sm divide-y">
             @forelse ($posts as $post)
-            <div class="p-4 flex gap-4 items-start">
+            <div class="p-4 flex flex-col sm:flex-row gap-4 items-start">
                 <div class="w-16 h-16 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
                     @if ($post->video)
                     <div class="w-full h-full flex items-center justify-center text-gray-400 text-xl">🎬</div>
@@ -43,7 +43,7 @@
                     <div class="w-full h-full flex items-center justify-center text-gray-400 text-xl">📣</div>
                     @endif
                 </div>
-                <div class="flex-1">
+                <div class="flex-1 min-w-0 w-full">
                     <p class="font-medium text-gray-800">
                         @if ($post->is_pinned)
                         <span class="text-[11px] font-semibold px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 align-middle">📌 Pinned</span>
