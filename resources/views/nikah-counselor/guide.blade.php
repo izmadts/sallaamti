@@ -45,7 +45,7 @@
             </div>
         </div>
 
-        <div class="max-w-6xl mx-auto px-4 py-12">
+        <div class="max-w-6xl mx-auto px-4 py-12" id="guide-tabs">
 
             {{-- ============================================================ --}}
             {{-- TAB 1 — OVERVIEW --}}
@@ -480,4 +480,27 @@
         </div>
 
     </div>
+
+    {{-- A user manually choosing Chrome's "Translate this page" (the
+         translate="no" on <html> and the notranslate meta tag — see
+         a4b693b — only stop the *automatic* translate prompt, not a
+         manual one) rewrites text nodes in a way that can disrupt
+         Alpine's bindings mid-init. If that leaves every tab panel above
+         stuck behind x-cloak (Alpine never got to strip the attribute),
+         the whole page looks blank below the hero. In the normal case
+         Alpine removes x-cloak from the active panel within
+         milliseconds of boot, long before this fires, so this is a
+         no-op on effectively every real visit. --}}
+    <script>
+        setTimeout(function () {
+            var tabs = document.getElementById('guide-tabs');
+            if (!tabs) return;
+            var stillCloaked = tabs.querySelectorAll('[x-cloak]');
+            if (!stillCloaked.length) return;
+            stillCloaked.forEach(function (el) {
+                el.removeAttribute('x-cloak');
+                el.style.display = 'block';
+            });
+        }, 4000);
+    </script>
 </x-guest-layout>
