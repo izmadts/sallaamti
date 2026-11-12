@@ -67,7 +67,7 @@ class DashboardController extends Controller
             'pending_requests' => $requests->where('status', 'pending')->count(),
             'approved_requests' => $requests->where('status', 'approved')->count(),
             'new_leads' => (clone $myLeads)->where('status', 'new')->count(),
-            'follow_ups_due' => (clone $myLeads)->whereDate('next_follow_up_at', '<=', now())->whereNotIn('status', ['registered', 'not_interested', 'closed'])->count(),
+            'follow_ups_due' => (clone $myLeads)->whereDate('next_follow_up_at', '<=', now())->whereNotIn('status', \App\Models\Lead::NO_FOLLOW_UP_STATUSES)->count(),
             'registered_leads' => (clone $myLeads)->where('status', 'registered')->count(),
             'active_batches' => (clone $myBatches)->whereIn('status', ['sent', 'partially_responded'])->count(),
             'awaiting_response' => \App\Models\MatchProposal::whereHas('batch', fn($q) => $q->where('matchmaker_id', $authUser->id))->where('status', 'sent')->count(),
@@ -75,7 +75,7 @@ class DashboardController extends Controller
         ];
 
         $followUps = (clone $myLeads)->whereDate('next_follow_up_at', '<=', now())
-            ->whereNotIn('status', ['registered', 'not_interested', 'closed'])
+            ->whereNotIn('status', \App\Models\Lead::NO_FOLLOW_UP_STATUSES)
             ->orderBy('next_follow_up_at')
             ->take(5)
             ->get();
@@ -91,7 +91,7 @@ class DashboardController extends Controller
         // open leads only (closed/not_interested aren't anyone's open task);
         // relations eager-loaded since LeadJourney checks each one per lead.
         $activeLeads = (clone $myLeads)
-            ->whereNotIn('status', ['not_interested', 'closed'])
+            ->whereNotIn('status', \App\Models\Lead::INACTIVE_STATUSES)
             ->with(['requirement.items', 'shortlistItems', 'proposalBatches'])
             ->get();
 

@@ -37,6 +37,167 @@ class Lead extends Model
         'created_by',
     ];
 
+    // Lead lifecycle statuses (owner, 12 Nov 2026): one list for every
+    // screen, API and validation rule. Order here = priority order used for
+    // sorting ("who needs attention first"). `bg`/`fg` = badge colours (inline styles: the committed CSS
+    // build has no new Tailwind classes).
+    // `auto` = set by the system from the linked account/profile (see
+    // syncAutoStatus()); staff can still pick any status by hand.
+    public const STATUSES = [
+        'pending_payment'    => ['label' => 'Pending Payment',    'bg' => '#ffedd5', 'fg' => '#9a3412',  'auto' => true],
+        'interested'         => ['label' => 'Interested',         'bg' => '#dcfce7', 'fg' => '#166534',     'auto' => false],
+        'account_registered' => ['label' => 'Account Registered', 'bg' => '#cffafe', 'fg' => '#155e75',        'auto' => true],
+        'registered'         => ['label' => 'Profile Pending',    'bg' => '#f3e8ff', 'fg' => '#6b21a8',  'auto' => true],
+        'new'                => ['label' => 'New',                'bg' => '#dbeafe', 'fg' => '#1e40af',        'auto' => false],
+        'contacted'          => ['label' => 'Contacted',          'bg' => '#fef9c3', 'fg' => '#854d0e',  'auto' => false],
+        'verified'           => ['label' => 'Verified',           'bg' => '#059669', 'fg' => '#ffffff',     'auto' => true],
+        'matched'            => ['label' => 'Matched',            'bg' => '#fce7f3', 'fg' => '#9d174d',        'auto' => true],
+        'not_interested'     => ['label' => 'Not Interested',     'bg' => '#fee2e2', 'fg' => '#b91c1c',           'auto' => false],
+        'number_not_valid'   => ['label' => 'Number Not Valid',   'bg' => '#e7e5e4', 'fg' => '#44403c',     'auto' => false],
+        'closed'             => ['label' => 'Closed',             'bg' => '#f3f4f6', 'fg' => '#4b5563',        'auto' => false],
+    ];
+
+    // No call-back needed for these, so they never show in "Follow-ups Due".
+    public const NO_FOLLOW_UP_STATUSES = ['registered', 'verified', 'matched', 'not_interested', 'number_not_valid', 'closed'];
+
+    // Dead ends: not anyone's open task.
+    public const INACTIVE_STATUSES = ['not_interested', 'number_not_valid', 'closed'];
+
+    // The system may move a lead automatically only while it is in one of
+    // these; a manual decision (not interested, wrong number, closed) or a
+    // match is never overwritten.
+    public const AUTO_FROM_STATUSES = ['new', 'contacted', 'interested', 'account_registered', 'registered', 'pending_payment', 'verified'];
+
+    public static function statusKeys(): array
+    {
+        return array_keys(self::STATUSES);
+    }
+
+    public static function statusRule(): string
+    {
+        return 'in:' . implode(',', self::statusKeys());
+    }
+
+    // value => label; $translate uses the db.* strings, falling back to
+    // English when a translation row doesn't exist yet.
+    public static function statusOptions(bool $translate = false): array
+    {
+        $out = [];
+        foreach (self::STATUSES as $key => $s) {
+            $out[$key] = $translate ? self::translateLabel($s['label']) : $s['label'];
+        }
+
+        return $out;
+    }
+
+    public static function statusLabel(?string $status, bool $translate = false): string
+    {
+        $label = self::STATUSES[$status]['label'] ?? ucfirst(str_replace('_', ' ', (string) $status));
+
+        return $translate ? self::translateLabel($label) : $label;
+    }
+
+    // Inline style for a status badge/chip.
+    public static function statusStyle(?string $status): string
+    {
+        $s = self::STATUSES[$status] ?? ['bg' => '#f3f4f6', 'fg' => '#4b5563'];
+
+        return "background:{$s['bg']};color:{$s['fg']}";
+    }
+
+    // SQL CASE for ORDER BY: priority position of each status.
+    public static function statusPrioritySql(): string
+    {
+        $cases = '';
+        foreach (self::statusKeys() as $i => $key) {
+            $cases .= " WHEN '{$key}' THEN {$i}";
+        }
+
+        return "CASE status{$cases} ELSE 99 END";
+    }
+
+    private static function translateLabel(string $label): string
+    {
+        $t = __('db.' . $label);
+
+        return $t === 'db.' . $label ? $label : $t;
+    }
+
+    // Last 10 digits: 0300-1234567, +92 300 1234567 and 923001234567 all
+    // become 3001234567, so a lead matches the account made with that number.
+    public static function phoneKey(?string $phone): ?string
+    {
+        $digits = preg_replace('/\D+/', '', (string) $phone);
+
+        return strlen($digits) >= 10 ? substr($digits, -10) : null;
+    }
+
+    // The status the linked account/profile says this lead is at, or null
+    // when there is nothing to go on (no account with this phone).
+    public static function statusFromProfile(?NikahProfile $profile, bool $hasAccount): ?string
+    {
+        if ($profile) {
+            if ($profile->verification_status === 'verified') {
+                return 'verified';
+            }
+            if (in_array($profile->payment_status, ['unpaid', 'submitted', 'rejected'], true) && (float) $profile->payment_amount > 0) {
+                return 'pending_payment';
+            }
+
+            return 'registered';
+        }
+
+        return $hasAccount ? 'account_registered' : null;
+    }
+
+    // Moves the lead to $status if the system is allowed to (see
+    // AUTO_FROM_STATUSES) and logs it on the lead's timeline.
+    public function applyAutoStatus(?string $status): bool
+    {
+        if (!$status || $status === $this->status || !in_array($this->status, self::AUTO_FROM_STATUSES, true)) {
+            return false;
+        }
+        $this->forceFill(['status' => $status])->saveQuietly();
+        MatchmakingTimelineEvent::log($this, $this->nikahProfile, 'status_changed', 'Status changed automatically to ' . self::statusLabel($status) . '.');
+
+        return true;
+    }
+
+    // Leads that belong to this profile: linked directly, or same phone as
+    // the profile owner's account.
+    public static function forProfile(NikahProfile $profile)
+    {
+        $key = self::phoneKey($profile->user?->phone);
+
+        return self::where(function ($q) use ($profile, $key) {
+            $q->where('nikah_profile_id', $profile->id);
+            if ($key) {
+                $q->orWhere(fn ($qq) => $qq->whereNull('nikah_profile_id')->where('phone', 'like', '%' . $key));
+            }
+        })->get();
+    }
+
+    public static function syncForProfile(NikahProfile $profile): void
+    {
+        $status = self::statusFromProfile($profile, true);
+        foreach (self::forProfile($profile) as $lead) {
+            $lead->applyAutoStatus($status);
+        }
+    }
+
+    public static function syncForUser(User $user): void
+    {
+        $key = self::phoneKey($user->phone);
+        if (!$key) {
+            return;
+        }
+        $profile = $user->nikahProfile ?? null;
+        $status = self::statusFromProfile($profile, true);
+        foreach (self::whereNull('nikah_profile_id')->where('phone', 'like', '%' . $key)->get() as $lead) {
+            $lead->applyAutoStatus($status);
+        }
+    }
+
     protected function casts(): array
     {
         return [

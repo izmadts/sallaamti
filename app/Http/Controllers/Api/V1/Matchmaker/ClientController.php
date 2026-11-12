@@ -83,7 +83,7 @@ class ClientController extends Controller
             'new' => (clone $mine)->where('status', 'new')->count(),
             'contacted' => (clone $mine)->where('status', 'contacted')->count(),
             'registered' => (clone $mine)->where('status', 'registered')->count(),
-            'follow_ups_due' => (clone $mine)->whereDate('next_follow_up_at', '<=', now())->whereNotIn('status', ['registered', 'not_interested', 'closed'])->count(),
+            'follow_ups_due' => (clone $mine)->whereDate('next_follow_up_at', '<=', now())->whereNotIn('status', \App\Models\Lead::NO_FOLLOW_UP_STATUSES)->count(),
         ];
 
         return response()->json([
@@ -156,7 +156,7 @@ class ClientController extends Controller
             'email' => ['nullable', 'email', 'max:255'],
             'looking_for' => ['nullable', 'in:self,family_member'],
             'source' => ['sometimes', 'required', 'in:facebook,instagram,whatsapp,website,phone,referral,manual,other'],
-            'status' => ['sometimes', 'required', 'in:new,contacted,interested,registered,not_interested,closed'],
+            'status' => ['sometimes', 'required', \App\Models\Lead::statusRule()],
             'notes' => ['nullable', 'string', 'max:2000'],
             'next_follow_up_at' => ['nullable', 'date'],
             'assigned_to' => [$canManageTeam ? 'nullable' : 'prohibited', 'exists:users,id'],

@@ -103,7 +103,7 @@ class LeadJourney
     public static function needsAttention(Collection $leads): Collection
     {
         return $leads
-            ->reject(fn (Lead $lead) => in_array($lead->status, ['not_interested', 'closed'], true))
+            ->reject(fn (Lead $lead) => in_array($lead->status, Lead::INACTIVE_STATUSES, true))
             ->map(fn (Lead $lead) => ['lead' => $lead, 'stage' => self::currentStage($lead)])
             ->filter(fn ($row) => $row['stage'] !== null)
             ->groupBy('stage')

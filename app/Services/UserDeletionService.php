@@ -59,7 +59,7 @@ class UserDeletionService
         }
 
         $hasActiveClients = Lead::where('assigned_to', $user->id)
-            ->whereNotIn('status', ['not_interested', 'closed'])
+            ->whereNotIn('status', \App\Models\Lead::INACTIVE_STATUSES)
             ->exists();
 
         if ($hasActiveClients) {

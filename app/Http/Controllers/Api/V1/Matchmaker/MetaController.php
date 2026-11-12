@@ -20,14 +20,9 @@ class MetaController extends Controller
         return response()->json([
             'consent_types' => MatchmakingConsent::TYPES,
             'consent_methods' => MatchmakingConsent::METHODS,
-            'lead_statuses' => [
-                'new' => 'New',
-                'contacted' => 'Contacted',
-                'interested' => 'Interested',
-                'registered' => 'Registered',
-                'not_interested' => 'Not Interested',
-                'closed' => 'Closed',
-            ],
+            'lead_statuses' => \App\Models\Lead::statusOptions(),
+            // Badge colours + priority order, for apps that want them.
+            'lead_status_meta' => collect(\App\Models\Lead::STATUSES)->map(fn ($s, $k) => ['label' => $s['label'], 'bg' => $s['bg'], 'fg' => $s['fg'], 'auto' => $s['auto']])->all(),
             'lead_sources' => [
                 'facebook' => 'Facebook',
                 'instagram' => 'Instagram',

@@ -20,7 +20,7 @@
                 </div>
                 <div class="bg-white rounded-lg shadow-sm p-3 text-center">
                     <p class="text-xl font-bold text-green-600">{{ $stats['registered'] }}</p>
-                    <p class="text-xs text-gray-500">Registered</p>
+                    <p class="text-xs text-gray-500">Profile Pending</p>
                 </div>
                 <a href="{{ route('admin.leads.index', ['follow_ups_due' => 1]) }}" class="bg-white rounded-lg shadow-sm p-3 text-center hover:bg-gray-50 {{ request()->boolean('follow_ups_due') ? 'ring-2 ring-red-300' : '' }}">
                     <p class="text-xl font-bold text-red-600">{{ $stats['follow_ups_due'] }}</p>
@@ -32,18 +32,46 @@
                 </a>
             </div>
 
+            {{-- Status chips (owner, 12 Nov 2026): colour per status, count, one tap = only that status.
+                 Ticking several in the form below filters by all of them together. --}}
+            <div class="bg-white p-3 rounded-lg shadow-sm">
+                <div class="flex flex-wrap gap-2">
+                    <a href="{{ route('admin.leads.index', request()->except(['status', 'page'])) }}"
+                       class="text-xs font-semibold px-3 py-1.5 rounded-full border {{ empty($statuses) ? 'border-gray-700' : 'border-gray-200' }}"
+                       style="background:#ffffff;color:#1f2937">All · {{ array_sum($statusCounts) }}</a>
+                    @foreach (\App\Models\Lead::STATUSES as $value => $st)
+                    <a href="{{ route('admin.leads.index', array_merge(request()->except(['status', 'page']), ['status' => [$value]])) }}"
+                       class="text-xs font-semibold px-3 py-1.5 rounded-full border-2 {{ in_array($value, $statuses, true) ? '' : 'border-transparent' }}"
+                       style="{{ \App\Models\Lead::statusStyle($value) }};{{ in_array($value, $statuses, true) ? 'border-color:#111827' : '' }}"
+                       title="{{ $st['auto'] ? 'System sets this automatically from the account/profile' : 'Set by staff' }}">
+                        {{ $st['label'] }} · {{ $statusCounts[$value] ?? 0 }}
+                    </a>
+                    @endforeach
+                </div>
+            </div>
+
             <form method="GET" class="bg-white p-4 rounded-lg shadow-sm flex flex-wrap gap-3 items-end">
                 <div>
                     <label class="text-xs text-gray-500">Search (name, phone, email)</label>
                     <input type="text" name="search" value="{{ request('search') }}" class="border-gray-300 rounded text-sm block w-56">
                 </div>
-                <div>
-                    <label class="text-xs text-gray-500">Status</label>
-                    <select name="status" class="border-gray-300 rounded text-sm block">
-                        <option value="">All</option>
-                        @foreach (['new' => 'New', 'contacted' => 'Contacted', 'interested' => 'Interested', 'registered' => 'Registered', 'not_interested' => 'Not Interested', 'closed' => 'Closed'] as $value => $label)
-                        <option value="{{ $value }}" {{ request('status') === $value ? 'selected' : '' }}>{{ $label }}</option>
+                <details class="relative" {{ count($statuses) > 1 ? 'open' : '' }}>
+                    <summary class="text-xs text-gray-500 cursor-pointer select-none">Status ({{ $statuses ? count($statuses) . ' selected' : 'All' }}) ▾</summary>
+                    <div class="mt-1 grid grid-cols-2 gap-x-4 gap-y-1 bg-white border border-gray-200 rounded p-2">
+                        @foreach (\App\Models\Lead::statusOptions() as $value => $label)
+                        <label class="flex items-center gap-1.5 text-xs">
+                            <input type="checkbox" name="status[]" value="{{ $value }}" {{ in_array($value, $statuses, true) ? 'checked' : '' }} class="rounded">
+                            <span class="px-1.5 py-0.5 rounded-full" style="{{ \App\Models\Lead::statusStyle($value) }}">{{ $label }}</span>
+                        </label>
                         @endforeach
+                    </div>
+                </details>
+                <div>
+                    <label class="text-xs text-gray-500">Sort</label>
+                    <select name="sort" class="border-gray-300 rounded text-sm block">
+                        <option value="priority" {{ $sort === 'priority' ? 'selected' : '' }}>Priority (follow-ups due, then status)</option>
+                        <option value="newest" {{ $sort === 'newest' ? 'selected' : '' }}>Newest first</option>
+                        <option value="follow_up" {{ $sort === 'follow_up' ? 'selected' : '' }}>Follow-up date</option>
                     </select>
                 </div>
                 <div>
@@ -86,7 +114,7 @@
                     </thead>
                     <tbody class="divide-y divide-gray-100">
                         @forelse ($leads as $lead)
-                        @php($followUpDue = $lead->next_follow_up_at && $lead->next_follow_up_at->lte(today()) && ! in_array($lead->status, ['registered', 'not_interested', 'closed']))
+                        @php($followUpDue = $lead->next_follow_up_at && $lead->next_follow_up_at->lte(today()) && ! in_array($lead->status, \App\Models\Lead::NO_FOLLOW_UP_STATUSES))
                         <tr class="{{ $followUpDue ? 'bg-red-50 hover:bg-red-100' : 'hover:bg-gray-50' }} cursor-pointer" onclick="window.location='{{ route('admin.leads.show', $lead) }}'">
                             <td class="px-4 py-3">
                                 <p class="font-medium text-gray-800">{{ $lead->name }}</p>
@@ -105,16 +133,8 @@
                             </td>
                             <td class="px-4 py-3 text-gray-500 capitalize">{{ $lead->source }}</td>
                             <td class="px-4 py-3">
-                                <span class="text-xs px-2 py-1 rounded-full
-                                    {{ match($lead->status) {
-                                        'new' => 'bg-blue-100 text-blue-800',
-                                        'contacted' => 'bg-amber-100 text-amber-800',
-                                        'interested' => 'bg-purple-100 text-purple-800',
-                                        'registered' => 'bg-green-100 text-green-800',
-                                        'not_interested', 'closed' => 'bg-gray-100 text-gray-600',
-                                        default => 'bg-gray-100 text-gray-600',
-                                    } }}">
-                                    {{ ucfirst(str_replace('_', ' ', $lead->status)) }}
+                                <span class="text-xs px-2 py-1 rounded-full font-semibold whitespace-nowrap" style="{{ \App\Models\Lead::statusStyle($lead->status) }}">
+                                    {{ \App\Models\Lead::statusLabel($lead->status) }}
                                 </span>
                                 {{-- Matchmaking-process journey, independent of the lifecycle
                                      status above — a quick-glance read of how far this lead

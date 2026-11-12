@@ -253,6 +253,18 @@ class NikahProfile extends Model
                 $profile->age = $profile->date_of_birth->age;
             }
         });
+
+        // Keep the matching lead's status in step (owner, 12 Nov 2026):
+        // profile made -> Profile Pending / Pending Payment, verified -> Verified.
+        static::saved(function (NikahProfile $profile) {
+            if ($profile->wasRecentlyCreated || $profile->wasChanged(['verification_status', 'payment_status', 'payment_amount'])) {
+                try {
+                    Lead::syncForProfile($profile);
+                } catch (\Throwable $e) {
+                    \Log::error('Lead status sync (profile ' . $profile->id . ') failed: ' . $e->getMessage());
+                }
+            }
+        });
     }
 
     public function user()

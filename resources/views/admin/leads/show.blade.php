@@ -54,7 +54,7 @@
                             <div>
                                 <x-input-label for="status" value="Status" />
                                 <select id="status" name="status" required class="border-gray-300 rounded-md shadow-sm w-full mt-1">
-                                    @foreach (['new' => 'New', 'contacted' => 'Contacted', 'interested' => 'Interested', 'registered' => 'Registered', 'not_interested' => 'Not Interested', 'closed' => 'Closed'] as $value => $label)
+                                    @foreach (\App\Models\Lead::statusOptions() as $value => $label)
                                     <option value="{{ $value }}" {{ $lead->status === $value ? 'selected' : '' }}>{{ $label }}</option>
                                     @endforeach
                                 </select>

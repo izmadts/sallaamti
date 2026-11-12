@@ -21,15 +21,8 @@
             <div>
                 <h2 class="text-xl font-bold text-gray-800">{{ $lead->name }}</h2>
                 <p class="text-sm text-gray-500">{{ $lead->phone ?: __('db.— no phone —') }} · {{ $lead->email ?: __('db.— no email —') }}</p>
-                <span class="inline-block mt-2 text-xs px-2 py-0.5 rounded-full
-                    {{ match($lead->status) {
-                        'new' => 'bg-blue-100 text-blue-800',
-                        'contacted' => 'bg-amber-100 text-amber-800',
-                        'interested' => 'bg-purple-100 text-purple-800',
-                        'registered' => 'bg-green-100 text-green-800',
-                        default => 'bg-gray-100 text-gray-600',
-                    } }}">
-                    {{ ucfirst(str_replace('_', ' ', $lead->status)) }}
+                <span class="inline-block mt-2 text-xs px-2 py-0.5 rounded-full font-semibold" style="{{ \App\Models\Lead::statusStyle($lead->status) }}">
+                                    {{ \App\Models\Lead::statusLabel($lead->status, true) }}
                 </span>
             </div>
             <div class="flex gap-2">
@@ -117,7 +110,7 @@
                         <div>
                             <x-input-label for="status" :value="__('db.Status')" />
                             <select id="status" name="status" required class="border-gray-300 rounded-md shadow-sm w-full mt-1">
-                                @foreach (['new' => __('db.New'), 'contacted' => __('db.Contacted'), 'interested' => __('db.Interested'), 'registered' => __('db.Registered'), 'not_interested' => __('db.Not Interested'), 'closed' => __('db.Closed')] as $value => $label)
+                                @foreach (\App\Models\Lead::statusOptions(true) as $value => $label)
                                 <option value="{{ $value }}" {{ $lead->status === $value ? 'selected' : '' }}>{{ $label }}</option>
                                 @endforeach
                             </select>

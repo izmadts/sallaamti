@@ -71,8 +71,10 @@ class LeadController extends Controller
             ->withExists(['proposalBatches as has_sent_batch' => fn ($q) => $q->where('status', 'sent')])
             ->withExists(['proposalBatches as has_matched_proposal' => fn ($q) => $q->whereHas('proposals', fn ($pq) => $pq->where('response', 'interested'))]);
 
-        if ($request->filled('status')) {
-            $query->where('status', $request->status);
+        // One or many statuses (the coloured chips above the table).
+        $statuses = array_values(array_intersect((array) $request->input('status', []), Lead::statusKeys()));
+        if ($statuses) {
+            $query->whereIn('status', $statuses);
         }
         if ($request->filled('search')) {
             $search = $request->search;
@@ -93,7 +95,7 @@ class LeadController extends Controller
         // Follow-ups that are due (the red "Follow-ups Due" card) always come
         // first, oldest due date first, so nobody waiting on a call-back gets
         // buried under fresh leads; everything else stays newest first.
-        $dueStatuses = ['registered', 'not_interested', 'closed'];
+        $dueStatuses = Lead::NO_FOLLOW_UP_STATUSES;
         $today = now()->toDateString();
         if ($request->boolean('follow_ups_due')) {
             $query->whereDate('next_follow_up_at', '<=', $today)->whereNotIn('status', $dueStatuses);
@@ -101,11 +103,21 @@ class LeadController extends Controller
         $placeholders = implode(',', array_fill(0, count($dueStatuses), '?'));
         $dueSql = "next_follow_up_at IS NOT NULL AND DATE(next_follow_up_at) <= ? AND status NOT IN ({$placeholders})";
         $dueBindings = array_merge([$today], $dueStatuses);
-        $leads = $query
-            ->orderByRaw("CASE WHEN {$dueSql} THEN 0 ELSE 1 END", $dueBindings)
-            ->orderByRaw("CASE WHEN {$dueSql} THEN next_follow_up_at END ASC", $dueBindings)
-            ->orderByDesc('created_at')
-            ->paginate(20)->withQueryString();
+        // Sort (owner, 12 Nov 2026): "priority" (default) = due follow-ups
+        // first, then by status priority (Lead::STATUSES order), newest first
+        // within a status. "newest" and "follow_up" are plain orders.
+        $sort = in_array($request->input('sort'), ['priority', 'newest', 'follow_up'], true) ? $request->input('sort') : 'priority';
+        if ($sort === 'newest') {
+            $query->orderByDesc('created_at');
+        } elseif ($sort === 'follow_up') {
+            $query->orderByRaw('next_follow_up_at IS NULL')->orderBy('next_follow_up_at')->orderByDesc('created_at');
+        } else {
+            $query->orderByRaw("CASE WHEN {$dueSql} THEN 0 ELSE 1 END", $dueBindings)
+                ->orderByRaw("CASE WHEN {$dueSql} THEN next_follow_up_at END ASC", $dueBindings)
+                ->orderByRaw(Lead::statusPrioritySql())
+                ->orderByDesc('created_at');
+        }
+        $leads = $query->paginate(20)->withQueryString();
 
         $stats = [
             'new' => Lead::where('status', 'new')->count(),
@@ -114,10 +126,11 @@ class LeadController extends Controller
             'follow_ups_due' => Lead::whereDate('next_follow_up_at', '<=', $today)->whereNotIn('status', $dueStatuses)->count(),
             'payment_due' => Lead::where('package_payment_status', 'submitted')->count(),
         ];
+        $statusCounts = Lead::selectRaw('status, COUNT(*) as n')->groupBy('status')->pluck('n', 'status')->all();
 
         $matchmakers = User::role(['admin', 'matchmaker'])->orderBy('name')->get();
 
-        return view('admin.leads.index', compact('leads', 'stats', 'matchmakers'));
+        return view('admin.leads.index', compact('leads', 'stats', 'matchmakers', 'statusCounts', 'statuses', 'sort'));
     }
 
     public function create()
@@ -216,7 +229,7 @@ class LeadController extends Controller
             'email' => ['nullable', 'email', 'max:255'],
             'looking_for' => ['nullable', 'in:self,family_member'],
             'source' => ['required', 'in:facebook,instagram,whatsapp,website,phone,referral,manual,other'],
-            'status' => ['required', 'in:new,contacted,interested,registered,not_interested,closed'],
+            'status' => ['required', \App\Models\Lead::statusRule()],
             'assigned_to' => ['nullable', 'exists:users,id'],
             'notes' => ['nullable', 'string', 'max:2000'],
             'next_follow_up_at' => ['nullable', 'date'],

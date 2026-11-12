@@ -34,7 +34,7 @@
                     <label class="text-xs font-semibold text-gray-500 block mb-1">{{ __('db.Status') }}</label>
                     <select name="status" class="border-gray-300 rounded-lg text-sm">
                         <option value="">{{ __('db.Any') }}</option>
-                        @foreach (['new' => __('db.New'), 'contacted' => __('db.Contacted'), 'interested' => __('db.Interested'), 'registered' => __('db.Registered'), 'not_interested' => __('db.Not Interested'), 'closed' => __('db.Closed')] as $value => $label)
+                        @foreach (\App\Models\Lead::statusOptions(true) as $value => $label)
                         <option value="{{ $value }}" {{ request('status') === $value ? 'selected' : '' }}>{{ $label }}</option>
                         @endforeach
                     </select>
@@ -87,15 +87,8 @@
                                 <p class="text-xs text-gray-400">{{ $lead->phone ?: $lead->email ?: '—' }}</p>
                             </td>
                             <td class="px-4 py-3">
-                                <span class="text-xs px-2 py-0.5 rounded-full
-                                    {{ match($lead->status) {
-                                        'new' => 'bg-blue-100 text-blue-800',
-                                        'contacted' => 'bg-amber-100 text-amber-800',
-                                        'interested' => 'bg-purple-100 text-purple-800',
-                                        'registered' => 'bg-green-100 text-green-800',
-                                        default => 'bg-gray-100 text-gray-600',
-                                    } }}">
-                                    {{ ucfirst(str_replace('_', ' ', $lead->status)) }}
+                                <span class="text-xs px-2 py-0.5 rounded-full font-semibold" style="{{ \App\Models\Lead::statusStyle($lead->status) }}">
+                                    {{ \App\Models\Lead::statusLabel($lead->status, true) }}
                                 </span>
                             </td>
                             <td class="px-4 py-3">

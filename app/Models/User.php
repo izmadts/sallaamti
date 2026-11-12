@@ -12,6 +12,22 @@ class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable, HasRoles;
 
+
+    // New account (or phone changed) whose number matches a lead -> that lead
+    // becomes "Account Registered" until a Nikah profile is made (owner, 12 Nov 2026).
+    protected static function booted(): void
+    {
+        static::saved(function (User $user) {
+            if ($user->wasRecentlyCreated || $user->wasChanged('phone')) {
+                try {
+                    Lead::syncForUser($user);
+                } catch (\Throwable $e) {
+                    \Log::error('Lead status sync (user ' . $user->id . ') failed: ' . $e->getMessage());
+                }
+            }
+        });
+    }
+
     protected $fillable = [
         'name',
         'username',
