@@ -254,15 +254,15 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/push/unsubscribe', [PushSubscriptionController::class, 'destroy'])->name('push.unsubscribe');
 
     // Sallaamti Wall — posting and reacting (viewing the wall itself is public, see above)
-    Route::post('/wall', [WallController::class, 'store'])->name('wall.store');
+    Route::post('/wall', [WallController::class, 'store'])->middleware('throttle:5,1')->name('wall.store');
     Route::post('/wall/{duaRequest}/react', [WallController::class, 'react'])->name('wall.react');
     Route::post('/wall/post/{communityPost}/react', [WallController::class, 'postReact'])->name('wall.post.react');
     Route::post('/wall/post/{communityPost}/vote', [WallController::class, 'postVote'])->name('wall.post.vote');
     Route::get('/wall/saved', [WallController::class, 'saved'])->name('wall.saved');
     Route::post('/wall/{duaRequest}/save', [WallController::class, 'save'])->name('wall.save');
     Route::post('/wall/post/{communityPost}/save', [WallController::class, 'postSave'])->name('wall.post.save');
-    Route::post('/wall/{duaRequest}/comments', [WallController::class, 'storeComment'])->name('wall.comments.store');
-    Route::post('/wall/post/{communityPost}/comments', [WallController::class, 'storePostComment'])->name('wall.post.comments.store');
+    Route::post('/wall/{duaRequest}/comments', [WallController::class, 'storeComment'])->middleware('throttle:10,1')->name('wall.comments.store');
+    Route::post('/wall/post/{communityPost}/comments', [WallController::class, 'storePostComment'])->middleware('throttle:10,1')->name('wall.post.comments.store');
     Route::delete('/comments/{comment}', [WallController::class, 'destroyComment'])->name('comments.destroy');
 
     // --- NIKAH MODULE ---
@@ -287,7 +287,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/nikah/interests/{interest}/decline', [NikahInterestController::class, 'decline'])->name('nikah.interest.decline');
     Route::delete('/nikah/interests/{interest}/cancel', [NikahInterestController::class, 'cancel'])->name('nikah.interest.cancel');
     Route::get('/nikah/interests/{interest}/messages', [NikahGuardianMessageController::class, 'show'])->name('nikah.messages.show');
-    Route::post('/nikah/interests/{interest}/messages', [NikahGuardianMessageController::class, 'store'])->name('nikah.messages.store');
+    Route::post('/nikah/interests/{interest}/messages', [NikahGuardianMessageController::class, 'store'])->middleware('throttle:30,1')->name('nikah.messages.store');
     Route::get('/nikah/payment', [NikahPaymentController::class, 'show'])->name('nikah.payment');
     Route::post('/nikah/payment', [NikahPaymentController::class, 'store'])->name('nikah.payment.store');
     Route::post('/nikah/hire-counselor', [\App\Http\Controllers\NikahHireCounselorController::class, 'hire'])->name('nikah.hire-counselor');
@@ -328,7 +328,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/quran-live/{course}/admission/step/{step}', [QuranLiveCourseController::class, 'admissionShowStep'])->name('quran-live.admission.step');
     Route::post('/quran-live/{course}/admission/step/{step}', [QuranLiveCourseController::class, 'admissionSaveStep'])->name('quran-live.admission.step.save');
     Route::get('/quran-live/{course}/admission/review', [QuranLiveCourseController::class, 'admissionReview'])->name('quran-live.admission.review');
-    Route::post('/quran-live/{course}/admission/finalize', [QuranLiveCourseController::class, 'admissionFinalize'])->name('quran-live.admission.finalize');
+    Route::post('/quran-live/{course}/admission/finalize', [QuranLiveCourseController::class, 'admissionFinalize'])->middleware('throttle:5,1')->name('quran-live.admission.finalize');
     Route::get('/quran-live/{course}/subscribe/{admission}', [QuranLiveCourseController::class, 'subscribe'])->name('quran-live.subscribe');
     Route::post('/quran-live/{course}/subscribe/{admission}', [QuranLiveCourseController::class, 'storeSubscription'])->name('quran-live.subscribe.store');
     Route::get('/quran-subscriptions/{subscription}/screenshot', [QuranSubscriptionFileController::class, 'show'])->name('quran-subscription.screenshot');

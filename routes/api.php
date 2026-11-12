@@ -113,7 +113,7 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
             Route::delete('interests/{interest}/cancel', [NikahInterestController::class, 'cancel'])->name('interests.cancel');
 
             Route::get('interests/{interest}/messages', [NikahGuardianMessageController::class, 'index'])->name('messages.index');
-            Route::post('interests/{interest}/messages', [NikahGuardianMessageController::class, 'store'])->name('messages.store');
+            Route::post('interests/{interest}/messages', [NikahGuardianMessageController::class, 'store'])->middleware('throttle:30,1')->name('messages.store');
 
             Route::post('block/{profile}', [NikahSafetyController::class, 'block'])->name('block');
             Route::delete('block/{block}', [NikahSafetyController::class, 'unblock'])->name('unblock');
@@ -144,7 +144,7 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
         // so this deliberately sits outside both the nikah.* and
         // matchmaker.* prefix groups rather than duplicated under each.
         Route::get('leads/{lead}/messages', [NikahHireCounselorController::class, 'messages'])->name('leads.messages.index');
-        Route::post('leads/{lead}/messages', [NikahHireCounselorController::class, 'sendMessage'])->name('leads.messages.store');
+        Route::post('leads/{lead}/messages', [NikahHireCounselorController::class, 'sendMessage'])->middleware('throttle:30,1')->name('leads.messages.store');
         Route::post('leads/{lead}/report', [NikahHireCounselorController::class, 'report'])->name('leads.report');
 
         Route::prefix('volunteer')->name('volunteer.')->group(function () {
@@ -177,10 +177,10 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
             Route::get('meta', [QuranLiveController::class, 'meta'])->name('meta');
             Route::get('courses', [QuranLiveController::class, 'courses'])->name('courses.index');
             Route::get('courses/{course}', [QuranLiveController::class, 'show'])->name('courses.show');
-            Route::post('courses/{course}/admissions', [QuranLiveController::class, 'storeAdmission'])->name('admissions.store');
+            Route::post('courses/{course}/admissions', [QuranLiveController::class, 'storeAdmission'])->middleware('throttle:5,1')->name('admissions.store');
             Route::get('admissions/{admission}/subscription', [QuranLiveController::class, 'subscription'])->name('admissions.subscription.show');
             Route::post('admissions/{admission}/subscription', [QuranLiveController::class, 'storeSubscription'])->name('admissions.subscription.store');
-            Route::post('admissions/{admission}/messages', [QuranLiveController::class, 'sendMessage'])->name('admissions.messages.store');
+            Route::post('admissions/{admission}/messages', [QuranLiveController::class, 'sendMessage'])->middleware('throttle:30,1')->name('admissions.messages.store');
             Route::get('my-class', [QuranLiveController::class, 'myClass'])->name('my-class');
             Route::get('my-progress', [QuranLiveController::class, 'myProgress'])->name('my-progress');
         });
@@ -235,7 +235,7 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
         Route::prefix('questions')->name('questions.')->group(function () {
             Route::get('mine', [QuestionController::class, 'mine'])->name('mine');
             Route::get('/', [QuestionController::class, 'index'])->name('index');
-            Route::post('/', [QuestionController::class, 'store'])->name('store');
+            Route::post('/', [QuestionController::class, 'store'])->middleware('throttle:5,1')->name('store');
         });
 
         // Polled, not pushed — no persistent websocket process available
@@ -257,12 +257,12 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
         Route::prefix('wall')->name('wall.')->group(function () {
             Route::get('/', [WallController::class, 'index'])->name('index');
             Route::get('saved', [WallController::class, 'saved'])->name('saved');
-            Route::post('dua', [WallController::class, 'storeDua'])->name('dua.store');
+            Route::post('dua', [WallController::class, 'storeDua'])->middleware('throttle:5,1')->name('dua.store');
             Route::post('{type}/{id}/react', [WallController::class, 'react'])->whereIn('type', ['dua', 'post'])->whereNumber('id')->name('react');
             Route::post('{type}/{id}/save', [WallController::class, 'save'])->whereIn('type', ['dua', 'post'])->whereNumber('id')->name('save');
             Route::post('{type}/{id}/vote', [WallController::class, 'vote'])->whereIn('type', ['dua', 'post'])->whereNumber('id')->name('vote');
             Route::get('{type}/{id}/comments', [WallController::class, 'comments'])->whereIn('type', ['dua', 'post'])->whereNumber('id')->name('comments.index');
-            Route::post('{type}/{id}/comments', [WallController::class, 'storeComment'])->whereIn('type', ['dua', 'post'])->whereNumber('id')->name('comments.store');
+            Route::post('{type}/{id}/comments', [WallController::class, 'storeComment'])->whereIn('type', ['dua', 'post'])->whereNumber('id')->middleware('throttle:10,1')->name('comments.store');
             Route::delete('comments/{comment}', [WallController::class, 'destroyComment'])->name('comments.destroy');
         });
 

@@ -154,6 +154,13 @@ class WallController extends Controller
 
     public function store(Request $request)
     {
+        // Honeypot: real visitors never see or fill this field, bots that
+        // auto-fill every input do. Pretend success so the bot doesn't
+        // learn to skip the field next time.
+        if ($request->filled('website')) {
+            return back()->with('status', "Your dua has been submitted and will appear once our team reviews it. JazakAllah Khair for sharing.");
+        }
+
         $validated = $request->validate([
             'body' => ['required', 'string', 'max:1000'],
             'is_anonymous' => ['nullable', 'boolean'],

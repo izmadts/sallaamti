@@ -192,6 +192,15 @@ class QuranLiveCourseController extends Controller
             return redirect()->route('quran-live.admission', $course);
         }
 
+        // Honeypot: real visitors never see or fill this field, bots that
+        // auto-fill every input do. No admission record to redirect to
+        // afterwards here (unlike the guest forms), so just bounce back to
+        // the review step with a vague, harmless message instead of faking
+        // a submission success that the next page can't actually honor.
+        if ($request->filled('website')) {
+            return redirect()->route('quran-live.admission.review', $course);
+        }
+
         $request->validate(['declaration_accepted' => ['required', 'accepted']]);
 
         $validated = $this->wizardAllData();

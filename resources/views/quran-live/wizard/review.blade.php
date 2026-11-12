@@ -58,6 +58,11 @@
 
                 <form method="POST" action="{{ route('quran-live.admission.finalize', $course) }}" class="mt-6">
                     @csrf
+                    {{-- Honeypot: hidden from real visitors, bots that auto-fill every field will trip it --}}
+                    <div style="position:absolute;top:0;left:0;width:1px;height:1px;overflow:hidden;opacity:0;pointer-events:none" aria-hidden="true">
+                        <label for="admission_website">Leave this field empty</label>
+                        <input type="text" name="website" id="admission_website" tabindex="-1" autocomplete="off">
+                    </div>
                     <div class="bg-gray-50 border rounded p-4 flex items-start gap-2 mb-4">
                         <input type="checkbox" name="declaration_accepted" value="1" id="declaration_accepted" required class="mt-1">
                         <label for="declaration_accepted" class="text-sm text-gray-600">{{ __("db.I, as parent/guardian, confirm the above information is accurate and I consent to my child's/my enrollment in this online Quran class with Sallaamti.") }}</label>
