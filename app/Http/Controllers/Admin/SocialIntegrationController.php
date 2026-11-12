@@ -248,14 +248,14 @@ class SocialIntegrationController extends Controller
         // Exchange the short-lived user token Socialite gives us for a
         // long-lived one before deriving Page tokens from it, otherwise
         // the resulting Page token inherits the ~2hr expiry too.
-        $exchanged = Http::get('https://graph.facebook.com/' . self::GRAPH_VERSION . '/oauth/access_token', [
+        $exchanged = Http::timeout(8)->get('https://graph.facebook.com/' . self::GRAPH_VERSION . '/oauth/access_token', [
             'grant_type' => 'fb_exchange_token',
             'client_id' => config('services.facebook.client_id'),
             'client_secret' => config('services.facebook.client_secret'),
             'fb_exchange_token' => $socialUser->token,
         ])->json('access_token', $socialUser->token);
 
-        $pages = Http::withToken($exchanged)->get('https://graph.facebook.com/' . self::GRAPH_VERSION . '/me/accounts')->json('data', []);
+        $pages = Http::timeout(8)->withToken($exchanged)->get('https://graph.facebook.com/' . self::GRAPH_VERSION . '/me/accounts')->json('data', []);
 
         abort_if(empty($pages), 422, 'No Facebook Pages found for this account — you need to manage at least one Page.');
 
@@ -517,7 +517,7 @@ class SocialIntegrationController extends Controller
         $clientId = Setting::get('threads_client_id') ?: config('services.threads.client_id');
         $clientSecret = Setting::get('threads_client_secret') ?: config('services.threads.client_secret');
 
-        $token = Http::asForm()->post('https://graph.threads.net/oauth/access_token', [
+        $token = Http::timeout(8)->asForm()->post('https://graph.threads.net/oauth/access_token', [
             'client_id' => $clientId,
             'client_secret' => $clientSecret,
             'grant_type' => 'authorization_code',
@@ -530,7 +530,7 @@ class SocialIntegrationController extends Controller
         // Short-lived token from the exchange above (~1hr) — swap it for a
         // long-lived one (~60 days) before storing, same reason as
         // Facebook's fb_exchange_token step in handleFacebookCallback().
-        $longLived = Http::get('https://graph.threads.net/access_token', [
+        $longLived = Http::timeout(8)->get('https://graph.threads.net/access_token', [
             'grant_type' => 'th_exchange_token',
             'client_secret' => $clientSecret,
             'access_token' => $token->json('access_token'),

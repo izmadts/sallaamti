@@ -288,7 +288,15 @@ class AuthController extends Controller
     {
         $request->validate(['id_token' => ['required', 'string']]);
 
-        $info = Http::get('https://oauth2.googleapis.com/tokeninfo', ['id_token' => $request->id_token])->json();
+        // Explicit short timeout — this used to rely on Laravel's 30s
+        // default, which on shared hosting's small PHP-FPM worker pool means
+        // a handful of social logins hitting a slow/unresponsive Google
+        // endpoint at once can tie up every worker for up to 30s each,
+        // causing 502s for every OTHER visitor too (not just this request) —
+        // CPU/memory stay "normal" the whole time since the workers are just
+        // idle-waiting on the network, which is what made this hard to spot
+        // from server resource graphs alone.
+        $info = Http::timeout(8)->get('https://oauth2.googleapis.com/tokeninfo', ['id_token' => $request->id_token])->json();
 
         // Same DB-setting-overrides-.env pattern as web login's
         // Auth\SocialAuthController::isEnabled() — lets admin update this
@@ -309,7 +317,9 @@ class AuthController extends Controller
     {
         $request->validate(['access_token' => ['required', 'string']]);
 
-        $info = Http::get('https://graph.facebook.com/me', [
+        // Same reasoning as socialGoogle() above — short explicit timeout
+        // instead of Laravel's 30s default.
+        $info = Http::timeout(8)->get('https://graph.facebook.com/me', [
             'fields' => 'id,name,email',
             'access_token' => $request->access_token,
         ])->json();
