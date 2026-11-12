@@ -29,7 +29,7 @@ class TwitterPublisher implements SocialPublisher
             $body['media'] = ['media_ids' => [$mediaId]];
         }
 
-        $response = Http::withToken($token)->post('https://api.twitter.com/2/tweets', $body);
+        $response = Http::timeout(10)->withToken($token)->post('https://api.twitter.com/2/tweets', $body);
 
         if ($response->failed()) {
             return ['success' => false, 'external_id' => null, 'error' => $response->json('detail') ?? ('HTTP ' . $response->status())];
@@ -42,7 +42,7 @@ class TwitterPublisher implements SocialPublisher
     private function uploadPhoto(CommunityPost $post, string $token): ?string
     {
         $path = \Illuminate\Support\Facades\Storage::disk('public')->path($post->photo);
-        $response = Http::withToken($token)->asForm()->post('https://upload.twitter.com/1.1/media/upload.json', [
+        $response = Http::timeout(20)->withToken($token)->asForm()->post('https://upload.twitter.com/1.1/media/upload.json', [
             'media_data' => base64_encode(file_get_contents($path)),
         ]);
 
@@ -57,7 +57,7 @@ class TwitterPublisher implements SocialPublisher
         $bytes = file_get_contents($path);
         $totalBytes = strlen($bytes);
 
-        $init = Http::withToken($token)->asForm()->post('https://upload.twitter.com/1.1/media/upload.json', [
+        $init = Http::timeout(10)->withToken($token)->asForm()->post('https://upload.twitter.com/1.1/media/upload.json', [
             'command' => 'INIT',
             'total_bytes' => $totalBytes,
             'media_type' => 'video/mp4',
@@ -72,7 +72,7 @@ class TwitterPublisher implements SocialPublisher
         $chunkSize = 4 * 1024 * 1024;
 
         foreach (array_chunk(str_split($bytes, $chunkSize), 1) as $index => $chunk) {
-            Http::withToken($token)->asMultipart()->post('https://upload.twitter.com/1.1/media/upload.json?' . http_build_query([
+            Http::timeout(20)->withToken($token)->asMultipart()->post('https://upload.twitter.com/1.1/media/upload.json?' . http_build_query([
                 'command' => 'APPEND',
                 'media_id' => $mediaId,
                 'segment_index' => $index,
@@ -81,7 +81,7 @@ class TwitterPublisher implements SocialPublisher
             ]);
         }
 
-        $finalize = Http::withToken($token)->asForm()->post('https://upload.twitter.com/1.1/media/upload.json', [
+        $finalize = Http::timeout(10)->withToken($token)->asForm()->post('https://upload.twitter.com/1.1/media/upload.json', [
             'command' => 'FINALIZE',
             'media_id' => $mediaId,
         ]);
@@ -109,7 +109,7 @@ class TwitterPublisher implements SocialPublisher
 
             sleep(min((int) ($processingInfo['check_after_secs'] ?? 3), 10));
 
-            $status = Http::withToken($token)->get('https://upload.twitter.com/1.1/media/upload.json', [
+            $status = Http::timeout(10)->withToken($token)->get('https://upload.twitter.com/1.1/media/upload.json', [
                 'command' => 'STATUS',
                 'media_id' => $mediaId,
             ]);

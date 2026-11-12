@@ -32,7 +32,7 @@ class TiktokPublisher implements SocialPublisher
 
         $audited = Setting::get('tiktok_audited', '0') === '1';
 
-        $init = Http::withToken($account->access_token)->post('https://open.tiktokapis.com/v2/post/publish/video/init/', [
+        $init = Http::timeout(10)->withToken($account->access_token)->post('https://open.tiktokapis.com/v2/post/publish/video/init/', [
             'post_info' => [
                 'title' => $this->caption($post, 150),
                 'privacy_level' => $audited ? 'PUBLIC_TO_EVERYONE' : 'SELF_ONLY',
@@ -60,7 +60,7 @@ class TiktokPublisher implements SocialPublisher
     private function waitUntilComplete(string $publishId, string $token, int $maxAttempts = 15): array
     {
         for ($attempt = 0; $attempt < $maxAttempts; $attempt++) {
-            $status = Http::withToken($token)->post('https://open.tiktokapis.com/v2/post/publish/status/fetch/', [
+            $status = Http::timeout(10)->withToken($token)->post('https://open.tiktokapis.com/v2/post/publish/status/fetch/', [
                 'publish_id' => $publishId,
             ]);
 

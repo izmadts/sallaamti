@@ -34,7 +34,7 @@ class InstagramPublisher implements SocialPublisher
         $createParams = ['caption' => $this->caption($post, 2200), 'access_token' => $account->access_token];
         $createParams += $videoUrl ? ['media_type' => 'REELS', 'video_url' => $videoUrl] : ['image_url' => $photoUrl];
 
-        $create = Http::asForm()->post("{$base}/media", $createParams);
+        $create = Http::timeout(10)->asForm()->post("{$base}/media", $createParams);
 
         if ($create->failed()) {
             return ['success' => false, 'external_id' => null, 'error' => $this->extractError($create)];
@@ -46,7 +46,7 @@ class InstagramPublisher implements SocialPublisher
             return ['success' => false, 'external_id' => null, 'error' => 'Instagram video processing did not finish in time — it may still publish; check the account directly.'];
         }
 
-        $publish = Http::asForm()->post('https://graph.facebook.com/' . self::GRAPH_VERSION . "/{$igUserId}/media_publish", [
+        $publish = Http::timeout(10)->asForm()->post('https://graph.facebook.com/' . self::GRAPH_VERSION . "/{$igUserId}/media_publish", [
             'creation_id' => $creationId,
             'access_token' => $account->access_token,
         ]);
@@ -64,7 +64,7 @@ class InstagramPublisher implements SocialPublisher
     private function waitUntilProcessed(string $creationId, string $accessToken, int $maxAttempts = 10): bool
     {
         for ($attempt = 0; $attempt < $maxAttempts; $attempt++) {
-            $status = Http::withToken($accessToken)->get('https://graph.facebook.com/' . self::GRAPH_VERSION . "/{$creationId}", [
+            $status = Http::timeout(10)->withToken($accessToken)->get('https://graph.facebook.com/' . self::GRAPH_VERSION . "/{$creationId}", [
                 'fields' => 'status_code',
             ])->json('status_code');
 

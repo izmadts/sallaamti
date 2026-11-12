@@ -20,19 +20,19 @@ class FacebookPublisher implements SocialPublisher
         $base = 'https://graph.facebook.com/' . self::GRAPH_VERSION . "/{$pageId}";
 
         if ($videoUrl = $this->videoUrl($post)) {
-            $response = Http::asForm()->post("{$base}/videos", [
+            $response = Http::timeout(10)->asForm()->post("{$base}/videos", [
                 'file_url' => $videoUrl,
                 'description' => $this->caption($post),
                 'access_token' => $account->access_token,
             ]);
         } elseif ($photoUrl = $this->photoUrl($post)) {
-            $response = Http::asForm()->post("{$base}/photos", [
+            $response = Http::timeout(10)->asForm()->post("{$base}/photos", [
                 'url' => $photoUrl,
                 'caption' => $this->caption($post),
                 'access_token' => $account->access_token,
             ]);
         } else {
-            $response = Http::asForm()->post("{$base}/feed", [
+            $response = Http::timeout(10)->asForm()->post("{$base}/feed", [
                 'message' => $this->caption($post),
                 'access_token' => $account->access_token,
             ]);

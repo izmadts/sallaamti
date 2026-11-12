@@ -33,7 +33,7 @@ class ThreadsPublisher implements SocialPublisher
             default => ['media_type' => 'TEXT'],
         };
 
-        $create = Http::asForm()->post($base, $createParams);
+        $create = Http::timeout(10)->asForm()->post($base, $createParams);
 
         if ($create->failed()) {
             return ['success' => false, 'external_id' => null, 'error' => $this->extractError($create)];
@@ -45,7 +45,7 @@ class ThreadsPublisher implements SocialPublisher
             return ['success' => false, 'external_id' => null, 'error' => 'Threads media processing did not finish in time — it may still publish; check the account directly.'];
         }
 
-        $publish = Http::asForm()->post('https://graph.threads.net/' . self::API_VERSION . "/{$userId}/threads_publish", [
+        $publish = Http::timeout(10)->asForm()->post('https://graph.threads.net/' . self::API_VERSION . "/{$userId}/threads_publish", [
             'creation_id' => $creationId,
             'access_token' => $account->access_token,
         ]);
@@ -63,7 +63,7 @@ class ThreadsPublisher implements SocialPublisher
     private function waitUntilProcessed(string $creationId, string $accessToken, int $maxAttempts = 10): bool
     {
         for ($attempt = 0; $attempt < $maxAttempts; $attempt++) {
-            $status = Http::withToken($accessToken)->get('https://graph.threads.net/' . self::API_VERSION . "/{$creationId}", [
+            $status = Http::timeout(10)->withToken($accessToken)->get('https://graph.threads.net/' . self::API_VERSION . "/{$creationId}", [
                 'fields' => 'status',
             ])->json('status');
 
