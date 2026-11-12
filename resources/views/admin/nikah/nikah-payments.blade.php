@@ -18,7 +18,7 @@
 
             @forelse ($profiles as $profile)
             <div class="bg-white shadow-sm rounded-lg p-6">
-                <div class="flex justify-between items-start">
+                <div class="flex flex-wrap justify-between items-start gap-3">
                     <div class="flex gap-3">
                         <input type="checkbox" name="profile_ids[]" value="{{ $profile->id }}" form="bulkConfirmForm" class="mt-1 rounded" title="Select for bulk confirmation">
                         <div>

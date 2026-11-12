@@ -8,7 +8,7 @@
 
             @forelse ($reports as $report)
             <div class="bg-white shadow-sm rounded-lg p-6">
-                <div class="flex justify-between items-start">
+                <div class="flex flex-wrap justify-between items-start gap-3">
                     <div>
                         <h3 class="font-semibold">
                             {{ $report->reporter?->name ?? 'Deleted account' }} reported {{ $report->reported?->name ?? 'deleted account' }}

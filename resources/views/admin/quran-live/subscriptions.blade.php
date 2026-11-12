@@ -6,7 +6,7 @@
         <div class="max-w-4xl mx-auto sm:px-6 lg:px-8 space-y-4">
             @forelse ($subscriptions as $sub)
             <div class="bg-white shadow-sm rounded-lg p-5">
-                <div class="flex justify-between items-start">
+                <div class="flex flex-wrap justify-between items-start gap-3">
                     <div>
                         <p class="font-medium">{{ $sub->user?->name ?? 'Deleted account' }} ({{ $sub->user?->email ?? '—' }})</p>
                         <p class="text-sm text-gray-500">Rs. {{ number_format($sub->amount) }} via {{ $sub->payment_method }} | Ref: {{ $sub->payment_reference }}</p>

@@ -63,6 +63,7 @@
                 </summary>
                 <div class="px-5 pb-6 border-t pt-4">
                     <div x-show="lang === 'en'" x-cloak class="prose prose-sm max-w-none">
+                        <div class="overflow-x-auto">
                         <table class="w-full text-sm border-collapse">
                             <thead><tr class="text-left border-b"><th class="py-2 pr-3">Role</th><th class="py-2 pr-3">Sees</th><th class="py-2">Cannot do</th></tr></thead>
                             <tbody>
@@ -71,9 +72,11 @@
                                 <tr><td class="py-2 pr-3 align-top"><strong>Admin</strong></td><td class="py-2 pr-3 align-top">Everything — every counselor, every client's consent/proposals/payments, full commission ledger</td><td class="py-2 align-top">—</td></tr>
                             </tbody>
                         </table>
+                        </div>
                         <p class="text-xs text-gray-400 mt-2">Granting "Senior Matchmaker" is done from Users → Roles (the underlying permission is <code>leads.manage</code>) — it does not touch commission tier or level, which are separate concepts (section 3).</p>
                     </div>
                     <div x-show="lang === 'ur'" x-cloak dir="rtl" class="prose prose-sm max-w-none prose-ur text-right">
+                        <div class="overflow-x-auto">
                         <table class="w-full text-sm border-collapse">
                             <thead><tr class="text-right border-b"><th class="py-2 pl-3">کردار</th><th class="py-2 pl-3">دیکھ سکتا ہے</th><th class="py-2">نہیں کر سکتا</th></tr></thead>
                             <tbody>
@@ -82,6 +85,7 @@
                                 <tr><td class="py-2 pl-3 align-top"><strong>ایڈمن</strong></td><td class="py-2 pl-3 align-top">سب کچھ — ہر کاؤنسلر، ہر کلائنٹ کی رضامندی/تجاویز/ادائیگیاں، مکمل کمیشن لیجر</td><td class="py-2 align-top">—</td></tr>
                             </tbody>
                         </table>
+                        </div>
                         <p class="text-xs text-gray-400 mt-2">"سینیئر میچ میکر" کی اجازت یوزرز → رولز سے دی جاتی ہے (بنیادی اجازت <code>leads.manage</code> ہے) — اس کا کمیشن ٹیئر یا سطح سے کوئی تعلق نہیں، یہ الگ تصورات ہیں (سیکشن 3)۔</p>
                     </div>
                 </div>
@@ -105,6 +109,7 @@
                         <p>Moving an application to <strong>certified</strong> automatically: creates their real Sallaamti account (with the <code>matchmaker</code> role), mints a Counselor ID (<code>MM-PK-######</code>), generates their referral link + QR code, and issues their ID card certificate — all in one action, no manual follow-up steps.</p>
                         <h4>Levels — Now Automatic</h4>
                         <p>Four levels: 🥉 Nikah Counselor → 🥈 Certified Nikah Counselor → 🥇 Senior Nikah Counselor → ⭐ Regional Nikah Coordinator. <strong>Level directly sets commission rate</strong> — this is not cosmetic. A daily scheduled job promotes a counselor to the next level only when they clear <em>all three</em> of these together:</p>
+                        <div class="overflow-x-auto">
                         <table class="w-full text-sm border-collapse">
                             <thead><tr class="text-left border-b"><th class="py-2 pr-3">Next level</th><th class="py-2 pr-3">Verified profiles</th><th class="py-2 pr-3">Quality score</th><th class="py-2">Tenure</th></tr></thead>
                             <tbody>
@@ -113,6 +118,7 @@
                                 <tr><td class="py-2 pr-3">⭐ Regional Coordinator</td><td class="py-2 pr-3">50</td><td class="py-2 pr-3">85%</td><td class="py-2">180 days</td></tr>
                             </tbody>
                         </table>
+                        </div>
                         <p>Promotion is <strong>one-way only</strong> — it never auto-demotes (that stays a manual admin action from the application page). Both the counselor and every admin get notified when it happens — never a silent change to someone's pay rate. Quality Score itself = (Verification Rate × 45%) + (Paid Conversion Rate × 45%) + (Compliance Rate × 10%) — visible to the counselor on <strong>My Performance</strong>, and to admin on that counselor's application page (with the same "X to go" breakdown toward their next level).</p>
                     </div>
                     <div x-show="lang === 'ur'" x-cloak dir="rtl" class="prose prose-sm max-w-none prose-ur text-right">
@@ -124,6 +130,7 @@
                         <p>درخواست کو <strong>سرٹیفائیڈ</strong> کرنے پر خودکار طور پر: ان کا حقیقی سلامتی اکاؤنٹ بنتا ہے (میچ میکر رول کے ساتھ)، کاؤنسلر آئی ڈی (<code>MM-PK-######</code>) بنتی ہے، ان کا ریفرل لنک + QR کوڈ تیار ہوتا ہے، اور ان کا آئی ڈی کارڈ سرٹیفکیٹ جاری ہوتا ہے — سب ایک ہی کارروائی میں، کوئی دستی مرحلہ نہیں۔</p>
                         <h4>سطحیں — اب خودکار</h4>
                         <p>چار سطحیں: 🥉 نکاح کاؤنسلر → 🥈 سرٹیفائیڈ نکاح کاؤنسلر → 🥇 سینیئر نکاح کاؤنسلر → ⭐ ریجنل نکاح کوآرڈینیٹر۔ <strong>سطح براہ راست کمیشن کی شرح طے کرتی ہے</strong> — یہ محض سجاوٹ نہیں۔ ایک روزانہ چلنے والا خودکار عمل کاؤنسلر کو اگلی سطح پر تب ہی بڑھاتا ہے جب وہ ان تینوں شرائط کو ایک ساتھ پورا کرے:</p>
+                        <div class="overflow-x-auto">
                         <table class="w-full text-sm border-collapse">
                             <thead><tr class="text-right border-b"><th class="py-2 pl-3">اگلی سطح</th><th class="py-2 pl-3">تصدیق شدہ پروفائلز</th><th class="py-2 pl-3">کوالٹی سکور</th><th class="py-2">مدت</th></tr></thead>
                             <tbody>
@@ -132,6 +139,7 @@
                                 <tr><td class="py-2 pl-3">⭐ ریجنل کوآرڈینیٹر</td><td class="py-2 pl-3">50</td><td class="py-2 pl-3">85%</td><td class="py-2">180 دن</td></tr>
                             </tbody>
                         </table>
+                        </div>
                         <p>ترقی <strong>صرف ایک طرفہ</strong> ہے — کبھی خودکار طور پر نیچے نہیں آتی (یہ اب بھی درخواست صفحے سے دستی ایڈمن کارروائی ہے)۔ جب یہ ہو تو کاؤنسلر اور ہر ایڈمن دونوں کو مطلع کیا جاتا ہے — کسی کی آمدنی کی شرح میں کبھی خاموشی سے تبدیلی نہیں آتی۔ کوالٹی سکور خود = (ویریفیکیشن ریٹ × 45%) + (ادا شدہ کنورژن ریٹ × 45%) + (کمپلائنس ریٹ × 10%) — کاؤنسلر کو <strong>میری کارکردگی</strong> پر نظر آتا ہے، اور ایڈمن کو اسی کاؤنسلر کے درخواست صفحے پر (اگلی سطح تک "کتنا باقی ہے" کی وہی تفصیل کے ساتھ)۔</p>
                     </div>
                 </div>
@@ -336,6 +344,7 @@
                 <div class="px-5 pb-6 border-t pt-4">
                     <div x-show="lang === 'en'" x-cloak class="prose prose-sm max-w-none">
                         <p>Every status value that exists in this module, in one place:</p>
+                        <div class="overflow-x-auto">
                         <table class="w-full text-sm border-collapse">
                             <tbody>
                                 <tr class="border-b"><td class="py-2 pr-3 align-top font-semibold whitespace-nowrap">Lead.status</td><td class="py-2">new, contacted, interested, registered, not_interested, closed</td></tr>
@@ -349,9 +358,11 @@
                                 <tr><td class="py-2 pr-3 align-top font-semibold whitespace-nowrap">CommissionLedgerEntry.status</td><td class="py-2">pending, approved, paid — plus the independent flagged_at flag</td></tr>
                             </tbody>
                         </table>
+                        </div>
                     </div>
                     <div x-show="lang === 'ur'" x-cloak dir="rtl" class="prose prose-sm max-w-none prose-ur text-right">
                         <p>اس ماڈیول میں موجود ہر حیثیت کی قدر، ایک ہی جگہ:</p>
+                        <div class="overflow-x-auto">
                         <table class="w-full text-sm border-collapse">
                             <tbody>
                                 <tr class="border-b"><td class="py-2 pl-3 align-top font-semibold whitespace-nowrap">Lead.status</td><td class="py-2">نئی، رابطہ ہوا، دلچسپی، رجسٹرڈ، دلچسپی نہیں، بند</td></tr>
@@ -365,6 +376,7 @@
                                 <tr><td class="py-2 pl-3 align-top font-semibold whitespace-nowrap">CommissionLedgerEntry.status</td><td class="py-2">زیرِ التوا، منظور شدہ، ادا شدہ — نیز آزاد نشان زد فلیگ</td></tr>
                             </tbody>
                         </table>
+                        </div>
                     </div>
                 </div>
             </details>

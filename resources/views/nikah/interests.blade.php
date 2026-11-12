@@ -12,8 +12,8 @@
                 <h3 class="font-semibold text-gray-700 mb-3">{{ __('db.Received Interests') }}</h3>
                 <div class="space-y-3">
                     @forelse ($received as $interest)
-                    <div class="bg-white rounded-lg shadow-sm p-4 flex justify-between items-center">
-                        <div class="flex items-center gap-4">
+                    <div class="bg-white rounded-lg shadow-sm p-4 flex flex-wrap justify-between items-center gap-3">
+                        <div class="flex flex-wrap items-center gap-4">
                             @if ($interest->status === 'accepted' && $interest->sender->photo)
                             <img src="{{ route('nikah.file', [$interest->sender, 'photo']) }}" alt="{{ __('db.:age yrs, :city', ['age' => $interest->sender->age, 'city' => $interest->sender->city]) }}" class="w-16 h-20 object-cover rounded-full">
                             @endif
@@ -61,8 +61,8 @@
                         <h3 class="font-semibold text-gray-700 mb-3">{{ __('db.Sent Interests') }}</h3>
                         <div class="space-y-3">
                                     @forelse ($sent as $interest)
-                                    <div class="bg-white rounded-lg shadow-sm p-4 flex justify-between items-center">
-                                        <div class="flex items-center gap-4">
+                                    <div class="bg-white rounded-lg shadow-sm p-4 flex flex-wrap justify-between items-center gap-3">
+                                        <div class="flex flex-wrap items-center gap-4">
                                             @if ($interest->status === 'accepted' && $interest->receiver->photo)
                                             <img src="{{ route('nikah.file', [$interest->receiver, 'photo']) }}" alt="{{ __('db.:age yrs, :city', ['age' => $interest->receiver->age, 'city' => $interest->receiver->city]) }}" class="w-20 h-20 object-cover rounded-full">
                                             @endif

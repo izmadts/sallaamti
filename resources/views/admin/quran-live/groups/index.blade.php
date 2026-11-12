@@ -12,7 +12,7 @@
 
             @forelse ($groups as $group)
             <div class="bg-white shadow-sm rounded-lg p-5">
-                <div class="flex justify-between items-start">
+                <div class="flex flex-wrap justify-between items-start gap-3">
                     <div>
                         <h3 class="font-semibold">{{ $group->group_name }}</h3>
                         <p class="text-sm text-gray-500">Teacher: {{ $group->teacher?->name ?? 'Unassigned' }}</p>

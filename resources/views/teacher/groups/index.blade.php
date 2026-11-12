@@ -6,7 +6,7 @@
         <div class="max-w-5xl mx-auto sm:px-6 lg:px-8 space-y-4">
             @forelse ($groups as $group)
             <a href="{{ route('teacher.groups.show', $group) }}" class="block bg-white rounded-lg shadow-sm hover:shadow-md p-5">
-                <div class="flex justify-between items-start">
+                <div class="flex flex-wrap justify-between items-start gap-3">
                     <div>
                         <h4 class="font-semibold">{{ $group->course->title }} — {{ $group->group_name }}</h4>
                         <p class="text-sm text-gray-500">{{ is_array($group->class_days) ? implode(', ', $group->class_days) : $group->class_days }} | {{ $group->class_time }}</p>
