@@ -53,7 +53,67 @@ class AuthController extends Controller
         $user->assignRole('member');
         event(new Registered($user));
 
+        // Unlike the phone+OTP path (otpVerify()), this grants a token
+        // before proving control of anything — a throwaway email is enough
+        // to get in. EnsureEmailVerifiedApi gates the handful of
+        // write endpoints a spam account would actually use until this
+        // code is entered via emailVerify()/emailResend() below.
+        if ($user->email) {
+            $this->sendEmailVerificationCode($user, welcome: true);
+        }
+
         return $this->tokenResponse($user, 201);
+    }
+
+    /** Step 2 of email verification: check the 6-digit code emailed above. */
+    public function emailVerify(Request $request): JsonResponse
+    {
+        $user = $request->user();
+        $validated = $request->validate(['code' => ['required', 'digits:6']]);
+
+        if (!$user->email) {
+            throw ValidationException::withMessages(['code' => __('db.There is no email on this account to verify.')]);
+        }
+
+        if (!OtpCode::verify($user->email, $validated['code'], 'email_verify')) {
+            throw ValidationException::withMessages(['code' => __('db.That code is invalid or has expired.')]);
+        }
+
+        $user->email_verified_at = now();
+        $user->save();
+
+        return response()->json(['user' => new UserResource($user)]);
+    }
+
+    /** Re-send the email verification code — e.g. the first one expired or never arrived. */
+    public function emailResend(Request $request): JsonResponse
+    {
+        $user = $request->user();
+
+        if (!$user->email) {
+            throw ValidationException::withMessages(['email' => __('db.There is no email on this account to verify.')]);
+        }
+
+        if ($user->email_verified_at) {
+            return response()->json(['message' => __('db.This email is already verified.')]);
+        }
+
+        $this->sendEmailVerificationCode($user);
+
+        return response()->json(['message' => __('db.Verification code sent.')]);
+    }
+
+    private function sendEmailVerificationCode(User $user, bool $welcome = false): void
+    {
+        $otp = OtpCode::generateFor($user->email, 'email_verify', $user->id);
+
+        Notification::route('mail', $user->email)->notify(new OtpCodeMail(
+            $otp->code,
+            subject: 'Verify your Sallaamti email',
+            intro: $welcome
+                ? 'Welcome to Sallaamti! Please verify your email with the code below:'
+                : 'Your email verification code is:',
+        ));
     }
 
     public function login(Request $request): JsonResponse
@@ -277,6 +337,16 @@ class AuthController extends Controller
 
     private function tokenResponse(User $user, int $status = 200): JsonResponse
     {
+        // A freshly created model's in-memory attributes don't reflect
+        // column defaults applied at the DB level — User::create() here
+        // never passes is_active (defaults to true in the migration), so
+        // $user->is_active reads as null, not true, until this refresh.
+        // Was previously called AFTER the is_active check below, which
+        // made that check see null (falsy) and reject every brand-new
+        // registration (register()/otpVerify()/social login) as
+        // "deactivated" — nobody could create a mobile account at all.
+        $user->refresh();
+
         // Mirrors EnsureUserIsActiveApi's check, but at the token-issue
         // step — an admin-deactivated account (User::is_active, not the
         // separate self-service deactivated_at above) should never be able
@@ -287,13 +357,6 @@ class AuthController extends Controller
         }
 
         $token = $user->createToken('sallaamti-app')->plainTextToken;
-
-        // A freshly created model's in-memory attributes don't reflect
-        // column defaults applied at the DB level (e.g. the module-enabled
-        // flags default to true in the migration but aren't in $fillable
-        // passed to create()) — refresh so the response matches what /me
-        // would return a moment later instead of showing stale nulls/false.
-        $user->refresh();
 
         return response()->json([
             'user' => new UserResource($user),
