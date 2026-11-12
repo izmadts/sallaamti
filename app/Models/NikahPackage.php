@@ -21,6 +21,8 @@ class NikahPackage extends Model
     {
         return [
             'price' => 'decimal:2',
+            'duration_days' => 'integer',
+            'proposal_limit' => 'integer',
             'features' => 'array',
             'features_ur' => 'array',
             'is_active' => 'boolean',
