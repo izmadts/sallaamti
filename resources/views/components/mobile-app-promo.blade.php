@@ -30,6 +30,17 @@
         androidUrl: @js(setting('mobile_app_android_url', 'https://play.google.com/store/apps/details?id=com.sallaamti.app&pcampaignid=web_share')),
         iosUrl: @js(setting('mobile_app_ios_url', '')),
         init() {
+            {{-- Missing until now: if the visitor already has the site
+                 installed as a PWA (or this is iOS Safari's standalone
+                 mode), this full-screen "Get the Sallaamti App" takeover
+                 made no sense — it told them to install the very thing
+                 they were already running, and being fixed inset-0 z-9999
+                 with nothing else on screen to tap, it covered the entire
+                 installed app with no obvious way out, which is exactly
+                 what read as the app "freezing"/scroll being stuck. Same
+                 check components.pwa-install-banner already uses to skip
+                 itself in this mode. --}}
+            if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone) return;
             if (localStorage.getItem('mobileAppPromoDismissed') === '1') return;
             {{-- One-time-per-session, not once-per-pageview: without this, a
                  visitor who hasn't dismissed it yet gets this full-screen
