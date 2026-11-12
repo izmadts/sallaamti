@@ -38,7 +38,12 @@
        why this is Chrome-specific and not just a missing-CSS-fix report).
        Google Translate injects its banner/wrapper as a sibling of <body>,
        not a descendant of it, so body's own overflow-x:hidden can't
-       contain it. overflow-x: clip on <html> catches that without
+       contain it. NOTE (12 Nov 2026): overflow-x: clip on <html> was tried
+       here (4517a8e) and REMOVED: on real Android Chrome it stopped the
+       whole site from scrolling vertically (owner screen recording,
+       dashboard + /skills). The RTL overflow sources themselves are fixed
+       instead (honeypot boxes no longer sit at -9999px). Old note:
+       overflow-x: clip on <html> catches that without
        <html>'s overflow-x: hidden's old problem — `clip` doesn't turn an
        element into a new scroll container the way `hidden` does, so it
        doesn't repeat the iOS momentum-scroll regression that made the
@@ -46,7 +51,6 @@
        41c6614). Unsupported on iOS < 16 — those devices just don't get
        this extra layer, same as before this change. */
     html {
-        overflow-x: clip;
         overscroll-behavior-y: none;
     }
 
