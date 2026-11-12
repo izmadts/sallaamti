@@ -31,6 +31,15 @@
         iosUrl: @js(setting('mobile_app_ios_url', '')),
         init() {
             if (localStorage.getItem('mobileAppPromoDismissed') === '1') return;
+            {{-- One-time-per-session, not once-per-pageview: without this, a
+                 visitor who hasn't dismissed it yet gets this full-screen
+                 takeover shoved at them again on *every* navigation
+                 (clicking a link, switching the site language — anything
+                 that's a full page reload), which read as the page
+                 randomly "locking up" mid-browsing. sessionStorage clears
+                 when the tab/browser closes, so it still resets on a
+                 genuinely new visit. --}}
+            if (sessionStorage.getItem('mobileAppPromoShown') === '1') return;
             const ua = window.navigator.userAgent;
             if (/android/i.test(ua) && this.androidUrl) {
                 this.platform = 'android';
@@ -38,7 +47,10 @@
                 this.platform = 'ios';
             }
             if (this.platform === null) return;
-            setTimeout(() => { this.show = true; }, 2000);
+            setTimeout(() => {
+                this.show = true;
+                sessionStorage.setItem('mobileAppPromoShown', '1');
+            }, 2000);
         },
         storeUrl() {
             return this.platform === 'android' ? this.androidUrl : this.iosUrl;
