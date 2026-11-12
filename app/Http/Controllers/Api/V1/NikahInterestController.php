@@ -80,9 +80,15 @@ class NikahInterestController extends Controller
         $received = $myProfile->receivedInterests()->with('sender.user')->latest()->get();
         $sent = $myProfile->sentInterests()->with('receiver.user')->latest()->get();
 
+        // One query for every blocked profile ID instead of interestPayload()
+        // calling NikahBlock::existsBetween() per row (Sentry flagged this as
+        // an N+1 on this endpoint — a user with many interests ran one block
+        // lookup query per interest).
+        $blockedProfileIds = NikahBlock::excludedProfileIds($myProfile->id);
+
         return response()->json([
-            'received' => $received->map(fn ($i) => $this->interestPayload($i, $i->sender, $myProfile)),
-            'sent' => $sent->map(fn ($i) => $this->interestPayload($i, $i->receiver, $myProfile)),
+            'received' => $received->map(fn ($i) => $this->interestPayload($i, $i->sender, $blockedProfileIds)),
+            'sent' => $sent->map(fn ($i) => $this->interestPayload($i, $i->receiver, $blockedProfileIds)),
         ]);
     }
 
@@ -147,7 +153,7 @@ class NikahInterestController extends Controller
     // instead of relying on the type hint. The mobile client renders this
     // (and a blocked pair) as a disabled "no longer available" card rather
     // than a normal, tappable one.
-    private function interestPayload(NikahInterest $interest, ?NikahProfile $otherProfile, NikahProfile $myProfile): array
+    private function interestPayload(NikahInterest $interest, ?NikahProfile $otherProfile, array $blockedProfileIds): array
     {
         if (!$otherProfile) {
             return [
@@ -164,7 +170,7 @@ class NikahInterestController extends Controller
             'interest_id' => $interest->id,
             'status' => $interest->status,
             'created_at' => $interest->created_at->toIso8601String(),
-            'blocked' => NikahBlock::existsBetween($myProfile->id, $otherProfile->id),
+            'blocked' => in_array($otherProfile->id, $blockedProfileIds, true),
             'unavailable' => false,
             'profile' => [
                 'id' => $otherProfile->id,
