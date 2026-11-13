@@ -192,7 +192,14 @@ class UserManagementController extends Controller
             return back()->with('error', 'Only a Super Admin can deactivate another Super Admin.');
         }
 
-        $user->update(['is_active' => !$user->is_active]);
+        // update() silently no-ops here — is_active isn't in User::$fillable
+        // (an auth-gate flag, not a mass-assignable profile field), so this
+        // used to leave both the DB row and this in-memory value totally
+        // unchanged: no actual (de)activation, and the status message below
+        // read back the untouched (pre-toggle) state, so a deactivation
+        // attempt on an active user reported "has been activated." Same gap
+        // fixed in MatchmakerApplicationController::deactivateCounselor().
+        $user->forceFill(['is_active' => !$user->is_active])->save();
 
         // Deactivating from this general page used to leave a matchmaker
         // role fully intact — the account couldn't log into the website

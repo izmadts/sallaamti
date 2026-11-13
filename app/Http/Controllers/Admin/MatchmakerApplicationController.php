@@ -284,7 +284,12 @@ class MatchmakerApplicationController extends Controller
             'notes' => ['nullable', 'string', 'max:1000'],
         ]);
 
-        $user->update(['is_active' => false]);
+        // update() silently no-ops here — is_active isn't in User::$fillable
+        // (it's an auth-gate flag, not a profile field a mass-assignment
+        // call should ever touch), so this used to report success while
+        // leaving the account fully able to log in. forceFill() matches
+        // User::deactivate()/reactivate()'s own pattern for the same reason.
+        $user->forceFill(['is_active' => false])->save();
         if ($user->hasRole('matchmaker')) {
             $user->removeRole('matchmaker');
         }
@@ -309,7 +314,8 @@ class MatchmakerApplicationController extends Controller
         $user = $matchmakerApplication->user;
         abort_unless($user, 422, 'This application has no linked account to reactivate.');
 
-        $user->update(['is_active' => true]);
+        // Same mass-assignment gap as deactivateCounselor() above.
+        $user->forceFill(['is_active' => true])->save();
         if (!$user->hasRole('matchmaker')) {
             $user->assignRole('matchmaker');
         }
