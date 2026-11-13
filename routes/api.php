@@ -32,10 +32,6 @@ use App\Http\Controllers\Api\V1\VolunteerController;
 use App\Http\Controllers\Api\V1\WallController;
 use Illuminate\Support\Facades\Route;
 
-// GitHub Auto Deploy Webhook
-// This route must be OUTSIDE auth middleware so GitHub can access it without login
-Route::post('/deploy', [App\Http\Controllers\DeployController::class, 'handle']);
-
 // Sallaamti mobile app — Phase 0 (auth foundation). Every route here is
 // stateless bearer-token auth (Sanctum), not session — see
 // AuthController's class docblock for why. Rate-limited the same as the
