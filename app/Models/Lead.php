@@ -206,6 +206,15 @@ class Lead extends Model
             'package_started_at' => 'date',
             'package_expires_at' => 'date',
             'account_setup_skipped_at' => 'datetime',
+            // Without these, PDO hands back these foreign keys as PHP
+            // strings, which json_encode then quotes — the NC mobile app's
+            // `as int?` cast on nikah_profile_id (Api\V1\Matchmaker\
+            // ClientController::listPayload()) crashed on exactly this,
+            // caught live via `flutter run` on a real device. Same latent
+            // bug on nikah_package_id (detailPayload() / NikahHireCounselor
+            // Controller), fixed before it got the chance to do the same.
+            'nikah_profile_id' => 'integer',
+            'nikah_package_id' => 'integer',
         ];
     }
 
