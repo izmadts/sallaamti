@@ -56,13 +56,22 @@
                         <p class="text-xs text-gray-400 mt-1">Applied {{ $application->created_at->format('d M Y, h:i A') }}</p>
                     </div>
 
-                    <span class="text-xs px-2 py-1 rounded-full font-semibold
-                        {{ match(true) {
-                            $application->status === 'certified' => 'bg-green-100 text-green-800',
-                            $application->isTerminal() => 'bg-red-100 text-red-800',
-                            default => 'bg-amber-100 text-amber-800',
-                        } }}">
-                        {{ \App\Models\MatchmakerApplication::STEPS[$application->status] ?? ucfirst($application->status) }}
+                    <span class="flex flex-col items-end gap-1">
+                        <span class="text-xs px-2 py-1 rounded-full font-semibold
+                            {{ match(true) {
+                                $application->status === 'certified' => 'bg-green-100 text-green-800',
+                                $application->isTerminal() => 'bg-red-100 text-red-800',
+                                default => 'bg-amber-100 text-amber-800',
+                            } }}">
+                            {{ \App\Models\MatchmakerApplication::STEPS[$application->status] ?? ucfirst($application->status) }}
+                        </span>
+                        {{-- 'status' above stays 'certified' forever (a historical
+                             fact) even after Deactivate Counselor — this is the only
+                             thing on this list that actually says whether the
+                             account can still log in. --}}
+                        @if ($application->status === 'certified' && $application->user && !$application->user->is_active)
+                        <span class="text-xs px-2 py-1 rounded-full font-semibold bg-red-100 text-red-800">Deactivated</span>
+                        @endif
                     </span>
                 </a>
                 @empty

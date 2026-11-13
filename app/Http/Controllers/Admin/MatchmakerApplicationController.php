@@ -22,7 +22,9 @@ class MatchmakerApplicationController extends Controller
 
     public function index(Request $request)
     {
-        $query = MatchmakerApplication::latest();
+        // Eager-loaded so the index view can flag a deactivated certified
+        // counselor (user->is_active) without an N+1 per row.
+        $query = MatchmakerApplication::with('user')->latest();
 
         if ($request->filled('status')) {
             $query->where('status', $request->status);
