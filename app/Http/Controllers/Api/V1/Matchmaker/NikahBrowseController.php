@@ -188,6 +188,11 @@ class NikahBrowseController extends Controller
             $data['language'] = $profile->language;
             $data['prayer_frequency'] = $profile->prayer_frequency;
             $data['is_linked_to_lead'] = Lead::where('nikah_profile_id', $profile->id)->exists();
+            // Same redacted (no CNIC/photo/contact-info) card the admin web
+            // panel's "📋 Copy Summary" / WhatsApp buttons send
+            // (admin/nikah/show.blade.php) — a matchmaker gets the identical
+            // text, not a hand-rolled shorter one, on their own profile view.
+            $data['share_summary'] = $profile->shareSummary();
         }
 
         return $data;

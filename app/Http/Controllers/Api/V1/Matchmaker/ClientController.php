@@ -578,12 +578,16 @@ class ClientController extends Controller
         return [
             'id' => $lead->id,
             'name' => $lead->name,
+            'gender' => $lead->gender,
             'phone' => $lead->phone,
             'email' => $lead->email,
             'status' => $lead->status,
             'source' => $lead->source,
             'assigned_to' => $lead->assignedTo ? ['id' => $lead->assignedTo->id, 'name' => $lead->assignedTo->name] : null,
             'is_converted' => $lead->isConverted(),
+            // Same "Profile #" the admin panel shows (NikahProfile::id) —
+            // null until this lead is linked to a registered profile.
+            'nikah_profile_id' => $lead->nikah_profile_id,
             'next_follow_up_at' => $lead->next_follow_up_at?->toDateString(),
             'created_at' => $lead->created_at->toIso8601String(),
             'unread_message_count' => $lead->clientMessages()->where('sender_id', '!=', auth()->id())->where('is_read', false)->count(),
