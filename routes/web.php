@@ -133,6 +133,10 @@ Route::get('/quran-live/{course}', [QuranLiveCourseController::class, 'show'])->
 // Blog (public reading)
 Route::get('/blog', [BlogController::class, 'index'])->name('blog.index');
 Route::get('/blog/{blog_post:slug}', [BlogController::class, 'show'])->name('blog.show');
+// Sallaamti Library: free booklets + Manhaj/Manshoor PDFs (owner, 13 Nov 2026)
+Route::get('/library', [\App\Http\Controllers\LibraryController::class, 'index'])->name('library.index');
+Route::get('/library/{libraryItem:slug}', [\App\Http\Controllers\LibraryController::class, 'show'])->name('library.show');
+Route::get('/library/{libraryItem:slug}/download', [\App\Http\Controllers\LibraryController::class, 'download'])->name('library.download');
 Route::middleware('throttle:5,1')->group(function () {
     Route::post('/donate', [DonationController::class, 'store'])->name('donate.store');
     Route::post('/volunteer', [VolunteerController::class, 'store'])->name('volunteer.store');
@@ -717,6 +721,9 @@ Route::middleware(['auth', 'blog.manage'])->prefix('admin')->name('admin.')->gro
     Route::patch('blog-posts/{blog_post}/publish', [BlogPostController::class, 'publish'])->name('blog-posts.publish');
     Route::patch('blog-posts/{blog_post}/unpublish', [BlogPostController::class, 'unpublish'])->name('blog-posts.unpublish');
     Route::post('editor-images', [EditorImageController::class, 'store'])->name('editor-images.store');
+    // Library uploads (same staff as the blog: admin, manager, blogger)
+    Route::resource('library', \App\Http\Controllers\Admin\LibraryItemController::class)->except(['show']);
+    Route::patch('library/{library}/toggle', [\App\Http\Controllers\Admin\LibraryItemController::class, 'togglePublish'])->name('library.toggle');
 });
 
 // ============================================================
