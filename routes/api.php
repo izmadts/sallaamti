@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\V1\DeviceTokenController;
 use App\Http\Controllers\Api\V1\DonationController;
 use App\Http\Controllers\Api\V1\FaqController;
 use App\Http\Controllers\Api\V1\LearningController;
+use App\Http\Controllers\Api\V1\LibraryController;
 use App\Http\Controllers\Api\V1\NotificationController;
 use App\Http\Controllers\Api\V1\Matchmaker as MatchmakerApi;
 use App\Http\Controllers\Api\V1\MetaController;
@@ -67,6 +68,15 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
     // NikahCounselorApplicationController's class docblock. Throttled like
     // the auth endpoints above since it's an unauthenticated write.
     Route::post('nikah-counselor-application', [NikahCounselorApplicationController::class, 'store'])->middleware('throttle:5,1')->name('nikah-counselor-application.store');
+
+    // Digital Library — free booklets, no login needed (mirrors the public
+    // /library web page). Only the event counter write needs throttling.
+    Route::prefix('library')->name('library.')->group(function () {
+        Route::get('/', [LibraryController::class, 'index'])->name('index');
+        Route::get('categories', [LibraryController::class, 'categories'])->name('categories');
+        Route::get('{libraryItem:slug}', [LibraryController::class, 'show'])->name('show');
+        Route::post('{libraryItem:slug}/event', [LibraryController::class, 'event'])->middleware('throttle:30,1')->name('event');
+    });
 
     Route::middleware(['auth:sanctum', 'active.api'])->group(function () {
         Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard.index');
