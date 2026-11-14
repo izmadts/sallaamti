@@ -65,7 +65,7 @@ class SyncLeadStatuses extends Command
                     }
                 }
                 $status = Lead::statusFromProfile($profile, $hasAccount) ?? ($lead->status === 'matched' ? 'new' : null);
-                if (!$status || $status === $lead->status) {
+                if ($lead->status === 'matched' ? (!$status || $status === $lead->status) : !Lead::canAutoMove($lead->status, $status)) {
                     continue;
                 }
                 $changes[$lead->status . ' -> ' . $status] = ($changes[$lead->status . ' -> ' . $status] ?? 0) + 1;

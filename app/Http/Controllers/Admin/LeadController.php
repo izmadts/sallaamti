@@ -103,8 +103,8 @@ class LeadController extends Controller
         $placeholders = implode(',', array_fill(0, count($dueStatuses), '?'));
         $dueSql = "next_follow_up_at IS NOT NULL AND DATE(next_follow_up_at) <= ? AND status NOT IN ({$placeholders})";
         $dueBindings = array_merge([$today], $dueStatuses);
-        // Sort (owner, 12 Nov 2026): "priority" (default) = due follow-ups
-        // first, then by status priority (Lead::STATUSES order), newest first
+        // Sort (owner, 12 Nov 2026): "priority" (default) = Hot leads first
+        // (owner, 14 Nov 2026), then due follow-ups, then by status priority (Lead::STATUSES order), newest first
         // within a status. "newest" and "follow_up" are plain orders.
         $sort = in_array($request->input('sort'), ['priority', 'newest', 'follow_up'], true) ? $request->input('sort') : 'priority';
         if ($sort === 'newest') {
@@ -112,7 +112,8 @@ class LeadController extends Controller
         } elseif ($sort === 'follow_up') {
             $query->orderByRaw('next_follow_up_at IS NULL')->orderBy('next_follow_up_at')->orderByDesc('created_at');
         } else {
-            $query->orderByRaw("CASE WHEN {$dueSql} THEN 0 ELSE 1 END", $dueBindings)
+            $query->orderByRaw("CASE WHEN status = 'hot' THEN 0 ELSE 1 END")
+                ->orderByRaw("CASE WHEN {$dueSql} THEN 0 ELSE 1 END", $dueBindings)
                 ->orderByRaw("CASE WHEN {$dueSql} THEN next_follow_up_at END ASC", $dueBindings)
                 ->orderByRaw(Lead::statusPrioritySql())
                 ->orderByDesc('created_at');
@@ -120,7 +121,9 @@ class LeadController extends Controller
         $leads = $query->paginate(20)->withQueryString();
 
         $stats = [
+            'hot' => Lead::where('status', 'hot')->count(),
             'new' => Lead::where('status', 'new')->count(),
+            'paid' => Lead::where('status', 'paid')->count(),
             'contacted' => Lead::where('status', 'contacted')->count(),
             'registered' => Lead::where('status', 'registered')->count(),
             'follow_ups_due' => Lead::whereDate('next_follow_up_at', '<=', $today)->whereNotIn('status', $dueStatuses)->count(),
