@@ -16,6 +16,16 @@ return new class extends Migration
         if (DB::getDriverName() !== 'mysql') {
             return;
         }
+
+        // leads:sync-statuses runs today's SyncLeadStatuses, which can
+        // compute 'hot'/'paid' (Lead::statusFromProfile()) — those aren't in
+        // the leads.status ENUM yet on a fresh deploy (2026_11_14_090000
+        // only widens it after this migration runs), so writing one here
+        // truncates and throws (caught live while testing this merge: lead
+        // #55 -> 'paid'). Widening here too makes that write safe; the next
+        // migration's identical ALTER is then a harmless no-op.
+        DB::statement("ALTER TABLE leads MODIFY status ENUM('hot', 'new', 'contacted', 'interested', 'account_registered', 'registered', 'pending_payment', 'paid', 'verified', 'matched', 'not_interested', 'number_not_valid', 'closed') NOT NULL DEFAULT 'new'");
+
         Artisan::call('leads:sync-statuses', ['--fix-matched' => true]);
     }
 
