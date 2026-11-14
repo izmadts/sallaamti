@@ -41,24 +41,30 @@ class Lead extends Model
     // screen, API and validation rule. Order here = priority order used for
     // sorting ("who needs attention first"). `bg`/`fg` = badge colours (inline styles: the committed CSS
     // build has no new Tailwind classes).
+    // Matched is staff-only (owner, 13 Nov 2026): an accepted interest only
+    // shares contact details, it is not a rishta.
     // `auto` = set by the system from the linked account/profile (see
     // syncAutoStatus()); staff can still pick any status by hand.
     public const STATUSES = [
+        // Owner, 14 Nov 2026: Hot on top; "Paid" tag for verified + paid; Contacted shown as "Follow-up";
+        // the two Registered steps named clearly.
+        'hot'                => ['label' => '🔥 Hot',             'bg' => '#dc2626', 'fg' => '#ffffff',  'auto' => false],
         'pending_payment'    => ['label' => 'Pending Payment',    'bg' => '#ffedd5', 'fg' => '#9a3412',  'auto' => true],
-        'interested'         => ['label' => 'Interested',         'bg' => '#dcfce7', 'fg' => '#166534',     'auto' => false],
-        'account_registered' => ['label' => 'Account Registered', 'bg' => '#cffafe', 'fg' => '#155e75',        'auto' => true],
-        'registered'         => ['label' => 'Profile Pending',    'bg' => '#f3e8ff', 'fg' => '#6b21a8',  'auto' => true],
-        'new'                => ['label' => 'New',                'bg' => '#dbeafe', 'fg' => '#1e40af',        'auto' => false],
-        'contacted'          => ['label' => 'Contacted',          'bg' => '#fef9c3', 'fg' => '#854d0e',  'auto' => false],
-        'verified'           => ['label' => 'Verified',           'bg' => '#059669', 'fg' => '#ffffff',     'auto' => true],
-        'matched'            => ['label' => 'Matched',            'bg' => '#fce7f3', 'fg' => '#9d174d',        'auto' => true],
-        'not_interested'     => ['label' => 'Not Interested',     'bg' => '#fee2e2', 'fg' => '#b91c1c',           'auto' => false],
-        'number_not_valid'   => ['label' => 'Number Not Valid',   'bg' => '#e7e5e4', 'fg' => '#44403c',     'auto' => false],
-        'closed'             => ['label' => 'Closed',             'bg' => '#f3f4f6', 'fg' => '#4b5563',        'auto' => false],
+        'interested'         => ['label' => 'Interested',         'bg' => '#dcfce7', 'fg' => '#166534',  'auto' => false],
+        'account_registered' => ['label' => 'Registered (Account)', 'bg' => '#cffafe', 'fg' => '#155e75', 'auto' => true],
+        'registered'         => ['label' => 'Registered (Profile)', 'bg' => '#f3e8ff', 'fg' => '#6b21a8', 'auto' => true],
+        'new'                => ['label' => 'New',                'bg' => '#dbeafe', 'fg' => '#1e40af',  'auto' => false],
+        'contacted'          => ['label' => 'Follow-up',          'bg' => '#fef9c3', 'fg' => '#854d0e',  'auto' => false],
+        'paid'               => ['label' => '💰 Paid · Verified', 'bg' => '#ca8a04', 'fg' => '#ffffff',  'auto' => true],
+        'verified'           => ['label' => 'Verified',           'bg' => '#059669', 'fg' => '#ffffff',  'auto' => true],
+        'matched'            => ['label' => 'Matched',            'bg' => '#fce7f3', 'fg' => '#9d174d',  'auto' => false],
+        'not_interested'     => ['label' => 'Not Interested',     'bg' => '#fee2e2', 'fg' => '#b91c1c',  'auto' => false],
+        'number_not_valid'   => ['label' => 'Number Not Valid',   'bg' => '#e7e5e4', 'fg' => '#44403c',  'auto' => false],
+        'closed'             => ['label' => 'Closed',             'bg' => '#f3f4f6', 'fg' => '#4b5563',  'auto' => false],
     ];
 
     // No call-back needed for these, so they never show in "Follow-ups Due".
-    public const NO_FOLLOW_UP_STATUSES = ['registered', 'verified', 'matched', 'not_interested', 'number_not_valid', 'closed'];
+    public const NO_FOLLOW_UP_STATUSES = ['registered', 'paid', 'verified', 'matched', 'not_interested', 'number_not_valid', 'closed'];
 
     // Dead ends: not anyone's open task.
     public const INACTIVE_STATUSES = ['not_interested', 'number_not_valid', 'closed'];
@@ -66,7 +72,21 @@ class Lead extends Model
     // The system may move a lead automatically only while it is in one of
     // these; a manual decision (not interested, wrong number, closed) or a
     // match is never overwritten.
-    public const AUTO_FROM_STATUSES = ['new', 'contacted', 'interested', 'account_registered', 'registered', 'pending_payment', 'verified'];
+    public const AUTO_FROM_STATUSES = ['new', 'contacted', 'interested', 'account_registered', 'registered', 'pending_payment', 'paid', 'verified', 'hot'];
+
+    // A Hot lead (set by staff) stays Hot until it reaches one of these; an
+    // account or an unpaid profile alone does not take it off the top.
+    public const HOT_EXIT_STATUSES = ['paid', 'verified'];
+
+    // The system may move a lead from $from to $to.
+    public static function canAutoMove(?string $from, ?string $to): bool
+    {
+        if (!$to || $to === $from || !in_array($from, self::AUTO_FROM_STATUSES, true)) {
+            return false;
+        }
+
+        return $from !== 'hot' || in_array($to, self::HOT_EXIT_STATUSES, true);
+    }
 
     public static function statusKeys(): array
     {
@@ -138,7 +158,9 @@ class Lead extends Model
     {
         if ($profile) {
             if ($profile->verification_status === 'verified') {
-                return 'verified';
+                // Paid tag (owner, 14 Nov 2026): verified AND the fee was paid;
+                // fee-free verified profiles (e.g. widowed/divorced) stay "Verified".
+                return ($profile->payment_status === 'confirmed' && (float) $profile->payment_amount > 0) ? 'paid' : 'verified';
             }
             if (in_array($profile->payment_status, ['unpaid', 'submitted', 'rejected'], true) && (float) $profile->payment_amount > 0) {
                 return 'pending_payment';
@@ -154,7 +176,7 @@ class Lead extends Model
     // AUTO_FROM_STATUSES) and logs it on the lead's timeline.
     public function applyAutoStatus(?string $status): bool
     {
-        if (!$status || $status === $this->status || !in_array($this->status, self::AUTO_FROM_STATUSES, true)) {
+        if (!self::canAutoMove($this->status, $status)) {
             return false;
         }
         $this->forceFill(['status' => $status])->saveQuietly();

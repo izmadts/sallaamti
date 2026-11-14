@@ -3,22 +3,22 @@
 namespace App\Console\Commands;
 
 use App\Models\Lead;
-use App\Models\NikahInterest;
 use App\Models\User;
 use Illuminate\Console\Command;
 
 // One-off (and safe to re-run) status refresh for existing leads (owner,
 // 12 Nov 2026): verified profile -> Verified, profile made but fee unpaid ->
 // Pending Payment, profile under review -> Profile Pending, account but no
-// profile -> Account Registered, accepted interest -> Matched. A lead is
+// profile -> Account Registered. (Matched is staff-only since 13 Nov 2026: an
+// accepted interest only shares contact details, it is not a rishta.) A lead is
 // matched to its account by the linked profile, else by phone (last 10
 // digits, only when exactly one account has that number). Leads marked Not
 // Interested / Number Not Valid / Closed are never touched.
 class SyncLeadStatuses extends Command
 {
-    protected $signature = 'leads:sync-statuses {--dry-run : Only show what would change}';
+    protected $signature = 'leads:sync-statuses {--dry-run : Only show what would change} {--fix-matched : Undo the automatic Matched status set from accepted interests (13 Nov 2026)}';
 
-    protected $description = 'Set lead statuses from the linked account/Nikah profile (Verified, Pending Payment, Profile Pending, Account Registered, Matched).';
+    protected $description = 'Set lead statuses from the linked account/Nikah profile (Verified, Pending Payment, Profile Pending, Account Registered). Matched is set by staff only.';
 
     public function handle(): int
     {
@@ -35,12 +35,26 @@ class SyncLeadStatuses extends Command
             }
         });
 
-        $matchedProfileIds = NikahInterest::where('status', 'accepted')->get(['sender_profile_id', 'receiver_profile_id'])
-            ->flatMap(fn ($i) => [$i->sender_profile_id, $i->receiver_profile_id])->unique()->flip();
+        // --fix-matched: leads the first refresh moved to Matched automatically
+        // (and nobody changed by hand since) go back into the normal refresh.
+        $statuses = Lead::AUTO_FROM_STATUSES;
+        $autoMatchedIds = [];
+        if ($this->option('fix-matched')) {
+            foreach (Lead::where('status', 'matched')->get(['id']) as $l) {
+                $last = \App\Models\MatchmakingTimelineEvent::where('lead_id', $l->id)->where('event_type', 'status_changed')->latest('id')->first();
+                if ($last && str_starts_with($last->description, 'Status changed automatically to Matched')) {
+                    $autoMatchedIds[] = $l->id;
+                }
+            }
+            $statuses[] = 'matched';
+        }
 
         $changes = [];
-        Lead::with('nikahProfile')->whereIn('status', Lead::AUTO_FROM_STATUSES)->orderBy('id')->chunk(500, function ($leads) use ($byKey, $matchedProfileIds, $dry, &$changes) {
+        Lead::with('nikahProfile')->whereIn('status', $statuses)->orderBy('id')->chunk(500, function ($leads) use ($byKey, $autoMatchedIds, $dry, &$changes) {
             foreach ($leads as $lead) {
+                if ($lead->status === 'matched' && !in_array($lead->id, $autoMatchedIds, true)) {
+                    continue; // set by staff: keep
+                }
                 $profile = $lead->nikahProfile;
                 $hasAccount = (bool) $profile;
                 if (!$profile) {
@@ -50,10 +64,8 @@ class SyncLeadStatuses extends Command
                         $profile = User::find($uid)?->nikahProfile;
                     }
                 }
-                $status = $profile && isset($matchedProfileIds[$profile->id])
-                    ? 'matched'
-                    : Lead::statusFromProfile($profile, $hasAccount);
-                if (!$status || $status === $lead->status) {
+                $status = Lead::statusFromProfile($profile, $hasAccount) ?? ($lead->status === 'matched' ? 'new' : null);
+                if ($lead->status === 'matched' ? (!$status || $status === $lead->status) : !Lead::canAutoMove($lead->status, $status)) {
                     continue;
                 }
                 $changes[$lead->status . ' -> ' . $status] = ($changes[$lead->status . ' -> ' . $status] ?? 0) + 1;

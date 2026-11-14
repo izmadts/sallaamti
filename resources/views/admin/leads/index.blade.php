@@ -10,17 +10,26 @@
         <div class="max-w-6xl mx-auto sm:px-6 lg:px-8 space-y-6">
 
             <div class="grid grid-cols-2 sm:grid-cols-5 gap-3">
+                {{-- Owner, 14 Nov 2026: Hot leads first, and a count of paid + verified. --}}
+                <a href="{{ route('admin.leads.index', ['status' => ['hot']]) }}" class="rounded-lg shadow-sm p-3 text-center hover:opacity-90" style="background:#fee2e2">
+                    <p class="text-xl font-bold" style="color:#dc2626">{{ $stats['hot'] }}</p>
+                    <p class="text-xs" style="color:#991b1b">🔥 Hot</p>
+                </a>
+                <a href="{{ route('admin.leads.index', ['status' => ['paid']]) }}" class="bg-white rounded-lg shadow-sm p-3 text-center hover:bg-gray-50">
+                    <p class="text-xl font-bold" style="color:#ca8a04">{{ $stats['paid'] }}</p>
+                    <p class="text-xs text-gray-500">💰 Paid · Verified</p>
+                </a>
                 <div class="bg-white rounded-lg shadow-sm p-3 text-center">
                     <p class="text-xl font-bold text-blue-600">{{ $stats['new'] }}</p>
                     <p class="text-xs text-gray-500">New</p>
                 </div>
                 <div class="bg-white rounded-lg shadow-sm p-3 text-center">
                     <p class="text-xl font-bold text-amber-600">{{ $stats['contacted'] }}</p>
-                    <p class="text-xs text-gray-500">Contacted</p>
+                    <p class="text-xs text-gray-500">Follow-up</p>
                 </div>
                 <div class="bg-white rounded-lg shadow-sm p-3 text-center">
                     <p class="text-xl font-bold text-green-600">{{ $stats['registered'] }}</p>
-                    <p class="text-xs text-gray-500">Profile Pending</p>
+                    <p class="text-xs text-gray-500">Registered (Profile)</p>
                 </div>
                 <a href="{{ route('admin.leads.index', ['follow_ups_due' => 1]) }}" class="bg-white rounded-lg shadow-sm p-3 text-center hover:bg-gray-50 {{ request()->boolean('follow_ups_due') ? 'ring-2 ring-red-300' : '' }}">
                     <p class="text-xl font-bold text-red-600">{{ $stats['follow_ups_due'] }}</p>
