@@ -41,6 +41,8 @@ class Lead extends Model
     // screen, API and validation rule. Order here = priority order used for
     // sorting ("who needs attention first"). `bg`/`fg` = badge colours (inline styles: the committed CSS
     // build has no new Tailwind classes).
+    // Matched is staff-only (owner, 13 Nov 2026): an accepted interest only
+    // shares contact details, it is not a rishta.
     // `auto` = set by the system from the linked account/profile (see
     // syncAutoStatus()); staff can still pick any status by hand.
     public const STATUSES = [
@@ -51,7 +53,7 @@ class Lead extends Model
         'new'                => ['label' => 'New',                'bg' => '#dbeafe', 'fg' => '#1e40af',        'auto' => false],
         'contacted'          => ['label' => 'Contacted',          'bg' => '#fef9c3', 'fg' => '#854d0e',  'auto' => false],
         'verified'           => ['label' => 'Verified',           'bg' => '#059669', 'fg' => '#ffffff',     'auto' => true],
-        'matched'            => ['label' => 'Matched',            'bg' => '#fce7f3', 'fg' => '#9d174d',        'auto' => true],
+        'matched'            => ['label' => 'Matched',            'bg' => '#fce7f3', 'fg' => '#9d174d',        'auto' => false],
         'not_interested'     => ['label' => 'Not Interested',     'bg' => '#fee2e2', 'fg' => '#b91c1c',           'auto' => false],
         'number_not_valid'   => ['label' => 'Number Not Valid',   'bg' => '#e7e5e4', 'fg' => '#44403c',     'auto' => false],
         'closed'             => ['label' => 'Closed',             'bg' => '#f3f4f6', 'fg' => '#4b5563',        'auto' => false],
