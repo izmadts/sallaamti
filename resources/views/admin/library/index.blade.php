@@ -10,7 +10,7 @@
         <div class="bg-white rounded-lg shadow-sm overflow-x-auto">
             <table class="min-w-full text-sm">
                 <thead class="bg-gray-50 text-gray-500 text-xs uppercase">
-                    <tr><th class="px-4 py-3 text-left">Code</th><th class="px-4 py-3 text-left">Title</th><th class="px-4 py-3 text-left">Section</th><th class="px-4 py-3 text-left">Pages</th><th class="px-4 py-3 text-left">Downloads</th><th class="px-4 py-3 text-left">Status</th><th class="px-4 py-3 text-left">Actions</th></tr>
+                    <tr><th class="px-4 py-3 text-left">Code</th><th class="px-4 py-3 text-left">Title</th><th class="px-4 py-3 text-left">Section</th><th class="px-4 py-3 text-left">Pages</th><th class="px-4 py-3 text-left">Views / Downloads / Shares</th><th class="px-4 py-3 text-left">Status</th><th class="px-4 py-3 text-left">Actions</th></tr>
                 </thead>
                 <tbody class="divide-y divide-gray-100">
                     @forelse ($items as $item)
@@ -19,14 +19,18 @@
                         <td class="px-4 py-3"><span dir="rtl">{{ $item->title }}</span><br><a href="{{ $item->fileUrl() }}" target="_blank" class="text-xs text-teal-700">PDF</a></td>
                         <td class="px-4 py-3 text-gray-500">{{ $categories[$item->category]['en'] ?? $item->category }}</td>
                         <td class="px-4 py-3 text-gray-500">{{ $item->pages ?: '—' }}</td>
-                        <td class="px-4 py-3 text-gray-500">{{ $item->download_count }}</td>
+                        <td class="px-4 py-3 text-gray-500">{{ $item->view_count }} / {{ $item->download_count }} / {{ $item->share_count }}</td>
                         <td class="px-4 py-3">
                             <span class="text-xs px-2 py-1 rounded-full font-semibold" style="{{ $item->is_published ? 'background:#dcfce7;color:#166534' : 'background:#f3f4f6;color:#4b5563' }}">{{ $item->is_published ? 'Published' : 'Hidden' }}</span>
+                            @if ($item->is_published && $item->isNew())<span class="text-xs px-2 py-1 rounded-full font-semibold" style="background:#fef9c3;color:#854d0e">New</span>@endif
                         </td>
                         <td class="px-4 py-3 whitespace-nowrap">
                             <form method="POST" action="{{ route('admin.library.toggle', $item) }}" class="inline">@csrf @method('PATCH')<button class="text-xs text-teal-700 mr-3">{{ $item->is_published ? 'Hide' : 'Publish' }}</button></form>
                             <a href="{{ route('admin.library.edit', $item) }}" class="text-xs text-gray-600 mr-3">Edit</a>
+                            {{-- A published item can only be deleted by a full admin (LibraryItemController::destroy()) — hiding the button for anyone else avoids a confusing 403 click. --}}
+                            @if (!$item->is_published || auth()->user()->hasRole('admin'))
                             <form method="POST" action="{{ route('admin.library.destroy', $item) }}" class="inline" onsubmit="return confirm('Delete this item and its PDF?')">@csrf @method('DELETE')<button class="text-xs text-red-600">Delete</button></form>
+                            @endif
                         </td>
                     </tr>
                     @empty

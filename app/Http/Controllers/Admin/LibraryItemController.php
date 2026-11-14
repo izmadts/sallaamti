@@ -3,9 +3,11 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Jobs\NotifyMembersOfNewLibraryItemJob;
 use App\Models\LibraryItem;
 use App\Services\ImageOptimizer;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
@@ -28,11 +30,23 @@ class LibraryItemController extends Controller
     public function store(Request $request)
     {
         $data = $this->validated($request, null);
-        $data['file_path'] = $request->file('file')->store('library', 'public');
+        $file = $request->file('file');
+        $data['file_path'] = $file->store('library', 'public');
+        $data['file_size'] = $file->getSize();
         if ($request->hasFile('cover')) {
             $data['cover_path'] = ImageOptimizer::store($request->file('cover'), 'library/covers', 'public', maxDimension: 900, quality: 82);
         }
-        LibraryItem::create($data);
+
+        $item = LibraryItem::create($data);
+        // published_at/notified_at are deliberately not in $fillable (an
+        // admin-controlled timestamp, not something update($request-shaped
+        // array) should ever touch) — forceFill() is how every other such
+        // flag in this codebase gets set (see User::is_active's same fix
+        // this session). Plain update() here would silently no-op.
+        if ($item->is_published) {
+            $item->forceFill(['published_at' => now()])->save();
+        }
+        $this->maybeNotify($item, $request);
 
         return redirect()->route('admin.library.index')->with('status', 'Library item added.');
     }
@@ -47,28 +61,58 @@ class LibraryItemController extends Controller
         $data = $this->validated($request, $library);
         if ($request->hasFile('file')) {
             Storage::disk('public')->delete($library->file_path);
-            $data['file_path'] = $request->file('file')->store('library', 'public');
+            $file = $request->file('file');
+            $data['file_path'] = $file->store('library', 'public');
+            $data['file_size'] = $file->getSize();
+            // A re-upload is new content under the same item — the app's
+            // offline copy must re-download it, not trust the old one.
+            $data['version'] = $library->version + 1;
         }
         if ($request->hasFile('cover')) {
             if ($library->cover_path) Storage::disk('public')->delete($library->cover_path);
             $data['cover_path'] = ImageOptimizer::store($request->file('cover'), 'library/covers', 'public', maxDimension: 900, quality: 82);
         }
         $library->update($data);
+        if ($library->is_published && !$library->published_at) {
+            $library->forceFill(['published_at' => now()])->save();
+        }
+        $this->maybeNotify($library, $request);
 
         return redirect()->route('admin.library.index')->with('status', 'Library item updated.');
     }
 
     public function destroy(LibraryItem $library)
     {
+        // A published booklet may already be shared/downloaded widely —
+        // pulling it needs a real admin's call, not a staff blogger's.
+        abort_if($library->is_published && !Auth::user()->hasRole('admin'), 403, 'Only an admin can delete a published library item. Hide it first.');
+
         Storage::disk('public')->delete(array_filter([$library->file_path, $library->cover_path]));
         $library->delete();
 
         return redirect()->route('admin.library.index')->with('status', 'Library item deleted.');
     }
 
+    // Published + the "Send notification" checkbox + never notified before
+    // = queue the fan-out once and mark it sent immediately, so re-saving
+    // the same item (a typo fix, a new cover) never double-notifies.
+    private function maybeNotify(LibraryItem $item, Request $request): void
+    {
+        if ($item->is_published && $request->boolean('notify', true) && !$item->notified_at) {
+            NotifyMembersOfNewLibraryItemJob::dispatch($item->id);
+            $item->forceFill(['notified_at' => now()])->save();
+        }
+    }
+
     public function togglePublish(LibraryItem $library)
     {
-        $library->update(['is_published' => !$library->is_published]);
+        $nowPublished = !$library->is_published;
+        $library->forceFill([
+            'is_published' => $nowPublished,
+            // Only set the first time — hiding and republishing later must
+            // not reset the "New" badge window or the sitemap lastmod.
+            'published_at' => $nowPublished && !$library->published_at ? now() : $library->published_at,
+        ])->save();
 
         return back()->with('status', $library->is_published ? 'Published on /library.' : 'Hidden from /library.');
     }
@@ -81,6 +125,7 @@ class LibraryItemController extends Controller
             'slug'        => ['nullable', 'string', 'max:200', 'alpha_dash', Rule::unique('library_items', 'slug')->ignore($item?->id)],
             'category'    => ['required', Rule::in(array_keys(LibraryItem::CATEGORIES))],
             'description' => ['nullable', 'string', 'max:2000'],
+            'review_note' => ['nullable', 'string', 'max:255'],
             'pages'       => ['nullable', 'integer', 'min:1', 'max:999'],
             'language'    => ['required', Rule::in(['ur', 'en'])],
             'sort_order'  => ['nullable', 'integer', 'min:0'],

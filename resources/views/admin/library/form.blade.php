@@ -27,6 +27,7 @@
                 </div>
                 <div><x-input-label value="Title (Urdu)" /><x-text-input name="title" dir="rtl" class="w-full mt-1" :value="old('title', $item->title)" required /></div>
                 <div><x-input-label value="Short description (shown on the card and in Google)" /><textarea name="description" dir="rtl" rows="3" class="border-gray-300 rounded-md w-full mt-1">{{ old('description', $item->description) }}</textarea></div>
+                <div><x-input-label value="Review note (e.g. &quot;Ulama review: 20 Nov 2026&quot; — shown small on the page)" /><x-text-input name="review_note" class="w-full mt-1" :value="old('review_note', $item->review_note)" /></div>
                 <div class="grid sm:grid-cols-3 gap-4">
                     <div><x-input-label value="Pages" /><x-text-input name="pages" type="number" min="1" class="w-full mt-1" :value="old('pages', $item->pages)" /></div>
                     <div>
@@ -42,7 +43,11 @@
                 <div>
                     <x-input-label :value="$item->exists ? 'Replace PDF (optional, max 20 MB)' : 'PDF file (max 20 MB)'" />
                     <input type="file" name="file" accept="application/pdf" class="w-full mt-1" {{ $item->exists ? '' : 'required' }}>
-                    @if ($item->exists)<a href="{{ $item->fileUrl() }}" target="_blank" class="text-xs text-teal-700">Current PDF</a>@endif
+                    @if ($item->exists)
+                    <a href="{{ $item->fileUrl() }}" target="_blank" class="text-xs text-teal-700">Current PDF</a>
+                    <span class="text-xs text-gray-400">· v{{ $item->version }}@if($item->fileSizeHuman()) · {{ $item->fileSizeHuman() }}@endif</span>
+                    <p class="text-xs text-gray-400 mt-1">Uploading a new file here bumps the version — the app re-downloads it instead of trusting its old offline copy.</p>
+                    @endif
                 </div>
                 <div>
                     <x-input-label value="Cover image (optional; without it the title is shown on green)" />
@@ -53,6 +58,14 @@
                     <input type="checkbox" name="is_published" value="1" id="is_published" class="rounded" {{ old('is_published', $item->is_published) ? 'checked' : '' }}>
                     <label for="is_published" class="text-sm">Published (visible on /library)</label>
                 </div>
+                @if (!$item->notified_at)
+                <div class="flex items-center gap-2">
+                    <input type="checkbox" name="notify" value="1" id="notify" class="rounded" {{ old('notify', true) ? 'checked' : '' }}>
+                    <label for="notify" class="text-sm">Send notification to members (only sent if Published is checked too)</label>
+                </div>
+                @else
+                <p class="text-xs text-gray-400">Members were already notified about this item on {{ $item->notified_at->format('d M Y') }} — saving again won't notify a second time.</p>
+                @endif
                 <x-primary-button>{{ $item->exists ? 'Save' : 'Add to library' }}</x-primary-button>
             </form>
         </div>
