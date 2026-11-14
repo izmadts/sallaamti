@@ -1,6 +1,9 @@
 @php($share = 'https://wa.me/?text=' . rawurlencode($item->title . ' — سلامتی کا مفت کتابچہ: ' . route('library.show', $item)))
 <div class="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-300" style="border:1px solid #eef2ef; display:flex; flex-direction:column">
-    <a href="{{ route('library.show', $item) }}" class="block" style="background:#022c22">
+    <a href="{{ route('library.show', $item) }}" class="block relative" style="background:#022c22">
+        @if ($item->isNew())
+        <span class="absolute top-3 right-3 text-xs font-bold px-2 py-1 rounded-full" style="background:#fef9c3; color:#854d0e; z-index:1">نئی ✨</span>
+        @endif
         @if ($item->coverUrl())
             <img src="{{ $item->coverUrl() }}" alt="{{ $item->title }}" loading="lazy" class="w-full object-cover" style="height:220px">
         @else
@@ -8,11 +11,11 @@
         @endif
     </a>
     <div class="p-5" style="flex:1; display:flex; flex-direction:column">
-        <a href="{{ route('library.show', $item) }}" class="block text-lg font-bold text-gray-800 mb-2" style="line-height:1.8">{{ $item->title }}</a>
+        <a href="{{ route('library.show', $item) }}" class="block text-lg font-bold text-gray-800 mb-2" style="line-height:1.8; font-family:'Noto Nastaliq Urdu', serif">{{ $item->title }}</a>
         @if ($item->description)
             <p class="text-gray-500 text-sm line-clamp-3 mb-3" style="line-height:1.9">{{ $item->description }}</p>
         @endif
-        <p class="text-xs text-gray-400 mb-4">@if($item->pages){{ $item->pages }} صفحات · @endif PDF · مفت</p>
+        <p class="text-xs text-gray-400 mb-4">{{ $item->metaLine() }}</p>
         <div class="flex gap-2" style="margin-top:auto">
             <a href="{{ route('library.download', $item) }}" class="text-sm font-semibold text-white rounded-lg text-center" style="background:#065f46; padding:12px 14px; flex:1; min-height:44px">⬇ ڈاؤن لوڈ</a>
             <a href="{{ $share }}" target="_blank" rel="noopener" class="text-sm font-semibold rounded-lg text-center" style="background:#dcfce7; color:#166534; padding:12px 14px; flex:1; min-height:44px">واٹس ایپ پر بھیجیں</a>

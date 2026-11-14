@@ -77,4 +77,21 @@ class LibraryItem extends Model
 
         return $mb >= 0.1 ? number_format($mb, 1) . ' MB' : number_format($this->file_size / 1024, 0) . ' KB';
     }
+
+    // "10 صفحات · PDF · 1.2 MB · مفت" — built here, not with @if/@php in the
+    // view: a @php block right here tripped Livewire's Blade-compiler
+    // extension (which wraps every @if/@endif for wire:key tracking) into
+    // compiling @php without its matching close, on the public card/show
+    // views specifically (an isolated partial compiled fine; only inside
+    // the <x-guest-layout> wrapped page did it break) — caught by actually
+    // rendering the view, not just linting it.
+    public function metaLine(): string
+    {
+        return implode(' · ', array_filter([
+            $this->pages ? $this->pages . ' صفحات' : null,
+            'PDF',
+            $this->fileSizeHuman(),
+            'مفت',
+        ]));
+    }
 }

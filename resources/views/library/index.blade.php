@@ -1,10 +1,17 @@
 {{-- Sallaamti Library (owner, 13 Nov 2026): free Urdu booklets + Sallaamti documents. Mobile first. --}}
 <x-guest-layout :title="'کتب خانہ — مفت کتابچے | Sallaamti Library'" :description="'سلامتی کے مفت اردو کتابچے: والدین، بیٹی، بیٹا، بیوہ و طلاق یافتہ بہنوں کے لیے نکاح کی رہنمائی، منہجِ سلامتی اور منشور۔ ڈاؤن لوڈ کریں اور شیئر کریں۔'">
 
+    @push('schema')
+    {{-- Nastaliq-style Urdu titles on the Library pages — see library/show.blade.php's own comment on this same push. --}}
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Nastaliq+Urdu:wght@400;700&display=swap" rel="stylesheet">
+    @endpush
+
     <section class="page-hero relative overflow-hidden flex items-center" style="min-height: 240px; background: linear-gradient(135deg, #022c22 0%, #065f46 100%);">
         <div class="max-w-7xl mx-auto px-4 py-14 relative z-10 text-center w-full" dir="rtl">
             <span class="section-eyebrow" style="color:#e9c46a">Sallaamti Library</span>
-            <h1 class="text-3xl md:text-5xl font-extrabold text-white mt-2 mb-3" style="line-height:1.6">کتب خانہ</h1>
+            <h1 class="text-3xl md:text-5xl font-extrabold text-white mt-2 mb-3" style="line-height:1.6; font-family:'Noto Nastaliq Urdu', serif">کتب خانہ</h1>
             <p class="text-white/80 text-lg max-w-2xl mx-auto" style="line-height:1.9">مفت کتابچے: پڑھیں، ڈاؤن لوڈ کریں اور اپنے خاندان سے شیئر کریں</p>
         </div>
     </section>

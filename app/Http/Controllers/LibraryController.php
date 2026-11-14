@@ -18,6 +18,7 @@ class LibraryController extends Controller
     public function show(LibraryItem $libraryItem)
     {
         abort_unless($libraryItem->is_published, 404);
+        $libraryItem->increment('view_count');
         $more = LibraryItem::published()->where('id', '!=', $libraryItem->id)->orderBy('sort_order')->limit(4)->get();
 
         return view('library.show', ['item' => $libraryItem, 'more' => $more]);
