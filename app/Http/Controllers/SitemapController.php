@@ -25,6 +25,7 @@ class SitemapController extends Controller
             ['loc' => '/skills', 'priority' => '0.9', 'changefreq' => 'weekly'],
             ['loc' => '/quran-live', 'priority' => '0.8', 'changefreq' => 'weekly'],
             ['loc' => '/blog', 'priority' => '0.8', 'changefreq' => 'weekly'],
+            ['loc' => '/library', 'priority' => '0.8', 'changefreq' => 'weekly'],
             ['loc' => '/donate', 'priority' => '0.7', 'changefreq' => 'monthly'],
             ['loc' => '/volunteer', 'priority' => '0.7', 'changefreq' => 'monthly'],
         ];
@@ -62,6 +63,15 @@ class SitemapController extends Controller
                 'lastmod' => $post->updated_at->toDateString(),
                 'changefreq' => 'monthly',
                 'priority' => '0.6',
+            ]);
+        });
+
+        \App\Models\LibraryItem::published()->get(['slug', 'updated_at'])->each(function ($item) use ($urls) {
+            $urls->push([
+                'loc' => url('/library/' . $item->slug),
+                'lastmod' => $item->updated_at->toDateString(),
+                'changefreq' => 'monthly',
+                'priority' => '0.7',
             ]);
         });
 
