@@ -18,7 +18,7 @@ class DashboardController extends Controller
     // "general"), so growing one doesn't silently reshape the other.
     // 'wall' deliberately excluded — it's rendered as its own banner above
     // the tile grid, not a regular tile (see DashboardScreen).
-    private const TILES = ['nikah', 'counseling', 'quran', 'quran_live', 'skills', 'community', 'qa', 'donation', 'volunteer'];
+    private const TILES = ['nikah', 'counseling', 'quran', 'quran_live', 'skills', 'community', 'qa', 'library', 'donation', 'volunteer'];
 
     // Which of the 4 togglable preferences (see the users table's
     // *_module_enabled columns, same ones the web nav's module dropdown
