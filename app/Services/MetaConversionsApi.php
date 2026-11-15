@@ -6,6 +6,7 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 // Server-side counterpart to the client-side dataLayer push already in
 // partials/gtm-body.blade.php (session('conversion_event') → GTM → whatever
@@ -24,9 +25,22 @@ class MetaConversionsApi
 
     /**
      * @param array<string, mixed> $customData e.g. ['value' => 500, 'currency' => 'PKR']
+     * @param string|null $eventId SEO Agent backlog #7 (15 Nov 2026): pass the
+     *        SAME id to the browser Pixel's eventID option (fbq('track', ...,
+     *        {eventID: ...})) for the same user action, so Meta dedupes the
+     *        two instead of double-counting a conversion that fired from
+     *        both the member's own browser and this server call. Omit it
+     *        (e.g. the admin-confirms-payment-days-later Purchase call,
+     *        which has no browser counterpart at all) and one is generated
+     *        anyway — Meta requires every event to have one, dedup or not.
+     * @return string the event_id actually sent, so the caller can pass the
+     *         same one to session('conversion_event_data') for the GTM
+     *         dataLayer push in partials/gtm-body.blade.php to pick up.
      */
-    public function send(string $eventName, ?User $user = null, array $customData = [], ?Request $request = null): void
+    public function send(string $eventName, ?User $user = null, array $customData = [], ?Request $request = null, ?string $eventId = null): string
     {
+        $eventId ??= (string) Str::uuid();
+
         $pixelId = setting('meta_pixel_id');
         $accessToken = setting('meta_conversions_api_token');
 
@@ -34,7 +48,7 @@ class MetaConversionsApi
         // every call site treats this the same as any other optional
         // ad-attribution signal, never a hard dependency.
         if (!$pixelId || !$accessToken) {
-            return;
+            return $eventId;
         }
 
         $userData = [];
@@ -62,6 +76,7 @@ class MetaConversionsApi
         $payload = [
             'data' => [[
                 'event_name' => $eventName,
+                'event_id' => $eventId,
                 'event_time' => now()->timestamp,
                 'action_source' => 'website',
                 'event_source_url' => $request?->fullUrl() ?? url('/'),
@@ -84,6 +99,8 @@ class MetaConversionsApi
             // every notify() call in this codebase being wrapped the same way.
             Log::warning('MetaConversionsApi: ' . $eventName . ' threw — ' . $e->getMessage());
         }
+
+        return $eventId;
     }
 
     private function hash(string $value): string

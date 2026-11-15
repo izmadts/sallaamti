@@ -50,7 +50,12 @@ class NikahProfileController extends Controller
 
         session()->flash('conversion_event', 'nikah_profile_created');
 
-        app(MetaConversionsApi::class)->send('CompleteRegistration', Auth::user(), ['content_name' => 'nikah_profile'], $request);
+        // Shared with the browser Pixel via the dataLayer push (see
+        // partials/gtm-body.blade.php) so Meta can dedupe this CAPI call
+        // against whatever Pixel tag fires from the same page load, instead
+        // of double-counting one CompleteRegistration.
+        $eventId = app(MetaConversionsApi::class)->send('CompleteRegistration', Auth::user(), ['content_name' => 'nikah_profile'], $request);
+        session()->flash('conversion_event_data', ['meta_event_id' => $eventId]);
 
         return redirect()->route('nikah.payment')->with('status', 'Profile submitted! Please complete the verification fee payment to proceed.');
     }
