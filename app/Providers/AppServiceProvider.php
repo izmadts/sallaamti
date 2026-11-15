@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Facades\Notification;
 use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\View;
 use App\Models\BlogPost;
@@ -54,13 +55,17 @@ class AppServiceProvider extends ServiceProvider
         });
 
         // Share latest 2 blog posts with the shared footer partial (used by both
-        // the guest layout and the authenticated app layout)
+        // the guest layout and the authenticated app layout). Cached (SEO
+        // Agent backlog #3, 15 Nov 2026, home-page-slow investigation): this
+        // runs on EVERY page on the site (footer is global), not just home —
+        // a new blog post being up to 5 minutes late to appear in the footer
+        // is a fine trade for not re-querying it on every single request.
         View::composer('partials.footer', function ($view) {
             try {
-                $footerPosts = \App\Models\BlogPost::where('status', 'published')
+                $footerPosts = Cache::remember('home.footer_posts', 300, fn () => \App\Models\BlogPost::where('status', 'published')
                     ->orderByDesc('published_at')
                     ->take(2)
-                    ->get();
+                    ->get());
             } catch (\Exception $e) {
                 $footerPosts = collect();
             }
@@ -87,9 +92,9 @@ class AppServiceProvider extends ServiceProvider
         // try/catch-and-fall-back-empty pattern as the footer composer above.
         View::composer(['layouts.navigation', 'layouts.guest'], function ($view) {
             try {
-                $latestApprovedDua = \App\Models\DuaRequest::where('status', 'approved')
+                $latestApprovedDua = Cache::remember('home.latest_approved_dua', 300, fn () => \App\Models\DuaRequest::where('status', 'approved')
                     ->orderByDesc('created_at')
-                    ->first();
+                    ->first());
             } catch (\Exception $e) {
                 $latestApprovedDua = null;
             }
@@ -102,7 +107,11 @@ class AppServiceProvider extends ServiceProvider
         // members alike, so it's composed onto both places it appears.
         View::composer('components.daily-content-widget', function ($view) {
             try {
-                $dailyContent = \App\Models\DailyContent::forToday();
+                // Keyed by date, not a fixed TTL — forToday() picks
+                // deterministically from the whole active pool, so the
+                // cached value is correct all day and simply stops being
+                // read once the date rolls over.
+                $dailyContent = Cache::remember('home.daily_content.' . now()->toDateString(), now()->endOfDay(), fn () => \App\Models\DailyContent::forToday());
             } catch (\Exception $e) {
                 $dailyContent = null;
             }

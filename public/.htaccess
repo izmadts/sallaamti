@@ -5,6 +5,18 @@
 
     RewriteEngine On
 
+    # Bot-scan bait (SEO Agent backlog #3, 15 Nov 2026): 286 origin 502s in
+    # 2 hours came from a scanner hitting /config.js, /backup.zip, etc. —
+    # every one of those 404s still booted the full Laravel app before
+    # failing, exhausting PHP-FPM workers. Cloudflare's WAF rule blocks the
+    # known paths at the edge, but this stops ANY nonexistent file with a
+    # scanner-bait extension from reaching PHP at all, even if Cloudflare
+    # is bypassed — a plain, instant Apache 404, same as those files not
+    # existing ever did on any ordinary site.
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_URI} \.(zip|rar|7z|tar|gz|sql|bak|env|ini|log|swp)$ [NC]
+    RewriteRule ^ - [R=404,L]
+
     # Redirect index.html and index.php to root
     RewriteCond %{THE_REQUEST} ^[A-Z]{3,9}\ /index\.(php|html?)\ HTTP
     RewriteRule ^index\.(php|html?)$ / [R=301,L]

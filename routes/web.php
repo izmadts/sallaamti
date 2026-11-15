@@ -74,7 +74,7 @@ Route::get('/', function () {
         return redirect()->route('dashboard');
     }
 
-    $banners = \App\Models\Banner::active()->get();
+    $banners = \Illuminate\Support\Facades\Cache::remember('home.banners', 300, fn () => \App\Models\Banner::active()->get());
 
     return view('index', compact('banners'));
 })->name('index');

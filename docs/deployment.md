@@ -86,10 +86,16 @@ cd ~/path-to-sallaamti || { rm -f "$LOCK"; exit 1; }
   php artisan optimize:clear
   php artisan view:cache
   php artisan config:cache
+  php artisan route:cache
 } >> ~/deploy-sallaamti.log 2>&1
 
 rm -f "$LOCK"
 ```
+(15 Nov 2026: added `route:cache` — it wasn't in the script, so every
+request was resolving routes by scanning the full route list instead of
+the cached array; update the live `~/deploy-sallaamti.sh` on the server
+to match, since this doc isn't what's actually running there.)
+
 This deliberately does **not** run `php artisan migrate` automatically —
 an unattended migration on every push is one bad migration away from
 taking the live site down with nobody watching. Run migrations by hand

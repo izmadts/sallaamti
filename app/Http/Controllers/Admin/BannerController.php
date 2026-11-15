@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Banner;
 use App\Services\ImageOptimizer;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Storage;
 
 class BannerController extends Controller
@@ -36,6 +37,7 @@ class BannerController extends Controller
         $validated['is_active'] = $request->has('is_active');
 
         Banner::create($validated);
+        Cache::forget('home.banners');
         return redirect()->route('admin.banners.index')->with('status', 'Banner created.');
     }
 
@@ -62,6 +64,7 @@ class BannerController extends Controller
 
         $validated['is_active'] = $request->has('is_active');
         $banner->update($validated);
+        Cache::forget('home.banners');
 
         return redirect()->route('admin.banners.index')->with('status', 'Banner updated.');
     }
@@ -70,12 +73,14 @@ class BannerController extends Controller
     {
         Storage::disk('public')->delete($banner->image);
         $banner->delete();
+        Cache::forget('home.banners');
         return back()->with('status', 'Banner deleted.');
     }
 
     public function toggle(Banner $banner)
     {
         $banner->update(['is_active' => !$banner->is_active]);
+        Cache::forget('home.banners');
         return back()->with('status', 'Banner ' . ($banner->is_active ? 'activated' : 'deactivated') . '.');
     }
 }
