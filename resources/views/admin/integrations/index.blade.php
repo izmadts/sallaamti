@@ -44,7 +44,12 @@
                 </h4>
                 @if ($account = $accounts['facebook'] ?? null)
                 <div class="flex items-center gap-2">
+                    @if ($account->status === 'expired')
+                    <span class="text-xs px-2 py-1 rounded-full bg-red-100 text-red-700 font-semibold">⚠️ needs reconnect</span>
+                    <a href="{{ route('admin.integrations.connect', 'facebook') }}" class="text-xs font-semibold px-3 py-1.5 rounded-full text-white" style="background: var(--teal)">Reconnect</a>
+                    @else
                     <span class="text-xs px-2 py-1 rounded-full bg-green-100 text-green-700 font-semibold">✅ {{ $account->display_name }}</span>
+                    @endif
                     <form method="POST" action="{{ route('admin.integrations.disconnect', $account) }}">
                         @csrf
                         <button class="text-xs text-red-500 hover:underline">Disconnect</button>
@@ -54,6 +59,9 @@
                 <a href="{{ route('admin.integrations.connect', 'facebook') }}" class="text-xs font-semibold px-3 py-1.5 rounded-full text-white" style="background: var(--teal)">Connect Facebook</a>
                 @endif
             </div>
+            @if (($accounts['facebook'] ?? null) && $accounts['facebook']->status === 'expired' && $accounts['facebook']->last_error)
+            <p class="text-xs text-red-600 bg-red-50 rounded px-3 py-2">{{ $accounts['facebook']->last_error }}</p>
+            @endif
             <p class="text-xs text-amber-700 bg-amber-50 border border-amber-100 rounded-lg px-3 py-2">
                 Uses its <strong>own</strong> Meta App — a different App ID/Secret from the one under Settings → Social Login (that one is only for member sign-in). Enter this app's credentials below, not that one's.
             </p>
@@ -91,7 +99,11 @@
                 </h4>
                 @if ($account = $accounts['instagram'] ?? null)
                 <div class="flex items-center gap-2">
+                    @if ($account->status === 'expired')
+                    <span class="text-xs px-2 py-1 rounded-full bg-red-100 text-red-700 font-semibold">⚠️ needs reconnect (via Facebook above)</span>
+                    @else
                     <span class="text-xs px-2 py-1 rounded-full bg-green-100 text-green-700 font-semibold">✅ {{ $account->display_name }}</span>
+                    @endif
                     <form method="POST" action="{{ route('admin.integrations.disconnect', $account) }}">
                         @csrf
                         <button class="text-xs text-red-500 hover:underline">Disconnect</button>
@@ -101,6 +113,9 @@
                 <span class="text-xs px-2 py-1 rounded-full bg-gray-100 text-gray-500">Not connected</span>
                 @endif
             </div>
+            @if (($accounts['instagram'] ?? null) && $accounts['instagram']->status === 'expired' && $accounts['instagram']->last_error)
+            <p class="text-xs text-red-600 bg-red-50 rounded px-3 py-2">{{ $accounts['instagram']->last_error }}</p>
+            @endif
             <p class="text-xs text-gray-400">
                 Connected automatically when you connect Facebook above, if that Page has an Instagram Business account linked to it. No Instagram Business account yet? Link one to your Page in Meta Business Suite, then reconnect Facebook.
             </p>
@@ -181,7 +196,12 @@
                     </h4>
                     @if ($account = $accounts['twitter'] ?? null)
                     <div class="flex items-center gap-2">
+                        @if ($account->status === 'expired')
+                        <span class="text-xs px-2 py-1 rounded-full bg-red-100 text-red-700 font-semibold">⚠️ needs reconnect</span>
+                        <a href="{{ route('admin.integrations.connect', 'twitter') }}" class="text-xs font-semibold px-3 py-1.5 rounded-full text-white" style="background: var(--teal)">Reconnect</a>
+                        @else
                         <span class="text-xs px-2 py-1 rounded-full bg-green-100 text-green-700 font-semibold">✅ {{ $account->display_name }}</span>
+                        @endif
                         <form method="POST" action="{{ route('admin.integrations.disconnect', $account) }}">
                             @csrf
                             <button class="text-xs text-red-500 hover:underline">Disconnect</button>
@@ -193,6 +213,9 @@
                     <span class="text-xs text-gray-400 italic">Save credentials below, then connect</span>
                     @endif
                 </div>
+                @if (($accounts['twitter'] ?? null) && $accounts['twitter']->status === 'expired' && $accounts['twitter']->last_error)
+                <p class="text-xs text-red-600 bg-red-50 rounded px-3 py-2">{{ $accounts['twitter']->last_error }}</p>
+                @endif
                 <ol class="text-xs text-gray-500 list-decimal ms-4 space-y-0.5">
                     <li>Go to <span class="font-mono">developer.twitter.com/en/portal/dashboard</span>, create a Project + App (free tier is enough).</li>
                     <li>Under User authentication settings, enable OAuth 2.0, set app type to "Web App, Automated App or Bot" (confidential client), and add the redirect URI below.</li>
@@ -225,7 +248,12 @@
                     </h4>
                     @if ($account = $accounts['youtube'] ?? null)
                     <div class="flex items-center gap-2">
+                        @if ($account->status === 'expired')
+                        <span class="text-xs px-2 py-1 rounded-full bg-red-100 text-red-700 font-semibold">⚠️ needs reconnect</span>
+                        <a href="{{ route('admin.integrations.connect', 'youtube') }}" class="text-xs font-semibold px-3 py-1.5 rounded-full text-white" style="background: var(--teal)">Reconnect</a>
+                        @else
                         <span class="text-xs px-2 py-1 rounded-full bg-green-100 text-green-700 font-semibold">✅ {{ $account->display_name }}</span>
+                        @endif
                         <form method="POST" action="{{ route('admin.integrations.disconnect', $account) }}">
                             @csrf
                             <button class="text-xs text-red-500 hover:underline">Disconnect</button>
@@ -237,6 +265,9 @@
                     <span class="text-xs text-gray-400 italic">Save credentials below, then connect</span>
                     @endif
                 </div>
+                @if (($accounts['youtube'] ?? null) && $accounts['youtube']->status === 'expired' && $accounts['youtube']->last_error)
+                <p class="text-xs text-red-600 bg-red-50 rounded px-3 py-2">{{ $accounts['youtube']->last_error }}</p>
+                @endif
                 <ol class="text-xs text-gray-500 list-decimal ms-4 space-y-0.5">
                     <li>In <span class="font-mono">console.cloud.google.com</span>, create/select a project and enable the "YouTube Data API v3".</li>
                     <li>Configure the OAuth consent screen — it can stay in "Testing" status, just add your own Google account under Test Users (no Google verification needed for one channel).</li>
@@ -269,7 +300,12 @@
                     </h4>
                     @if ($account = $accounts['tiktok'] ?? null)
                     <div class="flex items-center gap-2">
+                        @if ($account->status === 'expired')
+                        <span class="text-xs px-2 py-1 rounded-full bg-red-100 text-red-700 font-semibold">⚠️ needs reconnect</span>
+                        <a href="{{ route('admin.integrations.connect', 'tiktok') }}" class="text-xs font-semibold px-3 py-1.5 rounded-full text-white" style="background: var(--teal)">Reconnect</a>
+                        @else
                         <span class="text-xs px-2 py-1 rounded-full bg-green-100 text-green-700 font-semibold">✅ {{ $account->display_name }}</span>
+                        @endif
                         <form method="POST" action="{{ route('admin.integrations.disconnect', $account) }}">
                             @csrf
                             <button class="text-xs text-red-500 hover:underline">Disconnect</button>
@@ -281,6 +317,9 @@
                     <span class="text-xs text-gray-400 italic">Save credentials below, then connect</span>
                     @endif
                 </div>
+                @if (($accounts['tiktok'] ?? null) && $accounts['tiktok']->status === 'expired' && $accounts['tiktok']->last_error)
+                <p class="text-xs text-red-600 bg-red-50 rounded px-3 py-2">{{ $accounts['tiktok']->last_error }}</p>
+                @endif
                 <ol class="text-xs text-gray-500 list-decimal ms-4 space-y-0.5">
                     <li>Go to <span class="font-mono">developers.tiktok.com/apps</span>, create an app, and add the "Content Posting API" product.</li>
                     <li>Add the redirect URI below under Login Kit → Redirect URI.</li>
@@ -317,7 +356,12 @@
                     </h4>
                     @if ($account = $accounts['threads'] ?? null)
                     <div class="flex items-center gap-2">
+                        @if ($account->status === 'expired')
+                        <span class="text-xs px-2 py-1 rounded-full bg-red-100 text-red-700 font-semibold">⚠️ {{ $account->display_name }} — needs reconnect</span>
+                        <a href="{{ route('admin.integrations.connect', 'threads') }}" class="text-xs font-semibold px-3 py-1.5 rounded-full text-white" style="background: var(--teal)">Reconnect</a>
+                        @else
                         <span class="text-xs px-2 py-1 rounded-full bg-green-100 text-green-700 font-semibold">✅ {{ $account->display_name }}</span>
+                        @endif
                         <form method="POST" action="{{ route('admin.integrations.disconnect', $account) }}">
                             @csrf
                             <button class="text-xs text-red-500 hover:underline">Disconnect</button>
@@ -329,6 +373,9 @@
                     <span class="text-xs text-gray-400 italic">Save credentials below, then connect</span>
                     @endif
                 </div>
+                @if (($account ?? null) && $account->status === 'expired' && $account->last_error)
+                <p class="text-xs text-red-600 bg-red-50 rounded px-3 py-2">{{ $account->last_error }}</p>
+                @endif
                 <ol class="text-xs text-gray-500 list-decimal ms-4 space-y-0.5">
                     <li>Go to <span class="font-mono">developers.facebook.com/apps</span>, click "Create App," and choose the "Access Threads API" use case — this issues a <strong>separate</strong> Threads App ID/Secret, not the same as the Facebook App ID above.</li>
                     <li>Add the redirect URI below as a valid OAuth redirect URI for the Threads use case.</li>

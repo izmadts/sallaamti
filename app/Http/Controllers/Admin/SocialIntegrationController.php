@@ -23,7 +23,14 @@ class SocialIntegrationController extends Controller
 
     public function index()
     {
-        $accounts = SocialAccount::where('status', 'connected')->get()->keyBy('platform');
+        // 'expired' accounts must still show here — PublishCommunityPostToSocialJob
+        // flips a dead token to 'expired' and emails admins once, but this
+        // page used to only query 'connected', so it kept showing a green
+        // "Connected" badge (or even "Connect <platform>" as if never
+        // connected at all) forever after, with no way to see or fix it
+        // here if that one email got missed (found 15 Nov 2026, Threads
+        // posting failure investigation — same gap for every platform).
+        $accounts = SocialAccount::whereIn('status', ['connected', 'expired'])->get()->keyBy('platform');
         $settings = Setting::allKeyed();
 
         return view('admin.integrations.index', ['accounts' => $accounts, 'settings' => $settings]);
