@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Concerns\HasWizardSteps;
 use App\Http\Controllers\Concerns\RecordsCommission;
 use App\Http\Controllers\Controller;
-use App\Models\City;
 use App\Models\Lead;
 use App\Models\LeadShortlistItem;
 use App\Models\MatchmakerApplication;
@@ -580,7 +579,7 @@ class LeadController extends Controller
         $this->authorize_();
 
         $targetCity = $request->filled('city') ? Lead::normalizeCity($request->string('city')) : null;
-        $targetState = $targetCity ? City::query()->whereRaw('LOWER(name) = ?', [mb_strtolower($targetCity)])->value('state') : null;
+        $targetState = Lead::cityState($targetCity);
 
         $counselors = MatchmakerApplication::with('user')
             ->whereIn('status', self::ASSIGNMENT_ELIGIBLE_STAGES)
@@ -589,7 +588,7 @@ class LeadController extends Controller
             ->filter(fn ($application) => $application->user !== null)
             ->map(function ($application) use ($targetCity, $targetState) {
                 $city = Lead::normalizeCity($application->area);
-                $state = $city ? City::query()->whereRaw('LOWER(name) = ?', [mb_strtolower($city)])->value('state') : null;
+                $state = Lead::cityState($city);
                 $sameCity = $targetCity && $city && mb_strtolower($city) === mb_strtolower($targetCity);
                 $sameState = $targetState && $state && $state === $targetState;
                 // The NC app's own API (EnsureUserIsMatchmakerApi) requires

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Cache;
 
 class Lead extends Model
 {
@@ -153,6 +154,17 @@ class Lead extends Model
         'sailkot' => 'Sialkot',
         'pindi' => 'Rawalpindi',
         'isb' => 'Islamabad',
+        'karchi' => 'Karachi',
+        'khi' => 'Karachi',
+        'lhr' => 'Lahore',
+        'rwp' => 'Rawalpindi',
+        'fsd' => 'Faisalabad',
+        // The "pakistan"/"distt"/"district" strip above already turns
+        // "Hyderabad, Pakistan" into plain "Hyderabad" before this map is
+        // even checked, so this entry is only a safety net for an input
+        // shape that regex doesn't catch cleanly — the real India/Pakistan
+        // ambiguity fix is the country='Pakistan' restriction below.
+        'hyderabad pakistan' => 'Hyderabad',
     ];
 
     // "Karachi, Pakistan" / "lahore distt" / "ISB" -> a single clean value
@@ -178,9 +190,55 @@ class Lead extends Model
             $key = mb_strtolower($value);
         }
 
-        $known = City::query()->whereRaw('LOWER(name) = ?', [$key])->value('name');
+        $known = self::pakistanCityMap()[$key] ?? null;
 
         return $known ?? mb_convert_case($value, MB_CASE_TITLE, 'UTF-8');
+    }
+
+    // Every lead/counselor city in this system is a Pakistani one — the
+    // whole point of city-wise assignment is matching a lead to a
+    // Pakistan-based counselor, so there's never a reason to look outside
+    // it. Without this, "Hyderabad" (also a real city in India) could
+    // resolve against the wrong country's row in the ~150k-row `cities`
+    // table, and the lookup itself ran a LOWER(name) = ? query — the
+    // function wrapping stops MySQL from using the existing `name` index at
+    // all, on a table that size. Cached in memory (Pakistan is a few
+    // thousand rows, not 150k) so this never touches the database inside a
+    // loop (e.g. the backfill migration below, or bulk-assign's per-lead
+    // normalization) — a real city is added/renamed rarely enough that a
+    // day's staleness is a non-issue, and `cities:import` already fully
+    // replaces the table in one go when it does happen.
+    private static function pakistanCityMap(): array
+    {
+        return Cache::remember('lead.pakistan_city_map', now()->addDay(), function () {
+            return City::query()
+                ->where('country', 'Pakistan')
+                ->pluck('name')
+                ->mapWithKeys(fn ($name) => [mb_strtolower($name) => $name])
+                ->all();
+        });
+    }
+
+    // Same Pakistan-only, cached, non-functional-index-breaking approach as
+    // normalizeCity() above, for the one other place a city name needs
+    // resolving to something — here, its province, for
+    // Admin\LeadController::counselorsForAssignment()'s same-province
+    // sort. A normalized city name (from normalizeCity()) is expected in.
+    public static function cityState(?string $city): ?string
+    {
+        if (!$city) {
+            return null;
+        }
+
+        $map = Cache::remember('lead.pakistan_city_state_map', now()->addDay(), function () {
+            return City::query()
+                ->where('country', 'Pakistan')
+                ->get(['name', 'state'])
+                ->mapWithKeys(fn ($row) => [mb_strtolower($row->name) => $row->state])
+                ->all();
+        });
+
+        return $map[mb_strtolower($city)] ?? null;
     }
 
     // Last 10 digits: 0300-1234567, +92 300 1234567 and 923001234567 all
