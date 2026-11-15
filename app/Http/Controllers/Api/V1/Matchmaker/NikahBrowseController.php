@@ -121,7 +121,13 @@ class NikahBrowseController extends Controller
             // defaulted from the lead's own requirements rather than typed
             // by the counselor — so the picker's filter fields can show it
             // instead of looking empty while the list is already narrowed.
-            'applied_filters' => $appliedFilters,
+            // Cast to object: a plain browse with zero filters leaves this
+            // array genuinely empty, which json_encode renders as a JSON
+            // array (`[]`), not an object (`{}`) — the app's own code
+            // expects a map/object and crashes decoding a List instead
+            // (found 15 Nov 2026, live-device test: Browse tab went blank
+            // on first open, before any filter was ever set).
+            'applied_filters' => (object) $appliedFilters,
         ]);
     }
 
