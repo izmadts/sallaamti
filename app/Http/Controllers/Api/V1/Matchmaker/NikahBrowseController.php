@@ -32,14 +32,21 @@ class NikahBrowseController extends Controller
 
         $query = NikahProfile::with('user')->matchmakerVisible();
 
-        if ($request->filled('gender')) {
+        if ($lead?->gender) {
+            // Owner, 15 Nov 2026: opposite-gender only when picking for a
+            // specific client is a hard rule, not a default the counselor
+            // can override — a male lead must never be able to shortlist a
+            // male candidate, in either direction. Checked before (and
+            // takes priority over) any client-supplied gender filter.
+            $lockedGender = $lead->gender === 'male' ? 'female' : 'male';
+            $query->whereHas('user', fn ($q) => $q->where('gender', $lockedGender));
+            // Reported even though it's not a real "filter" the counselor
+            // chose — the app uses this to show a locked indicator instead
+            // of an editable Gender dropdown that the server would silently
+            // overrule anyway.
+            $appliedFilters['gender_locked'] = $lockedGender;
+        } elseif ($request->filled('gender')) {
             $query->whereHas('user', fn ($q) => $q->where('gender', $request->gender));
-        } elseif ($lead?->gender) {
-            // Picking a candidate for a client of known gender: default to
-            // the opposite gender rather than showing everyone and relying
-            // on the counselor to remember to filter — still overridable
-            // via the Gender filter above if they explicitly set one.
-            $query->whereHas('user', fn ($q) => $q->where('gender', $lead->gender === 'male' ? 'female' : 'male'));
         }
 
         $city = $request->filled('city') ? $request->city : $requirementValues->get('city');
@@ -174,6 +181,14 @@ class NikahBrowseController extends Controller
             'city' => $profile->city,
             'country' => $profile->country,
             'gender' => $profile->user?->gender,
+            // matchmakerVisible() shows every opted-in profile regardless of
+            // review state — a counselor could never tell a fully-verified
+            // candidate from one that hasn't even finished paying the
+            // verification fee. Mirrors the web member-facing trust badges
+            // (NikahProfile::trustBadges(), resources/views/nikah/partials/
+            // profile-card.blade.php) rather than inventing a separate scheme.
+            'verification_status' => $profile->verification_status,
+            'payment_status' => $profile->payment_status,
         ];
 
         if ($lead) {
