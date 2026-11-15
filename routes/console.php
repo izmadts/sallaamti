@@ -14,7 +14,13 @@ Schedule::command('notifications:prune')->daily();
 Schedule::command('quran:send-class-reminders')->dailyAt('08:00');
 Schedule::command('quran:send-fee-reminders')->dailyAt('08:30');
 Schedule::command('matchmaker:promote-eligible-counselors')->dailyAt('02:00');
-Schedule::command('leads:release-stale')->dailyAt('03:00');
+// Temporarily disabled for tonight's 03:00 run (15 Nov 2026) as a safety
+// net — the command had a real bug (only checked who CREATED a lead, never
+// who it's ASSIGNED to) that would have unassigned all 848 leads currently
+// sitting on the owner's own admin account. Fixed in ReleaseStaleLeads.php;
+// re-enable this line once that fix is deployed and `php artisan
+// leads:release-stale --dry-run` on the server shows a sane count.
+// Schedule::command('leads:release-stale')->dailyAt('03:00');
 Schedule::command('nikah:send-payment-deadline-reminders')->dailyAt('09:00');
 
 // Admin-configurable via Settings (Admin > Integrations) — read fresh on

@@ -592,6 +592,15 @@ class LeadController extends Controller
                 $state = $city ? City::query()->whereRaw('LOWER(name) = ?', [mb_strtolower($city)])->value('state') : null;
                 $sameCity = $targetCity && $city && mb_strtolower($city) === mb_strtolower($targetCity);
                 $sameState = $targetState && $state && $state === $targetState;
+                // The NC app's own API (EnsureUserIsMatchmakerApi) requires
+                // the matchmaker role, which MatchmakerApplication::certify()
+                // is the only place that grants — a Training/Assessed/
+                // Probation applicant can reach this stage list without it,
+                // and a lead "assigned" to them would be invisible in their
+                // app (found 15 Nov 2026, same day bulk-assign shipped).
+                // Still shown here (not filtered out) so admin can see them
+                // in the pipeline; bulkAssign() is the actual hard gate.
+                $hasAppAccess = $application->user->hasRole('matchmaker');
 
                 return [
                     'id' => $application->user->id,
@@ -601,9 +610,11 @@ class LeadController extends Controller
                     'open_leads' => Lead::where('assigned_to', $application->user->id)->whereNotIn('status', Lead::INACTIVE_STATUSES)->count(),
                     'same_city' => (bool) $sameCity,
                     'same_province' => (bool) $sameState,
+                    'has_app_access' => $hasAppAccess,
+                    'ineligible_reason' => $hasAppAccess ? null : 'NC app access after certification',
                 ];
             })
-            ->sortBy(fn ($c) => [$c['same_city'] ? 0 : 1, $c['same_province'] ? 0 : 1, $c['open_leads']])
+            ->sortBy(fn ($c) => [$c['has_app_access'] ? 0 : 1, $c['same_city'] ? 0 : 1, $c['same_province'] ? 0 : 1, $c['open_leads']])
             ->values();
 
         return response()->json(['counselors' => $counselors]);
@@ -628,15 +639,34 @@ class LeadController extends Controller
         $counselor = User::findOrFail($validated['counselor_id']);
         $application = MatchmakerApplication::where('user_id', $counselor->id)->first();
         abort_unless(
-            $counselor->is_active && $application && in_array($application->status, self::ASSIGNMENT_ELIGIBLE_STAGES, true),
+            $counselor->is_active
+                && $application
+                && in_array($application->status, self::ASSIGNMENT_ELIGIBLE_STAGES, true)
+                // Hard gate (15 Nov 2026) — the NC app's own API requires
+                // this role, granted only at certify(). Without this check
+                // a Training/Assessed/Probation applicant could be handed
+                // leads they have no way to even see.
+                && $counselor->hasRole('matchmaker'),
             422,
-            'This counselor is not eligible to receive leads right now.'
+            'This counselor is not eligible to receive leads right now — they need to be certified (NC app access starts then) before leads can be assigned to them.'
         );
 
         $reassign = $request->boolean('reassign');
         $query = Lead::whereIn('id', $validated['lead_ids'])->with('createdBy');
         if (!$reassign) {
-            $query->whereNull('assigned_to');
+            // Owner, 15 Nov 2026: most open leads sit on the admin's own
+            // account (admin both created and self-assigned them, long
+            // before this feature existed) — treating only assigned_to IS
+            // NULL as "unassigned" meant a city batch with re-assign
+            // unticked moved almost nothing, since nearly every lead
+            // already had SOME value there. A lead held by an admin/staff
+            // account is effectively unassigned for this purpose; only a
+            // lead already with another real counselor needs the re-assign
+            // tick to move.
+            $query->where(function ($q) {
+                $q->whereNull('assigned_to')
+                    ->orWhereHas('assignedTo', fn ($aq) => $aq->role('admin'));
+            });
         }
 
         // A lead created by a counselor for themselves stays theirs even

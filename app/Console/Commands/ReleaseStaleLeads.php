@@ -16,7 +16,7 @@ use Illuminate\Console\Command;
 // that's their own client, not one handed to them from the pool.
 class ReleaseStaleLeads extends Command
 {
-    protected $signature = 'leads:release-stale';
+    protected $signature = 'leads:release-stale {--dry-run : List what would be released without changing anything}';
 
     protected $description = 'Unassign open leads whose status hasn\'t changed in 5+ days, returning them to the pool';
 
@@ -24,9 +24,11 @@ class ReleaseStaleLeads extends Command
 
     public function handle(): int
     {
+        $dryRun = $this->option('dry-run');
         $cutoff = now()->subDays(self::STALE_DAYS);
 
-        $candidates = Lead::whereNotNull('assigned_to')
+        $candidates = Lead::with('assignedTo')
+            ->whereNotNull('assigned_to')
             ->whereNotIn('status', Lead::NO_FOLLOW_UP_STATUSES)
             ->get();
 
@@ -41,6 +43,20 @@ class ReleaseStaleLeads extends Command
                 continue;
             }
 
+            // Fixed 15 Nov 2026 (same day this command shipped) — the check
+            // above only ever looked at who CREATED the lead, never who it's
+            // ASSIGNED to. Most open leads sit on the owner's own admin
+            // account (admin both created and self-assigned them), which
+            // sailed straight through and would have been wiped to
+            // "unassigned" tonight — 848 of them. A lead only genuinely sits
+            // "with a counselor" (the thing this command exists to detect)
+            // when the assignee IS a counselor — has the matchmaker role and
+            // isn't also an admin/staff account.
+            $assignee = $lead->assignedTo;
+            if (!$assignee || !$assignee->hasRole('matchmaker') || $assignee->hasRole('admin')) {
+                continue;
+            }
+
             $lastStatusChange = MatchmakingTimelineEvent::where('lead_id', $lead->id)
                 ->where('event_type', 'status_changed')
                 ->latest('created_at')
@@ -51,7 +67,14 @@ class ReleaseStaleLeads extends Command
                 continue;
             }
 
-            $previousCounselor = $lead->assignedTo?->name ?? 'the counselor';
+            $previousCounselor = $assignee->name;
+
+            if ($dryRun) {
+                $this->line("Would release lead #{$lead->id} ({$lead->name}) — currently with {$previousCounselor}, stale since {$staleSince->toDateString()}.");
+                $released++;
+                continue;
+            }
+
             $lead->update(['assigned_to' => null]);
 
             MatchmakingTimelineEvent::log(
@@ -64,7 +87,7 @@ class ReleaseStaleLeads extends Command
             $released++;
         }
 
-        $this->info("Released {$released} stale lead(s) back to the pool.");
+        $this->info(($dryRun ? 'Would release ' : 'Released ') . "{$released} stale lead(s) back to the pool.");
 
         return self::SUCCESS;
     }
