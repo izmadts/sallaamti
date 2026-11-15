@@ -2,7 +2,10 @@
     <x-slot name="header">
         <div class="flex justify-between items-center">
             <h2 class="font-semibold text-xl text-gray-800 leading-tight">Leads</h2>
-            <a href="{{ route('admin.leads.create') }}" class="text-sm font-semibold px-4 py-2 rounded-lg text-white hover:opacity-90" style="background: #0d6b6b">+ Add Lead</a>
+            <div class="flex items-center gap-2">
+                <a href="{{ route('admin.leads.by-counselor') }}" class="text-sm font-semibold px-4 py-2 rounded-lg text-gray-600 border border-gray-300 hover:bg-gray-50">📊 By Counselor</a>
+                <a href="{{ route('admin.leads.create') }}" class="text-sm font-semibold px-4 py-2 rounded-lg text-white hover:opacity-90" style="background: #0d6b6b">+ Add Lead</a>
+            </div>
         </div>
     </x-slot>
 
@@ -84,6 +87,15 @@
                     </select>
                 </div>
                 <div>
+                    <label class="text-xs text-gray-500">City</label>
+                    <select name="city" class="border-gray-300 rounded text-sm block">
+                        <option value="">All Cities</option>
+                        @foreach ($cities as $c)
+                        <option value="{{ $c->city }}" {{ request('city') === $c->city ? 'selected' : '' }}>{{ $c->city }} ({{ $c->open_count }} open)</option>
+                        @endforeach
+                    </select>
+                </div>
+                <div>
                     <label class="text-xs text-gray-500">Assigned To</label>
                     <select name="assigned_to" class="border-gray-300 rounded text-sm block">
                         <option value="">Anyone</option>
@@ -108,10 +120,96 @@
                 <a href="{{ route('admin.leads.index') }}" class="text-sm text-gray-500 px-2">Reset</a>
             </form>
 
+            {{-- Bulk City-wise Assignment (SEO Agent backlog #1, 15 Nov 2026):
+                 checkbox-select leads below (any filter, but typically a
+                 City-filtered page), pick an eligible counselor from the
+                 picker that opens, and move the whole batch in one submit —
+                 see Admin\LeadController::bulkAssign()/counselorsForAssignment(). --}}
+            <div x-data="{
+                    selected: [],
+                    all: @js($leads->pluck('id')),
+                    showAssignModal: false,
+                    counselors: [],
+                    loadingCounselors: false,
+                    counselorId: '',
+                    reassign: false,
+                    openAssignModal() {
+                        this.showAssignModal = true;
+                        this.counselorId = '';
+                        this.loadingCounselors = true;
+                        fetch('{{ route('admin.leads.counselors-for-assignment') }}?city=' + encodeURIComponent(@js(request('city') ?? '')))
+                            .then(r => r.json())
+                            .then(data => { this.counselors = data.counselors || []; })
+                            .catch(() => { this.counselors = []; })
+                            .finally(() => { this.loadingCounselors = false; });
+                    },
+                 }">
+                <form id="leads-bulk-assign-form" method="POST" action="{{ route('admin.leads.bulk-assign') }}">
+                    @csrf
+                    <template x-for="id in selected" :key="id">
+                        <input type="hidden" name="lead_ids[]" :value="id">
+                    </template>
+                    <input type="hidden" name="counselor_id" x-model="counselorId">
+                    <input type="hidden" name="reassign" :value="reassign ? 1 : 0">
+                </form>
+
+                <div class="flex items-center justify-between mb-2" x-show="all.length > 0">
+                    <label class="flex items-center gap-2 text-xs text-gray-500 cursor-pointer select-none">
+                        <input type="checkbox" class="rounded border-gray-300"
+                            @change="selected = $event.target.checked ? [...all] : []"
+                            :checked="selected.length === all.length && all.length > 0">
+                        Select all on this page
+                    </label>
+                    <button type="button" @click="openAssignModal()" x-show="selected.length > 0" x-cloak
+                        class="text-white text-xs font-semibold px-3 py-1.5 rounded-lg hover:opacity-90" style="background:#0d6b6b">
+                        👤 Assign Selected (<span x-text="selected.length"></span>) to Counselor
+                    </button>
+                </div>
+
+                {{-- Assign modal --}}
+                <div x-show="showAssignModal" x-cloak class="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" @keydown.escape.window="showAssignModal = false">
+                    <div class="bg-white rounded-lg shadow-xl w-full max-w-md p-5" @click.outside="showAssignModal = false">
+                        <h3 class="font-semibold text-gray-800 mb-1">Assign <span x-text="selected.length"></span> lead(s)</h3>
+                        <p class="text-xs text-gray-400 mb-3">Eligible counselors (Training or further along, not deactivated) — same city first, then nearby.</p>
+
+                        <div x-show="loadingCounselors" class="text-sm text-gray-400 py-4 text-center">Loading eligible counselors…</div>
+                        <div x-show="!loadingCounselors && counselors.length === 0" class="text-sm text-gray-400 py-4 text-center">No eligible counselor found.</div>
+
+                        <div class="space-y-1 max-h-64 overflow-y-auto" x-show="!loadingCounselors">
+                            <template x-for="c in counselors" :key="c.id">
+                                <label class="flex items-center justify-between gap-2 p-2 rounded border cursor-pointer" :class="counselorId == c.id ? 'border-teal-500 ring-1 ring-teal-500' : 'border-gray-100 hover:bg-gray-50'">
+                                    <span class="flex items-center gap-2 min-w-0">
+                                        <input type="radio" name="counselor_id_radio" :value="c.id" x-model="counselorId">
+                                        <span class="min-w-0">
+                                            <span class="font-medium text-gray-800" x-text="c.name"></span>
+                                            <span class="block text-xs text-gray-400">
+                                                <span x-text="c.city || 'City unknown'"></span> · <span x-text="c.stage"></span> · <span x-text="c.open_leads"></span> open
+                                            </span>
+                                        </span>
+                                    </span>
+                                    <span x-show="c.same_city" class="text-[10px] font-semibold text-teal-600 bg-teal-50 px-1.5 py-0.5 rounded-full whitespace-nowrap">Same city</span>
+                                    <span x-show="!c.same_city && c.same_province" class="text-[10px] font-semibold text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded-full whitespace-nowrap">Nearby</span>
+                                </label>
+                            </template>
+                        </div>
+
+                        <label class="flex items-center gap-1.5 text-xs text-gray-500 mt-3">
+                            <input type="checkbox" x-model="reassign" class="rounded">
+                            Also reassign leads already assigned to someone else
+                        </label>
+
+                        <div class="flex justify-end gap-2 mt-4">
+                            <button type="button" @click="showAssignModal = false" class="text-sm text-gray-500 px-3 py-1.5">Cancel</button>
+                            <button type="submit" form="leads-bulk-assign-form" :disabled="!counselorId" class="disabled:opacity-40 text-white text-sm font-semibold px-4 py-2 rounded-lg" style="background:#0d6b6b">Assign</button>
+                        </div>
+                    </div>
+                </div>
+
             <div class="bg-white rounded-lg shadow-sm overflow-x-auto">
                 <table class="min-w-full text-sm">
                     <thead class="bg-gray-50 text-gray-500 text-xs uppercase">
                         <tr>
+                            <th class="px-4 py-3 text-left"></th>
                             <th class="px-4 py-3 text-left">Name</th>
                             <th class="px-4 py-3 text-left">Contact</th>
                             <th class="px-4 py-3 text-left">Source</th>
@@ -125,6 +223,9 @@
                         @forelse ($leads as $lead)
                         @php($followUpDue = $lead->next_follow_up_at && $lead->next_follow_up_at->lte(today()) && ! in_array($lead->status, \App\Models\Lead::NO_FOLLOW_UP_STATUSES))
                         <tr class="{{ $followUpDue ? 'bg-red-50 hover:bg-red-100' : 'hover:bg-gray-50' }} cursor-pointer" onclick="window.location='{{ route('admin.leads.show', $lead) }}'">
+                            <td class="px-4 py-3" onclick="event.stopPropagation()">
+                                <input type="checkbox" value="{{ $lead->id }}" x-model="selected" class="rounded border-gray-300">
+                            </td>
                             <td class="px-4 py-3">
                                 <p class="font-medium text-gray-800">{{ $lead->name }}</p>
                                 @if ($lead->isConverted())
@@ -182,11 +283,12 @@
                         </tr>
                         @empty
                         <tr>
-                            <td colspan="7" class="px-4 py-8 text-center text-gray-400">No leads match your filters.</td>
+                            <td colspan="8" class="px-4 py-8 text-center text-gray-400">No leads match your filters.</td>
                         </tr>
                         @endforelse
                     </tbody>
                 </table>
+            </div>
             </div>
 
             {{ $leads->links() }}

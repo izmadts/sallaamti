@@ -512,7 +512,13 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     // scope. Gated inside the controller the same way as the walk-in
     // wizard above (nikah.manage OR nikah.create-profile), not admin.only,
     // so a matchmaker can run their own leads without the full admin role.
+    // These two GET routes must stay ahead of the resource() call below —
+    // same reason leads/message-reports does above — or Route::resource's
+    // own GET /leads/{lead} (show) would swallow them first.
+    Route::get('/leads/counselors-for-assignment', [\App\Http\Controllers\Admin\LeadController::class, 'counselorsForAssignment'])->name('leads.counselors-for-assignment');
+    Route::get('/leads/by-counselor', [\App\Http\Controllers\Admin\LeadController::class, 'byCounselorReport'])->name('leads.by-counselor');
     Route::resource('leads', \App\Http\Controllers\Admin\LeadController::class)->except(['edit']);
+    Route::post('/leads/bulk-assign', [\App\Http\Controllers\Admin\LeadController::class, 'bulkAssign'])->name('leads.bulk-assign');
     Route::post('/leads/{lead}/convert', [\App\Http\Controllers\Admin\LeadController::class, 'convert'])->name('leads.convert');
     Route::post('/leads/{lead}/link-profile', [\App\Http\Controllers\Admin\LeadController::class, 'linkProfile'])->name('leads.link-profile');
     Route::post('/leads/{lead}/shortlist', [\App\Http\Controllers\Admin\LeadController::class, 'addToShortlist'])->name('leads.shortlist.add');

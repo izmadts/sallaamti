@@ -14,6 +14,7 @@ class Lead extends Model
         'gender',
         'phone',
         'email',
+        'city',
         'looking_for',
         'source',
         'status',
@@ -141,6 +142,45 @@ class Lead extends Model
         $t = __('db.' . $label);
 
         return $t === 'db.' . $label ? $label : $t;
+    }
+
+    // Shorthand/misspellings seen in free-text "Shehar:" notes and manual
+    // entry that a plain case-insensitive lookup against the `cities` table
+    // (see City::class, ~150k rows) won't catch on its own — checked before
+    // falling back to that table. Not exhaustive; just what the owner
+    // actually hit backfilling real data (15 Nov 2026).
+    private const CITY_ALIASES = [
+        'sailkot' => 'Sialkot',
+        'pindi' => 'Rawalpindi',
+        'isb' => 'Islamabad',
+    ];
+
+    // "Karachi, Pakistan" / "lahore distt" / "ISB" -> a single clean value
+    // matching City::class's own casing wherever possible, so the admin
+    // City filter never shows near-duplicate entries for the same real
+    // city. Returns null for input with nothing left to keep.
+    public static function normalizeCity(?string $raw): ?string
+    {
+        $value = trim((string) $raw);
+        if ($value === '') {
+            return null;
+        }
+
+        $value = preg_replace('/\b(pakistan|distt\.?|district)\b/iu', '', $value) ?? $value;
+        $value = trim($value, " \t\n\r\0\x0B,.-");
+        if ($value === '') {
+            return null;
+        }
+
+        $key = mb_strtolower($value);
+        if (isset(self::CITY_ALIASES[$key])) {
+            $value = self::CITY_ALIASES[$key];
+            $key = mb_strtolower($value);
+        }
+
+        $known = City::query()->whereRaw('LOWER(name) = ?', [$key])->value('name');
+
+        return $known ?? mb_convert_case($value, MB_CASE_TITLE, 'UTF-8');
     }
 
     // Last 10 digits: 0300-1234567, +92 300 1234567 and 923001234567 all

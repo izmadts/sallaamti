@@ -5,12 +5,15 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Concerns\HasWizardSteps;
 use App\Http\Controllers\Concerns\RecordsCommission;
 use App\Http\Controllers\Controller;
+use App\Models\City;
 use App\Models\Lead;
 use App\Models\LeadShortlistItem;
+use App\Models\MatchmakerApplication;
 use App\Models\MatchmakingTimelineEvent;
 use App\Models\NikahPackage;
 use App\Models\NikahProfile;
 use App\Models\User;
+use App\Notifications\LeadsBatchAssigned;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Storage;
@@ -91,6 +94,9 @@ class LeadController extends Controller
         if ($request->filled('payment_status')) {
             $query->where('package_payment_status', $request->payment_status);
         }
+        if ($request->filled('city')) {
+            $query->where('city', $request->city);
+        }
 
         // Follow-ups that are due (the red "Follow-ups Due" card) always come
         // first, oldest due date first, so nobody waiting on a call-back gets
@@ -133,7 +139,20 @@ class LeadController extends Controller
 
         $matchmakers = User::role(['admin', 'matchmaker'])->orderBy('name')->get();
 
-        return view('admin.leads.index', compact('leads', 'stats', 'matchmakers', 'statusCounts', 'statuses', 'sort'));
+        // City filter dropdown (SEO Agent backlog #1, 15 Nov 2026): each
+        // city's count of still-open leads (New / Follow-up / Registered
+        // (Account) / Pending Payment) — the ones batch-assignment actually
+        // cares about moving, not the whole lead history for that city.
+        $openStatuses = ['new', 'contacted', 'account_registered', 'pending_payment'];
+        $cityPlaceholders = implode(',', array_fill(0, count($openStatuses), '?'));
+        $cities = Lead::query()
+            ->whereNotNull('city')->where('city', '!=', '')
+            ->selectRaw("city, COUNT(*) as total, SUM(CASE WHEN status IN ({$cityPlaceholders}) THEN 1 ELSE 0 END) as open_count", $openStatuses)
+            ->groupBy('city')
+            ->orderByDesc('open_count')
+            ->get();
+
+        return view('admin.leads.index', compact('leads', 'stats', 'matchmakers', 'statusCounts', 'statuses', 'sort', 'cities'));
     }
 
     public function create()
@@ -154,6 +173,7 @@ class LeadController extends Controller
             'gender' => ['nullable', 'in:male,female'],
             'phone' => ['nullable', 'string', 'max:30'],
             'email' => ['nullable', 'email', 'max:255'],
+            'city' => ['nullable', 'string', 'max:80'],
             'looking_for' => ['nullable', 'in:self,family_member'],
             'source' => ['required', 'in:facebook,instagram,whatsapp,website,phone,referral,manual,other'],
             'assigned_to' => ['nullable', 'exists:users,id'],
@@ -161,6 +181,7 @@ class LeadController extends Controller
             'next_follow_up_at' => ['nullable', 'date'],
         ]);
 
+        $validated['city'] = Lead::normalizeCity($validated['city'] ?? null);
         $validated['created_by'] = auth()->id();
         $validated['assigned_to'] = $validated['assigned_to'] ?? auth()->id();
 
@@ -230,6 +251,7 @@ class LeadController extends Controller
             'gender' => ['nullable', 'in:male,female'],
             'phone' => ['nullable', 'string', 'max:30'],
             'email' => ['nullable', 'email', 'max:255'],
+            'city' => ['nullable', 'string', 'max:80'],
             'looking_for' => ['nullable', 'in:self,family_member'],
             'source' => ['required', 'in:facebook,instagram,whatsapp,website,phone,referral,manual,other'],
             'status' => ['required', \App\Models\Lead::statusRule()],
@@ -241,6 +263,7 @@ class LeadController extends Controller
             'package_started_at' => ['nullable', 'date'],
         ]);
 
+        $validated['city'] = Lead::normalizeCity($validated['city'] ?? null);
         $packageChanged = ($validated['nikah_package_id'] ?? null) != $lead->nikah_package_id;
 
         // Price/dates are derived from the chosen package by default (an
@@ -537,6 +560,136 @@ class LeadController extends Controller
         MatchmakingTimelineEvent::log($lead, $lead->nikahProfile, 'package_payment_rejected', 'Package payment rejected: ' . $validated['reason']);
 
         return back()->with('status', 'Package payment rejected — the client can resubmit from their progress link.');
+    }
+
+    // Pipeline stages a counselor must have reached before they're trusted
+    // with fresh website leads (SEO Agent backlog #1, 15 Nov 2026, owner's
+    // own words: "naye Nikah Counselors ko batch-wise, shehar ke mutabiq,
+    // carefully assign karein") — never Rejected/Withdrawn, and never
+    // someone who hasn't even finished Training yet.
+    private const ASSIGNMENT_ELIGIBLE_STAGES = ['training', 'assessed', 'probation', 'certified'];
+
+    // Data source for the bulk-assign modal's counselor picker: every
+    // counselor who has reached an eligible pipeline stage and isn't
+    // deactivated, with their own city (self-reported on MatchmakerApplication::area,
+    // normalized the same way lead city is) and current open-lead load —
+    // same-city first, then same-province, then everyone else, ties broken
+    // by whoever has the least on their plate.
+    public function counselorsForAssignment(Request $request)
+    {
+        $this->authorize_();
+
+        $targetCity = $request->filled('city') ? Lead::normalizeCity($request->string('city')) : null;
+        $targetState = $targetCity ? City::query()->whereRaw('LOWER(name) = ?', [mb_strtolower($targetCity)])->value('state') : null;
+
+        $counselors = MatchmakerApplication::with('user')
+            ->whereIn('status', self::ASSIGNMENT_ELIGIBLE_STAGES)
+            ->whereHas('user', fn ($q) => $q->where('is_active', true))
+            ->get()
+            ->filter(fn ($application) => $application->user !== null)
+            ->map(function ($application) use ($targetCity, $targetState) {
+                $city = Lead::normalizeCity($application->area);
+                $state = $city ? City::query()->whereRaw('LOWER(name) = ?', [mb_strtolower($city)])->value('state') : null;
+                $sameCity = $targetCity && $city && mb_strtolower($city) === mb_strtolower($targetCity);
+                $sameState = $targetState && $state && $state === $targetState;
+
+                return [
+                    'id' => $application->user->id,
+                    'name' => $application->user->name,
+                    'city' => $city,
+                    'stage' => MatchmakerApplication::STEPS[$application->status] ?? $application->status,
+                    'open_leads' => Lead::where('assigned_to', $application->user->id)->whereNotIn('status', Lead::INACTIVE_STATUSES)->count(),
+                    'same_city' => (bool) $sameCity,
+                    'same_province' => (bool) $sameState,
+                ];
+            })
+            ->sortBy(fn ($c) => [$c['same_city'] ? 0 : 1, $c['same_province'] ? 0 : 1, $c['open_leads']])
+            ->values();
+
+        return response()->json(['counselors' => $counselors]);
+    }
+
+    // Moves a whole batch (checkbox-selected on the City-filtered leads
+    // list, hard-capped at 50) to one counselor in a single click, writes a
+    // timeline event per lead so the audit trail reads the same as any
+    // other reassignment, and fires exactly ONE push — not one per lead —
+    // so a counselor given 20 leads gets one notification, not 20.
+    public function bulkAssign(Request $request)
+    {
+        $this->authorize_();
+
+        $validated = $request->validate([
+            'lead_ids' => ['required', 'array', 'min:1', 'max:50'],
+            'lead_ids.*' => ['integer', 'exists:leads,id'],
+            'counselor_id' => ['required', 'exists:users,id'],
+            'reassign' => ['nullable', 'boolean'],
+        ]);
+
+        $counselor = User::findOrFail($validated['counselor_id']);
+        $application = MatchmakerApplication::where('user_id', $counselor->id)->first();
+        abort_unless(
+            $counselor->is_active && $application && in_array($application->status, self::ASSIGNMENT_ELIGIBLE_STAGES, true),
+            422,
+            'This counselor is not eligible to receive leads right now.'
+        );
+
+        $reassign = $request->boolean('reassign');
+        $query = Lead::whereIn('id', $validated['lead_ids'])->with('createdBy');
+        if (!$reassign) {
+            $query->whereNull('assigned_to');
+        }
+
+        // A lead created by a counselor for themselves stays theirs even
+        // during a bulk sweep — same rule update() already enforces one
+        // lead at a time (isLockedToCreator()), just applied across a batch.
+        $leads = $query->get()->reject(fn ($lead) => $this->isLockedToCreator($lead));
+
+        if ($leads->isEmpty()) {
+            return back()->with('error', 'No eligible leads in that selection — they may already be assigned, or locked to the counselor who created them.');
+        }
+
+        $admin = auth()->user();
+        foreach ($leads as $lead) {
+            $lead->update(['assigned_to' => $counselor->id]);
+            MatchmakingTimelineEvent::log($lead, $lead->nikahProfile, 'status_changed', "Assigned to {$counselor->name} by {$admin->name}.");
+        }
+
+        $cityLabel = $leads->pluck('city')->filter()->unique()->implode(', ') ?: 'their region';
+
+        try {
+            $counselor->notify(new LeadsBatchAssigned($cityLabel, $leads->count()));
+        } catch (\Throwable $e) {
+            \Log::error('LeadsBatchAssigned notification failed: ' . $e->getMessage());
+        }
+
+        return back()->with('status', "{$leads->count()} lead(s) assigned to {$counselor->name}.");
+    }
+
+    // Admin → Leads → By Counselor: per counselor and city, how much of
+    // what was handed to them has actually moved — assigned vs. contacted
+    // vs. registered vs. paid, and when they last touched any of it.
+    public function byCounselorReport()
+    {
+        $this->authorize_();
+
+        $counselors = User::role(['admin', 'matchmaker'])->orderBy('name')->get();
+        $areas = MatchmakerApplication::whereNotNull('user_id')->pluck('area', 'user_id');
+
+        $rows = $counselors->map(function ($user) use ($areas) {
+            $base = fn () => Lead::where('assigned_to', $user->id);
+
+            return [
+                'user' => $user,
+                'city' => $areas[$user->id] ?? null,
+                'assigned' => $base()->count(),
+                'contacted' => $base()->where('status', 'contacted')->count(),
+                'registered' => $base()->whereIn('status', ['registered', 'account_registered'])->count(),
+                'paid' => $base()->whereIn('status', ['paid', 'verified'])->count(),
+                'last_activity' => $base()->max('updated_at'),
+            ];
+        })->filter(fn ($row) => $row['assigned'] > 0)->sortByDesc('assigned')->values();
+
+        return view('admin.leads.by-counselor', compact('rows'));
     }
 
     // Same permission-gated pattern as Admin\MatchmakerApplicationController::file()

@@ -37,6 +37,7 @@
                             <x-text-input id="email" name="email" type="email" class="w-full mt-1" :value="old('email')" />
                         </div>
                     </div>
+                    <x-lead-city-field :value="old('city')" />
                     <div class="grid grid-cols-2 gap-4">
                         <div>
                             <x-input-label for="gender" value="Gender" />
