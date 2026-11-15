@@ -1079,9 +1079,13 @@
                .page-hero {
                    min-height: 250px !important;
                }
-    
-               .social-btn {
-                   width: 35px;
-                   height: 35px;
+
+               /* UX test, 13 Nov 2026: these were shrinking further on
+                  mobile (was 35px/30px) — below Apple/Google's 44px
+                  minimum touch target, the opposite of what a small
+                  screen needs. Grown to 44px here instead. */
+               .social-btn, .social-btn-sm {
+                   width: 44px;
+                   height: 44px;
                }
            }

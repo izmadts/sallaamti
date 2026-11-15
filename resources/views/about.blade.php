@@ -196,7 +196,7 @@
 
             <div class="flex flex-wrap justify-center gap-3 mb-12">
                 @foreach (['quran' => '📖 '.__('db.Quran Courses'), 'live' => '🎥 '.__('db.Live Classes'), 'nikah' => '💍 '.__('db.Nikah'), 'skills' => '💻 '.__('db.Skills')] as $key => $label)
-                <button @click="tab = '{{ $key }}'" class="px-5 py-2.5 rounded-full text-sm font-semibold border-2 transition"
+                <button @click="tab = '{{ $key }}'" class="px-5 py-3 rounded-full text-sm font-semibold border-2 transition"
                     :class="tab === '{{ $key }}' ? 'text-white' : 'text-gray-500 border-gray-200 hover:border-gray-300'"
                     :style="tab === '{{ $key }}' ? 'background: var(--teal); border-color: var(--teal)' : ''">
                     {{ $label }}
@@ -345,7 +345,7 @@
                                 ['📱 '.__('db.Mobile Apps'), 'Mobile Apps'],
                                 ['📈 '.__('db.Digital Marketing'), 'Digital Marketing'],
                             ] as [$label, $category])
-                            <a href="{{ route('skills.index', ['category' => $category]) }}" class="text-xs font-medium px-3 py-1.5 rounded-full bg-cream text-gray-600 hover:bg-teal-50 hover:text-teal-700 transition">{{ $label }}</a>
+                            <a href="{{ route('skills.index', ['category' => $category]) }}" class="inline-flex items-center text-xs font-medium px-3 py-3.5 rounded-full bg-cream text-gray-600 hover:bg-teal-50 hover:text-teal-700 transition">{{ $label }}</a>
                             @endforeach
                         </div>
                         <a href="{{ route('volunteer.create') }}" class="btn-teal btn-base px-6">{{ __('db.Join as Instructor Volunteer') }}</a>

@@ -42,7 +42,7 @@
                     <h6 class="font-bold text-gray-800 mb-1">{{ $info[1] }}</h6>
                     <p class="text-gray-500 text-sm mb-3">{{ $info[2] }}</p>
                     <a href="{{ $info[3] }}" target="_blank"
-                        class="text-xs font-semibold" style="color: var(--teal)">
+                        class="inline-block text-xs font-semibold py-4 px-2 -mx-2 -my-2" style="color: var(--teal)">
                         {{ $info[4] }} →
                     </a>
                 </div>
@@ -309,7 +309,7 @@
                         <p class="text-gray-500 text-sm mb-0">{{ setting('site_address', 'Karachi, Sindh, Pakistan') }}</p>
                     </div>
                     <a href="https://maps.google.com/?q=Karachi+Pakistan" target="_blank"
-                        class="btn-base btn-teal text-sm px-5 py-2">
+                        class="btn-base btn-teal text-sm px-5 py-3">
                         <i class="fa fa-map-marker-alt mr-2"></i>{{ __('db.Get Directions') }}
                     </a>
                 </div>
