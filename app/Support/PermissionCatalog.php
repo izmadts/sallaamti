@@ -37,6 +37,11 @@ class PermissionCatalog
         'matchmaker-applications' => 'Nikah Counselor Applications',
         'commissions' => 'Matchmaker Commission Rules & Ledger',
         'questions' => 'Ask from Alim/Mufti (review & answer)',
+        // Only ".manage" is wired (Admin\ProposalBatchApprovalController) —
+        // a Probation-stage counselor's "sent" batch waits here for a human
+        // to actually let it reach the client. .view/.delete exist for grid
+        // consistency, same precedent as 'leads' above.
+        'probation-batches' => 'Probation Proposal Batch Approvals',
     ];
 
     public const ACTIONS = [

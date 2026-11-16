@@ -621,6 +621,11 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::get('matchmaker-applications/{matchmakerApplication}/file/{type}', [\App\Http\Controllers\Admin\MatchmakerApplicationController::class, 'file'])->name('matchmaker-applications.file')->middleware('can:matchmaker-applications.view');
     Route::post('matchmaker-applications/{matchmakerApplication}/agreement-link', [\App\Http\Controllers\Admin\MatchmakerApplicationController::class, 'sendAgreementLink'])->name('matchmaker-applications.agreement-link')->middleware('can:matchmaker-applications.manage');
 
+    // Probation proposal-batch approvals (trainee-access addendum, 15/16 Nov 2026)
+    Route::get('proposal-batches', [\App\Http\Controllers\Admin\ProposalBatchApprovalController::class, 'index'])->name('proposal-batches.index')->middleware('can:probation-batches.manage');
+    Route::post('proposal-batches/{batch}/approve', [\App\Http\Controllers\Admin\ProposalBatchApprovalController::class, 'approve'])->name('proposal-batches.approve')->middleware('can:probation-batches.manage');
+    Route::post('proposal-batches/{batch}/reject', [\App\Http\Controllers\Admin\ProposalBatchApprovalController::class, 'reject'])->name('proposal-batches.reject')->middleware('can:probation-batches.manage');
+
     // Static reference/training material — deliberately open to anyone who
     // can reach the admin panel at all (no extra can: gate), since the more
     // staff who can pull this up to train someone, the better. No sensitive

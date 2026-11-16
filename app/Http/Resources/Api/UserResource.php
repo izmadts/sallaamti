@@ -3,6 +3,7 @@
 namespace App\Http\Resources\Api;
 
 use App\Models\MatchmakerApplication;
+use App\Support\MatchmakerStageAccess;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -46,6 +47,15 @@ class UserResource extends JsonResource
             // own tier lookup so the mobile app's top bar can show the same
             // badge (🥉/🥈/🥇/⭐) without a separate round trip at login.
             'tier' => $this->hasRole('matchmaker') ? $this->matchmakerTier() : null,
+            // 15 Nov 2026 trainee-access addendum — null/[]/0 for anyone
+            // without NC-app access at all; 'certified' with every feature
+            // unlocked for a full 'matchmaker'; the real
+            // training/assessed/probation stage (and its narrower feature
+            // set + lead cap) for a 'matchmaker_trainee'. The NC app reads
+            // these instead of hard-coding the feature matrix itself.
+            'nc_stage' => MatchmakerStageAccess::stageFor($this->resource),
+            'nc_features' => MatchmakerStageAccess::featuresFor(MatchmakerStageAccess::stageFor($this->resource)),
+            'nc_lead_cap' => MatchmakerStageAccess::leadCapFor(MatchmakerStageAccess::stageFor($this->resource)),
         ];
     }
 

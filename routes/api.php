@@ -285,21 +285,21 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
             Route::get('clients/{lead}', [MatchmakerApi\ClientController::class, 'show'])->name('clients.show');
             Route::patch('clients/{lead}', [MatchmakerApi\ClientController::class, 'update'])->name('clients.update');
             Route::post('clients/{lead}/link-profile', [MatchmakerApi\ClientController::class, 'linkProfile'])->name('clients.link-profile');
-            Route::post('clients/{lead}/shortlist', [MatchmakerApi\ClientController::class, 'addToShortlist'])->name('clients.shortlist.add');
-            Route::delete('clients/{lead}/shortlist/{item}', [MatchmakerApi\ClientController::class, 'removeFromShortlist'])->name('clients.shortlist.remove');
-            Route::post('clients/{lead}/shortlist/{item}/finalize', [MatchmakerApi\ClientController::class, 'finalizeShortlistItem'])->name('clients.shortlist.finalize');
-            Route::post('clients/{lead}/requirements', [MatchmakerApi\ClientController::class, 'saveRequirement'])->name('clients.requirements.save');
-            Route::post('clients/{lead}/package-payment', [MatchmakerApi\ClientController::class, 'submitPackagePayment'])->name('clients.package-payment.submit');
+            Route::post('clients/{lead}/shortlist', [MatchmakerApi\ClientController::class, 'addToShortlist'])->name('clients.shortlist.add')->middleware('feature:shortlist');
+            Route::delete('clients/{lead}/shortlist/{item}', [MatchmakerApi\ClientController::class, 'removeFromShortlist'])->name('clients.shortlist.remove')->middleware('feature:shortlist');
+            Route::post('clients/{lead}/shortlist/{item}/finalize', [MatchmakerApi\ClientController::class, 'finalizeShortlistItem'])->name('clients.shortlist.finalize')->middleware('feature:shortlist');
+            Route::post('clients/{lead}/requirements', [MatchmakerApi\ClientController::class, 'saveRequirement'])->name('clients.requirements.save')->middleware('feature:requirements');
+            Route::post('clients/{lead}/package-payment', [MatchmakerApi\ClientController::class, 'submitPackagePayment'])->name('clients.package-payment.submit')->middleware('feature:packages');
 
-            Route::post('clients/{lead}/consents', [MatchmakerApi\ClientController::class, 'recordConsent'])->name('clients.consents.record');
-            Route::post('clients/{lead}/consents/request', [MatchmakerApi\ClientController::class, 'requestConsent'])->name('clients.consents.request');
-            Route::post('clients/{lead}/consents/{consent}/revoke', [MatchmakerApi\ClientController::class, 'revokeConsent'])->name('clients.consents.revoke');
+            Route::post('clients/{lead}/consents', [MatchmakerApi\ClientController::class, 'recordConsent'])->name('clients.consents.record')->middleware('feature:consent');
+            Route::post('clients/{lead}/consents/request', [MatchmakerApi\ClientController::class, 'requestConsent'])->name('clients.consents.request')->middleware('feature:consent');
+            Route::post('clients/{lead}/consents/{consent}/revoke', [MatchmakerApi\ClientController::class, 'revokeConsent'])->name('clients.consents.revoke')->middleware('feature:consent');
             Route::post('clients/{lead}/set-password', [MatchmakerApi\ClientController::class, 'setLoginPassword'])->name('clients.set-password');
 
-            Route::post('clients/{lead}/proposal-batches', [MatchmakerApi\ClientController::class, 'createBatch'])->name('clients.batches.create');
-            Route::post('clients/{lead}/proposal-batches/{batch}/proposals', [MatchmakerApi\ClientController::class, 'addProposal'])->name('clients.batches.proposals.add');
-            Route::delete('clients/{lead}/proposal-batches/{batch}/proposals/{proposal}', [MatchmakerApi\ClientController::class, 'removeProposal'])->name('clients.batches.proposals.remove');
-            Route::post('clients/{lead}/proposal-batches/{batch}/send', [MatchmakerApi\ClientController::class, 'sendBatch'])->name('clients.batches.send');
+            Route::post('clients/{lead}/proposal-batches', [MatchmakerApi\ClientController::class, 'createBatch'])->name('clients.batches.create')->middleware('feature:proposal_batch');
+            Route::post('clients/{lead}/proposal-batches/{batch}/proposals', [MatchmakerApi\ClientController::class, 'addProposal'])->name('clients.batches.proposals.add')->middleware('feature:proposal_batch');
+            Route::delete('clients/{lead}/proposal-batches/{batch}/proposals/{proposal}', [MatchmakerApi\ClientController::class, 'removeProposal'])->name('clients.batches.proposals.remove')->middleware('feature:proposal_batch');
+            Route::post('clients/{lead}/proposal-batches/{batch}/send', [MatchmakerApi\ClientController::class, 'sendBatch'])->name('clients.batches.send')->middleware('feature:proposal_batch');
 
             // Stateless walk-in registration — see ClientProfileController's class docblock
             Route::get('clients/{lead}/profile', [MatchmakerApi\ClientProfileController::class, 'show'])->name('clients.profile.show');
@@ -307,9 +307,9 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
             Route::post('clients/{lead}/profile/payment', [MatchmakerApi\ClientProfileController::class, 'payment'])->name('clients.profile.payment');
             Route::get('clients/{lead}/profile/file/{type}', [MatchmakerApi\ClientFileController::class, 'show'])->name('clients.profile.file');
 
-            Route::get('browse', [MatchmakerApi\NikahBrowseController::class, 'index'])->name('browse.index');
-            Route::get('browse/{profile}', [MatchmakerApi\NikahBrowseController::class, 'show'])->name('browse.show');
-            Route::post('browse/{profile}/request-contact', [MatchmakerApi\NikahBrowseController::class, 'requestContact'])->name('browse.request-contact');
+            Route::get('browse', [MatchmakerApi\NikahBrowseController::class, 'index'])->name('browse.index')->middleware('feature:browse');
+            Route::get('browse/{profile}', [MatchmakerApi\NikahBrowseController::class, 'show'])->name('browse.show')->middleware('feature:browse');
+            Route::post('browse/{profile}/request-contact', [MatchmakerApi\NikahBrowseController::class, 'requestContact'])->name('browse.request-contact')->middleware('feature:browse');
 
             Route::get('interests', [MatchmakerApi\InterestController::class, 'index'])->name('interests.index');
             Route::post('interests/{interest}/accept', [MatchmakerApi\InterestController::class, 'accept'])->name('interests.accept');
@@ -317,7 +317,7 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
 
             Route::get('commissions', [MatchmakerApi\CommissionController::class, 'index'])->name('commissions.index');
             Route::get('performance', [MatchmakerApi\PerformanceController::class, 'index'])->name('performance.index');
-            Route::get('referral', [MatchmakerApi\ReferralController::class, 'show'])->name('referral.show');
+            Route::get('referral', [MatchmakerApi\ReferralController::class, 'show'])->name('referral.show')->middleware('feature:referral');
             Route::get('meta/enums', [MatchmakerApi\MetaController::class, 'enums'])->name('meta.enums');
             Route::get('meta/payment-accounts', [MatchmakerApi\MetaController::class, 'paymentAccounts'])->name('meta.payment-accounts');
             Route::get('meta/packages', [MatchmakerApi\MetaController::class, 'packages'])->name('meta.packages');
@@ -330,9 +330,17 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
             Route::post('notifications/{id}/read', [MatchmakerApi\NotificationController::class, 'markRead'])->name('notifications.read');
             Route::post('notifications/read-all', [MatchmakerApi\NotificationController::class, 'markAllRead'])->name('notifications.read-all');
 
-            Route::get('certificate', [MatchmakerApi\CertificateController::class, 'show'])->name('certificate.show');
-            Route::get('certificate/download', [MatchmakerApi\CertificateController::class, 'download'])->name('certificate.download');
-            Route::post('certificate/request-dispatch', [MatchmakerApi\CertificateController::class, 'requestDispatch'])->name('certificate.request-dispatch');
+            Route::get('certificate', [MatchmakerApi\CertificateController::class, 'show'])->name('certificate.show')->middleware('feature:certificate');
+            Route::get('certificate/download', [MatchmakerApi\CertificateController::class, 'download'])->name('certificate.download')->middleware('feature:certificate');
+            Route::post('certificate/request-dispatch', [MatchmakerApi\CertificateController::class, 'requestDispatch'])->name('certificate.request-dispatch')->middleware('feature:certificate');
+
+            // Training Guide + Quiz (15 Nov 2026 addendum) — ungated, visible
+            // at every stage: a trainee takes it to auto-promote
+            // training→assessed, but anyone (already-certified included)
+            // can re-read the guide and see their own past scores any time.
+            Route::get('training/quiz', [MatchmakerApi\TrainingQuizController::class, 'questions'])->name('training.quiz.questions');
+            Route::post('training/quiz/submit', [MatchmakerApi\TrainingQuizController::class, 'submit'])->name('training.quiz.submit');
+            Route::get('training/quiz/attempts', [MatchmakerApi\TrainingQuizController::class, 'attempts'])->name('training.quiz.attempts');
         });
 
         // Deliberately outside the 'api.matchmaker' gate above —

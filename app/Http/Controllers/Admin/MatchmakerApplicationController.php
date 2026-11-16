@@ -117,8 +117,25 @@ class MatchmakerApplicationController extends Controller
             'reviewed_by' => auth()->id(),
         ]);
 
-        if (!$wasCertified && $validated['status'] === 'certified') {
-            $this->certify($matchmakerApplication);
+        // Trainee NC-app access (15 Nov 2026 addendum): moving into Training/
+        // Assessed/Probation grants matchmaker_trainee the same way
+        // certify() grants matchmaker — safe to re-run on an unchanged
+        // value (e.g. admin re-saving an already-Training application just
+        // to backfill its account), since assignRole() is itself guarded.
+        // Moving anywhere else (back before Training, or certified, which
+        // certify() already handles) drops matchmaker_trainee — a revert
+        // should mean no app access below that stage, same as it would for
+        // someone who'd never reached Training at all.
+        $traineeStages = ['training', 'assessed', 'probation'];
+
+        if (in_array($validated['status'], $traineeStages, true)) {
+            $this->grantTraineeAccess($matchmakerApplication);
+        } elseif ($validated['status'] === 'certified') {
+            if (!$wasCertified) {
+                $this->certify($matchmakerApplication);
+            }
+        } elseif ($matchmakerApplication->user?->hasRole('matchmaker_trainee')) {
+            $matchmakerApplication->user->removeRole('matchmaker_trainee');
         }
 
         return back()->with('status', 'Stage updated to "' . MatchmakerApplication::STEPS[$validated['status']] . '".');
@@ -204,6 +221,13 @@ class MatchmakerApplicationController extends Controller
         if ($wasCertified && $matchmakerApplication->user?->hasRole('matchmaker')) {
             $matchmakerApplication->user->removeRole('matchmaker');
         }
+        // Unlike 'matchmaker' above, trainee access isn't gated on
+        // $wasCertified — a rejected Training/Assessed/Probation applicant
+        // never reaches certified at all, but still had real (if limited)
+        // app access that must come off too.
+        if ($matchmakerApplication->user?->hasRole('matchmaker_trainee')) {
+            $matchmakerApplication->user->removeRole('matchmaker_trainee');
+        }
 
         return back()->with('status', 'Application rejected.' . ($wasCertified ? ' Their counselor access has also been revoked.' : ''));
     }
@@ -260,6 +284,9 @@ class MatchmakerApplicationController extends Controller
         // Same gap as reject() above — see that comment.
         if ($wasCertified && $matchmakerApplication->user?->hasRole('matchmaker')) {
             $matchmakerApplication->user->removeRole('matchmaker');
+        }
+        if ($matchmakerApplication->user?->hasRole('matchmaker_trainee')) {
+            $matchmakerApplication->user->removeRole('matchmaker_trainee');
         }
 
         return back()->with('status', 'Application marked as withdrawn.' . ($wasCertified ? ' Their counselor access has also been revoked.' : ''));
@@ -367,7 +394,11 @@ class MatchmakerApplicationController extends Controller
     // code, and issues the certificate through the exact same
     // Certificate/DomPDF/verify() pipeline the volunteer ID card already
     // uses (VolunteerAdminController::approve()).
-    private function certify(MatchmakerApplication $application): void
+    // Shared by certify() and grantTraineeAccess() — finds or creates the
+    // real Sallaamti account this application belongs to, and applies the
+    // password the applicant chose at apply time if this is a brand-new
+    // account. Whoever calls this still owns deciding which role to grant.
+    private function resolveOrCreateUser(MatchmakerApplication $application): User
     {
         $user = $application->user;
 
@@ -375,7 +406,7 @@ class MatchmakerApplicationController extends Controller
         // application form never requires signing in first) used to always
         // get a BRAND NEW account here, even when they already had a real
         // Sallaamti account under the same email (e.g. from the member
-        // app). That left the new 'matchmaker' role and this Certificate
+        // app). That left the new role and (for certify()) the Certificate
         // row attached to a phantom duplicate account the person never
         // actually logs into — their real account shows no certificate and
         // the app's "download certificate" 404s. Matching by email first
@@ -413,8 +444,35 @@ class MatchmakerApplicationController extends Controller
             $user->update(['gender' => $application->gender]);
         }
 
+        return $user;
+    }
+
+    // Addendum (15 Nov 2026, owner approved): an application sitting at
+    // Training/Assessed/Probation no longer has to wait at a dead "under
+    // review" screen until certify() — it gets real, limited NC-app access
+    // now, via the lighter 'matchmaker_trainee' role (see
+    // MatchmakerStageAccess for exactly what that unlocks per stage).
+    // Upgraded to the full 'matchmaker' role at certify(); dropped entirely
+    // if the application moves back before Training, or is rejected/
+    // withdrawn.
+    private function grantTraineeAccess(MatchmakerApplication $application): void
+    {
+        $user = $this->resolveOrCreateUser($application);
+
+        if (!$user->hasRole('matchmaker_trainee') && !$user->hasRole('matchmaker')) {
+            $user->assignRole('matchmaker_trainee');
+        }
+    }
+
+    private function certify(MatchmakerApplication $application): void
+    {
+        $user = $this->resolveOrCreateUser($application);
+
         if (!$user->hasRole('matchmaker')) {
             $user->assignRole('matchmaker');
+        }
+        if ($user->hasRole('matchmaker_trainee')) {
+            $user->removeRole('matchmaker_trainee');
         }
 
         if (!$application->counselor_code) {

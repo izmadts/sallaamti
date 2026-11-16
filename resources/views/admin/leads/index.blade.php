@@ -178,23 +178,23 @@
                         <div class="space-y-1 max-h-64 overflow-y-auto" x-show="!loadingCounselors">
                             <template x-for="c in counselors" :key="c.id">
                                 <label class="flex items-center justify-between gap-2 p-2 rounded border"
-                                    :class="!c.has_app_access ? 'border-gray-100 opacity-50 cursor-not-allowed' : (counselorId == c.id ? 'border-teal-500 ring-1 ring-teal-500 cursor-pointer' : 'border-gray-100 hover:bg-gray-50 cursor-pointer')">
+                                    :class="(!c.has_app_access || c.at_cap) ? 'border-gray-100 opacity-50 cursor-not-allowed' : (counselorId == c.id ? 'border-teal-500 ring-1 ring-teal-500 cursor-pointer' : 'border-gray-100 hover:bg-gray-50 cursor-pointer')">
                                     <span class="flex items-center gap-2 min-w-0">
-                                        <input type="radio" name="counselor_id_radio" :value="c.id" x-model="counselorId" :disabled="!c.has_app_access">
+                                        <input type="radio" name="counselor_id_radio" :value="c.id" x-model="counselorId" :disabled="!c.has_app_access || c.at_cap">
                                         <span class="min-w-0">
                                             <span class="font-medium text-gray-800" x-text="c.name"></span>
-                                            <span class="block text-xs" :class="c.has_app_access ? 'text-gray-400' : 'text-amber-600'">
-                                                <template x-if="c.has_app_access">
-                                                    <span><span x-text="c.city || 'City unknown'"></span> · <span x-text="c.stage"></span> · <span x-text="c.open_leads"></span> open</span>
+                                            <span class="block text-xs" :class="(c.has_app_access && !c.at_cap) ? 'text-gray-400' : 'text-amber-600'">
+                                                <template x-if="c.has_app_access && !c.at_cap">
+                                                    <span><span x-text="c.city || 'City unknown'"></span> · <span x-text="c.stage"></span> · <span x-text="c.open_leads"></span><span x-text="c.lead_cap !== null ? '/' + c.lead_cap : ''"></span> open</span>
                                                 </template>
-                                                <template x-if="!c.has_app_access">
+                                                <template x-if="!c.has_app_access || c.at_cap">
                                                     <span><span x-text="c.stage"></span> — <span x-text="c.ineligible_reason"></span></span>
                                                 </template>
                                             </span>
                                         </span>
                                     </span>
-                                    <span x-show="c.has_app_access && c.same_city" class="text-[10px] font-semibold text-teal-600 bg-teal-50 px-1.5 py-0.5 rounded-full whitespace-nowrap">Same city</span>
-                                    <span x-show="c.has_app_access && !c.same_city && c.same_province" class="text-[10px] font-semibold text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded-full whitespace-nowrap">Nearby</span>
+                                    <span x-show="c.has_app_access && !c.at_cap && c.same_city" class="text-[10px] font-semibold text-teal-600 bg-teal-50 px-1.5 py-0.5 rounded-full whitespace-nowrap">Same city</span>
+                                    <span x-show="c.has_app_access && !c.at_cap && !c.same_city && c.same_province" class="text-[10px] font-semibold text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded-full whitespace-nowrap">Nearby</span>
                                 </label>
                             </template>
                         </div>

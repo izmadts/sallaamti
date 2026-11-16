@@ -52,8 +52,14 @@ class ReleaseStaleLeads extends Command
             // "with a counselor" (the thing this command exists to detect)
             // when the assignee IS a counselor — has the matchmaker role and
             // isn't also an admin/staff account.
+            //
+            // 'matchmaker_trainee' (same-day trainee-access addendum) gets
+            // the same treatment — a Training/Assessed/Probation counselor
+            // can sit on a lead just as a certified one can, and the point
+            // of this command (don't let a lead go stale with no follow-up)
+            // applies just as much to them.
             $assignee = $lead->assignedTo;
-            if (!$assignee || !$assignee->hasRole('matchmaker') || $assignee->hasRole('admin')) {
+            if (!$assignee || (!$assignee->hasRole('matchmaker') && !$assignee->hasRole('matchmaker_trainee')) || $assignee->hasRole('admin')) {
                 continue;
             }
 

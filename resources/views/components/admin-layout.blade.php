@@ -173,6 +173,17 @@
                     <span class="bg-blue-400 text-blue-900 text-xs font-bold px-1.5 py-0.5 rounded-full">{{ $pendingCounselors }}</span>
                     @endif
                 </a>
+                @can('probation-batches.manage')
+                <a href="{{ route('admin.proposal-batches.index') }}"
+                    class="flex items-center justify-between gap-3 px-3 py-2 rounded-lg transition
+                          {{ request()->routeIs('admin.proposal-batches*') ? 'bg-teal-700 text-white' : 'text-teal-100 hover:bg-teal-800' }}">
+                    <span class="flex items-center gap-3"><span class="text-base">📋</span> Batches Awaiting Approval</span>
+                    @php $pendingBatches = \App\Models\ProposalBatch::where('status', 'pending_approval')->count(); @endphp
+                    @if ($pendingBatches > 0)
+                    <span class="bg-blue-400 text-blue-900 text-xs font-bold px-1.5 py-0.5 rounded-full">{{ $pendingBatches }}</span>
+                    @endif
+                </a>
+                @endcan
                 <a href="{{ route('admin.commissions.ledger') }}"
                     class="flex items-center justify-between gap-3 px-3 py-2 rounded-lg transition
                           {{ request()->routeIs('admin.commissions.*') && !request()->routeIs('admin.commissions.rules*') ? 'bg-teal-700 text-white' : 'text-teal-100 hover:bg-teal-800' }}">

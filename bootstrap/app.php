@@ -27,6 +27,7 @@ return Application::configure(basePath: dirname(__DIR__))
         'counselor' => \App\Http\Middleware\EnsureUserIsCounselor::class,
         'matchmaker' => \App\Http\Middleware\EnsureUserIsMatchmaker::class,
         'api.matchmaker' => \App\Http\Middleware\EnsureUserIsMatchmakerApi::class,
+        'feature' => \App\Http\Middleware\EnsureFeatureUnlocked::class,
         ]);
     })->withMiddleware(function (Middleware $middleware) {
     $middleware->web(append: [

@@ -16,7 +16,9 @@ use App\Models\NikahProfile;
 use App\Models\ProposalBatch;
 use App\Models\User;
 use App\Notifications\NewPackagePaymentSubmitted;
+use App\Notifications\ProposalBatchAwaitingApproval;
 use App\Services\ImageOptimizer;
+use App\Services\Matchmaking\ProposalBatchDispatcher;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -556,19 +558,28 @@ class ClientController extends Controller
             return response()->json(['message' => "This client's {$lead->nikahPackage->name} package only has {$remaining} {$word} remaining, but this batch has {$batch->proposals()->count()}."], 422);
         }
 
-        $now = now();
-        $batch->proposals()->update(['status' => 'sent', 'sent_at' => $now]);
-        $batch->update(['status' => 'sent', 'sent_at' => $now]);
+        // Trainee-access addendum (15/16 Nov 2026) — a Probation counselor's
+        // "Send" doesn't reach the client directly; it waits for an admin/
+        // senior to approve it first (Admin\ProposalBatchApprovalController).
+        // A certified matchmaker (or an admin acting as one) always sends
+        // straight through, same as before this addendum.
+        if (auth()->user()->hasRole('matchmaker_trainee') && !auth()->user()->hasRole('matchmaker')) {
+            $batch->update(['status' => 'pending_approval']);
 
-        MatchmakingTimelineEvent::log($lead, $lead->nikahProfile, 'proposal_batch_sent', "Proposal Batch #{$batch->batch_number} sent ({$batch->proposals()->count()} candidates).");
+            MatchmakingTimelineEvent::log($lead, $batch->nikahProfile, 'proposal_batch_pending_approval', "Proposal Batch #{$batch->batch_number} sent for admin approval ({$batch->proposals()->count()} candidates).");
 
-        if ($lead->nikahProfile?->user) {
-            try {
-                $lead->nikahProfile->user->notify(new \App\Notifications\NewProposalBatchReceived($batch));
-            } catch (\Throwable $e) {
-                \Log::error('NewProposalBatchReceived notification failed: ' . $e->getMessage());
-            }
+            User::role('admin')->each(function ($admin) use ($batch) {
+                try {
+                    $admin->notify(new ProposalBatchAwaitingApproval($batch));
+                } catch (\Throwable $e) {
+                    \Log::error('ProposalBatchAwaitingApproval notification failed: ' . $e->getMessage());
+                }
+            });
+
+            return response()->json(['batch' => $this->batchPayload($batch->fresh('proposals.candidate.user'))]);
         }
+
+        app(ProposalBatchDispatcher::class)->dispatch($batch);
 
         return response()->json(['batch' => $this->batchPayload($batch->fresh('proposals.candidate.user'))]);
     }

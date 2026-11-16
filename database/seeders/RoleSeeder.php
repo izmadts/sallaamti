@@ -23,6 +23,10 @@ class RoleSeeder extends Seeder
         Role::firstOrCreate(['name' => 'donor']);
         Role::firstOrCreate(['name' => 'volunteer']);
         Role::firstOrCreate(['name' => 'matchmaker']);
+        // Limited NC-app access for an application still at Training/
+        // Assessed/Probation — see MatchmakerStageAccess for the feature
+        // matrix. Upgraded to 'matchmaker' at certify().
+        Role::firstOrCreate(['name' => 'matchmaker_trainee']);
 
     }
 }
