@@ -10,6 +10,7 @@ use App\Models\MatchmakerReferral;
 use App\Models\NikahProfile;
 use App\Models\User;
 use App\Notifications\MatchmakerCommissionEarned;
+use App\Support\MatchmakerStageAccess;
 
 // Where a matchmaking commission actually gets recorded — deliberately
 // the only place either trigger point (payment confirmation, package
@@ -43,7 +44,13 @@ trait RecordsCommission
             $matchmaker = $referral?->counselor;
         }
 
-        if (!$matchmaker || !$matchmaker->hasRole('matchmaker')) {
+        // Found live (16 Nov 2026) — trainee-access addendum's own spec:
+        // "verified-profile commission at base tier from Training." This
+        // only ever checked hasRole('matchmaker'), so a Training/Assessed/
+        // Probation counselor (matchmaker_trainee) never earned anything
+        // here at all. stageFor() returns non-null for any real NC stage,
+        // trainee or certified alike.
+        if (!$matchmaker || MatchmakerStageAccess::stageFor($matchmaker) === null) {
             return;
         }
 
@@ -97,8 +104,13 @@ trait RecordsCommission
     private function recordPackageCommission(Lead $lead): void
     {
         $matchmaker = $lead->assignedTo;
+        $stage = $matchmaker ? MatchmakerStageAccess::stageFor($matchmaker) : null;
 
-        if (!$matchmaker || !$matchmaker->hasRole('matchmaker') || !$lead->nikah_package_id) {
+        // Spec: "package commission from Probation" — stricter than
+        // verified-profile commission above. Reuses the same 'packages'
+        // feature-matrix entry Probation unlocks elsewhere, so this can
+        // never drift out of sync with what the NC app actually shows her.
+        if (!$matchmaker || $stage === null || !in_array('packages', MatchmakerStageAccess::featuresFor($stage), true) || !$lead->nikah_package_id) {
             return;
         }
 

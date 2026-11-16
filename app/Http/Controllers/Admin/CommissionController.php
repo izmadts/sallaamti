@@ -64,7 +64,9 @@ class CommissionController extends Controller
         }
 
         $entries = $query->paginate(25)->withQueryString();
-        $matchmakers = User::role('matchmaker')->orderBy('name')->get();
+        // A trainee can now earn commission too (RecordsCommission, 16 Nov
+        // 2026 fix) — this filter needs to find their entries just as well.
+        $matchmakers = User::role(['matchmaker', 'matchmaker_trainee'])->orderBy('name')->get();
         $totals = [
             'pending' => CommissionLedgerEntry::where('status', 'pending')->sum('commission_amount'),
             'approved' => CommissionLedgerEntry::where('status', 'approved')->sum('commission_amount'),

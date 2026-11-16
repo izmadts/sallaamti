@@ -137,7 +137,13 @@ class LeadController extends Controller
         ];
         $statusCounts = Lead::selectRaw('status, COUNT(*) as n')->groupBy('status')->pluck('n', 'status')->all();
 
-        $matchmakers = User::role(['admin', 'matchmaker'])->orderBy('name')->get();
+        // Found live (16 Nov 2026) — this plain role query never included
+        // matchmaker_trainee, so a Training/Assessed/Probation counselor
+        // (the whole point of the trainee-access addendum) was invisible
+        // here even though counselorsForAssignment()'s own richer picker
+        // already accounted for them. Fixed everywhere this exact query is
+        // used (index/create/show's own "Assigned To" dropdowns).
+        $matchmakers = User::role(['admin', 'matchmaker', 'matchmaker_trainee'])->orderBy('name')->get();
 
         // City filter dropdown (SEO Agent backlog #1, 15 Nov 2026): each
         // city's count of still-open leads (New / Follow-up / Registered
@@ -159,7 +165,13 @@ class LeadController extends Controller
     {
         $this->authorize_();
 
-        $matchmakers = User::role(['admin', 'matchmaker'])->orderBy('name')->get();
+        // Found live (16 Nov 2026) — this plain role query never included
+        // matchmaker_trainee, so a Training/Assessed/Probation counselor
+        // (the whole point of the trainee-access addendum) was invisible
+        // here even though counselorsForAssignment()'s own richer picker
+        // already accounted for them. Fixed everywhere this exact query is
+        // used (index/create/show's own "Assigned To" dropdowns).
+        $matchmakers = User::role(['admin', 'matchmaker', 'matchmaker_trainee'])->orderBy('name')->get();
 
         return view('admin.leads.create', compact('matchmakers'));
     }
@@ -209,7 +221,13 @@ class LeadController extends Controller
             'consents.recordedBy', 'consents.revokedBy', 'consentRequests.requestedBy',
             'proposalBatches.proposals.candidate.user',
         ]);
-        $matchmakers = User::role(['admin', 'matchmaker'])->orderBy('name')->get();
+        // Found live (16 Nov 2026) — this plain role query never included
+        // matchmaker_trainee, so a Training/Assessed/Probation counselor
+        // (the whole point of the trainee-access addendum) was invisible
+        // here even though counselorsForAssignment()'s own richer picker
+        // already accounted for them. Fixed everywhere this exact query is
+        // used (index/create/show's own "Assigned To" dropdowns).
+        $matchmakers = User::role(['admin', 'matchmaker', 'matchmaker_trainee'])->orderBy('name')->get();
         // One-time packages (e.g. "Sallaamti Verified") aren't a real
         // matchmaking service a counselor assigns — every profile already
         // pays its own verification fee automatically, which fires its own
@@ -725,7 +743,10 @@ class LeadController extends Controller
     {
         $this->authorize_();
 
-        $counselors = User::role(['admin', 'matchmaker'])->orderBy('name')->get();
+        // Same gap as the "Assigned To" dropdowns above — a trainee can
+        // hold and work leads now too, so their activity belongs in this
+        // report.
+        $counselors = User::role(['admin', 'matchmaker', 'matchmaker_trainee'])->orderBy('name')->get();
         $areas = MatchmakerApplication::whereNotNull('user_id')->pluck('area', 'user_id');
 
         $rows = $counselors->map(function ($user) use ($areas) {

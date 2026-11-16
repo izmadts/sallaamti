@@ -78,7 +78,10 @@ class ClientController extends Controller
             'follow_ups_due' => (clone $mine)->whereDate('next_follow_up_at', '<=', now())->whereNotIn('status', \App\Models\Lead::NO_FOLLOW_UP_STATUSES)->count(),
         ];
 
-        $matchmakers = $canManageTeam ? User::role(['admin', 'matchmaker'])->orderBy('name')->get() : collect();
+        // Found live (16 Nov 2026) — same gap as the admin side: a
+        // Training/Assessed/Probation counselor (matchmaker_trainee) was
+        // invisible to a senior counselor reassigning within their team.
+        $matchmakers = $canManageTeam ? User::role(['admin', 'matchmaker', 'matchmaker_trainee'])->orderBy('name')->get() : collect();
 
         return view('matchmaker.clients.index', compact('clients', 'stats', 'canManageTeam', 'matchmakers'));
     }
@@ -86,7 +89,10 @@ class ClientController extends Controller
     public function create()
     {
         $canManageTeam = $this->canManageTeam();
-        $matchmakers = $canManageTeam ? User::role(['admin', 'matchmaker'])->orderBy('name')->get() : collect();
+        // Found live (16 Nov 2026) — same gap as the admin side: a
+        // Training/Assessed/Probation counselor (matchmaker_trainee) was
+        // invisible to a senior counselor reassigning within their team.
+        $matchmakers = $canManageTeam ? User::role(['admin', 'matchmaker', 'matchmaker_trainee'])->orderBy('name')->get() : collect();
 
         return view('matchmaker.clients.create', compact('canManageTeam', 'matchmakers'));
     }
@@ -172,7 +178,10 @@ class ClientController extends Controller
         }
 
         $canManageTeam = $this->canManageTeam();
-        $matchmakers = $canManageTeam ? User::role(['admin', 'matchmaker'])->orderBy('name')->get() : collect();
+        // Found live (16 Nov 2026) — same gap as the admin side: a
+        // Training/Assessed/Probation counselor (matchmaker_trainee) was
+        // invisible to a senior counselor reassigning within their team.
+        $matchmakers = $canManageTeam ? User::role(['admin', 'matchmaker', 'matchmaker_trainee'])->orderBy('name')->get() : collect();
         $lockedToCreator = $this->isLockedToCreator($lead);
 
         return view('matchmaker.clients.show', compact('lead', 'searchResults', 'suggestions', 'canManageTeam', 'matchmakers', 'lockedToCreator'));
