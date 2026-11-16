@@ -15,7 +15,14 @@ use Symfony\Component\HttpFoundation\Response;
 // 'matchmaker_trainee' has a stage-limited feature set.
 class EnsureFeatureUnlocked
 {
-    public function handle(Request $request, string $feature, Closure $next): Response
+    // Found live (16 Nov 2026): Laravel always passes $next as the second
+    // argument to a parameterized middleware's handle() — any ->middleware
+    // ('feature:x')-bound parameters come AFTER it, not before. Had this
+    // backwards, which 500'd every single feature-gated route (Browse,
+    // Shortlist, Requirements, Consent, Proposal Batch, Packages, Referral,
+    // Certificate) for every account, trainee and certified alike, since
+    // the TypeError happens before the role check ever runs.
+    public function handle(Request $request, Closure $next, string $feature): Response
     {
         $user = $request->user();
 
