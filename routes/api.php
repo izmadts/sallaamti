@@ -68,6 +68,10 @@ Route::prefix('v1')->name('api.v1.')->group(function () {
     // NikahCounselorApplicationController's class docblock. Throttled like
     // the auth endpoints above since it's an unauthenticated write.
     Route::post('nikah-counselor-application', [NikahCounselorApplicationController::class, 'store'])->middleware('throttle:5,1')->name('nikah-counselor-application.store');
+    // Upload-as-you-pick (16 Nov 2026) — lets the NC app push the selfie to
+    // the server the moment it's taken, well before the final submit, so a
+    // slow connection doesn't cost the applicant their whole filled-in form.
+    Route::post('nikah-counselor-application/selfie', [NikahCounselorApplicationController::class, 'uploadSelfie'])->middleware('throttle:10,1')->name('nikah-counselor-application.selfie');
 
     // Digital Library — free booklets, no login needed (mirrors the public
     // /library web page). Only the event counter write needs throttling.

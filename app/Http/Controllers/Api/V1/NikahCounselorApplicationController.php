@@ -20,6 +20,25 @@ class NikahCounselorApplicationController extends Controller
 {
     use RegistersMinimalUsers;
 
+    // Found live (16 Nov 2026): on a slow mobile connection, submitting the
+    // whole application in one multipart request (text fields + selfie
+    // together) meant the selfie upload alone could blow the request
+    // timeout and the applicant lost everything they'd typed, not just the
+    // photo. The NC app now calls this the moment a selfie is picked —
+    // while the applicant is still filling in the rest of the form, not
+    // racing a timeout — and store() below accepts the returned path
+    // instead of the raw file.
+    public function uploadSelfie(Request $request): JsonResponse
+    {
+        $request->validate([
+            'selfie_photo' => ['required', 'image', 'max:4096'],
+        ]);
+
+        $path = ImageOptimizer::store($request->file('selfie_photo'), 'matchmaker-applications/selfies', 'private');
+
+        return response()->json(['path' => $path], 201);
+    }
+
     public function store(Request $request): JsonResponse
     {
         $validated = $request->validate([
@@ -36,7 +55,11 @@ class NikahCounselorApplicationController extends Controller
             'marital_status' => ['required', 'in:never_married,divorced,widowed,married,separated'],
             'qualification' => ['required', 'in:' . implode(',', array_keys(MatchmakerApplication::QUALIFICATIONS))],
             'qualification_other' => ['required_if:qualification,other', 'nullable', 'string', 'max:100'],
-            'selfie_photo' => ['required', 'image', 'max:4096'],
+            // Either a raw file (web form, or an older app build) or the
+            // path uploadSelfie() already returned (current app build) —
+            // never both required at once.
+            'selfie_photo' => ['required_without:selfie_photo_path', 'nullable', 'image', 'max:4096'],
+            'selfie_photo_path' => ['required_without:selfie_photo', 'nullable', 'string'],
             // CNIC number stays looking mandatory on the form; CNIC front/
             // back photo upload is retired here too, same policy change as
             // the member Nikah profile.
@@ -56,7 +79,21 @@ class NikahCounselorApplicationController extends Controller
             'password' => ['required', 'string', 'min:8', 'confirmed'],
         ]);
 
-        $validated['selfie_photo'] = ImageOptimizer::store($request->file('selfie_photo'), 'matchmaker-applications/selfies', 'private');
+        if ($request->hasFile('selfie_photo')) {
+            $validated['selfie_photo'] = ImageOptimizer::store($request->file('selfie_photo'), 'matchmaker-applications/selfies', 'private');
+        } else {
+            // Trust it only after confirming it's really a file uploadSelfie()
+            // itself stored (not an arbitrary client-supplied path) and that
+            // it's still actually there.
+            $path = $validated['selfie_photo_path'];
+            abort_unless(
+                str_starts_with($path, 'matchmaker-applications/selfies/') && \Illuminate\Support\Facades\Storage::disk('private')->exists($path),
+                422,
+                'That selfie upload has expired or is missing — please retake it.'
+            );
+            $validated['selfie_photo'] = $path;
+        }
+        unset($validated['selfie_photo_path']);
 
         // This endpoint is guest-only (no auth:sanctum), unlike the web
         // controller — so there's no "already signed in" case to check here.
