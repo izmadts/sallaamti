@@ -73,12 +73,10 @@ trait ValidatesNikahProfile
             'guardian_relation' => ['nullable', 'string', 'max:100'],
             'about' => ['nullable', 'string', 'max:2000'],
             'expectations' => ['required', 'string', 'max:2000'],
-            // CNIC number stays on the form looking mandatory (the UI still
-            // marks it required and never says otherwise — that's
-            // deliberate), but the backend no longer actually enforces it:
+            // CNIC number is genuinely optional, in the UI and here —
             // members were avoiding the identity-verification step
             // altogether rather than upload a CNIC. Payment confirmation is
-            // now the verification signal (see Admin\NikahVerificationController
+            // the verification signal (see Admin\NikahVerificationController
             // ::approve(), which only ever checked payment_status anyway).
             'cnic_number' => [
                 'nullable',

@@ -22,7 +22,7 @@
 <h3>💍 Nikah Management</h3>
 <ul>
     <li><strong>Leads</strong> — the matchmaker CRM: capture a WhatsApp/Facebook/Instagram contact before they're a real account, track status/follow-ups/notes, "Convert to Client" to hand off into the same walk-in wizard below with their name/contact pre-filled, build a shortlist of candidates for them, and track a simple matchmaking package + price. Full admins see every matchmaker's leads; a matchmaker sees only their own.</li>
-    <li><strong>All Profiles</strong> / <strong>Verifications</strong> — review new profiles (CNIC number + front/back photos), Approve or Reject with a reason. Bulk-approve is available for straightforward cases. Send a reminder to profiles stuck incomplete.</li>
+    <li><strong>All Profiles</strong> / <strong>Verifications</strong> — review new profiles once their verification fee payment is submitted (CNIC number is optional, shown if provided), Approve or Reject with a reason. Bulk-approve is available for straightforward cases. Send a reminder to profiles stuck incomplete.</li>
     <li><strong>Payments</strong> — confirm or reject the one-time verification fee before a profile can go live; you can also record an offline payment manually.</li>
     <li><strong>Reports</strong> — safety reports members file against each other; view the conversation history attached to a report (if any) and suspend a profile if warranted. Dismiss reports that don't need action.</li>
     <li><strong>Contact Requests</strong> — matchmaker-initiated introductions awaiting your Approve/Deny decision.</li>

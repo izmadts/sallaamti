@@ -60,7 +60,7 @@ class NikahCounselorApplicationController extends Controller
             // never both required at once.
             'selfie_photo' => ['required_without:selfie_photo_path', 'nullable', 'image', 'max:4096'],
             'selfie_photo_path' => ['required_without:selfie_photo', 'nullable', 'string'],
-            // CNIC number stays looking mandatory on the form; CNIC front/
+            // CNIC number is optional, on the form and here; CNIC front/
             // back photo upload is retired here too, same policy change as
             // the member Nikah profile.
             'cnic_number' => ['nullable', 'string', 'max:20', 'unique:matchmaker_applications,cnic_number'],

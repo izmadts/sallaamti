@@ -24,10 +24,10 @@
     <li><strong>Family & Background</strong> — caste, family type, guardian name/contact/relation, ethnicity, languages spoken.</li>
     <li><strong>Deen & Lifestyle</strong> — sect, prayer regularity, hijab/beard, smoking, diet, openness to polygamy.</li>
     <li><strong>About & Preferences</strong> — about you, what you're looking for, and preferences for a match (age range, city, sect, education, marital status).</li>
-    <li><strong>Photos & Verification</strong> — CNIC number + front/back photos (required), an optional profile photo, whether to allow your photo to be shared after mutual interest, and profile visibility (four levels — see below).</li>
+    <li><strong>Photos & Verification</strong> — CNIC number (optional), your profile photo, whether to allow your photo to be shared after mutual interest, and profile visibility (four levels — see below).</li>
 </ol>
 <ul>
-    <li><strong>Verification is mandatory</strong> — your profile isn't visible to anyone until an admin verifies your CNIC and your one-time verification fee payment is confirmed (submit via JazzCash/Easypaisa/bank transfer + screenshot).</li>
+    <li><strong>Verification is mandatory</strong> — your profile isn't visible to anyone until an admin confirms your one-time verification fee payment (submit via JazzCash/Easypaisa/bank transfer + screenshot). CNIC is optional and never required for verification.</li>
     <li><strong>Profile Visibility — four levels, your choice</strong>: <em>Anyone can find me</em> (shows in Browse and in Google search results); <em>Sallaamti members only</em> (shows in Browse, but not on Google); <em>Only my Nikah Counselor can find me</em> (hidden from everyone browsing — a Nikah Counselor assisting you can still find and suggest you); <em>Nobody can find me by searching</em> (fully hidden from all search/browse — only someone who already has your exact profile, like a Nikah Counselor you've spoken to directly, can work with it). You can change this anytime from your profile's Edit page.</li>
     <li><strong>Browse</strong> shows opposite-gender, verified, active profiles set to "Anyone can find me" or "Sallaamti members only" that match your filters. <strong>Saved Profiles</strong> lets you bookmark ones to revisit.</li>
     <li><strong>Interest</strong>: send interest to start things off; the other person can Accept or Decline. Once accepted, a guardian-to-guardian messaging thread opens up for the two families to talk directly and safely.</li>

@@ -65,7 +65,7 @@ class NikahCounselorApplicationController extends Controller
             'qualification' => ['required', 'in:' . implode(',', array_keys(MatchmakerApplication::QUALIFICATIONS))],
             'qualification_other' => ['required_if:qualification,other', 'nullable', 'string', 'max:100'],
             'selfie_photo' => ['required', 'image', 'max:4096'],
-            // CNIC number stays looking mandatory on the form; CNIC front/
+            // CNIC number is optional, on the form and here; CNIC front/
             // back photo upload is retired here too, same policy change as
             // the member Nikah profile.
             'cnic_number' => ['nullable', 'string', 'max:20', 'unique:matchmaker_applications,cnic_number'],

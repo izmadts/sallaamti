@@ -160,10 +160,10 @@
                                 <p class="text-sm font-semibold text-gray-700 mb-3">🪪 {{ __('db.Identity Verification') }}</p>
                                 <div class="grid sm:grid-cols-2 gap-4">
                                     <div>
-                                        <label for="cnic_number" class="auth-label">{{ __('db.CNIC Number') }} <span class="text-red-400">*</span></label>
+                                        <label for="cnic_number" class="auth-label">{{ __('db.CNIC Number (Optional)') }}</label>
                                         <div class="auth-input-wrap">
                                             <i class="fa fa-id-card auth-icon"></i>
-                                            <input id="cnic_number" type="text" name="cnic_number" value="{{ old('cnic_number') }}" required class="auth-input @error('cnic_number') auth-input-error @enderror" placeholder="XXXXX-XXXXXXX-X">
+                                            <input id="cnic_number" type="text" name="cnic_number" value="{{ old('cnic_number') }}" class="auth-input @error('cnic_number') auth-input-error @enderror" placeholder="XXXXX-XXXXXXX-X">
                                         </div>
                                         <x-input-error :messages="$errors->get('cnic_number')" class="mt-1" />
                                     </div>

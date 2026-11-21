@@ -291,8 +291,8 @@
                             </div>
                             @else
                             <div>
-                                <x-input-label for="cnic_number" value="CNIC Number" />
-                                <x-text-input id="cnic_number" name="cnic_number" type="text" class="w-full mt-1" :value="old('cnic_number')" required
+                                <x-input-label for="cnic_number" value="CNIC Number (Optional)" />
+                                <x-text-input id="cnic_number" name="cnic_number" type="text" class="w-full mt-1" :value="old('cnic_number')"
                                     placeholder="{{ __('db.e.g. 12345-1234567-1') }}" />
                             </div>
                             @endif
