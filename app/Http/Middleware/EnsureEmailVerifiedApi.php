@@ -26,7 +26,17 @@ class EnsureEmailVerifiedApi
         $user = $request->user();
 
         if ($user && $user->email && !$user->email_verified_at) {
-            abort(403, __('db.Please verify your email before doing this — check your inbox for the code, or tap "Resend code" in the app.'));
+            // 'code' (16 Nov 2026 fix) — plain abort(403, $message) gave the
+            // app only prose to show, with nowhere to actually act on it
+            // (no screen anywhere in the app had an email-code entry field
+            // reachable once already logged in). A stable machine-readable
+            // code lets the app recognize this specific case and pop the
+            // verification dialog itself, in any language, rather than
+            // string-matching the translated message.
+            return response()->json([
+                'message' => __('db.Please verify your email before doing this — check your inbox for the code, or tap "Resend code" in the app.'),
+                'code' => 'email_not_verified',
+            ], 403);
         }
 
         return $next($request);
