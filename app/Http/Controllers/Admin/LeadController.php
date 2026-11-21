@@ -145,6 +145,11 @@ class LeadController extends Controller
 
         $leads = $query->paginate(20)->withQueryString();
 
+        // Fix (21 Nov 2026): the view still uses $statuses and $sort, which moved into
+        // filteredLeadsQuery() in 8f815c4 — compact() on undefined vars made /admin/leads a 500.
+        $statuses = array_values(array_intersect((array) $request->input('status', []), Lead::statusKeys()));
+        $sort = in_array($request->input('sort'), ['priority', 'newest', 'follow_up'], true) ? $request->input('sort') : 'priority';
+
         $today = now()->toDateString();
         $dueStatuses = Lead::NO_FOLLOW_UP_STATUSES;
         $stats = [
