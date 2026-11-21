@@ -19,7 +19,7 @@
                             <th class="px-4 py-3 text-right">Assigned</th>
                             <th class="px-4 py-3 text-right">Contacted</th>
                             <th class="px-4 py-3 text-right">Registered</th>
-                            <th class="px-4 py-3 text-right">Paid · Verified</th>
+                            <th class="px-4 py-3 text-right">Paid Verified</th>
                             <th class="px-4 py-3 text-left">Last Activity</th>
                         </tr>
                     </thead>

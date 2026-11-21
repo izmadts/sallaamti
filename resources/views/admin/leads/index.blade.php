@@ -31,7 +31,7 @@
                      Lead::statusFromProfile() — the same logic that keeps
                      each lead's status in sync). Account Created = signed up,
                      no profile yet; Registered = profile made, fee not paid
-                     yet; Pending Payment = fee submitted, awaiting admin
+                     yet; Profile · Fee Due = profile made, fee not paid yet (owner 21 Nov),
                      review; Verified = fee-free verified (e.g. widowed/
                      divorced); Paid = fee paid + verified. --}}
                 <div class="bg-white rounded-lg shadow-sm p-3 text-center">
@@ -40,19 +40,19 @@
                 </div>
                 <div class="bg-white rounded-lg shadow-sm p-3 text-center">
                     <p class="text-xl font-bold text-purple-600">{{ $stats['registered'] }}</p>
-                    <p class="text-xs text-gray-500">Registered (Profile)</p>
+                    <p class="text-xs text-gray-500">Profile · Free (Verify Due)</p>
                 </div>
                 <div class="bg-white rounded-lg shadow-sm p-3 text-center">
                     <p class="text-xl font-bold text-orange-600">{{ $stats['pending_payment'] }}</p>
-                    <p class="text-xs text-gray-500">Pending Payment</p>
+                    <p class="text-xs text-gray-500">Profile · Fee Due</p>
                 </div>
                 <div class="bg-white rounded-lg shadow-sm p-3 text-center">
                     <p class="text-xl font-bold text-emerald-600">{{ $stats['verified'] }}</p>
-                    <p class="text-xs text-gray-500">Verified</p>
+                    <p class="text-xs text-gray-500">Free Verified</p>
                 </div>
                 <a href="{{ route('admin.leads.index', ['status' => ['paid']]) }}" class="bg-white rounded-lg shadow-sm p-3 text-center hover:bg-gray-50">
                     <p class="text-xl font-bold" style="color:#ca8a04">{{ $stats['paid'] }}</p>
-                    <p class="text-xs text-gray-500">💰 Paid · Verified</p>
+                    <p class="text-xs text-gray-500">💰 Paid Verified</p>
                 </a>
                 <a href="{{ route('admin.leads.index', ['follow_ups_due' => 1]) }}" class="bg-white rounded-lg shadow-sm p-3 text-center hover:bg-gray-50 {{ request()->boolean('follow_ups_due') ? 'ring-2 ring-red-300' : '' }}">
                     <p class="text-xl font-bold text-red-600">{{ $stats['follow_ups_due'] }}</p>

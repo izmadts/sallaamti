@@ -50,15 +50,17 @@ class Lead extends Model
     public const STATUSES = [
         // Owner, 14 Nov 2026: Hot on top; "Paid" tag for verified + paid; Contacted shown as "Follow-up";
         // the two Registered steps named clearly.
+        // Owner, 21 Nov 2026: labels = the real meaning (statusFromProfile): pending_payment = profile made, fee not
+        // paid yet; registered = profile made, no fee due (free) and not verified yet; verified = Free Verified.
         'hot'                => ['label' => '🔥 Hot',             'bg' => '#dc2626', 'fg' => '#ffffff',  'auto' => false],
-        'pending_payment'    => ['label' => 'Pending Payment',    'bg' => '#ffedd5', 'fg' => '#9a3412',  'auto' => true],
+        'pending_payment'    => ['label' => 'Profile · Fee Due',  'bg' => '#ffedd5', 'fg' => '#9a3412',  'auto' => true],
         'interested'         => ['label' => 'Interested',         'bg' => '#dcfce7', 'fg' => '#166534',  'auto' => false],
-        'account_registered' => ['label' => 'Registered (Account)', 'bg' => '#cffafe', 'fg' => '#155e75', 'auto' => true],
-        'registered'         => ['label' => 'Registered (Profile)', 'bg' => '#f3e8ff', 'fg' => '#6b21a8', 'auto' => true],
+        'account_registered' => ['label' => 'Account Created', 'bg' => '#cffafe', 'fg' => '#155e75', 'auto' => true],
+        'registered'         => ['label' => 'Profile · Free (Verify Due)', 'bg' => '#f3e8ff', 'fg' => '#6b21a8', 'auto' => true],
         'new'                => ['label' => 'New',                'bg' => '#dbeafe', 'fg' => '#1e40af',  'auto' => false],
         'contacted'          => ['label' => 'Follow-up',          'bg' => '#fef9c3', 'fg' => '#854d0e',  'auto' => false],
-        'paid'               => ['label' => '💰 Paid · Verified', 'bg' => '#ca8a04', 'fg' => '#ffffff',  'auto' => true],
-        'verified'           => ['label' => 'Verified',           'bg' => '#059669', 'fg' => '#ffffff',  'auto' => true],
+        'paid'               => ['label' => '💰 Paid Verified', 'bg' => '#ca8a04', 'fg' => '#ffffff',  'auto' => true],
+        'verified'           => ['label' => 'Free Verified',      'bg' => '#059669', 'fg' => '#ffffff',  'auto' => true],
         'matched'            => ['label' => 'Matched',            'bg' => '#fce7f3', 'fg' => '#9d174d',  'auto' => false],
         'not_interested'     => ['label' => 'Not Interested',     'bg' => '#fee2e2', 'fg' => '#b91c1c',  'auto' => false],
         'number_not_valid'   => ['label' => 'Number Not Valid',   'bg' => '#e7e5e4', 'fg' => '#44403c',  'auto' => false],

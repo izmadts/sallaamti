@@ -49,7 +49,7 @@
                     <div><dd class="text-xl font-bold text-gray-800">{{ $activity['leads'] }}</dd><dt class="text-xs text-gray-500">Leads Assigned</dt></div>
                     <div><dd class="text-xl font-bold text-gray-800">{{ $activity['touched'] }}</dd><dt class="text-xs text-gray-500">Leads Touched</dt></div>
                     <div><dd class="text-xl font-bold text-gray-800">{{ $activity['status_changes'] }}</dd><dt class="text-xs text-gray-500">Status Changes</dt></div>
-                    <div><dd class="text-xl font-bold" style="color:#ca8a04">{{ $activity['paid'] }}</dd><dt class="text-xs text-gray-500">Paid · Verified</dt></div>
+                    <div><dd class="text-xl font-bold" style="color:#ca8a04">{{ $activity['paid'] }}</dd><dt class="text-xs text-gray-500">Paid Verified</dt></div>
                 </dl>
                 <p class="text-xs text-gray-400 mt-3">{{ $activity['contacted'] }} followed up · {{ $activity['registered'] }} registered
                     @if ($activity['last_activity']) · last activity {{ \Illuminate\Support\Carbon::parse($activity['last_activity'])->diffForHumans() }} @endif
