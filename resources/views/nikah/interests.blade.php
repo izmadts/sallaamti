@@ -13,6 +13,14 @@
                 <div class="space-y-3">
                     @forelse ($received as $interest)
                     <div class="bg-white rounded-lg shadow-sm p-4 flex flex-wrap justify-between items-center gap-3">
+                        @if (!$interest->sender)
+                        {{-- Found live (16 Nov 2026): the sender's NikahProfile can be deleted
+                             (account deletion, admin cleanup) while this interest row survives —
+                             sender()/receiver() are plain belongsTo with no cascade, so this is a
+                             real, reachable state, not a theoretical one. Shown instead of crashing
+                             the whole page on a null ->age access. --}}
+                        <p class="text-gray-400 italic">{{ __('db.This profile is no longer available.') }}</p>
+                        @else
                         <div class="flex flex-wrap items-center gap-4">
                             @if ($interest->status === 'accepted' && $interest->sender->photo)
                             <img src="{{ route('nikah.file', [$interest->sender, 'photo']) }}" alt="{{ __('db.:age yrs, :city', ['age' => $interest->sender->age, 'city' => $interest->sender->city]) }}" class="w-16 h-20 object-cover rounded-full">
@@ -50,6 +58,7 @@
                                 @endif
                             </div>
                         </div>
+                        @endif
                     </div>
                     @empty
                     <p class="text-gray-500">{{ __('db.No interests received yet.') }}</p>
@@ -62,6 +71,9 @@
                         <div class="space-y-3">
                                     @forelse ($sent as $interest)
                                     <div class="bg-white rounded-lg shadow-sm p-4 flex flex-wrap justify-between items-center gap-3">
+                                        @if (!$interest->receiver)
+                                        <p class="text-gray-400 italic">{{ __('db.This profile is no longer available.') }}</p>
+                                        @else
                                         <div class="flex flex-wrap items-center gap-4">
                                             @if ($interest->status === 'accepted' && $interest->receiver->photo)
                                             <img src="{{ route('nikah.file', [$interest->receiver, 'photo']) }}" alt="{{ __('db.:age yrs, :city', ['age' => $interest->receiver->age, 'city' => $interest->receiver->city]) }}" class="w-20 h-20 object-cover rounded-full">
@@ -88,6 +100,7 @@
                                             </form>
                                             @endif
                                         </div>
+                                        @endif
                                     </div>
                                     @empty
                                     <p class="text-gray-500">{{ __('db.No interests sent yet.') }}</p>

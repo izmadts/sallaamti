@@ -94,7 +94,7 @@ class NikahPaymentController extends Controller
 
         \App\Models\User::role('admin')->each(function ($admin) use ($profile) {
             try {
-                $admin->notify(new \App\Notifications\NewNikahPaymentSubmitted($profile));
+                $admin->notify(new \App\Notifications\NewNikahPaymentSubmitted($profile->id));
             } catch (\Throwable $e) {
                 \Log::error('NewNikahPaymentSubmitted notification failed: ' . $e->getMessage());
             }
