@@ -337,6 +337,41 @@ class Lead extends Model
         }
     }
 
+    // Found live (21 Nov 2026) auditing the leads stats fix: syncForProfile()/
+    // syncForUser() above only ever fire from a User/NikahProfile-side model
+    // event — so a lead created AFTER its matching account/profile already
+    // existed (a WhatsApp lead manually logged for someone who'd already
+    // registered themselves, an imported lead, etc.) stayed stuck at
+    // whatever status it was created with until something changed on the
+    // account side again. Checking once right at creation closes that gap
+    // for every Lead::create() call site at once, rather than patching the
+    // 7 separate places a lead gets created.
+    protected static function booted(): void
+    {
+        static::created(function (Lead $lead) {
+            if (!in_array($lead->status, self::AUTO_FROM_STATUSES, true)) {
+                return;
+            }
+
+            $profile = $lead->nikah_profile_id ? NikahProfile::find($lead->nikah_profile_id) : null;
+            // Defaults to whether nikah_profile_id itself resolved — NOT to
+            // true — so a lead with neither a profile nor a phone to check
+            // (nothing to go on at all) correctly falls through to
+            // statusFromProfile(null, false), which returns null (no
+            // opinion), rather than being wrongly guessed as
+            // 'account_registered'.
+            $hasAccount = (bool) $profile;
+            if (!$profile && $lead->phone) {
+                $key = self::phoneKey($lead->phone);
+                $user = $key ? User::where('phone', 'like', '%' . $key)->first() : null;
+                $profile = $user?->nikahProfile;
+                $hasAccount = (bool) $user;
+            }
+
+            $lead->applyAutoStatus(self::statusFromProfile($profile, $hasAccount));
+        });
+    }
+
     protected function casts(): array
     {
         return [
