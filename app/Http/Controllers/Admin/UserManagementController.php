@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Exceptions\UserDeletionBlockedException;
 use App\Http\Controllers\Controller;
+use App\Models\Lead;
 use App\Models\User;
 use App\Rules\ValidPhoneNumber;
 use App\Services\ImageOptimizer;
@@ -214,8 +215,23 @@ class UserManagementController extends Controller
         if (!$user->is_active && $user->hasRole('matchmaker')) {
             $user->removeRole('matchmaker');
         }
+        // Same gap as 'matchmaker' above, just never fixed here when
+        // matchmaker_trainee was added (15 Nov 2026 trainee-access
+        // addendum) — a Training/Assessed/Probation counselor deactivated
+        // from this general page kept their (limited) NC app access forever.
+        if (!$user->is_active && $user->hasRole('matchmaker_trainee')) {
+            $user->removeRole('matchmaker_trainee');
+        }
 
-        return back()->with('status', $user->name . ' has been ' . ($user->is_active ? 'activated' : 'deactivated') . '.');
+        // Owner (21 Nov 2026): same auto-unassign as
+        // Admin\MatchmakerApplicationController::deactivateCounselor() —
+        // a counselor deactivated from this general Users page needs their
+        // leads freed back into the unassigned pool too, not just the one
+        // deactivated via their own application page.
+        $unassigned = !$user->is_active ? Lead::unassignAllFor($user->id, 'Unassigned — counselor account was deactivated.') : 0;
+
+        return back()->with('status', $user->name . ' has been ' . ($user->is_active ? 'activated' : 'deactivated') . '.'
+            . ($unassigned ? " {$unassigned} lead(s) have been unassigned." : ''));
     }
 
     public function destroy(User $user, UserDeletionService $deletionService)

@@ -57,7 +57,14 @@ class MatchmakerApplicationController extends Controller
             ->orderBy('name')
             ->get();
 
-        return view('admin.matchmaker-applications.index', compact('applications', 'directRoleUsers', 'pendingCardRequests'));
+        // Owner (21 Nov 2026): "NC list dekhte hi unki performance bhi
+        // saath saath show ho" — quick-glance leads/touched/status-changes
+        // per counselor on this list, batched in two grouped queries rather
+        // than one pair per row (see CounselorActivity::bulkFor()).
+        $counselorIds = $applications->pluck('user_id')->merge($directRoleUsers->pluck('id'))->filter()->all();
+        $activityStats = \App\Support\CounselorActivity::bulkFor($counselorIds);
+
+        return view('admin.matchmaker-applications.index', compact('applications', 'directRoleUsers', 'pendingCardRequests', 'activityStats'));
     }
 
     public function show(MatchmakerApplication $matchmakerApplication, \App\Services\Matchmaking\CounselorPerformanceCalculator $calculator)
@@ -82,12 +89,18 @@ class MatchmakerApplicationController extends Controller
             ? \App\Models\CommissionLedgerEntry::where('matchmaker_id', $matchmakerApplication->user_id)->count()
             : 0;
 
+        // Owner (21 Nov 2026): fuller leads/touched/status-changes/last-
+        // activity breakdown for this one counselor's own page — visible at
+        // every stage (not just certified, unlike $performance above).
+        $activity = $matchmakerApplication->user ? \App\Support\CounselorActivity::detailFor($matchmakerApplication->user) : null;
+
         return view('admin.matchmaker-applications.show', [
             'application' => $matchmakerApplication,
             'performance' => $performance,
             'levelProgress' => $levelProgress,
             'leadCount' => $leadCount,
             'commissionCount' => $commissionCount,
+            'activity' => $activity,
         ]);
     }
 
@@ -229,7 +242,16 @@ class MatchmakerApplicationController extends Controller
             $matchmakerApplication->user->removeRole('matchmaker_trainee');
         }
 
-        return back()->with('status', 'Application rejected.' . ($wasCertified ? ' Their counselor access has also been revoked.' : ''));
+        // Owner (21 Nov 2026): "agar koi NC reject ya deactivate ho to uski
+        // tamam leads auto unassigned ho jani chahiye" — frees every lead
+        // they're holding back into the unassigned pool immediately.
+        $unassigned = $matchmakerApplication->user_id
+            ? Lead::unassignAllFor($matchmakerApplication->user_id, 'Unassigned — counselor\'s application was rejected.')
+            : 0;
+
+        return back()->with('status', 'Application rejected.'
+            . ($wasCertified ? ' Their counselor access has also been revoked.' : '')
+            . ($unassigned ? " {$unassigned} lead(s) have been unassigned." : ''));
     }
 
     // Undoes an accidental/mistaken reject() — deliberately admin-only
@@ -289,7 +311,14 @@ class MatchmakerApplicationController extends Controller
             $matchmakerApplication->user->removeRole('matchmaker_trainee');
         }
 
-        return back()->with('status', 'Application marked as withdrawn.' . ($wasCertified ? ' Their counselor access has also been revoked.' : ''));
+        // Same auto-unassign as reject() above — see that comment.
+        $unassigned = $matchmakerApplication->user_id
+            ? Lead::unassignAllFor($matchmakerApplication->user_id, 'Unassigned — counselor withdrew their application.')
+            : 0;
+
+        return back()->with('status', 'Application marked as withdrawn.'
+            . ($wasCertified ? ' Their counselor access has also been revoked.' : '')
+            . ($unassigned ? " {$unassigned} lead(s) have been unassigned." : ''));
     }
 
     // The normal way to stop a *certified* counselor from acting live —
@@ -330,7 +359,11 @@ class MatchmakerApplicationController extends Controller
             ]);
         }
 
-        return back()->with('status', $matchmakerApplication->full_name . ' has been deactivated — their account and NC app access are now blocked.');
+        // Same auto-unassign as reject()/withdraw() above — see reject()'s comment.
+        $unassigned = Lead::unassignAllFor($user->id, 'Unassigned — counselor was deactivated by admin.');
+
+        return back()->with('status', $matchmakerApplication->full_name . ' has been deactivated — their account and NC app access are now blocked.'
+            . ($unassigned ? " {$unassigned} lead(s) have been unassigned." : ''));
     }
 
     // Undoes deactivateCounselor() — re-activates the account and restores

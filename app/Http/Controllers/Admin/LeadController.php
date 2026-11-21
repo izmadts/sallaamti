@@ -58,21 +58,15 @@ class LeadController extends Controller
         abort_unless($user->hasRole('admin') || $user->can('leads.manage'), 403);
     }
 
-    public function index(Request $request)
+    // Shared by index() (the paginated table) and show() (Prev/Next —
+    // walks the exact same filtered+sorted order the admin/lead-manager
+    // was looking at, so stepping through never jumps to a lead outside
+    // whatever list they came from). Deliberately excludes the eager
+    // loads/withCount/withExists index() adds on top — show() only ever
+    // needs the ordered id list, not the full row payload.
+    private function filteredLeadsQuery(Request $request): \Illuminate\Database\Eloquent\Builder
     {
-        $this->authorize_();
-
-        // Matchmaking-process "journey" tags the leads table shows per row
-        // (point 4 of the NC-app restructuring ask) — a quick-glance
-        // pipeline readout independent of the lead's own lifecycle `status`
-        // column, computed as EXISTS/COUNT subqueries rather than N+1
-        // per-row queries across a paginated list.
-        $query = Lead::with(['assignedTo', 'nikahProfile.user', 'nikahPackage'])
-            ->withExists('requirement')
-            ->withCount('shortlistItems')
-            ->withExists(['consents as has_participation_consent' => fn ($q) => $q->active()->where('consent_type', 'matchmaking_participation')])
-            ->withExists(['proposalBatches as has_sent_batch' => fn ($q) => $q->where('status', 'sent')])
-            ->withExists(['proposalBatches as has_matched_proposal' => fn ($q) => $q->whereHas('proposals', fn ($pq) => $pq->where('response', 'interested'))]);
+        $query = Lead::query();
 
         // One or many statuses (the coloured chips above the table).
         $statuses = array_values(array_intersect((array) $request->input('status', []), Lead::statusKeys()));
@@ -124,15 +118,60 @@ class LeadController extends Controller
                 ->orderByRaw(Lead::statusPrioritySql())
                 ->orderByDesc('created_at');
         }
+
+        // id is always a valid tiebreak column regardless of which sort
+        // above ran — without it, two leads with an identical sort key
+        // (e.g. same created_at) could compare equal and make the Prev/
+        // Next position lookup in show() ambiguous.
+        return $query->orderByDesc('id');
+    }
+
+    public function index(Request $request)
+    {
+        $this->authorize_();
+
+        // Matchmaking-process "journey" tags the leads table shows per row
+        // (point 4 of the NC-app restructuring ask) — a quick-glance
+        // pipeline readout independent of the lead's own lifecycle `status`
+        // column, computed as EXISTS/COUNT subqueries rather than N+1
+        // per-row queries across a paginated list.
+        $query = $this->filteredLeadsQuery($request)
+            ->with(['assignedTo', 'nikahProfile.user', 'nikahPackage'])
+            ->withExists('requirement')
+            ->withCount('shortlistItems')
+            ->withExists(['consents as has_participation_consent' => fn ($q) => $q->active()->where('consent_type', 'matchmaking_participation')])
+            ->withExists(['proposalBatches as has_sent_batch' => fn ($q) => $q->where('status', 'sent')])
+            ->withExists(['proposalBatches as has_matched_proposal' => fn ($q) => $q->whereHas('proposals', fn ($pq) => $pq->where('response', 'interested'))]);
+
         $leads = $query->paginate(20)->withQueryString();
 
+        $today = now()->toDateString();
+        $dueStatuses = Lead::NO_FOLLOW_UP_STATUSES;
         $stats = [
             'hot' => Lead::where('status', 'hot')->count(),
             'new' => Lead::where('status', 'new')->count(),
-            'paid' => Lead::where('status', 'paid')->count(),
             'contacted' => Lead::where('status', 'contacted')->count(),
+            // Owner (21 Nov 2026): the old card set only ever showed
+            // 'registered' and a 'payment_due' figure that was actually
+            // counting matchmaking PACKAGE payments (package_payment_status),
+            // not Nikah profile verification-fee payments — a completely
+            // different thing with a confusingly similar name. Replaced
+            // with the real live pipeline: account created (no profile
+            // yet) -> profile registered -> verification fee pending ->
+            // verified (fee-free, e.g. widowed/divorced) -> paid+verified.
+            // These mirror Lead::statusFromProfile() exactly, so they stay
+            // accurate as profiles/payments change (see syncForProfile()/
+            // syncForUser(), called from NikahProfile/User observers).
+            'account_registered' => Lead::where('status', 'account_registered')->count(),
             'registered' => Lead::where('status', 'registered')->count(),
+            'pending_payment' => Lead::where('status', 'pending_payment')->count(),
+            'verified' => Lead::where('status', 'verified')->count(),
+            'paid' => Lead::where('status', 'paid')->count(),
             'follow_ups_due' => Lead::whereDate('next_follow_up_at', '<=', $today)->whereNotIn('status', $dueStatuses)->count(),
+            // Renamed in the view to "Package Payment Due" — kept as its
+            // own figure since it's a real, separate thing (a matchmaking
+            // package payment awaiting admin review), just no longer
+            // confusable with the Nikah verification-fee stats above.
             'payment_due' => Lead::where('package_payment_status', 'submitted')->count(),
         ];
         $statusCounts = Lead::selectRaw('status, COUNT(*) as n')->groupBy('status')->pluck('n', 'status')->all();
@@ -211,9 +250,35 @@ class LeadController extends Controller
         return redirect()->route('admin.leads.show', $lead)->with('status', 'Lead added.');
     }
 
+    // Owner (21 Nov 2026): "jab admin ya lead manager koi bhi single lead
+    // open kare to sequence ke saath Next/Previous ka button hona chahiye
+    // ta ke usko bar bar lead list per aa kar nayi lead page open na karna
+    // pare." Walks the exact same filtered+sorted order index() was
+    // showing (whatever query string got here), not a fixed global order —
+    // so stepping through only ever moves within whatever list the admin
+    // was actually looking at.
+    private function leadNavigation(Request $request, Lead $lead): array
+    {
+        $ids = $this->filteredLeadsQuery($request)->pluck('id')->all();
+        $position = array_search($lead->id, $ids, true);
+
+        if ($position === false) {
+            return ['prev_id' => null, 'next_id' => null, 'position' => null, 'total' => count($ids)];
+        }
+
+        return [
+            'prev_id' => $ids[$position - 1] ?? null,
+            'next_id' => $ids[$position + 1] ?? null,
+            'position' => $position + 1,
+            'total' => count($ids),
+        ];
+    }
+
     public function show(Lead $lead)
     {
         $this->authorize_();
+
+        $nav = $this->leadNavigation(request(), $lead);
 
         $lead->load([
             'assignedTo', 'createdBy', 'nikahProfile.user', 'nikahPackage', 'pendingPackage',
@@ -257,7 +322,7 @@ class LeadController extends Controller
 
         $lockedToCreator = $this->isLockedToCreator($lead);
 
-        return view('admin.leads.show', compact('lead', 'matchmakers', 'packages', 'searchResults', 'lockedToCreator'));
+        return view('admin.leads.show', compact('lead', 'matchmakers', 'packages', 'searchResults', 'lockedToCreator', 'nav'));
     }
 
     public function update(Request $request, Lead $lead)
@@ -349,8 +414,16 @@ class LeadController extends Controller
     // themselves. A lead created by an admin or a leads.manage holder
     // (a "Senior Matchmaker") stays freely reassignable, since neither of
     // those is a specific counselor losing "their" client.
+    // Owner (21 Nov 2026): super_admin never respects this lock regardless
+    // of who created the lead — "super admin ka koi bhi lead locked nahi
+    // honi chahiye." A plain admin/leads.manage holder still can't pull a
+    // lead away from the counselor who created it for themselves.
     private function isLockedToCreator(Lead $lead): bool
     {
+        if (auth()->user()?->hasRole('super_admin')) {
+            return false;
+        }
+
         $creator = $lead->createdBy;
 
         return $creator !== null && !$creator->hasRole('admin') && !$creator->can('leads.manage');

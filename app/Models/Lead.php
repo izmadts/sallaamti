@@ -305,6 +305,25 @@ class Lead extends Model
         }
     }
 
+    // Owner (21 Nov 2026): a counselor who is rejected, withdraws, or gets
+    // deactivated immediately frees every lead they're holding back into
+    // the unassigned pool, so admin/lead-manager can hand them to someone
+    // still active — nothing should sit stuck on a counselor who can no
+    // longer work it. Safe to do unconditionally for ALL their leads
+    // (including already Matched/Closed ones): commission keeps its own
+    // matchmaker_id snapshot (see RecordsCommission), so this never touches
+    // money already earned — it just clears the live assignment.
+    public static function unassignAllFor(int $userId, string $reason): int
+    {
+        $leads = self::where('assigned_to', $userId)->get();
+        foreach ($leads as $lead) {
+            $lead->update(['assigned_to' => null]);
+            MatchmakingTimelineEvent::log($lead, $lead->nikahProfile, 'status_changed', $reason);
+        }
+
+        return $leads->count();
+    }
+
     public static function syncForUser(User $user): void
     {
         $key = self::phoneKey($user->phone);

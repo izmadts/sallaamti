@@ -18,10 +18,6 @@
                     <p class="text-xl font-bold" style="color:#dc2626">{{ $stats['hot'] }}</p>
                     <p class="text-xs" style="color:#991b1b">🔥 Hot</p>
                 </a>
-                <a href="{{ route('admin.leads.index', ['status' => ['paid']]) }}" class="bg-white rounded-lg shadow-sm p-3 text-center hover:bg-gray-50">
-                    <p class="text-xl font-bold" style="color:#ca8a04">{{ $stats['paid'] }}</p>
-                    <p class="text-xs text-gray-500">💰 Paid · Verified</p>
-                </a>
                 <div class="bg-white rounded-lg shadow-sm p-3 text-center">
                     <p class="text-xl font-bold text-blue-600">{{ $stats['new'] }}</p>
                     <p class="text-xs text-gray-500">New</p>
@@ -30,17 +26,46 @@
                     <p class="text-xl font-bold text-amber-600">{{ $stats['contacted'] }}</p>
                     <p class="text-xs text-gray-500">Follow-up</p>
                 </div>
+                {{-- Owner (21 Nov 2026): the real live Nikah pipeline, accurate
+                     against current account/profile/payment state (see
+                     Lead::statusFromProfile() — the same logic that keeps
+                     each lead's status in sync). Account Created = signed up,
+                     no profile yet; Registered = profile made, fee not paid
+                     yet; Pending Payment = fee submitted, awaiting admin
+                     review; Verified = fee-free verified (e.g. widowed/
+                     divorced); Paid = fee paid + verified. --}}
                 <div class="bg-white rounded-lg shadow-sm p-3 text-center">
-                    <p class="text-xl font-bold text-green-600">{{ $stats['registered'] }}</p>
+                    <p class="text-xl font-bold text-cyan-600">{{ $stats['account_registered'] }}</p>
+                    <p class="text-xs text-gray-500">Account Created</p>
+                </div>
+                <div class="bg-white rounded-lg shadow-sm p-3 text-center">
+                    <p class="text-xl font-bold text-purple-600">{{ $stats['registered'] }}</p>
                     <p class="text-xs text-gray-500">Registered (Profile)</p>
                 </div>
+                <div class="bg-white rounded-lg shadow-sm p-3 text-center">
+                    <p class="text-xl font-bold text-orange-600">{{ $stats['pending_payment'] }}</p>
+                    <p class="text-xs text-gray-500">Pending Payment</p>
+                </div>
+                <div class="bg-white rounded-lg shadow-sm p-3 text-center">
+                    <p class="text-xl font-bold text-emerald-600">{{ $stats['verified'] }}</p>
+                    <p class="text-xs text-gray-500">Verified</p>
+                </div>
+                <a href="{{ route('admin.leads.index', ['status' => ['paid']]) }}" class="bg-white rounded-lg shadow-sm p-3 text-center hover:bg-gray-50">
+                    <p class="text-xl font-bold" style="color:#ca8a04">{{ $stats['paid'] }}</p>
+                    <p class="text-xs text-gray-500">💰 Paid · Verified</p>
+                </a>
                 <a href="{{ route('admin.leads.index', ['follow_ups_due' => 1]) }}" class="bg-white rounded-lg shadow-sm p-3 text-center hover:bg-gray-50 {{ request()->boolean('follow_ups_due') ? 'ring-2 ring-red-300' : '' }}">
                     <p class="text-xl font-bold text-red-600">{{ $stats['follow_ups_due'] }}</p>
                     <p class="text-xs text-gray-500">Follow-ups Due</p>
                 </a>
+                {{-- Renamed from "Payment Due" (owner, 21 Nov 2026) — this is
+                     a matchmaking PACKAGE payment awaiting review
+                     (package_payment_status), a different thing from the
+                     Nikah verification-fee "Pending Payment" card above; the
+                     old shared name made the two easy to mix up. --}}
                 <a href="{{ route('admin.leads.index', ['payment_status' => 'submitted']) }}" class="bg-white rounded-lg shadow-sm p-3 text-center hover:bg-gray-50">
-                    <p class="text-xl font-bold text-purple-600">{{ $stats['payment_due'] }}</p>
-                    <p class="text-xs text-gray-500">Payment Due</p>
+                    <p class="text-xl font-bold text-pink-600">{{ $stats['payment_due'] }}</p>
+                    <p class="text-xs text-gray-500">Package Payment Due</p>
                 </a>
             </div>
 

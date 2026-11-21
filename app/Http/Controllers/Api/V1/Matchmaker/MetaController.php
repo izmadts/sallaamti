@@ -20,7 +20,13 @@ class MetaController extends Controller
         return response()->json([
             'consent_types' => MatchmakingConsent::TYPES,
             'consent_methods' => MatchmakingConsent::METHODS,
-            'lead_statuses' => \App\Models\Lead::statusOptions(),
+            // 'paid' excluded (owner, 21 Nov 2026): "NC k pass lead ka
+            // status paid karny per restriction hona chahiye" — a counselor
+            // marking their own lead Paid bypasses the whole point of
+            // payment-confirmed-by-admin. Still kept in lead_status_meta
+            // below so a lead already Paid (set from the admin web panel)
+            // still renders its own badge correctly in this app.
+            'lead_statuses' => collect(\App\Models\Lead::statusOptions())->except('paid')->all(),
             // Badge colours + priority order, for apps that want them.
             'lead_status_meta' => collect(\App\Models\Lead::STATUSES)->map(fn ($s, $k) => ['label' => $s['label'], 'bg' => $s['bg'], 'fg' => $s['fg'], 'auto' => $s['auto']])->all(),
             'lead_sources' => [

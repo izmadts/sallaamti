@@ -39,6 +39,24 @@
                 </span>
             </div>
 
+            {{-- Activity (owner, 21 Nov 2026): visible at every stage, unlike
+                 $performance below which only computes once certified —
+                 "kisi specific NC ki activity bhi show ho profile open per." --}}
+            @if ($activity)
+            <div class="bg-white rounded-xl shadow-sm p-6">
+                <h4 class="font-semibold text-gray-700 mb-3 border-b pb-2">Activity</h4>
+                <dl class="grid grid-cols-2 sm:grid-cols-4 gap-4 text-center">
+                    <div><dd class="text-xl font-bold text-gray-800">{{ $activity['leads'] }}</dd><dt class="text-xs text-gray-500">Leads Assigned</dt></div>
+                    <div><dd class="text-xl font-bold text-gray-800">{{ $activity['touched'] }}</dd><dt class="text-xs text-gray-500">Leads Touched</dt></div>
+                    <div><dd class="text-xl font-bold text-gray-800">{{ $activity['status_changes'] }}</dd><dt class="text-xs text-gray-500">Status Changes</dt></div>
+                    <div><dd class="text-xl font-bold" style="color:#ca8a04">{{ $activity['paid'] }}</dd><dt class="text-xs text-gray-500">Paid · Verified</dt></div>
+                </dl>
+                <p class="text-xs text-gray-400 mt-3">{{ $activity['contacted'] }} followed up · {{ $activity['registered'] }} registered
+                    @if ($activity['last_activity']) · last activity {{ \Illuminate\Support\Carbon::parse($activity['last_activity'])->diffForHumans() }} @endif
+                </p>
+            </div>
+            @endif
+
             {{-- Pipeline progress — not shown once certified: "Move to Stage"/
                  Reject/Withdraw are onboarding-pipeline actions and don't
                  apply to someone already certified and working. Use
@@ -307,8 +325,8 @@
             <div class="bg-white rounded-xl shadow-sm p-6">
                 <h4 class="font-semibold text-gray-700 mb-3 border-b pb-2">Application Details</h4>
                 <dl class="grid sm:grid-cols-2 gap-x-6 gap-y-3 text-sm">
-                    <div><dt class="text-gray-400">Mobile</dt><dd>{{ $application->mobile_number }}</dd></div>
-                    <div><dt class="text-gray-400">WhatsApp</dt><dd>{{ $application->whatsapp_number ?: 'Same as mobile' }}</dd></div>
+                    <div><dt class="text-gray-400">Mobile</dt><dd><x-phone-actions :phone="$application->mobile_number" /></dd></div>
+                    <div><dt class="text-gray-400">WhatsApp</dt><dd>{{ $application->whatsapp_number ? '' : 'Same as mobile' }}@if ($application->whatsapp_number)<x-phone-actions :phone="$application->whatsapp_number" />@endif</dd></div>
                     <div><dt class="text-gray-400">Marital Status</dt><dd>{{ ucfirst(str_replace('_', ' ', $application->marital_status)) }}</dd></div>
                     <div><dt class="text-gray-400">Qualification</dt><dd>{{ $application->qualification === 'other' ? $application->qualification_other : (\App\Models\MatchmakerApplication::QUALIFICATIONS[$application->qualification] ?? '—') }}</dd></div>
                     <div><dt class="text-gray-400">City</dt><dd>{{ $application->area ?: '—' }}</dd></div>

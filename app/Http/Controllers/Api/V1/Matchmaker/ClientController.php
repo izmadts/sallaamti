@@ -158,7 +158,10 @@ class ClientController extends Controller
             'email' => ['nullable', 'email', 'max:255'],
             'looking_for' => ['nullable', 'in:self,family_member'],
             'source' => ['sometimes', 'required', 'in:facebook,instagram,whatsapp,website,phone,referral,manual,other'],
-            'status' => ['sometimes', 'required', \App\Models\Lead::statusRule()],
+            // 'paid' excluded (owner, 21 Nov 2026) — see MetaController's
+            // matching comment; this is the enforcement side of the same
+            // policy, in case a stale app build still submits it.
+            'status' => ['sometimes', 'required', 'in:' . implode(',', array_diff(\App\Models\Lead::statusKeys(), ['paid']))],
             'notes' => ['nullable', 'string', 'max:2000'],
             'next_follow_up_at' => ['nullable', 'date'],
             'assigned_to' => [$canManageTeam ? 'nullable' : 'prohibited', 'exists:users,id'],

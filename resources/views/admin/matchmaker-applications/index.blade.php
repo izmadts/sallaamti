@@ -30,13 +30,20 @@
                 </div>
                 <div class="divide-y">
                     @foreach ($directRoleUsers as $user)
-                    <a href="{{ route('admin.users.show', $user) }}" class="p-5 flex justify-between items-center flex-wrap gap-3 hover:bg-gray-50 transition">
+                    <div class="p-5 flex justify-between items-center flex-wrap gap-3 hover:bg-gray-50 transition cursor-pointer" onclick="window.location='{{ route('admin.users.show', $user) }}'">
                         <div>
                             <p class="font-medium text-gray-800">{{ $user->name }}</p>
-                            <p class="text-sm text-gray-500">{{ $user->email ?: $user->phone }}</p>
+                            @if ($user->email)
+                            <p class="text-sm text-gray-500">{{ $user->email }}</p>
+                            @else
+                            <p class="text-sm text-gray-500" onclick="event.stopPropagation()"><x-phone-actions :phone="$user->phone" /></p>
+                            @endif
+                            @if ($stats = $activityStats[$user->id] ?? null)
+                            <p class="text-xs text-gray-400 mt-1">{{ $stats['leads'] }} leads · {{ $stats['touched'] }} touched · {{ $stats['status_changes'] }} status changes</p>
+                            @endif
                         </div>
                         <span class="text-xs px-2 py-1 rounded-full font-semibold bg-amber-100 text-amber-800">Role Assigned by Admin</span>
-                    </a>
+                    </div>
                     @endforeach
                 </div>
             </div>
@@ -44,7 +51,12 @@
 
             <div class="bg-white rounded-lg shadow-sm divide-y">
                 @forelse ($applications as $application)
-                <a href="{{ route('admin.matchmaker-applications.show', $application) }}" class="p-5 flex justify-between items-start flex-wrap gap-3 hover:bg-gray-50 transition">
+                {{-- Owner (21 Nov 2026): was a whole-row <a> — switched to a
+                     clickable <div> so the phone's own WhatsApp/copy link
+                     (x-phone-actions) can live in the row without nesting
+                     an <a> inside an <a>, same stopPropagation pattern
+                     admin/leads/index.blade.php already uses. --}}
+                <div class="p-5 flex justify-between items-start flex-wrap gap-3 hover:bg-gray-50 transition cursor-pointer" onclick="window.location='{{ route('admin.matchmaker-applications.show', $application) }}'">
                     <div>
                         <p class="font-medium text-gray-800">{{ $application->full_name }}
                             @if ($application->counselor_code)
@@ -52,8 +64,16 @@
                             @endif
                             <span class="text-xs px-1.5 py-0.5 rounded bg-blue-50 text-blue-600 font-normal align-middle">Via Application</span>
                         </p>
-                        <p class="text-sm text-gray-500">{{ $application->mobile_number }} @if ($application->area) · {{ $application->area }} @endif</p>
+                        <p class="text-sm text-gray-500" onclick="event.stopPropagation()">
+                            <x-phone-actions :phone="$application->mobile_number" /> @if ($application->area) · {{ $application->area }} @endif
+                        </p>
                         <p class="text-xs text-gray-400 mt-1">Applied {{ $application->created_at->format('d M Y, h:i A') }}</p>
+                        {{-- Owner (21 Nov 2026): quick-glance activity so admin
+                             sees performance right on the list, not just on
+                             the counselor's own page. --}}
+                        @if ($application->user_id && ($stats = $activityStats[$application->user_id] ?? null))
+                        <p class="text-xs text-gray-400 mt-1">{{ $stats['leads'] }} leads · {{ $stats['touched'] }} touched · {{ $stats['status_changes'] }} status changes</p>
+                        @endif
                     </div>
 
                     <span class="flex flex-col items-end gap-1">
@@ -73,7 +93,7 @@
                         <span class="text-xs px-2 py-1 rounded-full font-semibold bg-red-100 text-red-800">Deactivated</span>
                         @endif
                     </span>
-                </a>
+                </div>
                 @empty
                 <p class="p-5 text-gray-500">No applications yet.</p>
                 @endforelse

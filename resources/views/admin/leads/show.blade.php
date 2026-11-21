@@ -10,6 +10,32 @@
     <div class="py-6">
         <div class="max-w-5xl mx-auto sm:px-6 lg:px-8 space-y-6">
 
+            {{-- Next/Previous (owner, 21 Nov 2026): walks whatever filtered/
+                 sorted list the admin/lead-manager came from (status, search,
+                 assigned_to, sort, etc. — carried in the query string), so
+                 there's no need to go back to the list to open the next lead. --}}
+            <div class="bg-white rounded-xl shadow-sm px-4 py-2.5 flex items-center justify-between">
+                @if ($nav['prev_id'])
+                <a href="{{ route('admin.leads.show', ['lead' => $nav['prev_id']] + request()->query()) }}"
+                    class="text-sm font-semibold px-3 py-1.5 rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-50">← Previous</a>
+                @else
+                <span class="text-sm font-semibold px-3 py-1.5 rounded-lg border border-gray-200 text-gray-300">← Previous</span>
+                @endif
+
+                <span class="text-xs text-gray-400">
+                    @if ($nav['position'])
+                    Lead {{ $nav['position'] }} of {{ $nav['total'] }}
+                    @endif
+                </span>
+
+                @if ($nav['next_id'])
+                <a href="{{ route('admin.leads.show', ['lead' => $nav['next_id']] + request()->query()) }}"
+                    class="text-sm font-semibold px-3 py-1.5 rounded-lg border border-gray-300 text-gray-600 hover:bg-gray-50">Next →</a>
+                @else
+                <span class="text-sm font-semibold px-3 py-1.5 rounded-lg border border-gray-200 text-gray-300">Next →</span>
+                @endif
+            </div>
+
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
 
                 {{-- Lead details + editable status/package --}}
