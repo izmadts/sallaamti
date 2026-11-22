@@ -2,7 +2,6 @@
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -72,9 +71,14 @@ return new class extends Migration
 
         // App-level fraud defense: a real person has exactly one CNIC.
         // Confirmed no existing duplicates before adding this (dev DB: 0/4).
-        $indexExists = collect(DB::select(
-            "SHOW INDEXES FROM nikah_profiles WHERE Key_name = 'nikah_profiles_cnic_number_unique'"
-        ))->isNotEmpty();
+        // Schema::getIndexes() (driver-agnostic) rather than a raw
+        // MySQL-only "SHOW INDEXES" query — found 22 Nov 2026: the raw SQL
+        // made this migration fail outright on SQLite (a fresh dev setup,
+        // or the test suite's :memory: DB), which — since SQLite wraps a
+        // whole migration batch in one transaction — silently rolled back
+        // every table created before it too, not just this one.
+        $indexExists = collect(Schema::getIndexes('nikah_profiles'))
+            ->contains(fn ($index) => $index['name'] === 'nikah_profiles_cnic_number_unique');
 
         if (!$indexExists) {
             Schema::table('nikah_profiles', function (Blueprint $table) {
@@ -85,9 +89,8 @@ return new class extends Migration
 
     public function down(): void
     {
-        $indexExists = collect(DB::select(
-            "SHOW INDEXES FROM nikah_profiles WHERE Key_name = 'nikah_profiles_cnic_number_unique'"
-        ))->isNotEmpty();
+        $indexExists = collect(Schema::getIndexes('nikah_profiles'))
+            ->contains(fn ($index) => $index['name'] === 'nikah_profiles_cnic_number_unique');
 
         if ($indexExists) {
             Schema::table('nikah_profiles', function (Blueprint $table) {
