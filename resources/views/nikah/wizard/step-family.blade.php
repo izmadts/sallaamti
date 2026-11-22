@@ -31,11 +31,14 @@
                                 <x-text-input id="caste" name="caste" type="text" class="w-full mt-1" :value="old('caste', $data['caste'] ?? '')"
                                     placeholder="{{ __('db.e.g. Rajput, Sheikh, Syed') }}" title="{{ __('db.Only if caste/biradari matters to your family — leave blank if not.') }}" />
                             </div>
-                            @php $familyTypeOptions = ['Joint Family', 'Nuclear Family', 'Living with In-Laws']; @endphp
+                            {{-- Owner (21 Nov 2026): "joint/nuclear logo ko samajh nahi aati" —
+                                 switched from household-structure terms to the social-class
+                                 terms members actually understand. --}}
+                            @php $familyTypeOptions = ['Elite', 'High Class', 'Middle', 'Lower Middle']; @endphp
                             <div>
                                 <x-input-label for="family_type" :value="__('db.Family Type')" />
                                 <x-searchable-select name="family_type" :options="$familyTypeOptions" :value="old('family_type', $data['family_type'] ?? '')"
-                                    placeholder="{{ __('db.Type to search, scroll, or pick from the list') }}" title="{{ __('db.Do you live in a joint family or on your own as a separate household?') }}" />
+                                    placeholder="{{ __('db.Type to search, scroll, or pick from the list') }}" title="{{ __('db.Your family\'s social standing.') }}" />
                             </div>
                             <div>
                                 <x-input-label for="ethnicity" :value="__('db.Ethnicity (optional)')" />

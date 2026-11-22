@@ -37,7 +37,8 @@
                                 <x-input-label for="ethnicity" value="Ethnicity (optional)" />
                                 <x-text-input id="ethnicity" name="ethnicity" type="text" class="w-full mt-1" :value="old('ethnicity', $data['ethnicity'] ?? '')" placeholder="e.g. Punjabi, Pashtun, Sindhi, Muhajir" />
                             </div>
-                            @php $familyTypeOptions = ['Joint Family', 'Nuclear Family', 'Living with In-Laws']; @endphp
+                            {{-- Owner (21 Nov 2026): social-class terms, same as the member wizard — see its comment. --}}
+                            @php $familyTypeOptions = ['Elite', 'High Class', 'Middle', 'Lower Middle']; @endphp
                             <div>
                                 <x-input-label for="family_type" value="Family Type (optional)" />
                                 <x-searchable-select name="family_type" :options="$familyTypeOptions" :value="old('family_type', $data['family_type'] ?? '')" placeholder="Type to search or pick" />

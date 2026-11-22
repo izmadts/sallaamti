@@ -89,7 +89,8 @@
                         <label class="text-xs text-gray-500">{{ __('db.Language') }}</label>
                         <x-searchable-select name="language" :options="$languageFilterOptions" :value="request('language')" class="text-sm" placeholder="Any" />
                     </div>
-                    @php $familyTypeFilterOptions = ['Joint Family', 'Nuclear Family', 'Living with In-Laws']; @endphp
+                    {{-- Owner (21 Nov 2026): social-class terms — see the create wizard's matching comment. --}}
+                    @php $familyTypeFilterOptions = ['Elite', 'High Class', 'Middle', 'Lower Middle']; @endphp
                     <div class="w-32">
                         <label class="text-xs text-gray-500">{{ __('db.Family Type') }}</label>
                         <x-searchable-select name="family_type" :options="$familyTypeFilterOptions" :value="request('family_type')" class="text-sm" placeholder="Any" />

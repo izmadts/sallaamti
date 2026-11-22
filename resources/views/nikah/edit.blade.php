@@ -242,7 +242,8 @@
 
                     <x-nikah-section :title="__('db.Family & Guardian Information')" icon="👨‍👩‍👧" color="amber">
                         <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                            @php $familyTypeOptions = ['Joint Family', 'Nuclear Family', 'Living with In-Laws']; @endphp
+                            {{-- Owner (21 Nov 2026): social-class terms — see the create wizard's matching comment. --}}
+                            @php $familyTypeOptions = ['Elite', 'High Class', 'Middle', 'Lower Middle']; @endphp
                             <div>
                                 <x-input-label for="family_type" :value="__('db.Family Type')" />
                                 <x-searchable-select name="family_type" :options="$familyTypeOptions" :value="old('family_type', $profile->family_type)"
