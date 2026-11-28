@@ -25,19 +25,23 @@ return new class extends Migration
 
         // Backfill via QuranGroupStudent, which already links (group, user)
         // to the correct admission for every existing membership.
-        DB::table('quran_assessments as a')
-            ->join('quran_group_students as gs', function ($join) {
-                $join->on('gs.quran_class_group_id', '=', 'a.quran_class_group_id')
-                    ->on('gs.user_id', '=', 'a.user_id');
-            })
-            ->update(['a.quran_admission_id' => DB::raw('gs.quran_admission_id')]);
+        // UPDATE … JOIN is MySQL-only; SQLite (the test suite's fresh, empty
+        // database) has no rows to backfill anyway, so it's skipped there.
+        if (DB::getDriverName() !== 'sqlite') {
+            DB::table('quran_assessments as a')
+                ->join('quran_group_students as gs', function ($join) {
+                    $join->on('gs.quran_class_group_id', '=', 'a.quran_class_group_id')
+                        ->on('gs.user_id', '=', 'a.user_id');
+                })
+                ->update(['a.quran_admission_id' => DB::raw('gs.quran_admission_id')]);
 
-        DB::table('quran_progress_reports as r')
-            ->join('quran_group_students as gs', function ($join) {
-                $join->on('gs.quran_class_group_id', '=', 'r.quran_class_group_id')
-                    ->on('gs.user_id', '=', 'r.user_id');
-            })
-            ->update(['r.quran_admission_id' => DB::raw('gs.quran_admission_id')]);
+            DB::table('quran_progress_reports as r')
+                ->join('quran_group_students as gs', function ($join) {
+                    $join->on('gs.quran_class_group_id', '=', 'r.quran_class_group_id')
+                        ->on('gs.user_id', '=', 'r.user_id');
+                })
+                ->update(['r.quran_admission_id' => DB::raw('gs.quran_admission_id')]);
+        }
 
         // Widen the progress-report unique constraint so two siblings in the
         // same group don't collide on one month's report. Same index-order

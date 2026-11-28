@@ -40,7 +40,11 @@ return new class extends Migration
             $table->unique(['quran_class_group_id', 'class_date'], 'quran_daily_links_group_date_unique');
         });
 
-        DB::statement('ALTER TABLE quran_daily_links DROP INDEX quran_daily_links_quran_live_course_id_class_date_unique');
+        if (DB::getDriverName() === 'mysql') {
+            DB::statement('ALTER TABLE quran_daily_links DROP INDEX quran_daily_links_quran_live_course_id_class_date_unique');
+        } else {
+            Schema::table('quran_daily_links', fn (Blueprint $table) => $table->dropUnique('quran_daily_links_quran_live_course_id_class_date_unique'));
+        }
     }
 
     public function down(): void
@@ -49,7 +53,11 @@ return new class extends Migration
             $table->unique(['quran_live_course_id', 'class_date']);
         });
 
-        DB::statement('ALTER TABLE quran_daily_links DROP INDEX quran_daily_links_group_date_unique');
+        if (DB::getDriverName() === 'mysql') {
+            DB::statement('ALTER TABLE quran_daily_links DROP INDEX quran_daily_links_group_date_unique');
+        } else {
+            Schema::table('quran_daily_links', fn (Blueprint $table) => $table->dropUnique('quran_daily_links_group_date_unique'));
+        }
 
         Schema::table('quran_daily_links', function (Blueprint $table) {
             $table->dropIndex('quran_daily_links_course_id_index');

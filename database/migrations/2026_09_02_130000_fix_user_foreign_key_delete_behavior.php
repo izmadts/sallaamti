@@ -38,6 +38,10 @@ return new class extends Migration
 
     public function up(): void
     {
+        if (DB::getDriverName() !== 'mysql') {
+            return; // reads information_schema — MySQL only; SQLite test DB keeps defaults
+        }
+
         foreach ($this->fixes as $tableName => $columns) {
             foreach ($columns as $column) {
                 $this->dropForeignKeysOn($tableName, $column);
@@ -59,6 +63,10 @@ return new class extends Migration
 
     public function down(): void
     {
+        if (DB::getDriverName() !== 'mysql') {
+            return; // reads information_schema — MySQL only; SQLite test DB keeps defaults
+        }
+
         foreach ($this->fixes as $tableName => $columns) {
             foreach ($columns as $column) {
                 $this->dropForeignKeysOn($tableName, $column);

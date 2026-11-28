@@ -26,5 +26,10 @@ Schedule::command('nikah:send-payment-deadline-reminders')->dailyAt('09:00');
 // Admin-configurable via Settings (Admin > Integrations) — read fresh on
 // every schedule:run tick, so a changed batch size/time takes effect
 // within a minute without a deploy.
+//
+// This file is loaded on every console boot — including before the settings
+// table exists (fresh-install migrate, the SQLite test suite) — so a failed
+// read falls back to the default instead of breaking every command/test.
+$wallBatchTime = rescue(fn () => \App\Models\Setting::get('scheduled_batch_time', '09:00'), '09:00', report: false);
 Schedule::command('wall:publish-scheduled')
-    ->dailyAt(\App\Models\Setting::get('scheduled_batch_time', '09:00'));
+    ->dailyAt($wallBatchTime ?: '09:00');

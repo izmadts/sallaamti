@@ -14,11 +14,15 @@ return new class extends Migration
 {
     public function up(): void
     {
-        DB::statement("ALTER TABLE quran_admissions MODIFY status ENUM('pending', 'assigned', 'rejected', 'completed', 'dropped') NOT NULL DEFAULT 'pending'");
+        if (DB::getDriverName() === 'mysql') { // SQLite test DB: no ENUM to widen
+            DB::statement("ALTER TABLE quran_admissions MODIFY status ENUM('pending', 'assigned', 'rejected', 'completed', 'dropped') NOT NULL DEFAULT 'pending'");
+        }
     }
 
     public function down(): void
     {
-        DB::statement("ALTER TABLE quran_admissions MODIFY status ENUM('pending', 'assigned', 'rejected') NOT NULL DEFAULT 'pending'");
+        if (DB::getDriverName() === 'mysql') { // SQLite test DB: no ENUM to widen
+            DB::statement("ALTER TABLE quran_admissions MODIFY status ENUM('pending', 'assigned', 'rejected') NOT NULL DEFAULT 'pending'");
+        }
     }
 };

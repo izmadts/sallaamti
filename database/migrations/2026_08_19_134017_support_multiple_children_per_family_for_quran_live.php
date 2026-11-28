@@ -36,12 +36,16 @@ return new class extends Migration
         // Backfill: under the old constraint there was at most one admission
         // per (course, account), so this match is unambiguous for every
         // existing row.
-        DB::table('quran_subscriptions as s')
-            ->join('quran_admissions as a', function ($join) {
-                $join->on('a.quran_live_course_id', '=', 's.quran_live_course_id')
-                    ->on('a.user_id', '=', 's.user_id');
-            })
-            ->update(['s.quran_admission_id' => DB::raw('a.id')]);
+        // UPDATE … JOIN is MySQL-only; SQLite (the test suite's fresh, empty
+        // database) has no rows to backfill anyway, so it's skipped there.
+        if (DB::getDriverName() !== 'sqlite') {
+            DB::table('quran_subscriptions as s')
+                ->join('quran_admissions as a', function ($join) {
+                    $join->on('a.quran_live_course_id', '=', 's.quran_live_course_id')
+                        ->on('a.user_id', '=', 's.user_id');
+                })
+                ->update(['s.quran_admission_id' => DB::raw('a.id')]);
+        }
 
         // Same FK-coverage issue as above: the new unique doesn't start with
         // quran_live_course_id or user_id, so plain indexes on those columns

@@ -20,19 +20,31 @@ return new class extends Migration
         // (same reasoning as the community_posts status migration).
         // Widen first so both old and new values are valid while the data
         // migrates, then narrow to the final set.
-        DB::statement("ALTER TABLE nikah_profiles MODIFY visibility ENUM('public', 'private', 'members_only', 'matchmaker_assisted', 'confidential') NOT NULL DEFAULT 'public'");
+        if (DB::getDriverName() === 'mysql') { // SQLite test DB: no ENUM to widen
+            DB::statement("ALTER TABLE nikah_profiles MODIFY visibility ENUM('public', 'private', 'members_only', 'matchmaker_assisted', 'confidential') NOT NULL DEFAULT 'public'");
+        }
 
         DB::table('nikah_profiles')->where('visibility', 'private')->update(['visibility' => 'matchmaker_assisted']);
 
-        DB::statement("ALTER TABLE nikah_profiles MODIFY visibility ENUM('public', 'members_only', 'matchmaker_assisted', 'confidential') NOT NULL DEFAULT 'public'");
+        if (DB::getDriverName() === 'mysql') { // SQLite test DB: no ENUM to widen
+
+            DB::statement("ALTER TABLE nikah_profiles MODIFY visibility ENUM('public', 'members_only', 'matchmaker_assisted', 'confidential') NOT NULL DEFAULT 'public'");
+
+        }
     }
 
     public function down(): void
     {
-        DB::statement("ALTER TABLE nikah_profiles MODIFY visibility ENUM('public', 'private', 'members_only', 'matchmaker_assisted', 'confidential') NOT NULL DEFAULT 'public'");
+        if (DB::getDriverName() === 'mysql') { // SQLite test DB: no ENUM to widen
+            DB::statement("ALTER TABLE nikah_profiles MODIFY visibility ENUM('public', 'private', 'members_only', 'matchmaker_assisted', 'confidential') NOT NULL DEFAULT 'public'");
+        }
 
         DB::table('nikah_profiles')->whereIn('visibility', ['members_only', 'matchmaker_assisted', 'confidential'])->update(['visibility' => 'private']);
 
-        DB::statement("ALTER TABLE nikah_profiles MODIFY visibility ENUM('public', 'private') NOT NULL DEFAULT 'public'");
+        if (DB::getDriverName() === 'mysql') { // SQLite test DB: no ENUM to widen
+
+            DB::statement("ALTER TABLE nikah_profiles MODIFY visibility ENUM('public', 'private') NOT NULL DEFAULT 'public'");
+
+        }
     }
 };

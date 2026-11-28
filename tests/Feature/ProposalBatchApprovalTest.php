@@ -23,16 +23,28 @@ class ProposalBatchApprovalTest extends TestCase
 
     private static int $seq = 0;
 
+    // Roles come from RoleSeeder, which RefreshDatabase doesn't run — without
+    // it every assignRole() here threw RoleDoesNotExist.
+    protected function setUp(): void
+    {
+        parent::setUp();
+        $this->seed(\Database\Seeders\RoleSeeder::class);
+    }
+
     private function makeUser(): User
     {
         self::$seq++;
 
-        return User::create([
+        $user = User::create([
             'name' => 'Test User ' . self::$seq,
             'email' => "test-user-" . self::$seq . "@example.test",
             'password' => Hash::make('password'),
-            'is_active' => true,
         ]);
+        // is_active isn't mass-assignable on User, so create() silently
+        // dropped it and EnsureUserIsActiveApi rejected every API call.
+        $user->forceFill(['is_active' => true])->save();
+
+        return $user;
     }
 
     private function makeProfile(User $owner): NikahProfile

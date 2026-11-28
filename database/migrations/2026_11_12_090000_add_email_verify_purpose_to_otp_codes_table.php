@@ -10,11 +10,15 @@ return new class extends Migration
 {
     public function up(): void
     {
-        DB::statement("ALTER TABLE otp_codes MODIFY purpose ENUM('registration', 'login', 'password_reset', 'super_admin_2fa', 'email_verify') NOT NULL");
+        if (DB::getDriverName() === 'mysql') { // SQLite test DB: no ENUM to widen
+            DB::statement("ALTER TABLE otp_codes MODIFY purpose ENUM('registration', 'login', 'password_reset', 'super_admin_2fa', 'email_verify') NOT NULL");
+        }
     }
 
     public function down(): void
     {
-        DB::statement("ALTER TABLE otp_codes MODIFY purpose ENUM('registration', 'login', 'password_reset', 'super_admin_2fa') NOT NULL");
+        if (DB::getDriverName() === 'mysql') { // SQLite test DB: no ENUM to widen
+            DB::statement("ALTER TABLE otp_codes MODIFY purpose ENUM('registration', 'login', 'password_reset', 'super_admin_2fa') NOT NULL");
+        }
     }
 };
