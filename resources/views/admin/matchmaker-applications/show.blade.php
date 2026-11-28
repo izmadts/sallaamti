@@ -300,7 +300,7 @@
                     <p class="text-xs text-gray-500 mb-2">Progress toward auto-promotion to <strong>{{ $levelProgress['next_level_label'] }}</strong>:</p>
                     <div class="space-y-2">
                         @foreach ([
-                            ['Verified Profiles', $levelProgress['verified'], ''],
+                            ['Packages Sold', $levelProgress['packages'], ''],
                             ['Quality Score', $levelProgress['quality_score'], '%'],
                             ['Days Certified', $levelProgress['tenure_days'], ' days'],
                         ] as $req)

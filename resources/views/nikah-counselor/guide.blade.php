@@ -367,7 +367,7 @@
                         <thead class="bg-gray-50 text-gray-500 text-left">
                             <tr>
                                 <th class="px-5 py-3 font-semibold">{{ __('db.Next Tier') }}</th>
-                                <th class="px-5 py-3 font-semibold">{{ __('db.Verified Profiles Needed') }}</th>
+                                <th class="px-5 py-3 font-semibold">{{ __('db.Packages Sold Needed') }}</th>
                                 <th class="px-5 py-3 font-semibold">{{ __('db.Quality Score') }}</th>
                                 <th class="px-5 py-3 font-semibold">{{ __('db.Minimum Days Certified') }}</th>
                             </tr>
@@ -377,7 +377,7 @@
                             @if ($tier['threshold'])
                             <tr>
                                 <td class="px-5 py-3 text-gray-700 font-medium">{{ $tier['label'] }}</td>
-                                <td class="px-5 py-3 text-gray-600">{{ $tier['threshold']['verified'] }}</td>
+                                <td class="px-5 py-3 text-gray-600">{{ $tier['threshold']['packages'] }}</td>
                                 <td class="px-5 py-3 text-gray-600">{{ $tier['threshold']['quality_score'] }}+</td>
                                 <td class="px-5 py-3 text-gray-600">{{ $tier['threshold']['tenure_days'] }}</td>
                             </tr>

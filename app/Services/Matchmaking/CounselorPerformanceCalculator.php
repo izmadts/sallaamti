@@ -13,9 +13,8 @@ use App\Models\NikahProfile;
 // numbers back both that page's display and the level auto-promotion
 // check (Console\Commands\PromoteEligibleCounselors) — two places computing
 // "how well is this counselor doing" from slightly different logic would
-// drift and eventually disagree with each other. See PerformanceController's
-// own docblock for why this is deliberately a 3-factor score, not the
-// hiring document's full 7-factor one — only 3 have real data behind them.
+// drift and eventually disagree with each other. Since 28 Nov 2026 the score
+// is package conversion only (owner decision) — see calculate().
 class CounselorPerformanceCalculator
 {
     public function calculate(int $matchmakerId): array
@@ -30,6 +29,14 @@ class CounselorPerformanceCalculator
         $paidCount = NikahProfile::whereIn('id', $allProfileIds)->where('payment_status', 'confirmed')->count();
 
         $clientsWithPackage = Lead::where('assigned_to', $matchmakerId)->whereNotNull('nikah_package_id')->count();
+
+        // Owner (28 Nov 2026): a counselor's score and level run on packages
+        // only — verification moved to customer service, so it's no longer
+        // the counselor's own result. Eligible = assigned clients that are
+        // verified and paid (the only ones a package can be sold to).
+        $eligibleClients = Lead::where('assigned_to', $matchmakerId)
+            ->whereHas('nikahProfile', fn ($q) => $q->where('verification_status', 'verified')->where('payment_status', 'confirmed'))
+            ->count();
 
         $proposalsSent = MatchProposal::whereHas('batch', fn ($q) => $q->where('matchmaker_id', $matchmakerId))->count();
 
@@ -46,10 +53,11 @@ class CounselorPerformanceCalculator
         $paidConversionRate = $introducedCount > 0 ? round(($paidCount / $introducedCount) * 100) : null;
         $complianceRate = $totalEntries > 0 ? max(0, round(100 - ($flaggedCount / $totalEntries) * 100)) : 100;
 
-        $qualityScore = null;
-        if ($verificationRate !== null && $paidConversionRate !== null) {
-            $qualityScore = round(($verificationRate * 0.45) + ($paidConversionRate * 0.45) + ($complianceRate * 0.10));
-        }
+        $packageConversionRate = $eligibleClients > 0 ? min(100, round(($clientsWithPackage / $eligibleClients) * 100)) : null;
+
+        // Packages only. Verification/paid rates and compliance are still
+        // reported (and shown) but no longer weigh into the score.
+        $qualityScore = $packageConversionRate;
 
         $commissionEarned = CommissionLedgerEntry::where('matchmaker_id', $matchmakerId)->where('status', 'paid')->sum('commission_amount');
         $referralCount = MatchmakerReferral::where('counselor_user_id', $matchmakerId)->count();
@@ -60,6 +68,8 @@ class CounselorPerformanceCalculator
                 'verified' => $verifiedCount,
                 'paid' => $paidCount,
                 'matchmaking_clients' => $clientsWithPackage,
+                'packages_sold' => $clientsWithPackage,
+                'eligible_clients' => $eligibleClients,
                 'proposals' => $proposalsSent,
                 'mutual_interests' => $mutualInterests,
                 'recognition_bonuses' => $recognitionBonuses,
@@ -69,6 +79,7 @@ class CounselorPerformanceCalculator
                 'verification_rate' => $verificationRate,
                 'paid_conversion_rate' => $paidConversionRate,
                 'compliance_rate' => $complianceRate,
+                'package_conversion_rate' => $packageConversionRate,
                 'overall' => $qualityScore,
             ],
             'commission_earned' => $commissionEarned,

@@ -19,6 +19,7 @@ use App\Notifications\NewPackagePaymentSubmitted;
 use App\Notifications\ProposalBatchAwaitingApproval;
 use App\Services\ImageOptimizer;
 use App\Services\Matchmaking\ProposalBatchDispatcher;
+use App\Support\NcClientState;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -249,9 +250,12 @@ class ClientController extends Controller
         abort_unless($lead->nikah_profile_id, 422, 'This client needs a linked Nikah profile before a candidate can be finalized into a proposal.');
 
         $validated = $request->validate([
-            'method' => ['required', 'in:' . implode(',', array_keys(MatchmakingConsent::METHODS))],
+            // Optional since the counselor app dropped its Consent step
+            // (28 Nov 2026) — older app builds still send it.
+            'method' => ['nullable', 'in:' . implode(',', array_keys(MatchmakingConsent::METHODS))],
             'notes' => ['nullable', 'string', 'max:1000'],
         ]);
+        $validated['method'] = $validated['method'] ?? 'other';
 
         $candidate = $item->nikahProfile;
 
@@ -491,7 +495,24 @@ class ClientController extends Controller
     {
         $this->authorizeClient($lead);
         abort_unless($lead->nikah_profile_id, 422, 'This client needs a linked Nikah profile before a proposal batch can be sent to them.');
-        abort_unless($lead->hasActiveConsent('matchmaking_participation'), 422, 'Record this client\'s consent to participate in matchmaking before sending them proposals.');
+
+        // Owner (28 Nov 2026): the counselor app no longer has a Consent
+        // step — the client's agreement to take part is already obtained at
+        // registration and on the customer-service verification call. The
+        // consent row is still required (and still revocable by admin), so
+        // it's recorded here automatically, the same way
+        // finalizeShortlistItem() already does on Mark Final.
+        if (!$lead->hasActiveConsent('matchmaking_participation')) {
+            MatchmakingConsent::create([
+                'lead_id' => $lead->id,
+                'consent_type' => 'matchmaking_participation',
+                'method' => 'other',
+                'notes' => 'Recorded automatically when the counselor started a proposal batch (consent is confirmed at registration/verification).',
+                'recorded_by' => auth()->id(),
+                'granted_at' => now(),
+            ]);
+            MatchmakingTimelineEvent::log($lead, $lead->nikahProfile, 'consent_recorded', MatchmakingConsent::TYPES['matchmaking_participation'] . ' consent recorded automatically (proposal batch started).');
+        }
 
         $batchNumber = ProposalBatch::where('lead_id', $lead->id)->max('batch_number') + 1;
 
@@ -602,6 +623,9 @@ class ClientController extends Controller
             // Same "Profile #" the admin panel shows (NikahProfile::id) —
             // null until this lead is linked to a registered profile.
             'nikah_profile_id' => $lead->nikah_profile_id,
+            // not_registered / pending / rejected / verified — drives the
+            // app's coloured status marker (see App\Support\NcClientState).
+            'verification_state' => NcClientState::verificationState($lead),
             'next_follow_up_at' => $lead->next_follow_up_at?->toDateString(),
             'created_at' => $lead->created_at->toIso8601String(),
             'unread_message_count' => $lead->clientMessages()->where('sender_id', '!=', auth()->id())->where('is_read', false)->count(),
@@ -624,6 +648,7 @@ class ClientController extends Controller
             'assigned_to' => $lead->assignedTo ? ['id' => $lead->assignedTo->id, 'name' => $lead->assignedTo->name] : null,
             'is_converted' => $lead->isConverted(),
             'nikah_profile_id' => $lead->nikah_profile_id,
+            'verification_state' => NcClientState::verificationState($lead),
             // Answers "is this client even reachable in-app, or is
             // everything happening over WhatsApp?" — null means no member
             // account exists yet (no Nikah profile registered), so there's

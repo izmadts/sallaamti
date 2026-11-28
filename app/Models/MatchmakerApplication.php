@@ -76,10 +76,16 @@ class MatchmakerApplication extends Model
     // 'level' directly drives commission tier (RecordsCommission::
     // tierForMatchmaker()), so promotion is intentionally one-way here —
     // this never auto-demotes; that stays a deliberate admin action.
+    //
+    // Owner (28 Nov 2026): counselors are measured on packages only —
+    // verification moved to customer service. 'packages' = clients with an
+    // active package; 'quality_score' is now the package conversion rate
+    // (packages sold ÷ verified clients assigned), so its bars are set
+    // lower than the old blended score's 60/75/85.
     public const PROMOTION_THRESHOLDS = [
-        'certified_nikah_counselor' => ['verified' => 5, 'quality_score' => 60, 'tenure_days' => 30],
-        'senior_nikah_counselor' => ['verified' => 20, 'quality_score' => 75, 'tenure_days' => 90],
-        'regional_nikah_coordinator' => ['verified' => 50, 'quality_score' => 85, 'tenure_days' => 180],
+        'certified_nikah_counselor' => ['packages' => 5, 'quality_score' => 30, 'tenure_days' => 30],
+        'senior_nikah_counselor' => ['packages' => 20, 'quality_score' => 40, 'tenure_days' => 90],
+        'regional_nikah_coordinator' => ['packages' => 50, 'quality_score' => 50, 'tenure_days' => 180],
     ];
 
     public const QUALIFICATIONS = [
@@ -199,7 +205,7 @@ class MatchmakerApplication extends Model
         }
 
         return $tenureDays >= $thresholds['tenure_days']
-            && $stats['verified'] >= $thresholds['verified']
+            && ($stats['packages_sold'] ?? 0) >= $thresholds['packages']
             && ($score['overall'] ?? 0) >= $thresholds['quality_score'];
     }
 
@@ -220,11 +226,16 @@ class MatchmakerApplication extends Model
 
         $tenureDays = $this->tenureDays() ?? 0;
         $qualityScore = $score['overall'] ?? 0;
+        $packagesSold = $stats['packages_sold'] ?? 0;
+        $packages = ['current' => $packagesSold, 'needed' => $thresholds['packages'], 'met' => $packagesSold >= $thresholds['packages']];
 
         return [
             'next_level' => $nextLevel,
             'next_level_label' => self::LEVELS[$nextLevel],
-            'verified' => ['current' => $stats['verified'], 'needed' => $thresholds['verified'], 'met' => $stats['verified'] >= $thresholds['verified']],
+            'packages' => $packages,
+            // Same values under the old key — NC app builds from before the
+            // package-only score read 'verified' and would fail without it.
+            'verified' => $packages,
             'quality_score' => ['current' => $qualityScore, 'needed' => $thresholds['quality_score'], 'met' => $qualityScore >= $thresholds['quality_score']],
             'tenure_days' => ['current' => $tenureDays, 'needed' => $thresholds['tenure_days'], 'met' => $tenureDays >= $thresholds['tenure_days']],
         ];

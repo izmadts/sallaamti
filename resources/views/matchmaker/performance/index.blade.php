@@ -65,13 +65,11 @@ $accent = $tierColors[$myTier];
             <p class="text-xs text-gray-500 mt-2 mb-4">{{ __('db.A simplified score built from what Sallaamti can measure today. Client Satisfaction, Proposal Quality, and Follow-up Response tracking will be added as those systems are built — this score will grow more complete over time, not less accurate.') }}</p>
 
             @if ($score['overall'] === null)
-            <p class="text-sm text-gray-400 text-center py-6">{{ __('db.Introduce your first client to start building your Quality Score.') }}</p>
+            <p class="text-sm text-gray-400 text-center py-6">{{ __('db.Once customer service verifies one of your clients, sell them a package to start building your Quality Score.') }}</p>
             @else
             <div class="space-y-4">
                 @foreach ([
-                [__('db.Verification Rate'), $score['verification_rate'], __("db.How many of the people you've introduced went on to get verified.")],
-                [__('db.Paid Conversion'), $score['paid_conversion_rate'], __("db.How many of the people you've introduced completed payment.")],
-                [__('db.Compliance'), $score['compliance_rate'], __('db.How clean your commission history is — no flagged entries.')],
+                [__('db.Package Conversion'), $score['package_conversion_rate'], __('db.How many of your verified clients bought a package. Your Quality Score is this number.')],
                 ] as $factor)
                 <div>
                     <div class="flex justify-between text-sm mb-1">
@@ -108,7 +106,7 @@ $accent = $tierColors[$myTier];
                 <p class="text-xs text-gray-400 mb-4">{{ __("db.Meet all three below and you're promoted automatically — no need to ask anyone. Higher tiers earn a higher commission rate on every sale.") }}</p>
                 <div class="space-y-3">
                     @foreach ([
-                        [__('db.Verified Profiles'), $levelProgress['verified'], ''],
+                        [__('db.Packages Sold'), $levelProgress['packages'], ''],
                         [__('db.Quality Score'), $levelProgress['quality_score'], '%'],
                         [__('db.Days as a Counselor'), $levelProgress['tenure_days'], ' ' . __('db.days')],
                     ] as $req)
