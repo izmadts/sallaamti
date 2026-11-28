@@ -141,6 +141,51 @@ class NcAppSimplificationApiTest extends TestCase
             ->assertJsonPath('score.overall', 50);
     }
 
+    public function test_representative_clients_skip_call_register_and_verify(): void
+    {
+        $nc = $this->makeCounselor();
+        $rep = $this->makeUser();
+        $preparing = $this->makeLead($nc, $this->makeProfile(), 'new');
+        $ready = $this->makeLead($nc, $this->makeProfile('verified', 'confirmed'), 'new');
+        $preparing->forceFill(['created_by' => $rep->id])->saveQuietly();
+        $ready->forceFill(['created_by' => $rep->id])->saveQuietly();
+
+        $tasks = collect($this->actingAs($nc)->getJson('/api/v1/matchmaker/dashboard')->assertOk()->json('tasks'))->pluck('task', 'id');
+
+        $this->assertArrayNotHasKey($preparing->id, $tasks->all());
+        $this->assertSame('requirements', $tasks[$ready->id]);
+
+        $this->actingAs($nc)->getJson("/api/v1/matchmaker/clients/{$ready->id}")
+            ->assertJsonPath('client.is_own_client', false);
+    }
+
+    public function test_clients_can_be_found_by_profile_number(): void
+    {
+        $nc = $this->makeCounselor();
+        $profile = $this->makeProfile();
+        $lead = $this->makeLead($nc, $profile);
+        $this->makeLead($nc, $this->makeProfile());
+
+        foreach ([(string) $profile->id, '#' . $profile->id] as $term) {
+            $ids = collect($this->actingAs($nc)->getJson('/api/v1/matchmaker/clients?search=' . urlencode($term))->assertOk()->json('clients'))->pluck('id');
+            $this->assertContains($lead->id, $ids->all(), "search '{$term}'");
+        }
+    }
+
+    public function test_browse_can_look_up_a_profile_number(): void
+    {
+        $nc = $this->makeCounselor();
+        $wanted = $this->makeProfile('verified', 'confirmed');
+        $other = $this->makeProfile('verified', 'confirmed');
+        foreach ([$wanted, $other] as $p) {
+            $p->forceFill(['is_active' => true, 'visibility' => 'members_only', 'matchmaking_opt_in_at' => now()])->save();
+        }
+
+        $ids = collect($this->actingAs($nc)->getJson('/api/v1/matchmaker/browse?profile_id=%23' . $wanted->id)->assertOk()->json('profiles'))->pluck('id');
+
+        $this->assertSame([$wanted->id], $ids->all());
+    }
+
     private function packageId(): int
     {
         return \App\Models\NikahPackage::create([

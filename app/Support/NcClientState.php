@@ -20,9 +20,21 @@ use App\Models\Lead;
 //
 // nextTask() is the one thing the counselor should do next for this client,
 // in the order the simplified app walks them through (Today's Tasks list).
+//
+// Owner (28 Nov 2026): calling, registering and getting a client verified
+// are the counselor's job only for their OWN clients (leads they created).
+// Clients assigned by the representative arrive ready — those three steps
+// are the representative's — so the counselor's list starts at preferences.
 class NcClientState
 {
     public const TASKS = ['call', 'register', 'verify', 'requirements', 'package', 'shortlist', 'send'];
+
+    // A lead the counselor created themselves (and so always keeps), as
+    // opposed to one the representative / admin assigned to them.
+    public static function isOwnClient(Lead $lead): bool
+    {
+        return $lead->created_by !== null && (int) $lead->created_by === (int) $lead->assigned_to;
+    }
 
     public static function verificationState(Lead $lead): string
     {
@@ -49,6 +61,12 @@ class NcClientState
     {
         if (in_array($lead->status, Lead::INACTIVE_STATUSES, true)) {
             return null;
+        }
+
+        if (!self::isOwnClient($lead)) {
+            // Representative's client: nothing for the counselor until it's
+            // verified (the representative is still preparing it).
+            return self::verificationState($lead) === 'verified' ? self::workTask($lead) : null;
         }
 
         $followUpDue = $lead->next_follow_up_at !== null

@@ -73,10 +73,14 @@ class ClientController extends Controller
             $query->where('assigned_to', $request->assigned_to);
         }
         if ($request->filled('search')) {
-            $search = $request->search;
+            $search = trim($request->search);
+            // "1234" or "#1234" also matches the client's Profile # (owner,
+            // 28 Nov 2026: counselors must be able to find a client by it).
+            $profileId = preg_match('/^#?\s*(\d+)$/', $search, $m) ? (int) $m[1] : null;
             $query->where(fn ($q) => $q->where('name', 'like', "%{$search}%")
                 ->orWhere('phone', 'like', "%{$search}%")
-                ->orWhere('email', 'like', "%{$search}%"));
+                ->orWhere('email', 'like', "%{$search}%")
+                ->when($profileId, fn ($q) => $q->orWhere('nikah_profile_id', $profileId)));
         }
 
         $clients = $query->orderByDesc('created_at')->paginate(15)->withQueryString();
@@ -626,6 +630,7 @@ class ClientController extends Controller
             // not_registered / pending / rejected / verified — drives the
             // app's coloured status marker (see App\Support\NcClientState).
             'verification_state' => NcClientState::verificationState($lead),
+            'is_own_client' => NcClientState::isOwnClient($lead),
             'next_follow_up_at' => $lead->next_follow_up_at?->toDateString(),
             'created_at' => $lead->created_at->toIso8601String(),
             'unread_message_count' => $lead->clientMessages()->where('sender_id', '!=', auth()->id())->where('is_read', false)->count(),
@@ -649,6 +654,7 @@ class ClientController extends Controller
             'is_converted' => $lead->isConverted(),
             'nikah_profile_id' => $lead->nikah_profile_id,
             'verification_state' => NcClientState::verificationState($lead),
+            'is_own_client' => NcClientState::isOwnClient($lead),
             // Answers "is this client even reachable in-app, or is
             // everything happening over WhatsApp?" — null means no member
             // account exists yet (no Nikah profile registered), so there's

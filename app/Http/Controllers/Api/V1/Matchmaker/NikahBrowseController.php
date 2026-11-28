@@ -32,6 +32,17 @@ class NikahBrowseController extends Controller
 
         $query = NikahProfile::with('user')->matchmakerVisible();
 
+        // Owner (28 Nov 2026): find a profile directly by its Profile #.
+        // An exact lookup ignores the client's saved preferences (they'd
+        // otherwise hide the very profile being looked up); the
+        // opposite-gender rule below still applies.
+        if ($request->filled('profile_id')) {
+            $profileId = (int) ltrim(trim((string) $request->profile_id), '#');
+            $query->where('id', $profileId);
+            $requirementValues = collect();
+            $appliedFilters['profile_id'] = $profileId;
+        }
+
         if ($lead?->gender) {
             // Owner, 15 Nov 2026: opposite-gender only when picking for a
             // specific client is a hard rule, not a default the counselor
